@@ -1,0 +1,13 @@
+ITEM.baseItem = "ammo_base"
+ITEM.name = "7.62x51mm Bullets"
+ITEM.PrintName = "#Item_Ammo762x51_PrintName"
+ITEM.cost = 0
+ITEM.classes = {CLASS_EMP, CLASS_EOW}
+ITEM.model = "models/items/boxmrounds.mdl"
+ITEM.weight = 3.5
+ITEM.access = "V"
+ITEM.uniqueID = "ammo_762x51"
+ITEM.business = true
+ITEM.ammoClass = "7.62x51mm"
+ITEM.ammoAmount = 30
+ITEM.description = "#Item_Ammo762x51_Description"

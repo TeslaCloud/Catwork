@@ -1,0 +1,7 @@
+config.Add("affectivewounds_enabled", true, true)
+config.Add("affectivewounds_legshotlimit", 1, true)
+config.Add("affectivewounds_armshotlimit", 1, true)
+config.Add("affectivewounds_affectota", false, true)
+config.Add("affectivewounds_affectmpf", true, true)
+config.Add("affectivewounds_additionalhitsota", 2, true)
+config.Add("affectivewounds_additionalhitsmpf", 1, true)

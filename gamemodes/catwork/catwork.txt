@@ -1,0 +1,20 @@
+"catwork"
+{
+	"title"			"Catwork"
+	"maps"			"^rp_"
+	"settings"
+	{
+		1
+		{
+			"name"		"schema"
+			"text"		"schema"
+			"help"		"Schema to load."
+			"type"		"Text"
+			"default"	"cwhl2rp"
+		}
+	}
+	"version"		"1.2.3"
+	"author"		"People who care"
+	"description"	"A roleplaying framework."
+	"workshopid"	"474315121"
+}

@@ -1,0 +1,17 @@
+ITEM.baseItem = "weapon_base"
+ITEM.name = "M1911"
+ITEM.PrintName = "#Item_WeaponM1911_PrintName"
+ITEM.cost = 0
+ITEM.model = "models/weapons/w_1911_1.mdl"
+ITEM.weight = 1
+ITEM.access = "V"
+ITEM.classes = {CLASS_EOW}
+ITEM.weaponClass = "sxbase_m1911"
+ITEM.business = true
+ITEM.description = "#Item_WeaponM1911_Description"
+ITEM.isAttachment = true
+ITEM.loweredOrigin = Vector(3, 0, -4)
+ITEM.loweredAngles = Angle(0, 45, 0)
+ITEM.attachmentBone = "ValveBiped.Bip01_Pelvis"
+ITEM.attachmentOffsetAngles = Angle(0, 0, 90)
+ITEM.attachmentOffsetVector = Vector(-4.19, 0, -8.54)

@@ -1,0 +1,9 @@
+"cwhl2rp"
+{
+	"title"			"HL2 RP"
+	"author"		"TeslaCloud Studios"
+	"description"	"A roleplaying schema set in the Half-Life universe."
+	"version"		"1.09"
+	"menusystem"	"1"
+	"workshopid"	"108727894"
+}
