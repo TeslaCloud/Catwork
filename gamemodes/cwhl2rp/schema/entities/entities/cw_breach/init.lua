@@ -61,12 +61,12 @@ function ENT:SetBreachEntity(entity, trace)
 	self:SetAngles(angles)
 	self:SetParent(entity)
 
-	entity.breach = self; self:SetHealth(5)
+	entity.breach = self self:SetHealth(5)
 end
 
 -- A function to open the entity.
 function ENT:BreachEntity(activator)
-	self:Explode(); self:Remove()
+	self:Explode() self:Remove()
 
 	hook.Run("EntityBreached", self.entity, activator)
 end

@@ -10,18 +10,18 @@ local COMMAND = cw.command:New("GarbageAdd")
 COMMAND.tip = "#Command_Garbageadd_Description"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "s"
-COMMAND.alias = {"AddGarbage", "GarbageSpawnAdd"}
+COMMAND.alias = { "AddGarbage", "GarbageSpawnAdd" }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
 	local entity = ents.Create("cw_garbage")
 
-	local Position = player:GetEyeTraceNoCursor().HitPos + Vector(0,0,5)
+	local Position = player:GetEyeTraceNoCursor().HitPos + Vector(0, 0, 5)
 	entity:SetPos(Position)
 	entity:Spawn()
 
 	if (IsValid(entity)) then
-		Angles = Angle(0, player:EyeAngles().yaw + 180,0)
+		Angles = Angle(0, player:EyeAngles().yaw + 180, 0)
 		entity:SetAngles(Angles)
 
 		table.insert(cwGarbage.garbagePoints, {
@@ -36,4 +36,4 @@ function COMMAND:OnRun(player, arguments)
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

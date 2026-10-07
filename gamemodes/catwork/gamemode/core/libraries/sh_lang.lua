@@ -14,7 +14,7 @@ cw.lang.stored = stored
 local fileList = cw.lang.fileList or {}
 cw.lang.fileList = fileList
 
-CW_LANGUAGE_CLASS = {__index = CW_LANGUAGE_CLASS}
+CW_LANGUAGE_CLASS = { __index = CW_LANGUAGE_CLASS }
 
 function CW_LANGUAGE_CLASS:Add(identifier, value)
 	self[identifier] = value
@@ -26,6 +26,7 @@ end
 	@param String The language to get the table for.
 	@returns The language table for the given language.
 --]]
+
 function cw.lang:GetTable(name)
 	if (!stored[name]) then
 		stored[name] = cw.core:NewMetaTable(
@@ -41,6 +42,7 @@ end
 	@details Get the table of all the languages.
 	@returns The table containing all the languages.
 --]]
+
 function cw.lang:GetAll()
 	return stored
 end
@@ -63,6 +65,7 @@ function cw.lang:Set(language) end
 	@param Various A list of arguments to replace in the string.
 	@returns The final string for the given identifier.
 --]]
+
 function cw.lang:GetString(language, identifier, arguments)
 	local langString = nil
 	arguments = arguments or {}
@@ -113,6 +116,7 @@ if (CLIENT) then
 		This is to stop our overrides from parsing translations, we
 		don't want certain things like the chatbox to be translated.
 	--]]
+
 	function surface.NoTranslate(bValue)
 		surface.bTranslating = !bValue
 	end
@@ -174,6 +178,7 @@ if (CLIENT) then
 		This will give us control over basically every text drawn
 		with Lua outside of Derma.
 	--]]
+
 	function surface.DrawText(sText)
 		if (surface.bTranslating) then
 			sText = cw.lang:TranslateText(sText)
@@ -211,7 +216,7 @@ else
 		so we network the raw identifier with any arguments and let the client parse it.
 	--]]
 	function L(player, identifier, ...)
-		local arguments = {...}
+		local arguments = { ... }
 
 		-- In case the format L(identifier, ...) is used.
 		if (isstring(player)) then
@@ -234,6 +239,7 @@ else
 
 				Clientside needs to manually concat arguments.
 			--]]
+
 			if (arguments) then
 				text = text..":"
 
@@ -253,4 +259,4 @@ else
 	end
 end
 
-util.IncludeDirectory("language/", true);
+util.IncludeDirectory("language/", true)

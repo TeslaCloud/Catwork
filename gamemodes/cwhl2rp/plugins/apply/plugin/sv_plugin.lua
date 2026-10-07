@@ -4,4 +4,4 @@
 	do not re-distribute without the permission of it's author.
 --]]
 
-config.Add("apply_recognise_enable", true);
+config.Add("apply_recognise_enable", true)

@@ -30,8 +30,8 @@ function COMMAND:OnRun(player, arguments)
 
 	local trace = player:GetEyeTraceNoCursor()
 	local angle = trace.HitNormal:Angle()
-	angle:RotateAroundAxis(angle:Forward(), 90);
-	angle:RotateAroundAxis(angle:Right(), 270);
+	angle:RotateAroundAxis(angle:Forward(), 90)
+	angle:RotateAroundAxis(angle:Right(), 270)
 
 	local data = {
 		text = text,
@@ -49,4 +49,4 @@ function COMMAND:OnRun(player, arguments)
 	cw.player:Notify(player, L("SurfaceTexts_Added"))
 end
 
-COMMAND:Register();
+COMMAND:Register()

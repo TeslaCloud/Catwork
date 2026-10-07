@@ -25,16 +25,16 @@ function COMMAND:OnRun(player, arguments)
 	local lowerName = string.lower(owningPerson)
 
 	if (IsValid(door) and cw.entity:IsDoor(door)) then
-		if (not door._OwningPersons or not door._OwningPersons[lowerName]) then
+		if (!door._OwningPersons or !door._OwningPersons[lowerName]) then
 			local owners = {}
 
-			if(not door._OwningPersons)then
+			if(!door._OwningPersons)then
 				door._OwningPersons = {}
 			end
 
 			door._OwningPersons[lowerName] = true
 
-			if (not cw.entity:IsDoorUnownable(door))then
+			if (!cw.entity:IsDoorUnownable(door))then
 				cw.entity:SetDoorUnownable(door, true)
 			end
 
@@ -60,4 +60,4 @@ function COMMAND:OnRun(player, arguments)
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

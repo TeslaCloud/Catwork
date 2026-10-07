@@ -80,4 +80,4 @@ cw.quickmenu:AddCallback("#QuickMenu_Description", nil, function()
 	else
 		return false
 	end
-end);
+end)

@@ -24,4 +24,4 @@ lang["#ForumNameDesc"] = "The name of your forum, which will be shown in the cha
 lang["#ForumLink"] = "Link to your forum"
 lang["#ForumLinkDesc"] = "Pressing the button with the name of your forum will open this link in the in-game browser."
 lang["#ForumButtonEnable"] = "Enable forum button"
-lang["#ForumButtonEnableDesc"] = "Whether or not the forum button is enabled.";
+lang["#ForumButtonEnableDesc"] = "Whether or not the forum button is enabled."

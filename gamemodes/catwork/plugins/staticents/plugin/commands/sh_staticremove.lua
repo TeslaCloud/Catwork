@@ -9,11 +9,11 @@
 local COMMAND = cw.command:New("UnStatic")
 COMMAND.tip = "#Command_Unstatic_Description"
 COMMAND.access = "a"
-COMMAND.alias = {"StaticRemove", "StaticPropRemove"}
+COMMAND.alias = { "StaticRemove", "StaticPropRemove" }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
 	plugin.Call("PlayerMakeStatic", player, false)
 end
 
-COMMAND:Register();
+COMMAND:Register()

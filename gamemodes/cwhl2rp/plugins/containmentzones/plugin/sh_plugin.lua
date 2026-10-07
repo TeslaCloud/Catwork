@@ -13,9 +13,11 @@ if (SERVER) then
 		if !data["radlevel"] then
 			data["radlevel"] = 0
 		end
+
 		if !data["radresist"] then
 			data["radresist"] = 0
 		end
+
 		if !data["cp_filter"] then
 			if ply:GetFaction() == FACTION_MPF then
 				data["cp_filter"] = 100
@@ -68,6 +70,7 @@ if (SERVER) then
 			if zone.pos then
 				checkRadSphere(zone.pos, zone.radius, zone.rad)
 			end
+
 			if zone.pos1 then
 				if zone.pos2 then
 					checkRadBox(zone.pos1, zone.pos2, zone.rad)
@@ -77,8 +80,9 @@ if (SERVER) then
 
 		for k, v in pairs(player.GetAll()) do
 			if !v:Alive() then continue end
+
 			if v.inRadArea and v.inRadArea >= CurTime() then
-				hook.Run("OnPlayerInContainmentArea", v, math.max(0,unpack(v.radEffects)))
+				hook.Run("OnPlayerInContainmentArea", v, math.max(0, unpack(v.radEffects)))
 			end
 		end
 	end
@@ -109,19 +113,23 @@ if (SERVER) then
 			ply:SetNWInt("resist_rad", newenergy)
 		else
 			local gasmasks = ply:GetInventory()["gasmask"]
+
 			if gasmasks then
 				local gasmask_equipped
 
 				for k, gasmask in pairs(gasmasks) do
 					if !gasmask:GetData("equip") then continue end
+
 					gasmask_equipped = gasmask
 				end
+
 				if gasmask_equipped then
 					local energy = gasmask_equipped:GetData("energy")
 					local value = math.abs(math.max(0.3, rad * 0.2))
 					local newenergy = math.Clamp(energy - value, 0, 100)
 
 					radresist = radresist + 5
+
 					if energy > 0 then
 						radresist = radresist + 93
 					end
@@ -135,6 +143,7 @@ if (SERVER) then
 				end
 			end
 		end
+
 		if self:PlayerIsMechanic(ply) then
 			radresist = radresist + 50
 		end
@@ -144,6 +153,7 @@ if (SERVER) then
 
 	function cwRadSystem:OnPlayerInContainmentArea(ply, rad)
 		if !ply.nextRadDamage then ply.nextRadDamage = CurTime() + 1 end
+
 		if ply.nextRadDamage and CurTime() >= ply.nextRadDamage then
 			local radlevel = ply:GetCharacterData("radlevel", 0)
 			local radresist = ply:GetCharacterData("radresist", 0)
@@ -151,7 +161,7 @@ if (SERVER) then
 			ply:SetNWInt("radLevel", rad)
 
 			radresist = hook.Run("ModifyPlayerRadResistance", ply, rad, radresist)
-			rad = math.Round(rad + ((rad/100)*(radresist - (radresist*2))),2)
+			rad = math.Round(rad + ((rad / 100) * (radresist - (radresist * 2))), 2)
 
 			if rad < 0 then
 				rad = 0
@@ -163,6 +173,7 @@ if (SERVER) then
 			ply.nextRadDamage = CurTime() + 1
 		end
 	end
+
 	function cwRadSystem:PlayerThink(player, curTime, infoTable)
 		local radlevel = player:GetCharacterData("radlevel", 0)
 
@@ -173,11 +184,13 @@ if (SERVER) then
 						hook.Run("OnPlayerRadLevelChanged", player, radlevel)
 						player.prevRadLevel = radlevel
 					end
+
 					hook.Run("PlayerRadThink", player, radlevel)
 				end
 			end
 		end
 	end
+
 	function cwRadSystem:PlayerDeath(ply)
 		ply:SetNWBool("inRadArea", false)
 		ply:SetCharacterData("radlevel", 0)
@@ -189,15 +202,18 @@ if (SERVER) then
 		ply.lastRadMessageTime = nil
 		ply.lastRadMessage = nil
 	end
+
 	function cwRadSystem:PlayerRadThink(ply, newrad)
 		if newrad > 999 then
 			if !ply.nextRadApply then ply.nextRadApply = CurTime() + 0.5 end
+
 			if CurTime() >= ply.nextRadApply then
-				ply:TakeDamage((ply:Health()/(newrad/ply:GetMaxHealth())), ply, ply)
+				ply:TakeDamage((ply:Health() / (newrad / ply:GetMaxHealth())), ply, ply)
 				ply.nextRadApply = CurTime() + 0.5
 			end
 		elseif newrad > 899 then
 			if !ply.nextRadFall then ply.nextRadFall = CurTime() + 20 end
+
 			if !ply:IsRagdolled() and !ply:IsNoClipping() then
 				if CurTime() >= ply.nextRadFall then
 					if 4 > math.random(1, 1000) then
@@ -209,16 +225,20 @@ if (SERVER) then
 			end
 		end
 	end
+
 	function cwRadSystem:RadMessage(ply, text)
 		if !ply.lastRadMessageTime then ply.lastRadMessageTime = CurTime() end
+
 		if ply.lastRadMessageTime and CurTime() >= ply.lastRadMessageTime then
-			--cw.chatBox:Add(ply, nil, "sleep", "** " .. text)
-			chatbox.AddText(ply, text, {textColor = Color("#89D235"), filter = "player_events", icon = false})
+			-- cw.chatBox:Add(ply, nil, "sleep", "** " .. text)
+			chatbox.AddText(ply, text, { textColor = Color("#89D235"), filter = "player_events", icon = false })
+
 			if ply.lastRadMessage != text then
-				ply.lastRadMessageTime = CurTime() + math.random(59,257)
+				ply.lastRadMessageTime = CurTime() + math.random(59, 257)
 			end
 		end
 	end
+
 	function cwRadSystem:OnPlayerRadLevelChanged(ply, newrad)
 		if self:PlayerHasRadImmune(ply) then
 			return
@@ -273,9 +293,11 @@ if (SERVER) then
 			ply:BoostAttribute("Radiation", ATB_STAMINA, false)
 		end
 	end
+
 	function cwRadSystem:PlayerShouldStaminaRegenerate(player)
 		if !self:PlayerHasRadImmune(player) then
 			local rad = player:GetCharacterData("radlevel", 0)
+
 			if rad > 199 then
 				return false
 			end
@@ -319,8 +341,9 @@ if (SERVER) then
 	concommand.Add("cwradsys_get", function(ply)
 		if ply:IsSuperAdmin() then
 			netstream.Start(ply, "cwRadSystemDataClear", {})
+
 			for k, v in pairs(self.stored) do
-				netstream.Start(ply, "cwRadSystemData", { pos = v.pos, pos1 = v.pos1, pos2 = v.pos2, radius = v.radius, rad = v.rad})
+				netstream.Start(ply, "cwRadSystemData", { pos = v.pos, pos1 = v.pos1, pos2 = v.pos2, radius = v.radius, rad = v.rad })
 			end
 		end
 	end)
@@ -331,6 +354,7 @@ else
 	function cwRadSystem:RenderScreenspaceEffects()
 		local LP = cw.client
 		local CT = UnPredictedCurTime()
+
 		if self:PlayerHasRadImmune(LP) then
 			return
 		end
@@ -346,20 +370,22 @@ else
 				end
 			end
 
-			DrawMaterialOverlay("effects/combine_binocoverlay",0)
+			DrawMaterialOverlay("effects/combine_binocoverlay", 0)
 		end
 
 		local rad = LP:GetCharacterData("radlevel", 0) or 0
+
 		if rad > 449 then
-			local raddelta = LP:GetCharacterData("radlevel", 0)/(1000+449)
-			local mod = (0.5 * raddelta) * (LP:GetMaxHealth()/LP:Health())
+			local raddelta = LP:GetCharacterData("radlevel", 0) / (1000 + 449)
+			local mod = (0.5 * raddelta) * (LP:GetMaxHealth() / LP:Health())
 			local sinScaler = math.sin(CT * mod)
-			DrawBloom(0,5 * mod, sinScaler * math.Rand(-5,5), sinScaler * math.Rand(-5,5),6 * mod,1,(1* math.Clamp(math.abs(sinScaler),1,100) + math.abs(math.cos(CT))) * mod,0,0)
+			DrawBloom(0, 5 * mod, sinScaler * math.Rand(-5, 5), sinScaler * math.Rand(-5, 5), 6 * mod, 1, (1 * math.Clamp(math.abs(sinScaler), 1, 100) + math.abs(math.cos(CT))) * mod, 0, 0)
 		end
-		--if rad > 299 then
+
+		-- if rad > 299 then
 		--	local raddelta = LP:GetCharacterData("radlevel", 0)/(1000+299)
 		--	DrawMotionBlur(0.4, 1 * raddelta, 0)
-		---end
+		--- end
 	end
 
 	function cwRadSystem:GeigerThink()
@@ -371,6 +397,7 @@ else
 
 		if !self.LastSound then self.LastSound = CurTime() end
 		if (CurTime() - self.LastSound) < 0.06 then return end
+
 		self.LastSound = CurTime()
 
 		if LP:GetNWBool("inRadArea") then
@@ -415,18 +442,21 @@ else
 				flvol = 0
 				highsound = false
 			end
-			flvol = (flvol * (math.random(0,127)) / 255) + 0.25
 
-			if math.random(0,127) < pct then
-				local snd = "player/geiger"..math.random(1,2)..".wav"
+			flvol = (flvol * (math.random(0, 127)) / 255) + 0.25
+
+			if math.random(0, 127) < pct then
+				local snd = "player/geiger"..math.random(1, 2)..".wav"
+
 				if highsound then
-					snd = "player/geiger"..math.random(2,3)..".wav"
+					snd = "player/geiger"..math.random(2, 3)..".wav"
 				end
 
 				LP:EmitSound(snd, 80, math.random(90, 110), flvol)
 			end
 		end
 	end
+
 	function cwRadSystem:Think()
 		local LP = cw.client
 
@@ -441,7 +471,7 @@ else
 
 		if LP:GetFaction() == FACTION_MPF then
 			local delta = math.floor(cp_filter)
-			cw.bars:Add("ФИЛЬТР", Color(130,130,130), nil, cp_filter, 100, cp_filter < 90)
+			cw.bars:Add("ФИЛЬТР", Color(130, 130, 130), nil, cp_filter, 100, cp_filter < 90)
 		end
 	end
 
@@ -472,11 +502,12 @@ else
 
 		for k, v in pairs(cwRadSystem.localstored) do
 			if v.pos then
-				render.DrawWireframeSphere(v.pos, v.radius, 10, 10, Color(255,0,0), true)
+				render.DrawWireframeSphere(v.pos, v.radius, 10, 10, Color(255, 0, 0), true)
 			end
+
 			if v.pos1 then
 				if v.pos2 then
-					render.DrawWireframeBox(Vector(0,0,0), Angle(0,0,0), v.pos1, v.pos2, Color(255,0,0), true)
+					render.DrawWireframeBox(Vector(0, 0, 0), Angle(0, 0, 0), v.pos1, v.pos2, Color(255, 0, 0), true)
 				end
 			end
 		end
@@ -485,6 +516,7 @@ else
 	netstream.Hook("cwRadSystemDataClear", function(data)
 		cwRadSystem.localstored = {}
 	end)
+
 	netstream.Hook("cwRadSystemData", function(data)
 		cwRadSystem.localstored[#cwRadSystem.localstored + 1] = {
 			pos = data.pos,
@@ -518,7 +550,7 @@ local nonhumanoids = {
 	"zombie_fast",
 	"zombie_poison",
 	"zombie_torso",
-	"zombie_torso_fast",
+	"zombie_torso_fast"
 }
 local mechanics = {
 	"ccamera",
@@ -533,8 +565,9 @@ local mechanics = {
 	"gunship",
 	"cturret",
 	"crab_synth",
-	"dropship",
+	"dropship"
 }
+
 function cwRadSystem:PlayerIsBiotic(ply)
 --[[
 	local ent = pk_pills.getMappedEnt(ply)
@@ -550,6 +583,7 @@ function cwRadSystem:PlayerIsBiotic(ply)
 	return false
 ]]
 end
+
 function cwRadSystem:PlayerIsMechanic(ply)
 --[[
 	local ent = pk_pills.getMappedEnt(ply)
@@ -565,6 +599,7 @@ function cwRadSystem:PlayerIsMechanic(ply)
 	return false
 ]]
 end
+
 function cwRadSystem:PlayerHasGeigerCounter(ply)
 	if ply:GetFaction() == FACTION_OTA then
 		return true
@@ -597,6 +632,7 @@ function cwRadSystem:PlayerHasRadImmune(ply)
 	if ply:GetCharacterData("isMutant", false) then
 		return true
 	end
+
 	if self:PlayerIsBiotic(ply) then
 		return true
 	elseif self:PlayerIsMechanic(ply) then

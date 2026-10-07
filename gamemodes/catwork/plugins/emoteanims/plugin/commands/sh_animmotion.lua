@@ -50,5 +50,5 @@ end
 COMMAND:Register()
 
 if (CLIENT) then
-	cw.quickmenu:AddCommand("#Emotes_animMotion", "#Emotes", COMMAND.name, {"#Emotes_animMotion_Left", "#Emotes_animMotion_Right", "#Emotes_animMotion_Behind"})
+	cw.quickmenu:AddCommand("#Emotes_animMotion", "#Emotes", COMMAND.name, { "#Emotes_animMotion_Left", "#Emotes_animMotion_Right", "#Emotes_animMotion_Behind" })
 end

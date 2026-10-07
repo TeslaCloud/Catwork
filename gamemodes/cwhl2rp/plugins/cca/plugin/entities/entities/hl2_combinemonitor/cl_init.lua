@@ -5,7 +5,7 @@ local glow = CreateMaterial("_CMB_SMALLMONITOR_GLOW4", "UnlitGeneric", {
 	["$additive"] = "1",
 	["$selfilium"] = "1",
 	["$vertexcolor"] = "1",
-	["$vertexalpha"] = "1",
+	["$vertexalpha"] = "1"
 })
 
 local errorc = CreateMaterial("_CMB_ERROR", "Modulate", {
@@ -13,7 +13,7 @@ local errorc = CreateMaterial("_CMB_ERROR", "Modulate", {
 	["$ignorez"] = "1",
 	["$vertexcolor"] = "1",
 	["$vertexalpha"] = "1",
-	["$translucent"] = "1",
+	["$translucent"] = "1"
 })
 
 surface.CreateFont("_CMB_FONT_1", {
@@ -39,7 +39,7 @@ surface.CreateFont("_CMB_FONT_4", {
 	size = 72,
 	weight = 1000,
 	antialias = true,
-	underline = false,
+	underline = false
 })
 
 surface.CreateFont("_CMB_FONT_5", {
@@ -47,12 +47,12 @@ surface.CreateFont("_CMB_FONT_5", {
 	size = 9,
 	weight = 500,
 	antialias = false,
-	underline = false,
+	underline = false
 })
 
 function ENT:Initialize()
 	self.RT = GetRenderTarget("_CMB_SMALLMONITOR_ENT"..self:EntIndex()..CurTime(), 256, 256, false)
-	self.RTMat = CreateMaterial("_CMB_SMALLMONITOR_ENT_RTMAT" .. self:EntIndex() .. CurTime(), "UnlitTwoTexture", {
+	self.RTMat = CreateMaterial("_CMB_SMALLMONITOR_ENT_RTMAT"..self:EntIndex()..CurTime(), "UnlitTwoTexture", {
 		["$selfilium"] = "1",
 		["$texture2"] = "dev/dev_scanline",
 		["Proxies"] = {
@@ -120,7 +120,7 @@ function ENT:DrawTranslucent()
 					end
 
 					if (#data.name > 19) then
-						data.name = string.sub(data.name, 1, 19 - 3) .. "..."
+						data.name = string.sub(data.name, 1, 19 - 3).."..."
 					end
 
 					if (data.status != "#Status_AntiCitizen") then
@@ -200,6 +200,7 @@ function ENT:DrawTranslucent()
 						end
 					end
 				end
+
 			cam.End2D()
 		render.PopRenderTarget()
 

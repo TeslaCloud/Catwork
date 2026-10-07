@@ -66,7 +66,7 @@ function cw.quiz:AddQuestion(question, answer, ...)
 	local index = cw.core:GetShortCRC(question)
 
 	stored[index] = {
-		possibleAnswers = {...},
+		possibleAnswers = { ... },
 		question = question,
 		answer = answer
 	}

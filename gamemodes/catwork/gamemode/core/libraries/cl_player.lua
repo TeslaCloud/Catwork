@@ -272,7 +272,7 @@ function cw.player:CanSeeNPC(player, target, allowance, ignoreEnts)
 		trace.mask = CONTENTS_SOLID + CONTENTS_MOVEABLE + CONTENTS_OPAQUE + CONTENTS_DEBRIS + CONTENTS_HITBOX + CONTENTS_MONSTER
 		trace.start = player:GetShootPos()
 		trace.endpos = target:GetShootPos()
-		trace.filter = {player, target}
+		trace.filter = { player, target }
 
 		if (ignoreEnts) then
 			if (type(ignoreEnts) == "table") then
@@ -302,7 +302,7 @@ function cw.player:CanSeePlayer(player, target, allowance, ignoreEnts)
 		trace.mask = CONTENTS_SOLID + CONTENTS_MOVEABLE + CONTENTS_OPAQUE + CONTENTS_DEBRIS + CONTENTS_HITBOX + CONTENTS_MONSTER
 		trace.start = player:GetShootPos()
 		trace.endpos = target:GetShootPos()
-		trace.filter = {player, target}
+		trace.filter = { player, target }
 
 		if (ignoreEnts) then
 			if (type(ignoreEnts) == "table") then
@@ -330,7 +330,7 @@ function cw.player:CanSeeEntity(player, target, allowance, ignoreEnts)
 		trace.mask = CONTENTS_SOLID + CONTENTS_MOVEABLE + CONTENTS_OPAQUE + CONTENTS_DEBRIS + CONTENTS_HITBOX + CONTENTS_MONSTER
 		trace.start = player:GetShootPos()
 		trace.endpos = target:LocalToWorld(target:OBBCenter())
-		trace.filter = {player, target}
+		trace.filter = { player, target }
 
 		if (ignoreEnts) then
 			if (type(ignoreEnts) == "table") then

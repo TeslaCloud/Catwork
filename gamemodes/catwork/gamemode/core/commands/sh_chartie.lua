@@ -12,7 +12,7 @@ COMMAND.text = "#Command_Chartie_Syntax"
 COMMAND.access = "a"
 COMMAND.arguments = 1
 COMMAND.optionalArguments = 1
-COMMAND.alias = {"Tie"}
+COMMAND.alias = { "Tie" }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
@@ -38,4 +38,4 @@ function COMMAND:OnRun(player, arguments)
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

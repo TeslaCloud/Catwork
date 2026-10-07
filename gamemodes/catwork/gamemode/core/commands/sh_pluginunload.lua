@@ -42,7 +42,7 @@ function COMMAND:OnRun(player, arguments)
 			end
 
 			if (#recipients > 0) then
-				netstream.Start(recipients, "SystemPluginSet", {plugin.name, true})
+				netstream.Start(recipients, "SystemPluginSet", { plugin.name, true })
 			end
 		else
 			cw.player:Notify(player, L("PluginManage_CouldNotUnload"))
@@ -52,4 +52,4 @@ function COMMAND:OnRun(player, arguments)
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

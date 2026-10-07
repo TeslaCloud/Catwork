@@ -12,89 +12,89 @@ function THEME:CreateFonts()
 	cw.fonts:Add("hl2_PlayerInfoText", {
 			font		= "Exo 2",
 			size		= cw.core:FontScreenScale(7),
-			weight		= 600,
-			antialiase	= true,
-			additive 	= false
+			weight = 600,
+			antialiase = true,
+			additive = false
 	})
 
 	cw.fonts:Add("hl2_Large3D2D", {
 			font		= "Exo 2",
 			size		= cw.core:GetFontSize3D(),
-			weight		= 600,
-			antialiase	= true,
-			additive 	= false
+			weight = 600,
+			antialiase = true,
+			additive = false
 	})
 
 	cw.fonts:Add("hl2_SurfaceTextFont", {
 			font		= "Kelly Slab",
 			size		= cw.core:GetFontSize3D(),
-			weight		= 400,
-			antialiase	= true,
-			additive 	= false
+			weight = 400,
+			antialiase = true,
+			additive = false
 	})
 
 	cw.fonts:Add("hl2_IntroTextSmall", {
 			font		= "Exo 2",
 			size		= 28,
-			weight		= 600,
-			antialiase	= true,
-			additive 	= false
+			weight = 600,
+			antialiase = true,
+			additive = false
 	})
 
 	cw.fonts:Add("hl2_IntroTextTiny", {
 			font		= "Exo 2",
 			size		= cw.core:FontScreenScale(9),
-			weight		= 600,
-			antialiase	= true,
-			additive 	= false
+			weight = 600,
+			antialiase = true,
+			additive = false
 	})
 
 	cw.fonts:Add("hl2_CinematicText", {
 			font		= "Exo 2",
 			size		= cw.core:FontScreenScale(8),
-			weight		= 600,
-			antialiase	= true,
-			additive 	= false
+			weight = 600,
+			antialiase = true,
+			additive = false
 	})
 
 	cw.fonts:Add("hl2_IntroTextBig", {
 			font		= "Exo 2",
 			size		= cw.core:FontScreenScale(18),
-			weight		= 600,
-			antialiase	= true,
-			additive 	= false
+			weight = 600,
+			antialiase = true,
+			additive = false
 	})
 
 	cw.fonts:Add("hl2_MainText", {
 			font		= "Exo 2",
 			size		= cw.core:FontScreenScale(7),
-			weight		= 600,
-			antialiase	= true,
-			additive 	= false
+			weight = 600,
+			antialiase = true,
+			additive = false
 	})
 
 	cw.fonts:Add("hl2_TargetIDText", {
 			font		= "Exo 2",
 			size		= cw.core:FontScreenScale(7),
-			weight		= 600,
-			antialiase	= true,
-			additive 	= false
+			weight = 600,
+			antialiase = true,
+			additive = false
 	})
 
 	cw.fonts:Add("hl2_MenuTextHuge", {
 			font		= "Exo 2",
 			size		= cw.core:FontScreenScale(30),
-			weight		= 600,
-			antialiase	= true,
-			additive 	= false
+			weight = 600,
+			antialiase = true,
+			additive = false
 	})
 
 	cw.fonts:Add("hl2_MenuTextBig", {
 		font		= "Exo 2",
 		size		= cw.core:FontScreenScale(18),
-		weight		= 600,
-		antialiase	= true,
-		additive 	= false
+		weight = 600,
+		antialiase = true,
+		additive = false
 	})
 
 	cw.fonts:Add("hl2_BarsFont", {
@@ -462,4 +462,4 @@ function THEME.skin:PaintCollapsibleCategory(panel, w, h)
 	self:DrawGenericBackground(0, 0, w, 21, Color(20, 20, 20))
 end
 
-cw.theme:Finish(THEME);
+cw.theme:Finish(THEME)

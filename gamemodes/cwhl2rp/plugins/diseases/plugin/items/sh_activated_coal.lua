@@ -9,14 +9,14 @@ ITEM.useText = "Swallow"
 ITEM.category = "Medical"
 ITEM.business = true
 ITEM.description = "#Item_ActivatedCoal_Description"
-ITEM.customFunctions = {"Give"}
+ITEM.customFunctions = { "Give" }
 
 -- Called when a player uses the item.
 function ITEM:OnUse(player, itemEntity)
 	if (player:GetCharacterData("diseases") == "gastrits") then
 		timer.Simple(math.random(30, 60), function()
-			player:SetCharacterData( "diseases", "none" )
-		end)		
+			player:SetCharacterData("diseases", "none")
+		end)
 	end
 
 	hook.Run("PlayerHealed", player, player, self)

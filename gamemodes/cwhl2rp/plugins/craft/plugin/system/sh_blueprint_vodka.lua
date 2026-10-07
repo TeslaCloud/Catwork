@@ -7,19 +7,19 @@ BLUEPRINT.category = "#Craft_Category_Alcohol"
 BLUEPRINT.description = "#Blueprint_BlueprintVodka_Description"
 BLUEPRINT.craftplace = "cw_craft_chem"
 BLUEPRINT.updatt = {
-	{"chem", 25}
+	{ "chem", 25 }
 }
 BLUEPRINT.reqatt = {
-	{"chem", 5}
+	{ "chem", 5 }
 }
 BLUEPRINT.required = {}
 BLUEPRINT.recipe = {
-	{"empty_glass_bottle", 1},
-	{"breens_water", 1},
-	{"potato", 2}
+	{ "empty_glass_bottle", 1 },
+	{ "breens_water", 1 },
+	{ "potato", 2 }
 }
 BLUEPRINT.finish = {
-	{"vodka", 1},
-	{"empty_soda_can", 1}
+	{ "vodka", 1 },
+	{ "empty_soda_can", 1 }
 }
-BLUEPRINT:Register();
+BLUEPRINT:Register()

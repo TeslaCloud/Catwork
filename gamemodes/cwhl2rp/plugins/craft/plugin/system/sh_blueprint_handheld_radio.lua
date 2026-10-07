@@ -6,20 +6,20 @@ BLUEPRINT.model = "models/deadbodies/dead_male_civilian_radio.mdl"
 BLUEPRINT.category = "#Craft_Category_Misc"
 BLUEPRINT.description = "#Blueprint_BlueprintHandheldRadio_Description"
 BLUEPRINT.reqatt = {
-	{"rem", 45}
+	{ "rem", 45 }
 }
 BLUEPRINT.updatt = {
-	{"rem", 20}
+	{ "rem", 20 }
 }
 BLUEPRINT.required = {
-	{"screw_driver", 1}
+	{ "screw_driver", 1 }
 }
 BLUEPRINT.recipe = {
-	{"refined_electronics", 1},
-	{"plastic", 1},
-	{"energy_cell", 1}
+	{ "refined_electronics", 1 },
+	{ "plastic", 1 },
+	{ "energy_cell", 1 }
 }
 BLUEPRINT.finish = {
-	{"handheld_radio", 1}
+	{ "handheld_radio", 1 }
 }
-BLUEPRINT:Register();
+BLUEPRINT:Register()

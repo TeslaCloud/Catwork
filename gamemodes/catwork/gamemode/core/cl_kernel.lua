@@ -54,33 +54,36 @@ timer.Destroy("HintSystem_Annoy2")
 
 base64 = base64 or {}
 
-local b='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/' -- You will need this for encoding/decoding
+local b = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/" -- You will need this for encoding/decoding
 -- encoding
 function base64.encode(data)
-	return ((data:gsub('.', function(x)
-		local r,b='',x:byte()
-		for i=8,1,-1 do r=r..(b%2^i-b%2^(i-1)>0 and '1' or '0') end
+	return ((data:gsub(".", function(x)
+		local r, b = "", x:byte()
+		for i = 8, 1, -1 do r = r..(b % 2 ^ i - b % 2 ^ (i - 1) > 0 and "1" or "0") end
 		return r
-	end)..'0000'):gsub('%d%d%d?%d?%d?%d?', function(x)
-		if (#x < 6) then return '' end
-		local c=0
-		for i=1,6 do c=c+(x:sub(i,i)=='1' and 2^(6-i) or 0) end
-		return b:sub(c+1,c+1)
-	end)..({ '', '==', '=' })[#data%3+1])
+	end).."0000"):gsub("%d%d%d?%d?%d?%d?", function(x)
+		if (#x < 6) then return "" end
+
+		local c = 0
+		for i = 1, 6 do c = c + (x:sub(i, i) == "1" and 2 ^ (6 - i) or 0) end
+		return b:sub(c + 1, c + 1)
+	end)..({ "", "==", "=" })[#data % 3 + 1])
 end
 
 -- decoding
 function base64.decode(data)
-	data = string.gsub(data, '[^'..b..'=]', '')
-	return (data:gsub('.', function(x)
-		if (x == '=') then return '' end
-		local r,f='',(b:find(x)-1)
-		for i=6,1,-1 do r=r..(f%2^i-f%2^(i-1)>0 and '1' or '0') end
+	data = string.gsub(data, "[^"..b.."=]", "")
+	return (data:gsub(".", function(x)
+		if (x == "=") then return "" end
+
+		local r, f = "", (b:find(x) - 1)
+		for i = 6, 1, -1 do r = r..(f % 2 ^ i - f % 2 ^ (i - 1) > 0 and "1" or "0") end
 		return r
-	end):gsub('%d%d%d?%d?%d?%d?%d?%d?', function(x)
-		if (#x != 8) then return '' end
-		local c=0
-		for i=1,8 do c=c+(x:sub(i,i)=='1' and 2^(8-i) or 0) end
+	end):gsub("%d%d%d?%d?%d?%d?%d?%d?", function(x)
+		if (#x != 8) then return "" end
+
+		local c = 0
+		for i = 1, 8 do c = c + (x:sub(i, i) == "1" and 2 ^ (8 - i) or 0) end
 			return string.char(c)
 	end))
 end
@@ -89,7 +92,7 @@ do
 	local cwOldRunConsoleCommand = RunConsoleCommand
 
 	function RunConsoleCommand(...)
-		local arguments = {...}
+		local arguments = { ... }
 
 		if (arguments[1] == nil) then
 			return
@@ -141,9 +144,11 @@ function surface.DrawScaled(x, y, scale, callback)
 	matrix:Translate(-pos)
 
 	cam.PushModelMatrix(matrix)
+
 		if (callback) then
 			Try("DrawScaled", callback, x, y, scale)
 		end
+
 	cam.PopModelMatrix()
 end
 
@@ -156,9 +161,11 @@ function surface.DrawRotated(x, y, angle, callback)
 	matrix:Translate(-pos)
 
 	cam.PushModelMatrix(matrix)
+
 		if (callback) then
 			Try("DrawRotated", callback, x, y, angle)
 		end
+
 	cam.PopModelMatrix()
 end
 
@@ -359,6 +366,7 @@ function cw.core:HandleEntityMenu(entity)
 
 	if (entity:GetClass() == "cw_item") then
 		itemTable = entity:GetItemTable()
+
 		if (itemTable and itemTable:IsInstance() and itemTable.GetOptions) then
 			local itemOptions = itemTable:GetOptions(entity)
 
@@ -471,7 +479,7 @@ function cw.core:AddMenuFromData(menuPanel, data, Callback, iMinimumWidth, bManu
 	local options = {}
 
 	if (!menuPanel) then
-		bCreated = true; menuPanel = DermaMenu()
+		bCreated = true menuPanel = DermaMenu()
 
 		if (iMinimumWidth) then
 			menuPanel:SetMinimumWidth(iMinimumWidth)
@@ -479,7 +487,7 @@ function cw.core:AddMenuFromData(menuPanel, data, Callback, iMinimumWidth, bManu
 	end
 
 	for k, v in pairs(data) do
-		options[#options + 1] = {k, v}
+		options[#options + 1] = { k, v }
 	end
 
 	table.sort(options, function(a, b)
@@ -528,6 +536,7 @@ end
 	sound will play, otherwise if it is a string then it will
 	play that sound.
 --]]
+
 function cw.core:AddCenterHint(text, delay, color, bNoSound, showDuplicated)
 	local colorWhite = cw.option:GetColor("white")
 
@@ -628,6 +637,7 @@ end
 	sound will play, otherwise if it is a string then it will
 	play that sound.
 --]]
+
 function cw.core:AddTopHint(text, delay, color, bNoSound, showDuplicated)
 	local colorWhite = cw.option:GetColor("white")
 
@@ -742,7 +752,7 @@ end
 local function Util_DrawText(info, text, color, bCentered, sFont)
 	local realWidth = 0
 
-	if (sFont) then cw.core:OverrideMainFont(sFont); end
+	if (sFont) then cw.core:OverrideMainFont(sFont) end
 
 	if (!bCentered) then
 		info.y, realWidth = cw.core:DrawInfo(
@@ -794,7 +804,7 @@ do
 				[HITGROUP_LEFTLEG] = cw.limb:GetName(HITGROUP_LEFTLEG),
 				[HITGROUP_STOMACH] = cw.limb:GetName(HITGROUP_STOMACH),
 				[HITGROUP_CHEST] = cw.limb:GetName(HITGROUP_CHEST),
-				[HITGROUP_HEAD] = cw.limb:GetName(HITGROUP_HEAD),
+				[HITGROUP_HEAD] = cw.limb:GetName(HITGROUP_HEAD)
 			}
 		}
 
@@ -1006,9 +1016,11 @@ function cw.core:DrawBars(info, class)
 		end
 
 		cw.option:SetFont("bar_text", cw.option:GetFont("auto_bar_text"))
+
 			for k, v in ipairs(cw.bars.stored) do
 				cw.bars.y = self:DrawBar(cw.bars.x, cw.bars.y, cw.bars.width, cw.bars.height, v.color, v.text, v.value, v.maximum, v.flash, table.Copy(v)) + (cw.bars.padding + 2)
 			end
+
 		cw.option:SetFont("bar_text", barTextFont)
 
 		info.y = cw.bars.y
@@ -1315,12 +1327,13 @@ end
 	A function to print colored text to the console.
 	Sure, it's hacky, but Garry is being a douche.
 --]]
+
 function cw.core:PrintColoredText(...)
 	local currentColor = nil
 	local colorWhite = cw.option:GetColor("white")
 	local text = {}
 
-	for k, v in ipairs({...}) do
+	for k, v in ipairs({ ... }) do
 		if (type(v) == "Player") then
 			text[#text + 1] = _team.GetColor(v:Team())
 			text[#text + 1] = v:Name()
@@ -1667,8 +1680,9 @@ function cw.core:HandleItemSpawnIconClick(itemTable, spawnIcon, Callback)
 
 	if (itemTable.GetOptions) then
 		local options = itemTable:GetOptions(nil, nil)
+
 		for k, v in pairs(options) do
-			itemFunctions[#itemFunctions + 1] = {title = k, name = v}
+			itemFunctions[#itemFunctions + 1] = { title = k, name = v }
 		end
 	end
 
@@ -1679,7 +1693,7 @@ function cw.core:HandleItemSpawnIconClick(itemTable, spawnIcon, Callback)
 	hook.Run("PlayerAdjustItemFunctions", itemTable, itemFunctions)
 	self:ValidateTableKeys(itemFunctions)
 
-	table.sort(itemFunctions, function(a, b) return ((type(a) == "table" and a.title) or a) < ((type(b) == "table" and b.title) or b); end)
+	table.sort(itemFunctions, function(a, b) return ((type(a) == "table" and a.title) or a) < ((type(b) == "table" and b.title) or b) end)
 	if (#itemFunctions == 0 and !Callback) then return end
 
 	local options = {}
@@ -1716,7 +1730,7 @@ function cw.core:HandleItemSpawnIconClick(itemTable, spawnIcon, Callback)
 		end
 	end, nil, true)
 
-	if (Callback) then Callback(itemMenu); end
+	if (Callback) then Callback(itemMenu) end
 
 	itemMenu:SetMinimumWidth(100)
 	hook.Run("PlayerAdjustItemMenu", itemTable, itemMenu, itemFunctions)
@@ -1770,7 +1784,7 @@ function cw.core:HandleItemSpawnIconClick(itemTable, spawnIcon, Callback)
 					local transmit, data = itemTable:HandleOptions(v.name)
 
 					if (transmit) then
-						netstream.Start("MenuOption", {option = v.name, data = data, item = itemTable.itemID})
+						netstream.Start("MenuOption", { option = v.name, data = data, item = itemTable.itemID })
 						defaultAction = false
 					end
 				end
@@ -1838,7 +1852,7 @@ function cw.core:SetOnLayoutCallback(target, Callback)
 
 		-- Called when the panel's layout is performed.
 		function target.PerformLayout()
-			target:OldPerformLayout(); Callback(target)
+			target:OldPerformLayout() Callback(target)
 		end
 	end
 end
@@ -2085,7 +2099,7 @@ function cw.core:DrawBackgroundBlurs()
 				cw.ScreenBlur:SetFloat("$blur", fraction * 5 * i)
 				cw.ScreenBlur:Recompute()
 
-				if (render) then render.UpdateScreenEffectTexture();end
+				if (render) then render.UpdateScreenEffectTexture() end
 
 				surface.DrawTexturedRect(x, y, scrW, scrH)
 			end
@@ -2333,10 +2347,10 @@ function cw.core:DrawCinematicInfo()
 				local smallTextWidth, smallTextHeight = self:GetCachedTextSize(introTextSmallFont, cinematicIntroText)
 				local tabY = textPosY + textHeight + smallTextHeight + 80
 				local verts = {
-					{x = 0, y = textPosY - 60}, -- left upper
-					{x = scrW, y = textPosY - 40}, -- right upper
-					{x = scrW, y = tabY}, -- right lower
-					{x = 0, y = tabY + 20} -- left lower
+					{ x = 0, y = textPosY - 60 }, -- left upper
+					{ x = scrW, y = textPosY - 40 }, -- right upper
+					{ x = scrW, y = tabY }, -- right lower
+					{ x = 0, y = tabY + 20 } -- left lower
 				}
 
 				surface.SetDrawColor(0, 0, 0, boxAlpha)
@@ -2497,7 +2511,7 @@ end
 
 -- A function to restore schema data.
 function cw.core:RestoreSchemaData(fileName, failSafe)
-	if (!fileName) then return failSafe; end
+	if (!fileName) then return failSafe end
 
 	if (self:SchemaDataExists(fileName)) then
 		local data = _file.Read("clockwork/schemas/"..self:GetSchemaFolder().."/"..fileName..".txt", "DATA")
@@ -2730,7 +2744,7 @@ function playerMeta:GetForcedAnimation()
 
 	if (forcedAnimation != 0) then
 		return {
-			animation = forcedAnimation,
+			animation = forcedAnimation
 		}
 	end
 end
@@ -2758,7 +2772,7 @@ end
 
 -- A function to get a player's gender.
 function playerMeta:GetGender()
-	if (self:GetNetVar("Gender") == nil) then return GENDER_MALE; end
+	if (self:GetNetVar("Gender") == nil) then return GENDER_MALE end
 
 	if (self:GetNetVar("Gender") == 1) then
 		return GENDER_FEMALE
@@ -2848,4 +2862,4 @@ function playerMeta:GetChatIcon()
 end
 
 playerMeta.GetName = playerMeta.Name
-playerMeta.Nick = playerMeta.Name;
+playerMeta.Nick = playerMeta.Name

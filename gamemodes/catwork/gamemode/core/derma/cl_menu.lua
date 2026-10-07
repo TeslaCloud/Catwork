@@ -22,7 +22,7 @@ end
 
 -- Called when the panel is initialized.
 function PANEL:Init()
-	if (!cw.theme:Call("PreMainMenuInit", self)) then	
+	if (!cw.theme:Call("PreMainMenuInit", self)) then
 		self:SetSize(scrW, scrH)
 
 		self.collapse = vgui.Create("cwFAButton", self)
@@ -97,7 +97,7 @@ function PANEL:Rebuild(change)
 		self.tabX = 24 -- hardcoding this for now
 		self.tabY = 256 -- we'll make theme system be able to override this later.
 
-		local activePanel = cw.menu:GetActivePanel();		
+		local activePanel = cw.menu:GetActivePanel()
 		local smallTextFont = cw.option:GetFont("menu_text_small")
 		local scrW = ScrW()
 		local scrH = ScrH()
@@ -117,6 +117,7 @@ function PANEL:Rebuild(change)
 		self.closeMenu:SetCallback(function(button)
 			self:SetOpen(false)
 		end)
+
 		self.closeMenu:SetTooltip("#CloseMenuDesc")
 		self.closeMenu:SizeToContents()
 		self.closeMenu:SetMouseInputEnabled(true)
@@ -133,19 +134,20 @@ function PANEL:Rebuild(change)
 			self:SetOpen(false)
 			cw.character:SetPanelOpen(true)
 		end)
+
 		self.characterMenu:SetTooltip("#CharactersDesc")
 		self.characterMenu:SizeToContents()
 		self.characterMenu:SetMouseInputEnabled(true)
-		self.characterMenu:SetPos(self.closeMenu.x, self.closeMenu.y + self.closeMenu:GetTall() + 8);	
+		self.characterMenu:SetPos(self.closeMenu.x, self.closeMenu.y + self.closeMenu:GetTall() + 8)
 
 		if (change) then
-			self:SetPos(self.tabX, self.tabY);		
+			self:SetPos(self.tabX, self.tabY)
 		elseif (IsValid(self.activePanel)) then
-			local width = self.activePanel:GetWide();			
+			local width = self.activePanel:GetWide()
 
 			self:SetPos(-400, self.tabY)
-			self:MoveTo(ScrW() - width - self.tabX - self.closeMenu:GetWide()*1.50, self.tabY, 0.4, 0, 4)
-		else			
+			self:MoveTo(ScrW() - width - self.tabX - self.closeMenu:GetWide() * 1.50, self.tabY, 0.4, 0, 4)
+		else
 			self:SetPos(-400, self.tabY)
 			self:MoveTo(self.tabX, self.tabY, 0.4, 0, 4)
 		end
@@ -360,7 +362,7 @@ function PANEL:Paint(w, h)
 			cdraw.DrawSimpleBlurBox(0, 0, ScrW() / 6, ScrH(), Color(110, 110, 110, 50))
 		end
 	elseif (CW_CONVAR_SHOWMATERIAL:GetInt() == 1) then
-		local material = Material(CW_CONVAR_MATERIAL:GetString());	
+		local material = Material(CW_CONVAR_MATERIAL:GetString());
 
 		surface.SetDrawColor(GetConVarNumber("cwBackColorR"), GetConVarNumber("cwBackColorG"), GetConVarNumber("cwBackColorB"), GetConVarNumber("cwBackColorA"))
 		surface.SetMaterial(material)
@@ -375,7 +377,7 @@ function PANEL:Think()
 	if (!cw.theme:Call("PreMainMenuThink", self)) then
 		self:SetVisible(cw.menu:GetOpen())
 		self:SetSize(ScrW(), ScrH())
-		self:SetPos(0,0)
+		self:SetPos(0, 0)
 
 		/*if (self.tabX != GetConVarNumber("cwTabPosX") or self.tabY != GetConVarNumber("cwTabPosY")) then
 			self.tabX = GetConVarNumber("cwTabPosX")
@@ -400,7 +402,6 @@ function PANEL:Think()
 
 		if (self.fadeInAnimation) then
 			self.fadeInAnimation:Run()
-
 		end
 
 		cw.theme:Call("PostMainMenuThink", self)
@@ -460,4 +461,4 @@ netstream.Hook("MenuOpen", function(data)
 	else
 		cw.menu:Create(data)
 	end
-end);
+end)

@@ -12,4 +12,4 @@ cwCleanedMaps.entityList = {
 	"item_healthcharger",
 	"item_suitcharger",
 	"weapon_*"
-};
+}

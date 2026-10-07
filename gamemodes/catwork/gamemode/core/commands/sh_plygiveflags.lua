@@ -24,11 +24,11 @@ function COMMAND:OnRun(player, arguments)
 			return
 		end
 
-		cw.player:GivePlayerFlags(target, arguments[2]);		
+		cw.player:GivePlayerFlags(target, arguments[2])
 		cw.player:NotifyAll(L("Command_Plygiveflags_Gave", player:Name(), target:SteamName(), arguments[2]))
 	else
 		cw.player:Notify(player, L(player, "NotValidCharacter", arguments[1]))
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

@@ -1,15 +1,15 @@
-﻿ITEM.name = "Syringe of Strychnine"
+ITEM.name = "Syringe of Strychnine"
 ITEM.PrintName = "#Item_GreenLiquid_PrintName"
 ITEM.uniqueID = "green_liquid"
 ITEM.cost = 50
 ITEM.model = "models/healthvial.mdl"
 ITEM.weight = 0.2
-ITEM.factions = {FACTION_MPF}
+ITEM.factions = { FACTION_MPF }
 ITEM.useText = "Use"
 ITEM.category = "Medical"
 ITEM.business = true
 ITEM.description = "#Item_GreenLiquid_Description"
-ITEM.customFunctions = {"Inject"}
+ITEM.customFunctions = { "Inject" }
 
 -- Called when a player uses the item.
 function ITEM:OnUse(player, itemEntity)

@@ -9,7 +9,7 @@ COMMAND.tip = "#Command_Charresetcustomspawn_Description"
 COMMAND.text = "#Command_Charresetcustomspawn_Syntax"
 COMMAND.access = "a"
 COMMAND.arguments = 1
-COMMAND.alias = {"ResetCustomSpawn", "RemoveCustomSpawn", "CustomSpawnRemove", "CustomSpawnReset"}
+COMMAND.alias = { "ResetCustomSpawn", "RemoveCustomSpawn", "CustomSpawnRemove", "CustomSpawnReset" }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
@@ -24,4 +24,4 @@ function COMMAND:OnRun(player, arguments)
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

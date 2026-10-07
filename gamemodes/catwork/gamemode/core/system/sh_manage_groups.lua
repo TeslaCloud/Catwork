@@ -44,7 +44,7 @@ if (CLIENT) then
 				userGroupsForm:SetPadding(4)
 			systemPanel.panelList:AddItem(userGroupsForm)
 
-			local userGroups = {"#System_ManageGroups_SuperAdmins", "#System_ManageGroups_Administrators", "#System_ManageGroups_Operators"}
+			local userGroups = { "#System_ManageGroups_SuperAdmins", "#System_ManageGroups_Administrators", "#System_ManageGroups_Operators" }
 
 			for k, v in pairs(userGroups) do
 				local groupButton = vgui.Create("DButton", systemPanel)
@@ -58,6 +58,7 @@ if (CLIENT) then
 						self.groupType = k
 						self:Rebuild()
 					end
+
 				userGroupsForm:AddItem(groupButton)
 			end
 		else
@@ -70,10 +71,11 @@ if (CLIENT) then
 					self.groupType = GROUP_USER
 					self:Rebuild()
 				end
+
 			systemPanel.navigationForm:AddItem(backButton)
 
 			if (!self.noRefresh) then
-				netstream.Start("SystemGroupGet", {self.groupType, self.groupPage})
+				netstream.Start("SystemGroupGet", { self.groupType, self.groupPage })
 			else
 				self.noRefresh = nil
 			end
@@ -94,7 +96,7 @@ if (CLIENT) then
 
 							if (commandTable and cw.player:HasFlags(cw.client, commandTable.access)) then
 								Derma_Query(L("#System_ManageGroups_DemoteConfirm"), v.steamName, L("Yes"), function()
-									netstream.Start("SystemGroupDemote", {v.steamID, v.steamName, self.groupType})
+									netstream.Start("SystemGroupDemote", { v.steamID, v.steamName, self.groupType })
 								end, L("No"), function() end)
 							end
 						end
@@ -111,7 +113,7 @@ if (CLIENT) then
 
 							-- Called when the button is clicked.
 							function nextButton.DoClick(button)
-								netstream.Start("SystemGroupGet", {self.groupType, self.groupPage + 1})
+								netstream.Start("SystemGroupGet", { self.groupType, self.groupPage + 1 })
 							end
 						end
 
@@ -120,7 +122,7 @@ if (CLIENT) then
 
 							-- Called when the button is clicked.
 							function backButton.DoClick(button)
-								netstream.Start("SystemGroupGet", {self.groupType, self.groupPage - 1})
+								netstream.Start("SystemGroupGet", { self.groupType, self.groupPage - 1 })
 							end
 						end
 					end
@@ -212,6 +214,7 @@ else
 					queryObj:Callback(function(result)
 						netstream.Start(player, "SystemGroupRebuild", true)
 					end)
+
 				queryObj:Execute()
 
 				cw.player:NotifyAll(L("Command_Plydemote_Demoted", player:Name(), data[2], cwUserGroup))

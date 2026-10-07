@@ -11,7 +11,7 @@ COMMAND.tip = "#Command_Charcheckatts_Description"
 COMMAND.text = "#Command_Charcheckatts_Syntax"
 COMMAND.access = "s"
 COMMAND.arguments = 1
-COMMAND.alias = {"CheckAtts"}
+COMMAND.alias = { "CheckAtts" }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
@@ -19,6 +19,7 @@ function COMMAND:OnRun(player, arguments)
 
 	if (target) then
 		cw.player:Notify(player, L("Command_Charcheckatts_Header", target:GetName()))
+
 		for k, v in pairs(cw.attribute:GetAll()) do
 			cw.player:Notify(player, v.name..": "..cw.attributes:Get(target, k, nil, true))
 		end
@@ -27,4 +28,4 @@ function COMMAND:OnRun(player, arguments)
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

@@ -89,7 +89,7 @@ function PANEL:OnMenuOpened()
 end
 
 -- Called when the panel is selected.
-function PANEL:OnSelected() self:Rebuild(); end
+function PANEL:OnSelected() self:Rebuild() end
 
 -- Called when the layout should be performed.
 function PANEL:PerformLayout(w, h) end
@@ -203,4 +203,4 @@ function PANEL:PerformLayout(w, h)
 	self.information:SetPos(40, 30 - self.information:GetTall())
 end
 
-vgui.Register("cwClassesItem", PANEL, "DPanel");
+vgui.Register("cwClassesItem", PANEL, "DPanel")

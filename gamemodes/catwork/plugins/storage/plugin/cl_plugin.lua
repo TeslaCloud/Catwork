@@ -19,6 +19,6 @@ netstream.Hook("ContainerPassword", function(data)
 	local entity = data
 
 	Derma_StringRequest("#Container_Password", "#Container_PasswordRequest", nil, function(text)
-		netstream.Start("ContainerPassword", {text, entity})
+		netstream.Start("ContainerPassword", { text, entity })
 	end)
-end);
+end)

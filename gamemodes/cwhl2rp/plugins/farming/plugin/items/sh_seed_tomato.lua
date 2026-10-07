@@ -14,5 +14,5 @@ ITEM.model = "models/props_lab/box01a.mdl"
 ITEM.uniqueID = "seed_tomato"
 ITEM.PlantModel = "models/props/de_inferno/claypot03_damage_01.mdl"
 ITEM.PlantName = "#Farming_Plant_Tomato"
-ITEM.GrowTime = {1800, 3000}
-ITEM.Harvest = {"seed_tomato", "tomato"}
+ITEM.GrowTime = { 1800, 3000 }
+ITEM.Harvest = { "seed_tomato", "tomato" }

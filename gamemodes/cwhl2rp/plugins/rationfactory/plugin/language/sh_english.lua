@@ -15,7 +15,7 @@ lang["#Factory_Supplements"] = "Citizen Supplements"
 lang["#Factory_Water_Title"] = "Breen's Water"
 lang["#Factory_Ration"] = "Ration"
 lang["#Factory_Contains"] = "Contents:"
-lang["#Factory_Ready"] = "Ready for Packaging!";
+lang["#Factory_Ready"] = "Ready for Packaging!"
 
 lang["#Factory_Water"] = "Breen's Water"
 lang["#Factory_RationDispenser"] = "Ration Dispenser"

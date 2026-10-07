@@ -38,6 +38,7 @@ function COMMAND:OnRun(player, arguments)
 					end,
 					OnTakeItem = function(player, storageTable, itemTable)
 						local target = cw.entity:GetPlayer(storageTable.entity)
+
 						if (target) then
 							if (target:GetCharacterData("clothes") == itemTable.index) then
 								if (!target:HasItemByID(itemTable.index)) then
@@ -73,4 +74,4 @@ function COMMAND:OnRun(player, arguments)
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

@@ -37,7 +37,7 @@ function ENT:TurnOff()
 	self:EmitSound("buttons/blip1.wav")
 end
 
-function ENT:TurnOn(player)	
+function ENT:TurnOn(player)
 	if (player:GetCharacterData("cit_cid", 0)) then
 		self:SetNetVar("monitor_activated", true)
 		self:EmitSound("buttons/blip1.wav")
@@ -105,7 +105,7 @@ function ENT:SetPlayer(player)
 end
 
 function ENT:Use(player)
-	if (!self:GetNetVar("monitor_activated") && !player:IsCombine()) then
+	if (!self:GetNetVar("monitor_activated") and !player:IsCombine()) then
 		self.activator = player
 		self:TurnOn(player)
 		self:SetPlayer(player)

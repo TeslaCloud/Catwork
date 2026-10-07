@@ -9,4 +9,3 @@ ITEM.business = false
 ITEM.description = "#Item_WoodenBoard_Description"
 
 function ITEM:OnDrop(player, position) end
-

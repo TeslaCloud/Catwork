@@ -7,16 +7,16 @@ BLUEPRINT.category = "#Craft_Category_Alcohol"
 BLUEPRINT.description = "#Blueprint_BlueprintBeer_Description"
 BLUEPRINT.craftplace = "cw_craft_chem"
 BLUEPRINT.updatt = {
-	{"chem", 25}
+	{ "chem", 25 }
 }
 BLUEPRINT.required = {}
 BLUEPRINT.recipe = {
-	{"corn", 2},
-	{"empty_glass_bottle", 1},
-	{"breens_water", 1}
+	{ "corn", 2 },
+	{ "empty_glass_bottle", 1 },
+	{ "breens_water", 1 }
 }
 BLUEPRINT.finish = {
-	{"beer", 1},
-	{"empty_soda_can", 1}
+	{ "beer", 1 },
+	{ "empty_soda_can", 1 }
 }
-BLUEPRINT:Register();
+BLUEPRINT:Register()

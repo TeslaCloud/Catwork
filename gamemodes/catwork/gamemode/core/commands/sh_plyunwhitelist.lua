@@ -11,7 +11,7 @@ COMMAND.tip = "#Command_Plyunwhitelist_Description"
 COMMAND.text = "#Command_Plyunwhitelist_Syntax"
 COMMAND.access = "sW"
 COMMAND.arguments = 2
-COMMAND.alias = {"UnWhitelist", "DeWhitelist"}
+COMMAND.alias = { "UnWhitelist", "DeWhitelist" }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
@@ -41,4 +41,4 @@ function COMMAND:OnRun(player, arguments)
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

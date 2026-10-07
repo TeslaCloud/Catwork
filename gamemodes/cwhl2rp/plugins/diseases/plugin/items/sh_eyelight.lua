@@ -6,7 +6,7 @@ ITEM.weight = 0.2
 ITEM.access = "q"
 ITEM.useText = "Apply"
 ITEM.category = "Medical"
-ITEM.business = true;
+ITEM.business = true
 ITEM.description = "#Item_Eyelight_Description"
 
 -- Called when a player uses the item.

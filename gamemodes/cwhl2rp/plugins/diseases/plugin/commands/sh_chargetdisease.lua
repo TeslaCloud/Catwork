@@ -8,7 +8,7 @@ COMMAND.arguments = 1
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
 	local target = _player.Find(arguments[1])
-	
+
 	if (target) then
 		cw.player:Notify(player, target:GetCharacterData("diseases"))
 	else

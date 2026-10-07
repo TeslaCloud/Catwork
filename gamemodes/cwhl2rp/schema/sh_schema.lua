@@ -65,8 +65,8 @@ cw.animation:AddCombineOverwatchModel("models/city8ow.mdl")
 
 cw.animation:AddVortigauntModel("models/vortigaunt_ozaxi.mdl")
 
-cw.option:SetKey("default_date", {month = 1, year = 2016, day = 1})
-cw.option:SetKey("default_time", {minute = 0, hour = 0, day = 1})
+cw.option:SetKey("default_date", { month = 1, year = 2016, day = 1 })
+cw.option:SetKey("default_time", { minute = 0, hour = 0, day = 1 })
 cw.option:SetKey("format_singular_cash", "%a")
 cw.option:SetKey("model_shipment", "models/items/item_item_crate.mdl")
 cw.option:SetKey("intro_image", "halfliferp/logo4")
@@ -87,25 +87,25 @@ cw.quiz:SetEnabled(true)
 cw.quiz:AddQuestion("#Quiz_RP1_Question", 3,
 					"#Quiz_RP1_Answer1",
 					"#Quiz_RP1_Answer2",
-					"#Quiz_RP1_Answer3",--
+					"#Quiz_RP1_Answer3", --
 					"#Quiz_RP1_Answer4",
 					"#Quiz_RP1_Answer5")
 
 cw.quiz:AddQuestion("#Quiz_RP2_Question", 2,
 					"#Quiz_RP2_Answer1",
-					"#Quiz_RP2_Answer2",--
+					"#Quiz_RP2_Answer2", --
 					"#Quiz_RP2_Answer3",
 					"#Quiz_RP2_Answer4")
 
 cw.quiz:AddQuestion("#Quiz_RP3_Question", 2,
 					"#Quiz_RP3_Answer1",
-					"#Quiz_RP3_Answer2",--
+					"#Quiz_RP3_Answer2", --
 					"#Quiz_RP3_Answer3")
 
 cw.quiz:AddQuestion("#Quiz_RP4_Question", 3,
 					"#Quiz_RP4_Answer1",
 					"#Quiz_RP4_Answer2",
-					"#Quiz_RP4_Answer3");--
+					"#Quiz_RP4_Answer3") --
 
 cw.flag:Add("v", "Light Blackmarket", "Access to light blackmarket goods.")
 cw.flag:Add("V", "Heavy Blackmarket", "Access to heavy blackmarket goods.")
@@ -131,7 +131,7 @@ function Schema:DetermineLoyalistTier(num)
 		end
 	end
 
-	return tier or self.LoyalistTiers[1] or {name = "ERROR", description = "ERROR", color = Color(255, 0, 255), min = -1, max = -1}
+	return tier or self.LoyalistTiers[1] or { name = "ERROR", description = "ERROR", color = Color(255, 0, 255), min = -1, max = -1 }
 end
 
 function Schema:PlayerIsLoyalistTier(player, tier)

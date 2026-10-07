@@ -7,9 +7,9 @@ BLUEPRINT.category = "#Craft_Category_Materials"
 BLUEPRINT.description = "#Blueprint_BlueprintCloth_Description"
 BLUEPRINT.required = {}
 BLUEPRINT.recipe = {
-	{"weed", 2},
+	{ "weed", 2 }
 }
 BLUEPRINT.finish = {
-	{"cloth", 1}
+	{ "cloth", 1 }
 }
-BLUEPRINT:Register();
+BLUEPRINT:Register()

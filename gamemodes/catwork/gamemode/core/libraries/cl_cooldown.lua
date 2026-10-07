@@ -18,6 +18,7 @@ cw.cooldown.sizes = cw.cooldown.sizes or {}
 	@param Bool Whether or not to add the size if it doesn't exist.
 	@returns Table The cooldown table matching the specified size.
 --]]
+
 function cw.cooldown:GetTable(width, height, bAdd)
 	local cooldownTable = self.sizes[width.." "..height]
 
@@ -35,56 +36,57 @@ end
 	@param Int The height of the cooldown box.
 	@returns Table The newly added cooldown table.
 --]]
+
 function cw.cooldown:AddSize(width, height)
 	local verticies = {
 		{
-			{x = 0, y = -(height / 2), u = 0.5, v = 0},
-			{x = width / 2, y = -(height / 2), u = 1, v = 0, c = function()
+			{ x = 0, y = -(height / 2), u = 0.5, v = 0 },
+			{ x = width / 2, y = -(height / 2), u = 1, v = 0, c = function()
 				return -(width / 2), 0
-			end},
+			end }
 		},
 		{
-			{x = width / 2, y = -(height / 2), u = 1, v = 0},
-			{x = width / 2, y = 0, u = 1, v = 0.5, c = function()
+			{ x = width / 2, y = -(height / 2), u = 1, v = 0 },
+			{ x = width / 2, y = 0, u = 1, v = 0.5, c = function()
 				return 0, -(height / 2)
-			end},
+			end }
 		},
 		{
-			{x = width / 2, y = 0, u = 1, v = 0.5},
-			{x = width / 2, y = height / 2, u = 1, v = 1, c = function()
+			{ x = width / 2, y = 0, u = 1, v = 0.5 },
+			{ x = width / 2, y = height / 2, u = 1, v = 1, c = function()
 				return 0, -(height / 2)
-			end},
+			end }
 		},
 		{
-			{x = width / 2, y = height / 2, u = 1, v = 1},
-			{x = 0, y = height / 2, u = 0.5, v = 1, c = function()
+			{ x = width / 2, y = height / 2, u = 1, v = 1 },
+			{ x = 0, y = height / 2, u = 0.5, v = 1, c = function()
 				return width / 2, 0
-			end},
+			end }
 		},
 		{
-			{x = 0, y = height / 2, u = 0.5, v = 1},
-			{x = -(width / 2), y = height / 2, u = 0, v = 1, c = function()
+			{ x = 0, y = height / 2, u = 0.5, v = 1 },
+			{ x = -(width / 2), y = height / 2, u = 0, v = 1, c = function()
 				return width / 2, 0
-			end},
+			end }
 		},
 		{
-			{x = -(width / 2), y = height / 2, u = 0, v = 1},
-			{x = -(width / 2), y = 0, u = 0, v = 0.5, c = function()
+			{ x = -(width / 2), y = height / 2, u = 0, v = 1 },
+			{ x = -(width / 2), y = 0, u = 0, v = 0.5, c = function()
 				return 0, height / 2
-			end},
+			end }
 		},
 		{
-			{x = -(width / 2), y = 0, u = 0, v = 0.5},
-			{x = -(width / 2), y = -(height / 2), u = 0, v = 0, c = function()
+			{ x = -(width / 2), y = 0, u = 0, v = 0.5 },
+			{ x = -(width / 2), y = -(height / 2), u = 0, v = 0, c = function()
 				return 0, height / 2
-			end},
+			end }
 		},
 		{
-			{x = -(width / 2), y = -(height / 2), u = 0, v = 0},
-			{x = 0, y = -(height / 2), u = 0.5, v = 0, c = function()
+			{ x = -(width / 2), y = -(height / 2), u = 0, v = 0 },
+			{ x = 0, y = -(height / 2), u = 0.5, v = 0, c = function()
 				return -(width / 2), 0
-			end},
-		},
+			end }
+		}
 	}
 
 	local editTable = table.Copy(verticies)
@@ -109,6 +111,7 @@ end
 	@param Int The texture ID to use when drawing.
 	@param Bool Whether or not to center the box.
 --]]
+
 function cw.cooldown:DrawBox(x, y, width, height, progress, color, textureID, bCenter)
 	local cooldownTable = self:GetTable(width, height, true)
 	local octant = math.Clamp((8 / 100) * progress, 0, 8)
@@ -121,7 +124,7 @@ function cw.cooldown:DrawBox(x, y, width, height, progress, color, textureID, bC
 	surface.SetTexture(textureID)
 	surface.SetDrawColor(color.r, color.g, color.b, color.a)
 
-	local polygons = {{x = x, y = y, u = 0.5, v = 0.5}}
+	local polygons = { { x = x, y = y, u = 0.5, v = 0.5 } }
 
 	for i = 1, 8 do
 		if (math.ceil(octant) == i) then
@@ -148,4 +151,4 @@ function cw.cooldown:DrawBox(x, y, width, height, progress, color, textureID, bC
 end
 
 cw.cooldown:AddSize(64, 64)
-cw.cooldown:AddSize(32, 32);
+cw.cooldown:AddSize(32, 32)

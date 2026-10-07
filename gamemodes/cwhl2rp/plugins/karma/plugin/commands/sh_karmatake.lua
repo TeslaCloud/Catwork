@@ -4,7 +4,7 @@ COMMAND.text = "#Command_Karmatake_Syntax"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "o"
 COMMAND.arguments = 2
-COMMAND.alias = {"CharTakeKarma", "TakeKarma", "ReduceKarma", "KarmaReduce"}
+COMMAND.alias = { "CharTakeKarma", "TakeKarma", "ReduceKarma", "KarmaReduce" }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)

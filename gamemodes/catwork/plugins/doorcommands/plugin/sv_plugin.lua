@@ -163,7 +163,6 @@ function cwDoorCmds:LoadDoorStates()
 		local entity = positions[tostring(v.position)]
 
 		if (IsValid(entity) and cw.entity:IsDoor(entity)) then
-
 			if (v.state == 1 or v.state == 2) then
 				cw.entity:OpenDoor(entity, 0)
 			end

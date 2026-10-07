@@ -70,4 +70,4 @@ cwEmoteAnims.stanceList = {
 	["lean_back"] = true,
 	["cheer1"] = true,
 	["wave"] = true
-};
+}

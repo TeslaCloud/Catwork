@@ -6,17 +6,17 @@ BLUEPRINT.model = "models/props_junk/cardboard_box004a.mdl"
 BLUEPRINT.category = "#Craft_Category_Storage"
 BLUEPRINT.description = "#Blueprint_BlueprintBag_Description"
 BLUEPRINT.reqatt = {
-	{"cloth", 15}
+	{ "cloth", 15 }
 }
 BLUEPRINT.updatt = {
-	{"cloth", 15}
+	{ "cloth", 15 }
 }
 BLUEPRINT.required = {}
 BLUEPRINT.recipe = {
-	{"cloth", 1},
-	{"cables", 1}
+	{ "cloth", 1 },
+	{ "cables", 1 }
 }
 BLUEPRINT.finish = {
-	{"boxed_bag", 1}
+	{ "boxed_bag", 1 }
 }
-BLUEPRINT:Register();
+BLUEPRINT:Register()

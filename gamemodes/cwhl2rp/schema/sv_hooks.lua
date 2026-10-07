@@ -34,14 +34,13 @@ end
 
 -- Called when a player's default model is needed.
 function Schema:GetPlayerDefaultModel(player)
-
 end
 
 -- Called when an entity's menu option should be handled.
 function Schema:EntityHandleMenuOption(player, entity, option, arguments)
 	if (entity:GetClass() == "prop_ragdoll" and arguments == "cw_corpseLoot") then
-		if (!entity.cwInventory) then entity.cwInventory = {}; end
-		if (!entity.cash) then entity.cash = 0; end
+		if (!entity.cwInventory) then entity.cwInventory = {} end
+		if (!entity.cash) then entity.cash = 0 end
 
 		local entityPlayer = cw.entity:GetPlayer(entity)
 
@@ -297,7 +296,7 @@ function Schema:PlayerStunEntity(player, entity)
 				cw.player:SetRagdollState(target, RAGDOLL_KNOCKEDOUT, config.Get("knockout_time"):Get())
 			end
 		else
-			target.nextStunInfo = {0, curTime + 2}
+			target.nextStunInfo = { 0, curTime + 2 }
 		end
 
 		target:ViewPunch(Angle(12 + strength, 0, 0))
@@ -312,10 +311,8 @@ function Schema:PlayerGiveWeapons(player)
 			if (self:IsPlayerCombineRank(player, "GHOST")) then
 		cw.player:GiveSpawnWeapon(player, "weapon_ep2sniper")
 			end
-			
 	elseif (player:GetFaction() == FACTION_VORT) then
 		cw.player:GiveSpawnWeapon(player, "weapon_vort")
-
 	elseif (player:GetFaction() == FACTION_VORT_SLAVE) then
 		cw.player:GiveSpawnWeapon(player, "cw_pushbroom")
 	end
@@ -379,7 +376,6 @@ end
 function Schema:PlayerSpawnProp(player, model)
 	if (!player:IsAdmin() and config.Get("cwu_props"):Get()) then
 		if (player:GetFaction() == FACTION_CITIZEN) then
-
 			if (player:GetCharacterData("customclass") != "Civil Worker's Union") then
 				model = string.Replace(model, "\\", "/")
 				model = string.Replace(model, "//", "/")
@@ -470,18 +466,17 @@ function Schema:PlayerCharacterInitialized(player)
 	local faction = player:GetFaction()
 
 	if (self:PlayerIsCombine(player)) then
-
 		for k, v in pairs(cw.class:GetStored()) do
 			if (v.factions and table.HasValue(v.factions, faction)) then
 				if (#_team.GetPlayers(v.index) < cw.class:GetLimit(v.name)) then
 					if (v.index == CLASS_MPS and self:IsPlayerCombineRank(player, "SCN")) then
-						cw.class:Set(player, v.index); break
+						cw.class:Set(player, v.index) break
 					elseif (v.index == CLASS_MPR and self:IsPlayerCombineRank(player, "RCT")) then
-						cw.class:Set(player, v.index); break
+						cw.class:Set(player, v.index) break
 					elseif (v.index == CLASS_EMP and self:IsPlayerCombineRank(player, "EpU")) then
-						cw.class:Set(player, v.index); break
+						cw.class:Set(player, v.index) break
 					elseif (v.index == CLASS_EOW and self:IsPlayerCombineRank(player, "EOW")) then
-						cw.class:Set(player, v.index); break
+						cw.class:Set(player, v.index) break
 					end
 				end
 			end
@@ -587,7 +582,7 @@ function Schema:KeyPress(player, key)
 						local playerDot = v:GetAimVector():Dot((position - playerPosition):GetNormal())
 						local threshold = 0.2 + math.Clamp((0.6 / 384) * playerPosition:Distance(position), 0, 0.6)
 
-						if (cw.player:CanSeeEntity(v, scanner, 0.9, {marker}) and playerDot >= threshold and scannerDot >= threshold) then
+						if (cw.player:CanSeeEntity(v, scanner, 0.9, { marker }) and playerDot >= threshold and scannerDot >= threshold) then
 							if (player != v) then
 								if (v:GetFaction() == FACTION_CITIZEN) then
 									if (!v:GetForcedAnimation()) then
@@ -731,6 +726,7 @@ function Schema:PlayerAdjustCharacterScreenInfo(player, character, info)
 			else
 				info.model = "models/combine_scanner.mdl"
 			end
+
 		-- elseif (self:IsStringCombineRank(info.name, "SeC")) then
 		-- 	info.model = "models/metropolice/c08.mdl"
 		-- elseif (self:IsStringCombineRank(info.name, "DvL")) then
@@ -775,7 +771,7 @@ function Schema:PlayerRadioUsed(player, text, listeners, eavesdroppers)
 	end
 
 	if (table.Count(newEavesdroppers) > 0) then
-		chatbox.AddText(newEavesdroppers, text, {suffix = " #Suffix_StationaryRadio ", sender = player, isPlayerMessage = true, filter = "ic", radius = 0, textColor = Color(255, 255, 200, 255)})
+		chatbox.AddText(newEavesdroppers, text, { suffix = " #Suffix_StationaryRadio ", sender = player, isPlayerMessage = true, filter = "ic", radius = 0, textColor = Color(255, 255, 200, 255) })
 	end
 end
 
@@ -957,7 +953,7 @@ end
 function Schema:PlayerCanUseCharacter(player, character)
 	if (character.data["permakilled"]) then
 		return L("CharIsPermaKilled", character.name)
-	--elseif (character.faction == FACTION_OTA) and !self:IsStringCombineRank(character.name, "GUARD") and !self.OTACanUse then
+	-- elseif (character.faction == FACTION_OTA) and !self:IsStringCombineRank(character.name, "GUARD") and !self.OTACanUse then
 	--	return "Overwatch Transhuman Arms сейчас в стазисе!"
 	elseif (character.faction == FACTION_MPF) then
 		if (!self:CanUseCP(player) and self:GetPlayerCombineRank(player) < 6) then
@@ -1108,7 +1104,7 @@ function Schema:PlayerUse(player, entity)
 
 	if (player:KeyDown(IN_SPEED) and cw.entity:IsDoor(entity)) then
 		if IsValid(entity.combineLock) then
-			if (self:PlayerIsCombine(player) or player:GetFaction() == FACTION_ADMIN or Schema:PlayerHasCombineLockAccess(player,entity.combineLock.access,entity.combineLock.rank)) then
+			if (self:PlayerIsCombine(player) or player:GetFaction() == FACTION_ADMIN or Schema:PlayerHasCombineLockAccess(player, entity.combineLock.access, entity.combineLock.rank)) then
 				if (!player.nextCombineLock or curTime >= player.nextCombineLock) then
 					entity.combineLock:ToggleWithChecks(player)
 
@@ -1273,7 +1269,7 @@ function Schema:PlayerPlayDeathSound(player, gender)
 									timer.Simple(0.5, function()
 										v:EmitSound("npc/overwatch/radiovoice/remainingunitscontain.wav")
 										timer.Simple(1.4, function()
-											v:EmitSound("npc/metropolice/vo/off"..math.random(1,4)..".wav")
+											v:EmitSound("npc/metropolice/vo/off"..math.random(1, 4)..".wav")
 										end)
 									end)
 								end
@@ -1306,7 +1302,7 @@ local function splitVoiceCodes(str)
 		if (v == "|") then
 			curDelay = curDelay + 1
 		elseif (v != "|" and prevChar == "|") then
-			table.insert(exploded, {curPhrase, curDelay})
+			table.insert(exploded, { curPhrase, curDelay })
 			curDelay = 0
 			curPhrase = v
 		else
@@ -1317,7 +1313,7 @@ local function splitVoiceCodes(str)
 	end
 
 	if (curPhrase != "") then
-		table.insert(exploded, {curPhrase, 0})
+		table.insert(exploded, { curPhrase, 0 })
 	end
 
 	return exploded

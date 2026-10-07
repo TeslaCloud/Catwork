@@ -23,4 +23,4 @@ function COMMAND:OnRun(player, arguments)
 	cw.player:RunClockworkCommand(player, "InvAction", "use", itemTable.uniqueID, tostring(itemTable.itemID))
 end
 
-COMMAND:Register();
+COMMAND:Register()

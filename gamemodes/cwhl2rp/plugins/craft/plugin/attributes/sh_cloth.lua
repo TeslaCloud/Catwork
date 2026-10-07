@@ -13,4 +13,4 @@ local ATTRIBUTE = cw.attribute:New()
 	ATTRIBUTE.description = "#Attribute_Cloth_Desc"
 	ATTRIBUTE.isOnCharScreen = false
 	ATTRIBUTE.category = "#AttributeCategory_Skills"
-ATB_CLOTH = cw.attribute:Register(ATTRIBUTE);
+ATB_CLOTH = cw.attribute:Register(ATTRIBUTE)

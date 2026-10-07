@@ -65,8 +65,9 @@ end
 	@details A function to replace a Derma panel's hook.
 	@params String The name of the panel with the hook to replace.
 	@params String The name of the hook that is being replaced.
-	@params Function The function to replace the Derma panel's hook with.	
+	@params Function The function to replace the Derma panel's hook with.
 --]]
+
 function cw.theme:HookReplace(vguiName, functionName, callback)
 	if (!self.factory[vguiName]) then
 		return
@@ -87,8 +88,9 @@ end
 	@details A function to add a hook to be called before a Derma panel's hook is called.
 	@params String The name of the panel with the hook to hook before.
 	@params String The name of the hook to add a hook before.
-	@params Function The function that will be called before the panel's hook is called.	
+	@params Function The function that will be called before the panel's hook is called.
 --]]
+
 function cw.theme:HookBefore(vguiName, functionName, callback)
 	if (!self.factory[vguiName]) then
 		return
@@ -118,6 +120,7 @@ end
 	@params String The name of the hook to add a hook after.
 	@params Function The function that will be called after the panel's hook is called.
 --]]
+
 function cw.theme:HookAfter(vguiName, functionName, callback)
 	if (!self.factory[vguiName]) then
 		return
@@ -145,6 +148,7 @@ end
 	@details A function to return all of the stored themes that have been created.
 	@returns Table The table containing all of the currently created themes.
 --]]
+
 function cw.theme:GetAll()
 	return cw.theme.stored
 end
@@ -155,6 +159,7 @@ end
 	@params String The name to search for.
 	@returns Table The theme table if found, returns nil if it doesn't exist.
 --]]
+
 function cw.theme:FindByID(id)
 	return cw.theme.stored[id]
 end
@@ -165,6 +170,7 @@ end
 	@params String The name to search for.
 	@returns Bool Whether or not the theme searched for exists.
 --]]
+
 function cw.theme:Exists(id)
 	return (IsValid(cw.theme.stored[id]))
 end
@@ -177,6 +183,7 @@ end
 	@params String The name of the base theme to derive from.
 	@returns Table The newly created theme table.
 --]]
+
 function cw.theme:Begin(isFixed, name, baseName)
 	return self:New(name, baseName, isFixed)
 end
@@ -189,6 +196,7 @@ end
 	@params Bool Whether or not the theme will not allow players to change the information color in settings.
 	@returns Table The newly created theme table.
 --]]
+
 function cw.theme:New(themeName, baseName, isFixed)
 	if (baseName) then
 		local base = self:FindByID(baseName)
@@ -228,6 +236,7 @@ end
 	@details A function to get the currently active theme.
 	@returns Table The active theme currently in use.
 --]]
+
 function cw.theme:Get()
 	return self.active
 end
@@ -237,6 +246,7 @@ end
 	@details A function to get whether the currently active theme allows clients to change the information color.
 	@returns Bool Whether or not the active theme has a fixed information color or not. Returns false if players can change the color.
 --]]
+
 function cw.theme:IsFixed()
 	return (self.active and self.active.isFixed)
 end
@@ -245,6 +255,7 @@ end
 	@codebase Client
 	@details A function to copy the currently active theme's skin to the Clockwork derma skin.
 --]]
+
 function cw.theme:CopySkin()
 	local skinTable = derma.GetNamedSkin("Clockwork")
 
@@ -261,6 +272,7 @@ end
 	@codebase Client
 	@details A function to initialize the theme library, called when Clockwork is initializing.
 --]]
+
 function cw.theme:Initialize()
 	local theme = self:Get()
 	local defaultTheme = config.Get("default_theme"):Get()
@@ -290,6 +302,7 @@ end
 	@params Bool Whether or not you want to switch to the newly created theme upon creation.
 	@returns String The name of the new theme that was saved.
 --]]
+
 function cw.theme:Register(bSwitchTo)
 	if (cwTHEME) then
 		local name = cwTHEME.name
@@ -306,6 +319,7 @@ end
 	@params Table The theme table to be saved.
 	@params Bool Whether or not you want to switch to the newly created theme upon creation.
 --]]
+
 function cw.theme:Finish(themeTable, bNoSwitch)
 	cw.theme.stored[themeTable.name] = themeTable
 
@@ -322,6 +336,7 @@ end
 	@params String The name of the theme to be loaded, can also be the theme table itself.
 	@params Bool Whether or not this is the first theme being loaded, used by Clockwork when initializing. Do NOT set to true.
 --]]
+
 function cw.theme:SetActive(theme, firstLoad)
 	if (istable(theme)) then
 		if (self:Get() and !firstLoad) then
@@ -349,6 +364,7 @@ end
 	@details A function to load a theme and initialize it. Do not call this, as it will not unload the previous theme.
 	@params Table The theme table to load.
 --]]
+
 function cw.theme:LoadTheme(themeTable, isBase)
 	local baseName = themeTable.base
 
@@ -387,6 +403,7 @@ end
 	@codebase Client
 	@details A function to unload the current theme. Do not call this, as it will not load another theme.
 --]]
+
 function cw.theme:UnloadTheme(theme, isBase)
 	local themeTable = theme or self.active
 	local baseName = themeTable.base
@@ -433,13 +450,14 @@ end
 	@params VarArg The arguments to call the hook with.
 	@returns Variable The results of the hook call.
 --]]
+
 function cw.theme:Call(hookName, ...)
 	if (self.active and self.active.hooks[hookName]) then
 		return self.active.hooks[hookName](self.active.hooks, ...)
 	end
 end
 
-local MARKUP_OBJECT = {__index = MARKUP_OBJECT, text = ""}
+local MARKUP_OBJECT = { __index = MARKUP_OBJECT, text = "" }
 
 -- A function to add new text to the markup object.
 function MARKUP_OBJECT:Add(text, color, scale, noNewLine)
@@ -467,6 +485,7 @@ end
 	@details A function get a new markup object for rendering.
 	@returns MarkupObject The new markup object.
 --]]
+
 function cw.theme:GetMarkupObject()
 	return cw.core:NewMetaTable(MARKUP_OBJECT)
 end

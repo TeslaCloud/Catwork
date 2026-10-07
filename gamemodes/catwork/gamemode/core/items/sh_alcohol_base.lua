@@ -10,7 +10,7 @@ ITEM.isBaseItem = true
 ITEM.name = "Alcohol Base"
 ITEM.useText = "Drink"
 ITEM.category = "Consumables"
-ITEM.useSound = {"npc/barnacle/barnacle_gulp1.wav", "npc/barnacle/barnacle_gulp2.wav"}
+ITEM.useSound = { "npc/barnacle/barnacle_gulp1.wav", "npc/barnacle/barnacle_gulp2.wav" }
 ITEM.expireTime = 1800
 ITEM.attributes = {}
 

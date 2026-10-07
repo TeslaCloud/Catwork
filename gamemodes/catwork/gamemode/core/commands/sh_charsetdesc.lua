@@ -12,7 +12,7 @@ COMMAND.text = "#Command_Charsetdesc_Syntax"
 COMMAND.access = "o"
 COMMAND.arguments = 1
 COMMAND.optionalArguments = 1
-COMMAND.alias = {"SetDescription", "SetDesc"}
+COMMAND.alias = { "SetDescription", "SetDesc" }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)

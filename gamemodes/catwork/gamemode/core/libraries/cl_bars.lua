@@ -36,7 +36,7 @@ function cw.bars:Add(uniqueID, color, text, value, maximum, flash, priority, max
 		maxValue = maxValue,
 		limitText = limitText,
 		flash = flash,
-		text = text,
+		text = text
 	})
 end
 

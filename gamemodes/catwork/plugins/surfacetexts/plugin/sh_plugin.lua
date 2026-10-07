@@ -16,4 +16,4 @@ util.Include("sv_plugin.lua")
 util.Include("sv_hooks.lua")
 util.Include("cl_hooks.lua")
 
-cwSurfaceTexts.stored = cwSurfaceTexts.stored or {};
+cwSurfaceTexts.stored = cwSurfaceTexts.stored or {}

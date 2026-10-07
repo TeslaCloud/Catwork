@@ -67,7 +67,6 @@ function PANEL:Rebuild()
 		return L(a.category) < L(b.category)
 	end)
 
-
 	for k, v in pairs(categories) do
 		local categoryForm = vgui.Create("DCollapsibleCategory", self.panelList)
 		categoryForm:SetLabel(L(v.category), nil, "basic_form_highlight")
@@ -91,6 +90,7 @@ function PANEL:Rebuild()
 				self.bpData = v2
 				self:Rebuild()
 			end
+
 			blueprintItem:SetSize(self.panelList:GetWide() - 48, 40)
 
 			local itemIcon = vgui.Create("SpawnIcon", blueprintItem)
@@ -324,13 +324,13 @@ function PANEL:Rebuild()
 end
 
 -- Called when the panel is selected.
-function PANEL:OnSelected() self:Rebuild(); end
+function PANEL:OnSelected() self:Rebuild() end
 
 -- Called when the layout should be performed.
-function PANEL:PerformLayout(w, h) 
+function PANEL:PerformLayout(w, h)
 	self.list:SetSize(w / 3 - 4, h - 8)
 	self.list:SetPos(4, 4)
-	self.craft:SetSize( 2 * w / 3 - 8, h - 40)
+	self.craft:SetSize(2 * w / 3 - 8, h - 40)
 	self.craft:SetPos(w / 3 + 4, 4)
 end
 
@@ -342,4 +342,3 @@ function PANEL:Paint(w, h)
 end
 
 vgui.Register("cwCraft", PANEL, "EditablePanel")
-

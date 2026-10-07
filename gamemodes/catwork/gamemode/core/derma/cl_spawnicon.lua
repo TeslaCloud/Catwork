@@ -54,4 +54,4 @@ function PANEL:SetCooldown(expireTime, textureID)
 	}
 end
 
-vgui.Register("cwSpawnIcon", PANEL, "SpawnIcon");
+vgui.Register("cwSpawnIcon", PANEL, "SpawnIcon")

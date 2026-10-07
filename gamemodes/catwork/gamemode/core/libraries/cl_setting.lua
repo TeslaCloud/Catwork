@@ -36,7 +36,7 @@ function cw.setting:AddMultiChoice(category, text, conVar, options, toolTip, Con
 	local index = conVar
 
 	if (options) then
-		table.sort(options, function(a, b) return a < b; end)
+		table.sort(options, function(a, b) return a < b end)
 	else
 		options = {}
 	end
@@ -186,7 +186,7 @@ function cw.setting:AddSettings()
 		return (config.Get("modify_themes"):GetBoolean())
 	end)
 
-	//Schemas can re-add the stuff that was here.
+	// Schemas can re-add the stuff that was here.
 
 	cw.setting:AddCheckBox(adminESP, "#EnableAdminESP", "cwAdminESP", "#EnableAdminESPDesc", function()
 		return cw.player:IsAdmin(cw.client)

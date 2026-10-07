@@ -7,17 +7,17 @@ BLUEPRINT.category = "#Craft_Category_Food"
 BLUEPRINT.description = "#Blueprint_BlueprintPopcorn_Description"
 BLUEPRINT.craftplace = "cw_craft_cook"
 BLUEPRINT.reqatt = {
-	{"cook", 10}
+	{ "cook", 10 }
 }
 BLUEPRINT.updatt = {
-	{"cook", 10}
+	{ "cook", 10 }
 }
 BLUEPRINT.required = {}
 BLUEPRINT.recipe = {
-	{"corn", 2},
-	{"empty_carton", 3}
+	{ "corn", 2 },
+	{ "empty_carton", 3 }
 }
 BLUEPRINT.finish = {
-	{"popcorn", 3}
+	{ "popcorn", 3 }
 }
-BLUEPRINT:Register();
+BLUEPRINT:Register()

@@ -12,7 +12,7 @@ COMMAND.text = "#Command_Plyrespawntp_Syntax"
 COMMAND.arguments = 1
 COMMAND.optionalArguments = 1
 COMMAND.access = "o"
-COMMAND.alias = {"PlyRTP", "RespawnTP"}
+COMMAND.alias = { "PlyRTP", "RespawnTP" }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
@@ -29,4 +29,4 @@ function COMMAND:OnRun(player, arguments)
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

@@ -15,7 +15,7 @@ function PANEL:Init()
 
 	-- Called when the button is clicked.
 	function self.btnClose.DoClick(button)
-		self:Close(); self:Remove()
+		self:Close() self:Remove()
 
 		gui.EnableScreenClicker(false)
 	end
@@ -30,7 +30,7 @@ function PANEL:Think()
 	self:SetPos((scrW / 2) - (self:GetWide() / 2), (scrH / 2) - (self:GetTall() / 2))
 
 	if (!IsValid(self.entity) or self.entity:GetPos():Distance(cw.client:GetPos()) > 192) then
-		self:Close(); self:Remove()
+		self:Close() self:Remove()
 
 		gui.EnableScreenClicker(false)
 	end
@@ -56,7 +56,7 @@ function PANEL:Populate(itemTable)
 
 	-- Called when the button is clicked.
 	function self.button.DoClick(button)
-		self:Close(); self:Remove()
+		self:Close() self:Remove()
 
 		gui.EnableScreenClicker(false)
 
@@ -75,4 +75,4 @@ function PANEL:PerformLayout()
 	DFrame.PerformLayout(self)
 end
 
-vgui.Register("cwViewBook", PANEL, "DFrame");
+vgui.Register("cwViewBook", PANEL, "DFrame")

@@ -61,7 +61,7 @@ function ENT:OnTakeDamage(damageInfo)
 	self:SetHealth(math.max(self:Health() - damageInfo:GetDamage(), 0))
 
 	if (self:Health() <= 0) then
-		self:Explode(); self:Remove()
+		self:Explode() self:Remove()
 	end
 end
 

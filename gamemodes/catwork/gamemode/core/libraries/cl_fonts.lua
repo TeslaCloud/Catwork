@@ -21,7 +21,7 @@ cw.fonts.sizes = cw.fonts.sizes or {}
 function cw.fonts:Add(name, fontTable, bForce)
 	if (self.stored[name] and !bForce) then return end
 
-	fontTable.extended = true; -- Force the font to load all characters.
+	fontTable.extended = true -- Force the font to load all characters.
 	self.stored[name] = fontTable
 	CreateFont(name, self.stored[name])
 end
@@ -53,7 +53,7 @@ end
 -- A function to grab a font by multiplier.
 function cw.fonts:GetMultiplied(name, multiplier)
 	local fontTable = self:FindByName(name)
-	if (fontTable == nil) then return name; end
+	if (fontTable == nil) then return name end
 
 	return self:GetSize(name, fontTable.size * multiplier)
 end
@@ -62,17 +62,17 @@ cw.fonts:Add("cwMainText",
 {
 	font		= "Arial",
 	size		= cw.core:FontScreenScale(7),
-	weight		= 700,
-	antialiase	= true,
-	additive 	= false,
-	extended	= true
+	weight = 700,
+	antialiase = true,
+	additive = false,
+	extended = true
 })
 cw.fonts:Add("cwESPText",
 {
 	font		= "Arial",
 	size		= cw.core:FontScreenScale(5.5),
-	weight		= 700,
-	antialiase	= true,
+	weight = 700,
+	antialiase = true,
 	additive 	= false,
 	extended 	= true
 })
@@ -80,17 +80,17 @@ cw.fonts:Add("cwTooltip",
 {
 	font		= "Arial",
 	size		= cw.core:FontScreenScale(5),
-	weight		= 700,
-	antialiase	= true,
-	additive 	= false,
-	extended	= true
+	weight = 700,
+	antialiase = true,
+	additive = false,
+	extended = true
 })
 cw.fonts:Add("cw.menuTextBig",
 {
 	font		= "Arial",
 	size		= cw.core:FontScreenScale(18),
-	weight		= 700,
-	antialiase	= true,
+	weight = 700,
+	antialiase = true,
 	additive 	= false,
 	extended 	= true
 })
@@ -98,71 +98,71 @@ cw.fonts:Add("cw.menuTextTiny",
 {
 	font		= "Arial",
 	size		= cw.core:FontScreenScale(7),
-	weight		= 700,
-	antialiase	= true,
-	additive 	= false,
-	extended	= true
+	weight = 700,
+	antialiase = true,
+	additive = false,
+	extended = true
 })
 cw.fonts:Add("cwInfoTextFont",
 {
 	font		= "Arial",
 	size		= cw.core:FontScreenScale(6),
-	weight		= 700,
-	antialiase	= true,
-	additive 	= false,
-	extended	= true
+	weight = 700,
+	antialiase = true,
+	additive = false,
+	extended = true
 })
 cw.fonts:Add("cw.menuTextHuge",
 {
 	font		= "Arial",
 	size		= cw.core:FontScreenScale(30),
-	weight		= 700,
-	antialiase	= true,
-	additive 	= false,
-	extended	= true
+	weight = 700,
+	antialiase = true,
+	additive = false,
+	extended = true
 })
 cw.fonts:Add("cw.menuTextSmall",
 {
 	font		= "Arial",
 	size		= cw.core:FontScreenScale(10),
-	weight		= 700,
-	antialiase	= true,
-	additive 	= false,
-	extended	= true
+	weight = 700,
+	antialiase = true,
+	additive = false,
+	extended = true
 })
 cw.fonts:Add("cwIntroTextBig",
 {
 	font		= "Arial",
 	size		= cw.core:FontScreenScale(18),
-	weight		= 700,
-	antialiase	= true,
-	additive 	= false,
-	extended	= true
+	weight = 700,
+	antialiase = true,
+	additive = false,
+	extended = true
 })
 cw.fonts:Add("cwIntroTextTiny",
 {
 	font		= "Arial",
 	size		= cw.core:FontScreenScale(9),
-	weight		= 700,
-	antialiase	= true,
-	additive 	= false,
-	extended	= true
+	weight = 700,
+	antialiase = true,
+	additive = false,
+	extended = true
 })
 cw.fonts:Add("cwIntroTextSmall",
 {
 	font		= "Arial",
 	size		= cw.core:FontScreenScale(7),
-	weight		= 700,
-	antialiase	= true,
-	additive 	= false,
-	extended	= true
+	weight = 700,
+	antialiase = true,
+	additive = false,
+	extended = true
 })
 cw.fonts:Add("cwLarge3D2D",
 {
 	font		= "Arial",
 	size		= cw.core:GetFontSize3D(),
-	weight		= 700,
-	antialiase	= true,
+	weight = 700,
+	antialiase = true,
 	additive 	= false,
 	extended 	= true
 })
@@ -170,8 +170,8 @@ cw.fonts:Add("cwScoreboardName",
 {
 	font		= "Arial",
 	size		= cw.core:FontScreenScale(7),
-	weight		= 600,
-	antialiase	= true,
+	weight = 600,
+	antialiase = true,
 	additive 	= false,
 	extended 	= true
 })
@@ -179,8 +179,8 @@ cw.fonts:Add("cwScoreboardDesc",
 {
 	font		= "Arial",
 	size		= cw.core:FontScreenScale(5),
-	weight		= 600,
-	antialiase	= true,
+	weight = 600,
+	antialiase = true,
 	additive 	= false,
 	extended 	= true
 })
@@ -188,8 +188,8 @@ cw.fonts:Add("cwCinematicText",
 {
 	font		= "Trebuchet",
 	size		= cw.core:FontScreenScale(8),
-	weight		= 700,
-	antialiase	= true,
+	weight = 700,
+	antialiase = true,
 	additive 	= false,
 	extended 	= true
 })
@@ -197,8 +197,8 @@ cw.fonts:Add("cwChatSyntax",
 {
 	font		= "Courier New",
 	size		= cw.core:FontScreenScale(7),
-	weight		= 600,
-	antialiase	= true,
+	weight = 600,
+	antialiase = true,
 	additive 	= false,
 	extended 	= true
 })

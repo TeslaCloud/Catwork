@@ -75,6 +75,7 @@ function PLUGIN:SaveCombineLocks()
 
 	cw.core:SaveSchemaData("plugins/combinelocks/"..game.GetMap(), cmbLocks)
 end
+
 function PLUGIN:LoadCombineLocks()
 	local cmbLocks = cw.core:RestoreSchemaData("plugins/combinelocks/"..game.GetMap())
 

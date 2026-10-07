@@ -61,7 +61,7 @@ function cwAreaDisplays:AddAreaDisplayDisplay(areaTable)
 			areaTable = areaTable,
 			fadeTime = curTime + 4,
 			class = areaTable.class,
-			alpha = 0,
+			alpha = 0
 		}
 	end
 end
@@ -152,7 +152,7 @@ function cwAreaDisplays:DrawDisplayScrolling(displayInfo, info)
 	if (!displayInfo.scrollInfo) then
 		displayInfo.scrollInfo = {
 			index = 0,
-			text = "",
+			text = ""
 		}
 	end
 

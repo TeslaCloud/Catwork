@@ -7,12 +7,12 @@ BLUEPRINT.category = "#Craft_Category_Misc"
 BLUEPRINT.description = "#Blueprint_BlueprintZipTie_Description"
 BLUEPRINT.required = {}
 BLUEPRINT.updatt = {
-	{"rem", 5}
+	{ "rem", 5 }
 }
 BLUEPRINT.recipe = {
-	{"cables", 1},
+	{ "cables", 1 }
 }
 BLUEPRINT.finish = {
-	{"zip_tie", 2}
+	{ "zip_tie", 2 }
 }
-BLUEPRINT:Register();
+BLUEPRINT:Register()

@@ -9,7 +9,7 @@ ITEM.useText = "Swallow"
 ITEM.category = "Medical"
 ITEM.business = true
 ITEM.description = "#Item_Sorbent_Description"
-ITEM.customFunctions = {"Give"}
+ITEM.customFunctions = { "Give" }
 
 -- Called when a player uses the item.
 function ITEM:OnUse(player, itemEntity)

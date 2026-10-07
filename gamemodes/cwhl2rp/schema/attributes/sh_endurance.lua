@@ -13,4 +13,4 @@ local ATTRIBUTE = cw.attribute:New()
 	ATTRIBUTE.description = "#Attribute_Endurance_Desc"
 	ATTRIBUTE.isOnCharScreen = true
 	ATTRIBUTE.category = "#AttributeCategory_Stats"
-ATB_ENDURANCE = cw.attribute:Register(ATTRIBUTE);
+ATB_ENDURANCE = cw.attribute:Register(ATTRIBUTE)

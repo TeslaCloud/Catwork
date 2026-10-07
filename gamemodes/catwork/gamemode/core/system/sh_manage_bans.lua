@@ -17,6 +17,7 @@ if (CLIENT) then
 	-- Called to get whether the local player has access to the system.
 	function SYSTEM:HasAccess()
 		local unbanTable = cw.command:FindByID("PlyUnban")
+
 		if (unbanTable and cw.player:HasFlags(cw.client, unbanTable.access)) then
 			return true
 		end

@@ -8,13 +8,13 @@ BLUEPRINT.description = "#Blueprint_BlueprintRefinedMetal_Description"
 BLUEPRINT.craftplace = "cw_craft_furnace"
 BLUEPRINT.required = {}
 BLUEPRINT.updatt = {
-	{"rem", 5}
+	{ "rem", 5 }
 }
 BLUEPRINT.recipe = {
-	{"reclaimed_metal", 5},
-	{"charcoal", 3}
+	{ "reclaimed_metal", 5 },
+	{ "charcoal", 3 }
 }
 BLUEPRINT.finish = {
-	{"refined_metal", 2}
+	{ "refined_metal", 2 }
 }
-BLUEPRINT:Register();
+BLUEPRINT:Register()

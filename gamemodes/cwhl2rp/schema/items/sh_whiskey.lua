@@ -14,6 +14,6 @@ ITEM.model = "models/props_junk/garbage_glassbottle002a.mdl"
 ITEM.weight = 1
 ITEM.access = "w"
 ITEM.business = true
-ITEM.attributes = {Stamina = 2}
+ITEM.attributes = { Stamina = 2 }
 ITEM.description = "#ITEM_Whiskey_Desc"
 ITEM.thirst = 15

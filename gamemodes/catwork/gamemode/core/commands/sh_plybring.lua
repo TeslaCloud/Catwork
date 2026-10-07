@@ -13,7 +13,7 @@ COMMAND.text = "#Command_Plybring_Syntax"
 COMMAND.arguments = 1
 COMMAND.optionalArguments = 1
 COMMAND.access = "o"
-COMMAND.alias = {"Bring"}
+COMMAND.alias = { "Bring" }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
@@ -32,4 +32,4 @@ function COMMAND:OnRun(player, arguments)
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

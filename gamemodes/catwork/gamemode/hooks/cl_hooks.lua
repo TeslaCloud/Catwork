@@ -44,6 +44,7 @@ function GM:HUDAmmoPickedUp(...) end
 	@codebase Client
 	@details Called when the context menu is opened.
 --]]
+
 function GM:OnContextMenuOpen()
 	if (cw.core:IsUsingTool()) then
 		return self.BaseClass:OnContextMenuOpen(self)
@@ -56,6 +57,7 @@ end
 	@codebase Client
 	@details Called when the context menu is close.
 --]]
+
 function GM:OnContextMenuClose()
 	if (cw.core:IsUsingTool()) then
 		return self.BaseClass:OnContextMenuClose(self)
@@ -72,6 +74,7 @@ end
 	@param Entity The entity that is being used.
 	@returns Bool Whether or not the player can use property.
 --]]
+
 function GM:CanProperty(player, property, entity)
 	if (!IsValid(entity)) then
 		return false
@@ -93,6 +96,7 @@ end
 	@param Entity The entity that the player is trying to drive.
 	@return Bool Whether or not the player can drive the entity.
 --]]
+
 function GM:CanDrive(player, entity)
 	if (!IsValid(entity)) then
 		return false
@@ -110,6 +114,7 @@ end
 	@details Called when the directory is rebuilt.
 	@param <DPanel> The directory panel.
 --]]
+
 function GM:ClockworkDirectoryRebuilt(panel)
 	for k, v in pairs(cw.command.stored) do
 		if (!cw.player:HasFlags(cw.client, v.access)) then
@@ -125,6 +130,7 @@ end
 	@details Called when the local player is given an item.
 	@param Table The table of the item that was given.
 --]]
+
 function GM:PlayerItemGiven(itemTable)
 	if (cw.storage:IsStorageOpen()) then
 		cw.storage:GetPanel():Rebuild()
@@ -136,6 +142,7 @@ end
 	@details Called when the local player has an item taken from them.
 	@param Table The table of the item that was taken.
 --]]
+
 function GM:PlayerItemTaken(itemTable)
 	if (cw.storage:IsStorageOpen()) then
 		cw.storage:GetPanel():Rebuild()
@@ -148,6 +155,7 @@ end
 	@param String The name of the config key.
 	@param String The value relating to the key in the table.
 --]]
+
 function GM:ClockworkConfigInitialized(key, value)
 	if (key == "cash_enabled" and !value) then
 		for k, v in pairs(item.GetAll()) do
@@ -170,6 +178,7 @@ local checkTable = {
 	@param String The previous value of the convar.
 	@param String The new value of the convar.
 --]]
+
 function GM:ClockworkConVarChanged(name, previousValue, newValue)
 	if (checkTable[name] and !cw.theme:IsFixed()) then
 		cw.option:SetColor(
@@ -198,6 +207,7 @@ end
 	@param Entity The entity that is being checked for menu options.
 	@param Table The table of options for the entity.
 --]]
+
 function GM:GetEntityMenuOptions(entity, options)
 	local class = entity:GetClass()
 
@@ -237,6 +247,7 @@ end
 	@codebase Client
 	@details Called when the GUI mouse has been released.
 --]]
+
 function GM:GUIMouseReleased(code)
 	if (!config.Get("use_opens_entity_menus"):Get()
 	and vgui.CursorVisible()) then
@@ -258,6 +269,7 @@ end
 	@param Player The player releasing a key.
 	@param Key The key that is being released.
 --]]
+
 function GM:KeyRelease(player, key)
 	if (config.Get("use_opens_entity_menus"):Get()) then
 		if (key == IN_USE) then
@@ -286,7 +298,7 @@ end
 function GM:PreDrawHalos()
 	if (IsValid(cw.client.openedEnt)) then
 		if (IsValid(cw.EntityMenu)) then
-			halo.Add({cw.client.openedEnt}, Color(255, 255, 255), 2, 2, 1, true, false)
+			halo.Add({ cw.client.openedEnt }, Color(255, 255, 255), 2, 2, 1, true, false)
 		else
 			cw.client.openedEnt = nil
 		end
@@ -297,6 +309,7 @@ end
 	@codebase Client
 	@details Called when the local player has been created.
 --]]
+
 function GM:LocalPlayerCreated()
 	cw.core:RegisterNetworkProxy(cw.client, "Clothes", function(entity, name, oldValue, newValue)
 		if (oldValue != newValue) then
@@ -322,6 +335,7 @@ end
 	@codebase Client
 	@details Called when the client initializes.
 --]]
+
 function GM:Initialize()
 	CW_CONVAR_TWELVEHOURCLOCK = cw.core:CreateClientConVar("cwTwelveHourClock", 0, true, true)
 	CW_CONVAR_HEADBOBSCALE = cw.core:CreateClientConVar("cwHeadbobScale", 1, true, true)
@@ -373,6 +387,7 @@ end
 	@codebase Client
 	@details Called when Clockwork has initialized.
 --]]
+
 function GM:ClockworkInitialized()
 	local logoFile = "clockwork/logo/002.png"
 
@@ -412,13 +427,14 @@ end
 	@codebase Client
 	@details Called when the tool menu needs to be populated.
 --]]
+
 function GM:PopulateToolMenu()
 	local toolGun = weapons.GetStored("gmod_tool")
 
 	for k, v in pairs(cw.tool:GetAll()) do
 		toolGun.Tool[v.Mode] = v
 
-		if (v.AddToMenu != false) then		
+		if (v.AddToMenu != false) then
 			spawnmenu.AddToolMenuOption(v.Tab or "Main",
 				v.Category or "New Category",
 				k,
@@ -426,7 +442,7 @@ function GM:PopulateToolMenu()
 				v.Command or "gmod_tool "..k,
 				v.ConfigName or k,
 				v.BuildCPanel
-			);			
+			)
 		end
 
 		language.Add("tool."..v.UniqueID..".name", v.Name)
@@ -439,6 +455,7 @@ end
 	@codebase Client
 	@details Called when a player's door access name is needed.
 --]]
+
 function GM:GetPlayerDoorAccessName(player, door, owner)
 	return player:Name()
 end
@@ -447,6 +464,7 @@ end
 	@codebase Client
 	@details Called when a player should show on the door access list.
 --]]
+
 function GM:PlayerShouldShowOnDoorAccessList(player, door, owner)
 	return true
 end
@@ -455,6 +473,7 @@ end
 	@codebase Client
 	@details Called when a player should show on the scoreboard.
 --]]
+
 function GM:PlayerShouldShowOnScoreboard(player)
 	return true
 end
@@ -463,6 +482,7 @@ end
 	@codebase Client
 	@details Called when the local player attempts to zoom.
 --]]
+
 function GM:PlayerCanZoom()
 	return true
 end
@@ -572,7 +592,7 @@ function GM:CalcView(player, origin, angles, fov)
 		local ragdollState = cw.client:GetRagdollState()
 
 		if (cw.BlackFadeIn == 255) then
-			return {origin = Vector(20000, 0, 0), angles = Angle(0, 0, 0), fov = fov}
+			return { origin = Vector(20000, 0, 0), angles = Angle(0, 0, 0), fov = fov }
 		else
 			local eyes = ragdollEntity:GetAttachment(ragdollEntity:LookupAttachment("eyes"))
 
@@ -588,13 +608,13 @@ function GM:CalcView(player, origin, angles, fov)
 					end
 				end
 
-				return {origin = eyes.Pos, angles = ragdollEyeAngles, fov = fov}
+				return { origin = eyes.Pos, angles = ragdollEyeAngles, fov = fov }
 			else
 				return self.BaseClass:CalcView(player, origin, angles, fov)
 			end
 		end
 	elseif (!cw.client:Alive()) then
-		return {origin = Vector(20000, 0, 0), angles = Angle(0, 0, 0), fov = fov}
+		return { origin = Vector(20000, 0, 0), angles = Angle(0, 0, 0), fov = fov }
 	elseif (config.Get("enable_headbob"):Get() and scale > 0) then
 		if (player:IsOnGround()) then
 			local frameTime = FrameTime()
@@ -602,7 +622,7 @@ function GM:CalcView(player, origin, angles, fov)
 			if (!cw.player:IsNoClipping(player)) then
 				local approachTime = frameTime * 2
 				local curTime = UnPredictedCurTime()
-				local info = {speed = 1, yaw = 0.5, roll = 0.1}
+				local info = { speed = 1, yaw = 0.5, roll = 0.1 }
 
 				if (!cw.HeadbobAngle) then
 					cw.HeadbobAngle = 0
@@ -628,9 +648,9 @@ function GM:CalcView(player, origin, angles, fov)
 				local velocity = player:GetVelocity()
 				local eyeAngles = player:EyeAngles()
 
-				if (!cw.VelSmooth) then cw.VelSmooth = 0; end
-				if (!cw.WalkTimer) then cw.WalkTimer = 0; end
-				if (!cw.LastStrafeRoll) then cw.LastStrafeRoll = 0; end
+				if (!cw.VelSmooth) then cw.VelSmooth = 0 end
+				if (!cw.WalkTimer) then cw.WalkTimer = 0 end
+				if (!cw.LastStrafeRoll) then cw.LastStrafeRoll = 0 end
 
 				cw.VelSmooth = math.Clamp(cw.VelSmooth * 0.9 + velocity:Length() * 0.1, 0, 700)
 				cw.WalkTimer = cw.WalkTimer + cw.VelSmooth * FrameTime() * 0.05
@@ -712,7 +732,7 @@ function GM:CalcViewModelView(weapon, viewModel, oldEyePos, oldEyeAngles, eyePos
 
 	cw.client.cwRaisedFraction = Lerp(FrameTime() * 2, cw.client.cwRaisedFraction or 100, targetValue)
 
-	--Return the edited angle and position.
+	-- Return the edited angle and position.
 	return oldEyePos, eyeAngles
 end
 
@@ -806,7 +826,7 @@ function GM:MenuItemsAdd(menuItems)
 	local directoryName = cw.option:GetKey("name_directory")
 	local inventoryName = cw.option:GetKey("name_inventory")
 
-	--menuItems:Add("#Classes", "cwClasses", "#ClassesDesc", cw.option:GetKey("icon_data_classes"))
+	-- menuItems:Add("#Classes", "cwClasses", "#ClassesDesc", cw.option:GetKey("icon_data_classes"))
 	menuItems:Add("#Settings", "cwSettings", "#SettingsDesc", cw.option:GetKey("icon_data_settings"))
 	menuItems:Add(systemName, "cwSystem", "#SystemDesc", cw.option:GetKey("icon_data_system"))
 	menuItems:Add(scoreboardName, "cwScoreboard", "#ScoreboardDesc", cw.option:GetKey("icon_data_scoreboard"))
@@ -816,7 +836,7 @@ function GM:MenuItemsAdd(menuItems)
 
 	if (config.Get("show_business"):GetBoolean() == true) then
 		local businessName = cw.option:GetKey("name_business")
-		--menuItems:Add(businessName, "cwBusiness", cw.option:GetKey("description_business"), cw.option:GetKey("icon_data_business"))
+		-- menuItems:Add(businessName, "cwBusiness", cw.option:GetKey("description_business"), cw.option:GetKey("icon_data_business"))
 	end
 end
 
@@ -1044,6 +1064,7 @@ end
 	Called when the entity outlines should be added.
 	The "outlines" parameter is a reference to cw.outline.
 --]]
+
 function GM:AddEntityOutlines(outlines)
 	if (IsValid(cw.EntityMenu) and IsValid(cw.EntityMenu.entity)) then
 		--[[ Maybe this isn't needed. --]]
@@ -1117,7 +1138,7 @@ function GM:HUDPaintForeground()
 
 		cw.core:DrawBar(
 			x, y, width, height, info.color or cw.option:GetColor("information"),
-			info.text or L("#ProgressBarInfo_Default"), info.percentage or 100, 100, info.flash, {uniqueID = info.uniqueID}
+			info.text or L("#ProgressBarInfo_Default"), info.percentage or 100, 100, info.flash, { uniqueID = info.uniqueID }
 		)
 	else
 		info = hook.Run("GetPostProgressBarInfo")
@@ -1130,7 +1151,7 @@ function GM:HUDPaintForeground()
 
 			cw.core:DrawBar(
 				x, y, width, height, info.color or cw.option:GetColor("information"),
-				info.text or L("#ProgressBarInfo_Default"), info.percentage or 100, 100, info.flash, {uniqueID = info.uniqueID}
+				info.text or L("#ProgressBarInfo_Default"), info.percentage or 100, 100, info.flash, { uniqueID = info.uniqueID }
 			)
 		end
 	end
@@ -1161,7 +1182,7 @@ function GM:HUDPaintForeground()
 		end
 	end
 
-	local info = {width = scrW * cw.option:GetKey("top_bar_width_scale"), x = 8, y = 8}
+	local info = { width = scrW * cw.option:GetKey("top_bar_width_scale"), x = 8, y = 8 }
 		cw.core:DrawBars(info, "top")
 
 	local action, percentage = cw.player:GetAction(cw.client, true)
@@ -1403,7 +1424,7 @@ function GM:HUDDrawTargetID()
 										end
 									else
 										local unrecognisedName, usedPhysDesc = cw.player:GetUnrecognisedName(entity)
-										local wrappedTable = {unrecognisedName}
+										local wrappedTable = { unrecognisedName }
 										local teamColor = _team.GetColor(entity:Team())
 										local result = hook.Run("PlayerCanShowUnrecognised", entity, x, y, unrecognisedName, teamColor, alpha, flashAlpha)
 										local newY
@@ -1453,7 +1474,7 @@ function GM:HUDDrawTargetID()
 									or cw.nextCheckRecognises[2] != entity) then
 										netstream.Start("GetTargetRecognises", entity)
 
-										cw.nextCheckRecognises = {curTime + 2, entity}
+										cw.nextCheckRecognises = { curTime + 2, entity }
 									end
 								end
 							end
@@ -1569,31 +1590,32 @@ end
 	@class Clockwork
 	@returns Table The text, flash, and percentage of the progress bar.
 --]]
+
 function GM:GetProgressBarInfo()
 	local action, percentage = cw.player:GetAction(cw.client, true)
 
 	if (!cw.client:Alive() and action == "spawn") then
 		return
-		--return {text = cw.lang:TranslateText("#ProgressBarInfo_spawn"), percentage = percentage, flash = percentage < 10, isBlocky = true, blocksAmt = 32}
+		-- return {text = cw.lang:TranslateText("#ProgressBarInfo_spawn"), percentage = percentage, flash = percentage < 10, isBlocky = true, blocksAmt = 32}
 	end
 
 	if (!cw.client:IsRagdolled()) then
 		if (action == "lock") then
-			return {text = cw.lang:TranslateText("#ProgressBarInfo_lock"), percentage = percentage, flash = percentage < 10, isBlocky = true, blocksAmt = 32}
+			return { text = cw.lang:TranslateText("#ProgressBarInfo_lock"), percentage = percentage, flash = percentage < 10, isBlocky = true, blocksAmt = 32 }
 		elseif (action == "unlock") then
-			return {text = cw.lang:TranslateText("#ProgressBarInfo_unlock"), percentage = percentage, flash = percentage < 10, isBlocky = true, blocksAmt = 32}
+			return { text = cw.lang:TranslateText("#ProgressBarInfo_unlock"), percentage = percentage, flash = percentage < 10, isBlocky = true, blocksAmt = 32 }
 		end
 	elseif (action == "unragdoll") then
 		if (cw.client:GetRagdollState() == RAGDOLL_FALLENOVER) then
-			return {text = cw.lang:TranslateText("#ProgressBarInfo_unragdoll_fallenover"), percentage = percentage, flash = percentage < 10, isBlocky = true, blocksAmt = 32}
+			return { text = cw.lang:TranslateText("#ProgressBarInfo_unragdoll_fallenover"), percentage = percentage, flash = percentage < 10, isBlocky = true, blocksAmt = 32 }
 		else
-			return {text = cw.lang:TranslateText("#ProgressBarInfo_unragdoll"), percentage = percentage, flash = percentage < 10, isBlocky = true, blocksAmt = 32}
+			return { text = cw.lang:TranslateText("#ProgressBarInfo_unragdoll"), percentage = percentage, flash = percentage < 10, isBlocky = true, blocksAmt = 32 }
 		end
 	elseif (cw.client:GetRagdollState() == RAGDOLL_FALLENOVER) then
 		local fallenOver = cw.client:GetDTBool(BOOL_FALLENOVER)
 
 		if (fallenOver and hook.Run("PlayerCanGetUp")) then
-			return {text = cw.lang:TranslateText("#ProgressBarInfo_PlayerCanGetUp"), percentage = 100, isBlocky = true, blocksAmt = 32}
+			return { text = cw.lang:TranslateText("#ProgressBarInfo_PlayerCanGetUp"), percentage = 100, isBlocky = true, blocksAmt = 32 }
 		end
 	end
 end
@@ -1630,6 +1652,7 @@ end
 	@class Clockwork
 	@param Table The current table of player info text to add onto.
 --]]
+
 function GM:GetPlayerInfoText(playerInfoText)
 	local cash = cw.player:GetCash() or 0
 	local wages = cw.player:GetWages() or 0
@@ -1655,6 +1678,7 @@ end
 	@param Table The player we are finding the distance for.
 	@returns Int The fade distance, defaulted at 4096.
 --]]
+
 function GM:GetTargetPlayerFadeDistance(player)
 	return 4096
 end
@@ -1669,6 +1693,7 @@ function GM:DestroyPlayerInfoText(playerInfoText) end
 	@param Table The player we are finding the distance for.
 	@param Table The player's current target text.
 --]]
+
 function GM:GetTargetPlayerText(player, targetPlayerText)
 	local targetIDTextFont = cw.option:GetFont("target_id_text")
 	local physDescTable = {}
@@ -1792,7 +1817,7 @@ function GM:GetPlayerScoreboardOptions(player, options, menu)
 		end
 	end
 
-	if (charTakeFlags and cw.player:HasFlags(cw.client,charTakeFlags.access)) then
+	if (charTakeFlags and cw.player:HasFlags(cw.client, charTakeFlags.access)) then
 		options["#ScoreboardOptions_CharTakeFlags"] = function()
 			Derma_StringRequest(player:Name(), "#ScoreboardOptions_CharTakeFlags_StringRequest", player:GetDTString(STRING_FLAGS), function(text)
 				cw.core:RunCommand("CharTakeFlags", player:Name(), text)
@@ -1821,9 +1846,11 @@ function GM:GetPlayerScoreboardOptions(player, options, menu)
 		options["#ScoreboardOptions_PlySetGroup"]["#ScoreboardOptions_PlySetGroup_SuperAdmin"] = function()
 			cw.core:RunCommand("PlySetGroup", player:Name(), "superadmin")
 		end
+
 		options["#ScoreboardOptions_PlySetGroup"]["#ScoreboardOptions_PlySetGroup_Admin"] = function()
 			cw.core:RunCommand("PlySetGroup", player:Name(), "admin")
 		end
+
 		options["#ScoreboardOptions_PlySetGroup"]["#ScoreboardOptions_PlySetGroup_Operator"] = function()
 			cw.core:RunCommand("PlySetGroup", player:Name(), "operator")
 		end
@@ -1997,7 +2024,7 @@ function GM:RenderScreenspaceEffects()
 		if (cw.FishEyeTexture and cw.client:WaterLevel() > 2) then
 			render.UpdateScreenEffectTexture()
 				cw.FishEyeTexture:SetFloat("$envmap", 0)
-				cw.FishEyeTexture:SetFloat("$envmaptint",	0)
+				cw.FishEyeTexture:SetFloat("$envmaptint", 0)
 				cw.FishEyeTexture:SetFloat("$refractamount", 0.1)
 				cw.FishEyeTexture:SetInt("$ignorez", 1)
 			render.SetMaterial(cw.FishEyeTexture)
@@ -2055,6 +2082,7 @@ function GM:RenderScreenspaceEffects()
 		--[[
 			Hotfix for ColorModify issues on OS X.
 		--]]
+
 		if (system.IsOSX()) then
 			cw.ColorModify["$pp_colour_brightness"] = 0
 			cw.ColorModify["$pp_colour_contrast"] = 1
@@ -2105,17 +2133,21 @@ function GM:ChatBoxKeyCodeTyped(code, text)
 	if (code == KEY_UP) then
 		if (cw.LastChatBoxText) then
 			cw.LastChatBoxCheck = math.Clamp(cw.LastChatBoxCheck + 1, 0, 25)
+
 			if (cw.LastChatBoxCheck > #cw.LastChatBoxText) then
 				cw.LastChatBoxCheck = 0
 			end
+
 			return cw.LastChatBoxText[cw.LastChatBoxCheck]
 		end
 	elseif (code == KEY_DOWN) then
 		if (cw.LastChatBoxText) then
 			cw.LastChatBoxCheck = math.Clamp(cw.LastChatBoxCheck - 1, 0, 25)
+
 			if (cw.LastChatBoxCheck <= 0) then
 				cw.LastChatBoxCheck = #cw.LastChatBoxText + 1
 			end
+
 			return cw.LastChatBoxText[cw.LastChatBoxCheck]
 		end
 	end
@@ -2138,7 +2170,7 @@ function GM:PlayerAdjustHeadbobInfo(info)
 	local scale
 
 	if (CW_CONVAR_HEADBOBSCALE) then
-		scale = math.Clamp(CW_CONVAR_HEADBOBSCALE:GetFloat(),0,1) or 1
+		scale = math.Clamp(CW_CONVAR_HEADBOBSCALE:GetFloat(), 0, 1) or 1
 	else
 		scale = 1
 	end
@@ -2289,7 +2321,7 @@ function GM:HUDDrawScoreBoard()
 		local material = cw.ClockworkIntroOverrideImage or cw.ClockworkSplash
 		local sineWave = math.sin(curTime)
 		local height = 256
-		local width = 512; --Patched
+		local width = 512 -- Patched
 		local alpha = 384
 
 		if (!cw.ClockworkIntroOverrideImage) then
@@ -2378,7 +2410,7 @@ end
 
 -- Called just after the background blurs have been drawn.
 function GM:PostDrawBackgroundBlurs()
-	local introTextSmallFont = cw.option:GetFont("intro_text_small");	
+	local introTextSmallFont = cw.option:GetFont("intro_text_small")
 	local backgroundColor = cw.option:GetColor("background")
 	local colorWhite = cw.option:GetColor("white")
 	local panelInfo = cw.CurrentFactionSelected
@@ -2412,6 +2444,7 @@ function GM:PostDrawBackgroundBlurs()
 			cw.core:DrawInfo(menuTitle, menuPanel.x, menuPanel.y, colorWhite, 255, true, function(x, y, width, height)
 				return x, y - height - 4
 			end)
+
 		cw.core:OverrideMainFont(false)
 	end
 
@@ -2440,7 +2473,7 @@ function GM:GetCinematicIntroInfo()
 end
 
 -- Called when the character loading time is needed.
-function GM:GetCharacterLoadingTime() return 8; end
+function GM:GetCharacterLoadingTime() return 8 end
 
 -- Called when a player's HUD should be painted.
 function GM:HUDPaintPlayer(player) end
@@ -2453,7 +2486,7 @@ function GM:HUDPaint()
 			local health = cw.client:Health()
 
 			if (health < maxHealth * 0.5) then
-				--hook.Run("DrawPlayerScreenDamage", 1 - ((1 / maxHealth) * health))
+				-- hook.Run("DrawPlayerScreenDamage", 1 - ((1 / maxHealth) * health))
 			end
 		end
 
@@ -2562,7 +2595,7 @@ end
 -- Called when a player says something.
 function GM:OnPlayerChat(player, text, teamOnly, playerIsDead)
 	if (!IsValid(player)) then
-		chatbox.AddText(nil, "[color=red]#Console[/color]: "..text, {icon = "icon16/shield.png"})
+		chatbox.AddText(nil, "[color=red]#Console[/color]: "..text, { icon = "icon16/shield.png" })
 	end
 
 	return true

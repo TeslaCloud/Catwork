@@ -36,4 +36,4 @@ timer.Simple(1, function()
 		SWEP.Instructions = cw.core:Replace(SWEP.Instructions, "Knock.", "Knock/Pickup.")
 		SWEP.Instructions = cw.core:Replace(SWEP.Instructions, "Punch.", "Punch/Throw.")
 	end
-end);
+end)

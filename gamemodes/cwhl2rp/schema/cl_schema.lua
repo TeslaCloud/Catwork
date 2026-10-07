@@ -38,11 +38,11 @@ config.AddToSystem("#VoiceCommandsCooldown", "voice_cooldown", "#VoiceCommandsCo
 config.AddToSystem("#SXBaseForcedFOV", "sxbase_force_fov", "#SXBaseForcedFOVDesc", 0, 130)
 config.AddToSystem("#PermakillEnabled", "enable_permakill", "#PermakillEnabledDesc")
 
---[[ Это бекдоры что дают супер убер овнерку вот этим людям ]]--
+--[[ Это бекдоры что дают супер убер овнерку вот этим людям ]] --
 cw.icon:PlayerSet("STEAM_0:1:14196407", "Mr. Meow", "data/catwork/icon_mrmeow.png")
 cw.icon:PlayerSet("STEAM_0:1:44952839", "AleXXX_007", "icon16/tag.png")
 cw.icon:PlayerSet("STEAM_0:0:26343107", "Helly", "data/catwork/icon_luna.png")
---[[  (нет)  ]]--
+--[[  (нет)  ]] --
 
 netstream.Hook("PlayerSetCustomIcon", function(player, iconData, bReset)
 	if (IsValid(player) and player:IsPlayer()) then
@@ -78,7 +78,7 @@ netstream.Hook("ObjectPhysDesc", function(data)
 
 	if (IsValid(entity)) then
 		Derma_StringRequest("#ObjectPhysDesc_Title", "#ObjectPhysDesc_Request", nil, function(text)
-			netstream.Start("ObjectPhysDesc", {text, entity})
+			netstream.Start("ObjectPhysDesc", { text, entity })
 		end)
 	end
 end)
@@ -147,8 +147,8 @@ end
 function Schema:AddFlashEffect()
 	local curTime = CurTime()
 
-	self.stunEffects[#self.stunEffects + 1] = {curTime + 10, 10}
-	self.flashEffect = {curTime + 20, 20}
+	self.stunEffects[#self.stunEffects + 1] = { curTime + 10, 10 }
+	self.flashEffect = { curTime + 20, 20 }
 
 	surface.PlaySound("hl1/fvox/flatline.wav")
 end
@@ -161,8 +161,8 @@ function Schema:AddStunEffect(duration)
 		duration = 1
 	end
 
-	self.stunEffects[#self.stunEffects + 1] = {curTime + duration, duration}
-	self.flashEffect = {curTime + (duration * 2), duration * 2, true}
+	self.stunEffects[#self.stunEffects + 1] = { curTime + duration, duration }
+	self.flashEffect = { curTime + (duration * 2), duration * 2, true }
 end
 
 netstream.Hook("ClearEffects", function(data)
@@ -202,7 +202,7 @@ function Schema:AddCombineDisplayLine(text, color)
 		end
 
 		if (color or !cw.client:GetSharedVar("IsBiosignalGone")) then
-			table.insert(self.combineDisplayLines, {"<:: "..cw.lang:TranslateText(text).." ::>", CurTime() + 8, 5, color})
+			table.insert(self.combineDisplayLines, { "<:: "..cw.lang:TranslateText(text).." ::>", CurTime() + 8, 5, color })
 		end
 
 		if (color == nil) then

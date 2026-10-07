@@ -12,7 +12,7 @@ COMMAND.text = "#Command_Plyvoiceunban_Syntax"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "o"
 COMMAND.arguments = 1
-COMMAND.alias = {"VoiceUnban", "PlyUnbanVoice"}
+COMMAND.alias = { "VoiceUnban", "PlyUnbanVoice" }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
@@ -27,4 +27,4 @@ function COMMAND:OnRun(player, arguments)
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

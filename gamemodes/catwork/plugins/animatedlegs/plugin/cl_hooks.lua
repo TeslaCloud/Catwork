@@ -20,6 +20,7 @@ end
 -- Called when the screenspace effects are rendered.
 function cwAnimatedLegs:RenderScreenspaceEffects()
 	cam.Start3D(EyePos(), EyeAngles())
+
 		if (self:ShouldDrawLegs()) then
 			self.RenderPos = cw.client:GetPos()
 
@@ -65,5 +66,6 @@ function cwAnimatedLegs:RenderScreenspaceEffects()
 			render.PopCustomClipPlane()
 			render.EnableClipping(false)
 		end
+
 	cam.End3D()
 end

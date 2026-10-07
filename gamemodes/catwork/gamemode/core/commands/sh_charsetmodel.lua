@@ -11,7 +11,7 @@ COMMAND.tip = "#Command_Charsetmodel_Description"
 COMMAND.text = "#Command_Charsetmodel_Syntax"
 COMMAND.access = "o"
 COMMAND.arguments = 2
-COMMAND.alias = {"SetModel"}
+COMMAND.alias = { "SetModel" }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
@@ -29,4 +29,4 @@ function COMMAND:OnRun(player, arguments)
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

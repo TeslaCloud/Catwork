@@ -13,7 +13,7 @@ function ENT:HUDPaintTargetID(x, y, alpha)
 
 	if (Schema:PlayerIsCombine(cw.client)) then
 		y = cw.core:DrawInfo("#Factory_RationDispenser", x, y, colorTargetID, alpha)
-		y = cw.core:DrawInfo("#Factory_FillState "..self:GetDTInt(0) , x, y, colorWhite, alpha);	
+		y = cw.core:DrawInfo("#Factory_FillState "..self:GetDTInt(0), x, y, colorWhite, alpha)
 	end
 end
 

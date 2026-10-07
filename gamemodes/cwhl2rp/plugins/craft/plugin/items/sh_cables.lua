@@ -1,5 +1,4 @@
 
-
 ITEM.name = "Cables"
 ITEM.PrintName = "#Item_Cables_Name"
 ITEM.model = "models/Items/CrossbowRounds.mdl"
@@ -9,4 +8,3 @@ ITEM.description = "#Item_Cables_Description"
 
 -- Called when a player drops the item.
 function ITEM:OnDrop(player, position) end
-

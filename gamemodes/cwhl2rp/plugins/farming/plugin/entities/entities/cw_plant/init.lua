@@ -25,7 +25,7 @@ function ENT:Initialize()
 	if (IsValid(physObj)) then
 		physObj:EnableMotion(false)
 		physObj:Sleep()
-		--physObj:SetMass(500)
+		-- physObj:SetMass(500)
 	end
 end
 
@@ -45,7 +45,7 @@ function ENT:OnTakeDamage(dmg)
 	if(player:IsPlayer()) then self:Remove() end
 end
 
-function ENT:Use(activator)	
+function ENT:Use(activator)
 	if self:GetGrowTime() <= CurTime() and !self.isGathering then
 		if (activator:GetNetVar("tied") == 0 and activator:Crouching()) then
 			local gathertime = math.random(11, 25) - math.Round(cw.attributes:Fraction(activator, ATB_FARM, 10))

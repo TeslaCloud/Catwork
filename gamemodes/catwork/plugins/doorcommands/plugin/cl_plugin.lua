@@ -26,7 +26,7 @@ function cwDoorCmds:PreDrawHalos()
 				color = Color(255, 100, 0, 255)
 			end
 
-			halo.Add({door}, color, 1, 1, 1, true, true)
+			halo.Add({ door }, color, 1, 1, 1, true, true)
 		end
 	end
 end

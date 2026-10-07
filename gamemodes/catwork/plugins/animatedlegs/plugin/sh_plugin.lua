@@ -14,4 +14,4 @@ PLUGIN:SetGlobalAlias("cwAnimatedLegs")
 
 --[[ You don't have to do this either, but I prefer to seperate the functions. --]]
 util.Include("cl_plugin.lua")
-util.Include("cl_hooks.lua");
+util.Include("cl_hooks.lua")

@@ -16,4 +16,4 @@ function COMMAND:OnRun(player, arguments)
 	cwSurfaceTexts:Remove(player)
 end
 
-COMMAND:Register();
+COMMAND:Register()

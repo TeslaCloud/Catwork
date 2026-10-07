@@ -9,7 +9,7 @@ COMMAND.tip = "#Command_Doorresetplayer_Description"
 COMMAND.text = "#Command_Doorresetplayer_Syntax"
 COMMAND.access = "D"
 COMMAND.arguments = 1
-COMMAND.alias = {"DoorRemovePlayer"}
+COMMAND.alias = { "DoorRemovePlayer" }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
@@ -25,4 +25,4 @@ function COMMAND:OnRun(player, arguments)
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

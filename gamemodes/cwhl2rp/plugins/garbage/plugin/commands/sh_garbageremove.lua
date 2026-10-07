@@ -10,7 +10,7 @@ local COMMAND = cw.command:New("GarbageRemove")
 COMMAND.tip = "#Command_Garbageremove_Description"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "s"
-COMMAND.alias = {"GarbagePointRemove", "GarbageSpawnRemove"}
+COMMAND.alias = { "GarbagePointRemove", "GarbageSpawnRemove" }
 
 function COMMAND:OnRun(player, arguments)
 	local position = player:GetEyeTraceNoCursor().HitPos + Vector(0, 0, 32)
@@ -18,7 +18,7 @@ function COMMAND:OnRun(player, arguments)
 
 	for k, v in pairs(cwGarbage.garbagePoints) do
 		if (v.position:Distance(position) <= 50) then
-			pointsCount = pointsCount + 1;	
+			pointsCount = pointsCount + 1
 			cwGarbage.garbagePoints[k] = nil
 		end
 	end
@@ -36,4 +36,4 @@ function COMMAND:OnRun(player, arguments)
 	cwGarbage:SaveGarbageSpawnPoints()
 end
 
-COMMAND:Register();
+COMMAND:Register()

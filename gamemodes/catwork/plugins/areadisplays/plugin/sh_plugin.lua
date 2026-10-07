@@ -18,4 +18,4 @@ util.Include("sv_plugin.lua")
 util.Include("sv_hooks.lua")
 util.Include("cl_hooks.lua")
 
-cwAreaDisplays.storedList = cwAreaDisplays.storedList or {};
+cwAreaDisplays.storedList = cwAreaDisplays.storedList or {}

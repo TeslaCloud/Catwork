@@ -45,10 +45,11 @@ netstream.Hook("MenuOption", function(player, data)
 	local shootPos = player:GetShootPos()
 
 	if (type(data) != "table") then
-		data = {data}
+		data = { data }
 	end
 
 	local itemTable = item.FindInstance(itemID)
+
 	if (itemTable and itemTable:IsInstance() and type(option) == "string") then
 		if (itemTable.HandleOptions) then
 			if (player:HasItemInstance(itemTable)) then
@@ -82,7 +83,7 @@ netstream.Hook("LocalPlayerCreated", function(player, data)
 			if (IsValid(player)) then
 				config.Send(player)
 			end
-		end);		
+		end)
 	end
 end)
 
@@ -181,11 +182,11 @@ netstream.Hook("DoorManagement", function(player, data)
 						end
 
 						if (cw.player:HasDoorAccess(data[3], data[1], DOOR_ACCESS_COMPLETE)) then
-							netstream.Start(player, "DoorAccess", {data[3], DOOR_ACCESS_COMPLETE})
+							netstream.Start(player, "DoorAccess", { data[3], DOOR_ACCESS_COMPLETE })
 						elseif (cw.player:HasDoorAccess(data[3], data[1], DOOR_ACCESS_BASIC)) then
-							netstream.Start(player, "DoorAccess", {data[3], DOOR_ACCESS_BASIC})
+							netstream.Start(player, "DoorAccess", { data[3], DOOR_ACCESS_BASIC })
 						else
-							netstream.Start(player, "DoorAccess", {data[3]})
+							netstream.Start(player, "DoorAccess", { data[3] })
 						end
 					end
 				end
@@ -240,7 +241,7 @@ netstream.Hook("RecogniseOption", function(player, data)
 	local recogniseData = data
 
 	if (config.Get("recognise_system"):Get()) then
-		if (type(recogniseData) == "string") then	
+		if (type(recogniseData) == "string") then
 			local playSound = false
 
 			if (recogniseData == "look") then

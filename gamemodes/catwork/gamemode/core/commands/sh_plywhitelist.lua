@@ -11,7 +11,7 @@ COMMAND.tip = "#Command_Plywhitelist_Description"
 COMMAND.text = "#Command_Plywhitelist_Syntax"
 COMMAND.access = "s"
 COMMAND.arguments = 2
-COMMAND.alias = {"Whitelist", "CharWhitelist", "GiveWhitelist"}
+COMMAND.alias = { "Whitelist", "CharWhitelist", "GiveWhitelist" }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
@@ -41,4 +41,4 @@ function COMMAND:OnRun(player, arguments)
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

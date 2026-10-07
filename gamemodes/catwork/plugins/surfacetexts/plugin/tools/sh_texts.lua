@@ -79,12 +79,12 @@ function TOOL.BuildCPanel(CPanel)
 	local options = {}
 
 	for k, v in pairs(textStyles) do
-		options[k] = {["texts_style"] = v}
+		options[k] = { ["texts_style"] = v }
 	end
 
 	CPanel:AddControl("Header", { Description = "#tool.texts.desc" })
 
-	local controlPresets = CPanel:AddControl("ComboBox", { MenuButton = 1, Folder = "textstyle", Options = options, CVars = {"texts_style"} })
+	local controlPresets = CPanel:AddControl("ComboBox", { MenuButton = 1, Folder = "textstyle", Options = options, CVars = { "texts_style" } })
 	controlPresets.Button:SetVisible(false)
 	controlPresets.DropDown:SetValue("#tool.texts.choose")
 

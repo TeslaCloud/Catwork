@@ -15,7 +15,7 @@ function PANEL:Init()
 
 	-- Called when the button is clicked.
 	function self.btnClose.DoClick(button)
-		self:Close(); self:Remove()
+		self:Close() self:Remove()
 
 		gui.EnableScreenClicker(false)
 	end
@@ -72,7 +72,7 @@ function PANEL:Populate(objectives)
 	function button.DoClick(button)
 		netstream.Start("EditObjectives", string.sub(textEntry:GetValue(), 0, 500))
 
-		self:Close(); self:Remove()
+		self:Close() self:Remove()
 
 		gui.EnableScreenClicker(false)
 	end
@@ -88,4 +88,4 @@ function PANEL:PerformLayout()
 	DFrame.PerformLayout(self)
 end
 
-vgui.Register("cwObjectives", PANEL, "DFrame");
+vgui.Register("cwObjectives", PANEL, "DFrame")

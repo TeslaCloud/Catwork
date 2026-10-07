@@ -11,17 +11,16 @@ local FACTION = faction.New("#Faction_MPF")
 FACTION.isCombineFaction = true
 FACTION.whitelist = true
 FACTION.material = "halfliferp/factions/mpf"
-FACTION.models = {male = {}, female = {}}
+FACTION.models = { male = {}, female = {} }
 FACTION.maximumAttributePoints = 40
 
 for i = 1, 24 do
-	table.insert(FACTION.models.male, "models/half_life2/jnstudio/cp_c08_"..i..".mdl");
-end;
+	table.insert(FACTION.models.male, "models/half_life2/jnstudio/cp_c08_"..i..".mdl")
+end
 
 for i = 1, 7 do
-	table.insert(FACTION.models.female, "models/half_life2/jnstudio/cp_female_c08_"..i..".mdl");
-end;
-
+	table.insert(FACTION.models.female, "models/half_life2/jnstudio/cp_female_c08_"..i..".mdl")
+end
 
 -- Called when a player's name should be assigned for the faction.
 function FACTION:GetName(player, character)
@@ -29,7 +28,7 @@ function FACTION:GetName(player, character)
 end
 
 -- Called when a player is transferred to the faction.
-function FACTION:OnTransferred(player, faction, name)	
+function FACTION:OnTransferred(player, faction, name)
 	if (faction.name == FACTION_OTA) then
 		if (name) then
 			cw.player:SetName(player, string.gsub(player:QueryCharacter("name"), ".+(%d%d%d%d%d)", " CP.C24.RCT:%1"), true)
@@ -47,4 +46,4 @@ function FACTION:OnTransferred(player, faction, name)
 	end
 end
 
-FACTION_MPF = FACTION:Register();
+FACTION_MPF = FACTION:Register()

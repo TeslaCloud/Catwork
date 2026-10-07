@@ -11,7 +11,7 @@ ITEM.model = "models/props_junk/garbage_glassbottle003a.mdl"
 ITEM.weight = 0.4
 ITEM.access = "w"
 ITEM.business = true
-ITEM.attributes = {Strength = 1}
+ITEM.attributes = { Strength = 1 }
 ITEM.thirst = 15
 ITEM.fatigue = -10
 ITEM.description = "#Item_BeerBad_Description"

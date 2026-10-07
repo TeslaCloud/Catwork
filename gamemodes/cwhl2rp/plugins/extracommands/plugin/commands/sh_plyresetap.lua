@@ -9,7 +9,7 @@ COMMAND.tip = "#Command_Plyresetarmor_Description"
 COMMAND.text = "#Command_Plyresetarmor_Syntax"
 COMMAND.access = "a"
 COMMAND.arguments = 1
-COMMAND.alias = {"ResetAP", "ResetArmor", "PlyResetAP"}
+COMMAND.alias = { "ResetAP", "ResetArmor", "PlyResetAP" }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
@@ -24,4 +24,4 @@ function COMMAND:OnRun(player, arguments)
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

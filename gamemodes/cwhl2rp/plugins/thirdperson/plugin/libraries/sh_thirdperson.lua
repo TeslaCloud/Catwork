@@ -5,7 +5,6 @@ library.New("thirdperson", cw)
 
 -- Client
 if (CLIENT) then
-
 CreateClientConVar("chasecam_bob", 1, true, false)
 CreateClientConVar("chasecam_bobscale", 0.5, true, false)
 CreateClientConVar("chasecam_back", 75, true, false)
@@ -17,10 +16,12 @@ CreateClientConVar("chasecam_smoothscale", 0.2, true, false)
 function cw.thirdperson.CalcView(player, pos, angles, fov)
 	local smooth = GetConVarNumber("chasecam_smooth")
 	local smoothscale = GetConVarNumber("chasecam_smoothscale")
+
 	if player:GetNetworkedInt("thirdperson") == 1 then
 		angles = player:GetAimVector():Angle()
 
 		local targetpos = Vector(0, 0, 60)
+
 		if player:KeyDown(IN_DUCK) then
 			if player:GetVelocity():Length() > 0 then
 				targetpos.z = 50
@@ -31,9 +32,11 @@ function cw.thirdperson.CalcView(player, pos, angles, fov)
 
 		player:SetAngles(angles)
 		local targetfov = fov
+
 		if player:GetVelocity():DotProduct(player:GetForward()) > 10 then
 			if player:KeyDown(IN_SPEED) then
 				targetpos = targetpos + player:GetForward() * -10
+
 				if GetConVarNumber("chasecam_bob") != 0 and player:OnGround() then
 					angles.pitch = angles.pitch + GetConVarNumber("chasecam_bobscale") * math.sin(CurTime() * 10)
 					angles.roll = angles.roll + GetConVarNumber("chasecam_bobscale") * math.cos(CurTime() * 10)
@@ -46,6 +49,7 @@ function cw.thirdperson.CalcView(player, pos, angles, fov)
 
 		-- tween to the target position
 		pos = player:GetVar("thirdperson_pos") or targetpos
+
 		if smooth != 0 then
 			pos.x = math.Approach(pos.x, targetpos.x, math.abs(targetpos.x - pos.x) * smoothscale)
 			pos.y = math.Approach(pos.y, targetpos.y, math.abs(targetpos.y - pos.y) * smoothscale)
@@ -53,16 +57,19 @@ function cw.thirdperson.CalcView(player, pos, angles, fov)
 		else
 			pos = targetpos
 		end
+
 		player:SetVar("thirdperson_pos", pos)
 
 		-- offset it by the stored amounts, but trace so it stays outside walls
 		-- we don't tween this so the camera feels like its tightly following the mouse
 		local offset = Vector(5, 5, 5)
+
 		if player:GetVar("thirdperson_zoom") != 1 then
 			offset.x = GetConVarNumber("chasecam_back")
 			offset.y = GetConVarNumber("chasecam_right")
 			offset.z = GetConVarNumber("chasecam_up")
 		end
+
 		local t = {}
 		t.start = player:GetPos() + pos
 		t.endpos = t.start + angles:Forward() * -offset.x
@@ -72,6 +79,7 @@ function cw.thirdperson.CalcView(player, pos, angles, fov)
 
 			local tr = util.TraceLine(t)
 			pos = tr.HitPos
+
 			if tr.Fraction < 1.0 then
 				pos = pos + tr.HitNormal * 5
 			end
@@ -80,22 +88,26 @@ function cw.thirdperson.CalcView(player, pos, angles, fov)
 
 		-- tween the fov
 		fov = player:GetVar("thirdperson_fov") or targetfov
+
 		if smooth != 0 then
 			fov = math.Approach(fov, targetfov, math.abs(targetfov - fov) * smoothscale)
 		else
 			fov = targetfov
 		end
+
 		player:SetVar("thirdperson_fov", fov)
 
 		return GAMEMODE:CalcView(player, pos, angles, fov)
 	end
 end
+
 hook.Add("CalcView", "cw.thirdperson.CalcView", cw.thirdperson.CalcView)
 
 -- thanks to termy58's crosshair example
 -- ... and thanks to termy58 for finding my stupid bug :P
 function cw.thirdperson.HUDPaint()
 	local player = LocalPlayer()
+
 	if player:GetNetworkedInt("thirdperson") == 0 then
 		return
 	end
@@ -118,11 +130,13 @@ function cw.thirdperson.HUDPaint()
 	t.endpos = tr.HitPos + tr.HitNormal * 5
 	t.filter = player
 	local tr = util.TraceLine(t)
+
 	if tr.Fraction != 1.0 then
 		surface.SetDrawColor(255, 48, 0, 255)
 	else
 		surface.SetDrawColor(255, 208, 64, 255)
 	end
+
 	surface.DrawLine(pos.x - offset, pos.y, pos.x - offset2, pos.y)
 	surface.DrawLine(pos.x + offset, pos.y, pos.x + offset2, pos.y)
 	surface.DrawLine(pos.x, pos.y - offset, pos.x, pos.y - offset2)
@@ -130,6 +144,7 @@ function cw.thirdperson.HUDPaint()
 	surface.DrawLine(pos.x - 1, pos.y, pos.x + 1, pos.y)
 	surface.DrawLine(pos.x, pos.y - 1, pos.x, pos.y + 1)
 end
+
 hook.Add("HUDPaint", "cw.thirdperson.HUDPaint", cw.thirdperson.HUDPaint)
 
 function cw.thirdperson.HUDShouldDraw(name)
@@ -137,6 +152,7 @@ function cw.thirdperson.HUDShouldDraw(name)
 		return false
 	end
 end
+
 hook.Add("HUDShouldDraw", "cw.thirdperson.HUDShouldDraw", cw.thirdperson.HUDShouldDraw)
 
 function cw.thirdperson.Zoom(player, command, arguments)
@@ -146,13 +162,13 @@ function cw.thirdperson.Zoom(player, command, arguments)
 		player:SetVar("thirdperson_zoom", 1)
 	end
 end
+
 concommand.Add("chasecam_zoom", cw.thirdperson.Zoom)
 
 -- Server
 else
-
 function cw.thirdperson.Command(player, command, arguments)
-	if not arguments[1] then
+	if !arguments[1] then
 		if player:GetNetworkedInt("thirdperson") == 1 then
 			cw.thirdperson.Disable(player)
 		else
@@ -164,12 +180,14 @@ function cw.thirdperson.Command(player, command, arguments)
 		cw.thirdperson.Disable(player)
 	end
 end
+
 concommand.Add("chasecam", cw.thirdperson.Command)
 
 function cw.thirdperson.Disable(player)
 	if player:GetNetworkedInt("thirdperson") == 0 then
 		return
 	end
+
 	local entity = player:GetViewEntity()
 	player:SetNetworkedInt("thirdperson", 0)
 	player:SetViewEntity(player)
@@ -180,9 +198,10 @@ function cw.thirdperson.Enable(player)
 	if player:GetNetworkedInt("thirdperson") == 1 then
 		return
 	end
+
 	local entity = ents.Create("prop_dynamic")
 	entity:SetModel("models/error.mdl")
-	entity:SetColor(Color(0,0,0,0))
+	entity:SetColor(Color(0, 0, 0, 0))
 	entity:DrawShadow(false)
 	entity:Spawn()
 	entity:SetAngles(player:GetAngles())
@@ -194,7 +213,6 @@ function cw.thirdperson.Enable(player)
 	player:SetViewEntity(entity)
 	player:SetNetworkedInt("thirdperson", 1)
 end
-
 end
 
 -- Shared
@@ -203,4 +221,5 @@ function cw.thirdperson.UpdateAnimation(player)
 		player:SetPlaybackRate(1.5)
 	end
 end
+
 hook.Add("UpdateAnimation", "cw.thirdperson.UpdateAnimation", cw.thirdperson.UpdateAnimation)

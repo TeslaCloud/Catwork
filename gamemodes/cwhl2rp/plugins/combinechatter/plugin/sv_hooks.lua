@@ -22,7 +22,7 @@ local randomSounds = {
 		"npc/overwatch/radiovoice/reminder100credits.wav",
 		"npc/overwatch/radiovoice/remindermemoryreplacement.wav",
 		"npc/overwatch/radiovoice/rewardnotice.wav",
-		"npc/overwatch/radiovoice/upi.wav", --derp
+		"npc/overwatch/radiovoice/upi.wav", -- derp
 		"npc/overwatch/radiovoice/youarejudgedguilty.wav"
 }
 

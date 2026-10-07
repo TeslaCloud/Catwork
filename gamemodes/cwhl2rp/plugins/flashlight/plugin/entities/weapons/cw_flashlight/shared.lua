@@ -33,7 +33,7 @@ end
 SWEP.Instructions = "Primary Fire: Toggle."
 SWEP.Contact = ""
 SWEP.Purpose = "Illuminating dark areas."
-SWEP.Author	= "kurozael"
+SWEP.Author = "kurozael"
 
 SWEP.WorldModel = "models/weapons/w_fists_t.mdl"
 SWEP.ViewModel = "models/weapons/v_punch.mdl"
@@ -50,7 +50,7 @@ SWEP.Primary.Ammo = ""
 SWEP.Secondary.DefaultClip = 0
 SWEP.Secondary.Automatic = false
 SWEP.Secondary.ClipSize = -1
-SWEP.Secondary.Ammo	= ""
+SWEP.Secondary.Ammo = ""
 
 SWEP.NoIronSightFovChange = true
 SWEP.NoIronSightAttack = true

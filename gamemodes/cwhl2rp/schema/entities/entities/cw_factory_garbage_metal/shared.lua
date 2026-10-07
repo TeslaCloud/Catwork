@@ -7,10 +7,10 @@ ENT.Author = "AleXXX_007"
 
 ENT.Contact			= ""
 ENT.Purpose 		= ""
-ENT.Instructions 	= ""
+ENT.Instructions = ""
 
-ENT.Spawnable			= true
-ENT.AdminSpawnable		= true
+ENT.Spawnable = true
+ENT.AdminSpawnable = true
 ENT.IsFactory = true
 
 ENT.RenderGroup = RENDERGROUP_TRANSLUCENT
@@ -30,7 +30,7 @@ ENT.GARBAGE_ITEMS = {
 	"weapon_hl2pipe",
 	"weapon_hl2pickaxe",
 	"weapon_hl2pan",
-	"weapon_hl2hook",
+	"weapon_hl2hook"
 }
 
 function ENT:SetupDataTables()
@@ -40,7 +40,7 @@ function ENT:SetupDataTables()
 	self:NetworkVar("Float", "0", "StartWorkTime")
 	self:NetworkVar("Float", "1", "NextWorkTime")
 	self:NetworkVar("Int", "0", "EjectStorage")
-	self:NetworkVar("Float", "3","StopWorkTime")
+	self:NetworkVar("Float", "3", "StopWorkTime")
 end
 
 function ENT:Think()
@@ -48,8 +48,8 @@ function ENT:Think()
 		if !self:GetIsWorking() then
 			if self:GetStopWorkTime() <= 0 then
 				local pos = self:GetSearchPos()
-				for k, v in pairs(ents.FindInBox(pos[1], pos[2])) do
 
+				for k, v in pairs(ents.FindInBox(pos[1], pos[2])) do
 					if self:GetGarbageCount() < self.METAL_GARBAGE_COUNT_START then
 						if v:GetClass() != "cw_item" then continue end
 						if !self:CanGarbageUsed(v:GetItemTable()) then continue end
@@ -69,12 +69,15 @@ function ENT:Think()
 			self.NextRandomSound = CurTime() + 0.65
 			self.NextWorkSound = nil
 		end
+
 		if self.NextRandomSound and CurTime() > self.NextRandomSound then
-			if math.Rand(0,1) > 0.8 then
+			if math.Rand(0, 1) > 0.8 then
 				self:EmitSound("plats/hall_elev_stop.wav")
 			end
+
 			self.NextRandomSound = CurTime() + 0.65
 		end
+
 		if self:GetIsWorking() then
 			if !self.NextGarbageDecrease then
 				self.NextGarbageDecrease = CurTime() + ((self:GetNextWorkTime() - self:GetStartWorkTime()) - 5) / self.METAL_GARBAGE_COUNT_START
@@ -83,6 +86,7 @@ function ENT:Think()
 				table.remove(self.Garbages)
 				self.NextGarbageDecrease = nil
 			end
+
 			if CurTime() > self:GetNextWorkTime() then
 				self:EndWork()
 			end
@@ -90,6 +94,7 @@ function ENT:Think()
 			if self.WorkSound and self.WorkSound:IsPlaying() then
 				self.WorkSound:Stop()
 			end
+
 			if self:GetStopWorkTime() > 0 then
 				local i = self.WORK_TIME - self:GetStopWorkTime()
 				self:SetStartWorkTime(CurTime() - i)
@@ -110,10 +115,10 @@ hook.Add("PostDrawOpaqueRenderables", "Factories", function()
 				   self:GetClass() != "cw_factory_garbage_paper" or
 				   self:GetClass() != "cw_factory_garbage_plastic") then continue end
 
-				render.DrawLine(self:GetProductPos() - self:GetForward() * 12, self:GetProductPos() + self:GetForward() * 12, Color(255,255,255), true)
-				render.DrawLine(self:GetProductPos() - self:GetRight() * 12, self:GetProductPos() + self:GetRight() * 12, Color(255,255,255), true)
-				render.DrawLine(self:GetProductPos() - self:GetUp() * 12, self:GetProductPos() + self:GetUp() * 12, Color(255,255,255), true)
-				render.DrawLine(self:GetProductPos(), self:GetPos(), Color(255,255,255), true)
+				render.DrawLine(self:GetProductPos() - self:GetForward() * 12, self:GetProductPos() + self:GetForward() * 12, Color(255, 255, 255), true)
+				render.DrawLine(self:GetProductPos() - self:GetRight() * 12, self:GetProductPos() + self:GetRight() * 12, Color(255, 255, 255), true)
+				render.DrawLine(self:GetProductPos() - self:GetUp() * 12, self:GetProductPos() + self:GetUp() * 12, Color(255, 255, 255), true)
+				render.DrawLine(self:GetProductPos(), self:GetPos(), Color(255, 255, 255), true)
 			end
 		end
 	end

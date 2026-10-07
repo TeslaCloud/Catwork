@@ -23,7 +23,7 @@ function cwCraft:PlayerCanCraft(player, bpTable)
 	if (!self:PlayerHasAttributes(player, bpTable)) then
 		return false, "#Craft_Error_NoAttributes"
 	end
-	
+
 	if (!self:PlayerMeetsRequirements(player, bpTable)) then
 		return false, "#Craft_Error_NoRequirements"
 	end
@@ -32,7 +32,7 @@ function cwCraft:PlayerCanCraft(player, bpTable)
 		return false, "#Craft_Error_Cooldown"
 	end
 
-	return true 
+	return true
 end
 
 function cwCraft:PlayerHasMaterials(player, bpTable)

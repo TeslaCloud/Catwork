@@ -12,7 +12,7 @@ COMMAND.text = "#Command_Mapchange_Syntax"
 COMMAND.access = "a"
 COMMAND.arguments = 1
 COMMAND.optionalArguments = 1
-COMMAND.alias = {"Changelevel"}
+COMMAND.alias = { "Changelevel" }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
@@ -35,4 +35,4 @@ function COMMAND:OnRun(player, arguments)
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

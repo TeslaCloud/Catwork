@@ -11,7 +11,7 @@ COMMAND.tip = "#Command_Plygoto_Description"
 COMMAND.text = "#Command_Plygoto_Syntax"
 COMMAND.access = "o"
 COMMAND.arguments = 1
-COMMAND.alias = {"GoTo"}
+COMMAND.alias = { "GoTo" }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)

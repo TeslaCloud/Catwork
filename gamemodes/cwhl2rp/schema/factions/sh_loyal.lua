@@ -52,4 +52,4 @@ function FACTION:OnTransferred(player, faction, name)
 	end
 end
 
-FACTION_LOYAL = FACTION:Register();
+FACTION_LOYAL = FACTION:Register()

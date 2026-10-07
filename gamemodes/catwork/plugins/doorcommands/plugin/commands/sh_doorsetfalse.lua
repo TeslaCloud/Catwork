@@ -22,7 +22,7 @@ function COMMAND:OnRun(player, arguments)
 			local data = {
 				position = door:GetPos(),
 				entity = door
-			};		
+			}
 
 			cw.entity:SetDoorFalse(door, true)
 
@@ -49,4 +49,4 @@ function COMMAND:OnRun(player, arguments)
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

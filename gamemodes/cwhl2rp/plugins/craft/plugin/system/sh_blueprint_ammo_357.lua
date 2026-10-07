@@ -7,17 +7,17 @@ BLUEPRINT.category = "#Craft_Category_Ammo"
 BLUEPRINT.description = "#Blueprint_BlueprintAmmo357_Description"
 BLUEPRINT.craftplace = "cw_craft_bullet"
 BLUEPRINT.reqatt = {
-	{"rem", 40}
+	{ "rem", 40 }
 }
 BLUEPRINT.updatt = {
-	{"rem", 20}
+	{ "rem", 20 }
 }
 BLUEPRINT.recipe = {
-	{"bullet_casings", 1},
-	{"gunpowder", 2},
-	{"refined_metal", 1}
+	{ "bullet_casings", 1 },
+	{ "gunpowder", 2 },
+	{ "refined_metal", 1 }
 }
 BLUEPRINT.finish = {
-	{"ammo_357", 1}
+	{ "ammo_357", 1 }
 }
-BLUEPRINT:Register();
+BLUEPRINT:Register()

@@ -1,4 +1,4 @@
-﻿PLUGIN:SetGlobalAlias("cwFactories")
+PLUGIN:SetGlobalAlias("cwFactories")
 
 if SERVER then
 	function cwFactories:EntityHandleMenuOption(player, entity, option, arguments)
@@ -31,9 +31,10 @@ if SERVER then
 				productpos = v:GetProductPos(),
 				garbagecount = v:GetGarbageCount(),
 				ejectstorage = v:GetEjectStorage(),
-				garbage = v.Garbages,
+				garbage = v.Garbages
 			}
 		end
+
 		for k, v in pairs(ents.FindByClass("cw_factory_garbage_plastic")) do
 			garbageRecyclerPlastic[#garbageRecyclerPlastic + 1] = {
 				angles = v:GetAngles(),
@@ -41,9 +42,10 @@ if SERVER then
 				productpos = v:GetProductPos(),
 				garbagecount = v:GetGarbageCount(),
 				ejectstorage = v:GetEjectStorage(),
-				garbage = v.Garbages,
+				garbage = v.Garbages
 			}
 		end
+
 		for k, v in pairs(ents.FindByClass("cw_factory_garbage_paper")) do
 			garbageRecyclerPaper[#garbageRecyclerPaper + 1] = {
 				angles = v:GetAngles(),
@@ -51,14 +53,15 @@ if SERVER then
 				productpos = v:GetProductPos(),
 				garbagecount = v:GetGarbageCount(),
 				ejectstorage = v:GetEjectStorage(),
-				garbage = v.Garbages,
+				garbage = v.Garbages
 			}
 		end
 
-		cw.core:SaveSchemaData("plugins/factories/metal/" .. game.GetMap(), garbageRecyclerMetal)
-		cw.core:SaveSchemaData("plugins/factories/plastic/" .. game.GetMap(), garbageRecyclerPlastic)
-		cw.core:SaveSchemaData("plugins/factories/paper/" .. game.GetMap(), garbageRecyclerPaper)
+		cw.core:SaveSchemaData("plugins/factories/metal/"..game.GetMap(), garbageRecyclerMetal)
+		cw.core:SaveSchemaData("plugins/factories/plastic/"..game.GetMap(), garbageRecyclerPlastic)
+		cw.core:SaveSchemaData("plugins/factories/paper/"..game.GetMap(), garbageRecyclerPaper)
 	end
+
 	function cwFactories:LoadFactories()
 		local garbageRecyclerMetal = cw.core:RestoreSchemaData("plugins/factories/metal/"..game.GetMap())
 		local garbageRecyclerPaper = cw.core:RestoreSchemaData("plugins/factories/paper/"..game.GetMap())
@@ -76,11 +79,13 @@ if SERVER then
 				device:SetGarbageCount(v.garbagecount)
 				device:SetEjectStorage(v.ejectstorage)
 				device.Garbages = {}
+
 				for z, x in pairs(v.garbage) do
 					device.Garbages[z] = x
 				end
 			end
 		end
+
 		for k, v in pairs(garbageRecyclerPaper) do
 			local device = ents.Create("cw_factory_garbage_paper")
 
@@ -93,11 +98,13 @@ if SERVER then
 				device:SetGarbageCount(v.garbagecount)
 				device:SetEjectStorage(v.ejectstorage)
 				device.Garbages = {}
+
 				for z, x in pairs(v.garbage) do
 					device.Garbages[z] = x
 				end
 			end
 		end
+
 		for k, v in pairs(garbageRecyclerPlastic) do
 			local device = ents.Create("cw_factory_garbage_plastic")
 
@@ -110,6 +117,7 @@ if SERVER then
 				device:SetGarbageCount(v.garbagecount)
 				device:SetEjectStorage(v.ejectstorage)
 				device.Garbages = {}
+
 				for z, x in pairs(v.garbage) do
 					device.Garbages[z] = x
 				end
@@ -120,6 +128,7 @@ if SERVER then
 	function cwFactories:ClockworkInitPostEntity()
 		self:LoadFactories()
 	end
+
 	function cwFactories:PostSaveData()
 		self:SaveFactories()
 	end

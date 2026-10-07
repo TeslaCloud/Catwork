@@ -9,7 +9,7 @@
 local COMMAND = cw.command:New("DropWeapon")
 COMMAND.tip = "#Command_Dropweapon_Description"
 COMMAND.flags = bit.bor(CMD_DEFAULT, CMD_FALLENOVER)
-COMMAND.alias = {"Drop"}
+COMMAND.alias = { "Drop" }
 COMMAND.cooldown = 5
 
 -- Called when the command has been run.
@@ -47,4 +47,4 @@ function COMMAND:OnRun(player, arguments)
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

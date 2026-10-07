@@ -33,7 +33,7 @@ if (SERVER) then
 					end
 				end
 			else
-				attributes[attribute] = {amount = 0, progress = 0}
+				attributes[attribute] = { amount = 0, progress = 0 }
 			end
 
 			local progress = attributes[attribute].progress + amount
@@ -84,7 +84,7 @@ if (SERVER) then
 			attribute = attributeTable.uniqueID
 
 			if (!attributes[attribute]) then
-				attributes[attribute] = {amount = 0, progress = 0}
+				attributes[attribute] = { amount = 0, progress = 0 }
 			elseif (attributes[attribute].amount == attributeTable.maximum) then
 				if (amount and amount > 0) then
 					return false, L("Attribute_MaximumReached")
@@ -176,7 +176,7 @@ if (SERVER) then
 						duration = duration,
 						endTime = CurTime() + duration,
 						default = amount,
-						amount = amount,
+						amount = amount
 					}
 				else
 					player.cwAttrBoosts[attribute][identifier] = {
@@ -447,7 +447,7 @@ else
 			if (cw.attributes.stored[attribute]) then
 				cw.attributes.stored[attribute].progress = amount
 			else
-				cw.attributes.stored[attribute] = {amount = 0, progress = amount}
+				cw.attributes.stored[attribute] = { amount = 0, progress = amount }
 			end
 		end
 	end)
@@ -463,7 +463,7 @@ else
 			if (cw.attributes.stored[attribute]) then
 				cw.attributes.stored[attribute].amount = amount
 			else
-				cw.attributes.stored[attribute] = {amount = amount, progress = 0}
+				cw.attributes.stored[attribute] = { amount = amount, progress = 0 }
 			end
 		end
 	end)

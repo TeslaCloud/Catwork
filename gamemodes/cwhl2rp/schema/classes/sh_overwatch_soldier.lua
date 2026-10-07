@@ -9,9 +9,9 @@
 local CLASS = cw.class:New("#Class_OverwatchSoldier")
 	CLASS.color = Color(150, 50, 50, 255)
 	CLASS.wages = 20
-	CLASS.factions = {FACTION_OTA}
+	CLASS.factions = { FACTION_OTA }
 	CLASS.isDefault = true
 	CLASS.wagesName = "#Class_OverwatchSoldier_Wages"
 	CLASS.description = "#Class_OverwatchSoldier_Desc"
 	CLASS.defaultPhysDesc = "Wearing dirty Overwatch gear"
-CLASS_OWS = CLASS:Register();
+CLASS_OWS = CLASS:Register()

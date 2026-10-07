@@ -18,4 +18,4 @@ function ENT:HUDPaintTargetID(x, y, alpha)
 end
 
 -- Called when the entity should draw.
-function ENT:Draw() self:DrawModel(); end
+function ENT:Draw() self:DrawModel() end

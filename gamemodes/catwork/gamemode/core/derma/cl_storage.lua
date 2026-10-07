@@ -16,7 +16,7 @@ function PANEL:Init()
 	-- Called when the button is clicked.
 	function self.btnClose.DoClick(button)
 		CloseDermaMenus()
-			self:Close(); self:Remove()
+			self:Close() self:Remove()
 			gui.EnableScreenClicker(false)
 		cw.core:RunCommand("StorageClose")
 	end
@@ -25,7 +25,7 @@ function PANEL:Init()
  	self.containerPanel:SetPadding(2)
  	self.containerPanel:SetSpacing(3)
  	self.containerPanel:SizeToContents()
- 	self.containerPanel:EnableVerticalScrollbar();	
+ 	self.containerPanel:EnableVerticalScrollbar()
 
 	if (!cw.storage:GetIsOneSided()) then
 		self.inventoryPanel = vgui.Create("cwPanelList", self)
@@ -79,7 +79,7 @@ function PANEL:RebuildPanel(storagePanel, storageType, usedWeight, weight, usedS
 	modelIcon:SetLookAt(position - Vector(0, 0, 15))
 	modelIcon:GetEntity():SetSequence(sequence)
 
-	function modelIcon:LayoutEntity(entity) return self:RunAnimation(); end
+	function modelIcon:LayoutEntity(entity) return self:RunAnimation() end
 
 	storagePanel:AddItem(modelIcon)
 
@@ -266,6 +266,7 @@ end
 -- Called when the layout should be performed.
 function PANEL:PerformLayout(w, h)
 	DFrame.PerformLayout(self)
+
 	if (!cw.storage:GetIsOneSided()) then
 		self.inventoryPanel:StretchToParent(nil, 28, nil, 4)
 		self.inventoryPanel:AlignRight(0)
@@ -307,7 +308,7 @@ function PANEL:Init()
 		self.spawnIcon:SetModel(model, skin)
 		self.spawnIcon:SetTooltip("")
 		self.spawnIcon:SetSize(48, 48)
-	self.cachedInfo = {model = model, skin = skin}
+	self.cachedInfo = { model = model, skin = skin }
 end
 
 -- Called each frame.
@@ -541,4 +542,4 @@ netstream.Hook("StorageGive", function(data)
 			cw.storage:GetPanel():Rebuild()
 		end
 	end
-end);
+end)

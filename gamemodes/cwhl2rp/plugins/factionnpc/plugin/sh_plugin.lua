@@ -34,25 +34,30 @@ function factionnpc:IsNPCCombine(npc)
 		if npc:HasSpawnFlags(SF_FLOOR_TURRET_CITIZEN) and npc:GetClass() == "npc_turret_floor" then
 			return false
 		end
+
 		for k, v in pairs(self.stored) do
 			if k == npc:GetClass() then
 				return v
 			end
 		end
 	end
+
 	return false
 end
+
 function factionnpc:IsNPCRebel(npc)
 	if IsValid(npc) then
 		if npc:HasSpawnFlags(SF_FLOOR_TURRET_CITIZEN) and npc:GetClass() == "npc_turret_floor" then
 			return true
 		end
+
 		for k, v in pairs(self.stored) do
 			if k == npc:GetClass() then
 				return (v == false)
 			end
 		end
 	end
+
 	return false
 end
 
@@ -62,12 +67,14 @@ function factionnpc:UpdateNPCRelations(ply)
 			if ply:IsPlayer() then
 				for k, v in pairs(ents.GetAll()) do
 					if !v:IsNPC() then continue end
+
 					if self:IsNPCCombine(v) then
 						if Schema:PlayerIsCombine(ply) then
 							v:AddEntityRelationship(ply, 3)
 						else
 							v:AddEntityRelationship(ply, 1)
 						end
+
 						if ply:GetFaction() == FACTION_NECRO or ply:GetFaction() == FACTION_ANTLI then
 							v:AddEntityRelationship(ply, 1)
 						end
@@ -77,6 +84,7 @@ function factionnpc:UpdateNPCRelations(ply)
 						else
 							v:AddEntityRelationship(ply, 3)
 						end
+
 						if ply:GetFaction() == FACTION_NECRO or ply:GetFaction() == FACTION_ANTLI then
 							v:AddEntityRelationship(ply, 1)
 						end
@@ -86,6 +94,7 @@ function factionnpc:UpdateNPCRelations(ply)
 		end
 	end
 end
+
 function factionnpc:UpdateNPCRelation(npc)
 	if !IsValid(npc) then return end
 	if !npc:IsNPC() then return end
@@ -97,6 +106,7 @@ function factionnpc:UpdateNPCRelation(npc)
 			else
 				npc:AddEntityRelationship(ply, 1)
 			end
+
 			if ply:GetFaction() == FACTION_NECRO or ply:GetFaction() == FACTION_ANTLI then
 				npc:AddEntityRelationship(ply, 1)
 			end
@@ -108,6 +118,7 @@ function factionnpc:UpdateNPCRelation(npc)
 			else
 				npc:AddEntityRelationship(ply, 3)
 			end
+
 			if ply:GetFaction() == FACTION_NECRO or ply:GetFaction() == FACTION_ANTLI then
 				npc:AddEntityRelationship(ply, 1)
 			end

@@ -11,7 +11,7 @@ COMMAND.tip = "#Command_Chargiveflags_Description"
 COMMAND.text = "#Command_Chargiveflags_Syntax"
 COMMAND.access = "s"
 COMMAND.arguments = 2
-COMMAND.alias = {"GiveFlags"}
+COMMAND.alias = { "GiveFlags" }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
@@ -33,4 +33,4 @@ function COMMAND:OnRun(player, arguments)
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

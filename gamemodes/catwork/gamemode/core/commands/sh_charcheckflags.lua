@@ -11,7 +11,7 @@ COMMAND.tip = "#Command_Charcheckflags_Description"
 COMMAND.text = "#Command_Charcheckflags_Syntax"
 COMMAND.access = "s"
 COMMAND.arguments = 1
-COMMAND.alias = {"CheckFlags"}
+COMMAND.alias = { "CheckFlags" }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
@@ -24,4 +24,4 @@ function COMMAND:OnRun(player, arguments)
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

@@ -19,7 +19,7 @@ function PANEL:Init()
 	-- Called when the button is clicked.
 	function self.btnClose.DoClick(button)
 		CloseDermaMenus()
-		self:Close(); self:Remove()
+		self:Close() self:Remove()
 
 		netstream.Start("SalesmanAdd", {
 			showChatBubble = cw.salesman.showChatBubble,
@@ -246,7 +246,7 @@ function PANEL:RebuildPanel(panelList, typeName, inventory)
 
 			if (category) then
 				items[category] = items[category] or {}
-				items[category][#items[category] + 1] = {k, v}
+				items[category][#items[category] + 1] = { k, v }
 			end
 		end
 	end
@@ -494,4 +494,4 @@ function PANEL:Think()
 	self.spawnIcon:SetColor(self.itemTable.color)
 end
 
-vgui.Register("cwSalesmanItem", PANEL, "DPanel");
+vgui.Register("cwSalesmanItem", PANEL, "DPanel")

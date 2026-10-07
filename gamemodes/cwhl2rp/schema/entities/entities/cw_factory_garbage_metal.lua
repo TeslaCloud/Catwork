@@ -1,5 +1,5 @@
---models/props/de_train/processor_nobase.mdl
---models/props/de_train/biohazardtank.mdl
+-- models/props/de_train/processor_nobase.mdl
+-- models/props/de_train/biohazardtank.mdl
 if SERVER then AddCSLuaFile() end
 
 if CLIENT then
@@ -8,30 +8,31 @@ if CLIENT then
 		size = 13,
 		weight = 1000,
 		antialias = false,
-		underline = false,
+		underline = false
 	})
 	surface.CreateFont("_GR_CMB_FONT_2", {
 		font = "Default",
 		size = 11,
 		weight = 1000,
 		antialias = false,
-		underline = false,
+		underline = false
 	})
 	surface.CreateFont("_GR_CMB_FONT_3", {
 		font = "Verdana",
 		size = 10,
 		weight = 800,
 		antialias = false,
-		underline = false,
+		underline = false
 	})
 	surface.CreateFont("_GR_CMB_FONT_4", {
 		font = "System",
 		size = 40,
 		weight = 1000,
 		antialias = false,
-		underline = false,
+		underline = false
 	})
 end
+
 ENT.Base = "base_gmodentity"
 
 ENT.PrintName = "Garbage Recycler - Metal"
@@ -77,12 +78,11 @@ function ENT:Initialize()
 		self.StopWorkTime = nil
 	else
 		self.RT = GetRenderTargetEx("_cmb_FIndicatorRT"..self:EntIndex()..CurTime(), 128, 85, RT_SIZE_DEFAULT, MATERIAL_RT_DEPTH_SHARED, 0x0001, CREATERENDERTARGETFLAGS_UNFILTERABLE_OK, IMAGE_FORMAT_DEFAULT)
-		self.RTMat = CreateMaterial("_cmb_FIndicatorRTMAT" .. self:EntIndex() .. CurTime(), "UnlitTwoTexture", {
+		self.RTMat = CreateMaterial("_cmb_FIndicatorRTMAT"..self:EntIndex()..CurTime(), "UnlitTwoTexture", {
 			["$selfilium"] = "1",
 			["$texture2"] = "dev/dev_scanline",
 			["Proxies"] =
 			{
-
 				["TextureScroll"] =
 				{
 					["texturescrollvar"] = "$texture2transform",
@@ -101,7 +101,7 @@ function ENT:SetupDataTables()
 	self:NetworkVar("Float", "0", "StartWorkTime")
 	self:NetworkVar("Float", "1", "NextWorkTime")
 	self:NetworkVar("Int", "0", "EjectStorage")
-	self:NetworkVar("Float", "3","StopWorkTime")
+	self:NetworkVar("Float", "3", "StopWorkTime")
 end
 
 if SERVER then
@@ -112,6 +112,7 @@ if SERVER then
 		ent:Activate()
 		return ent
 	end
+
 	function ENT:CanGarbageUsed(item)
 		if GARBAGE_ITEMS[item("uniqueID")] then
 			return true
@@ -132,6 +133,7 @@ if SERVER then
 			if self:GetGarbageCount() != METAL_GARBAGE_COUNT_START then
 				return
 			end
+
 			self:SetStartWorkTime(CurTime())
 			self:SetNextWorkTime(CurTime() + WORK_TIME)
 		else
@@ -139,10 +141,10 @@ if SERVER then
 			self:SetStartWorkTime(CurTime() - i)
 			self:SetNextWorkTime((CurTime() + WORK_TIME) - i)
 		end
+
 		self:SetIsWorking(true)
 		self:EmitSound("plats/elevator_large_start1.wav")
 		self.NextWorkSound = CurTime() + 1.4
-
 	end
 
 	function ENT:Eject()
@@ -151,12 +153,14 @@ if SERVER then
 
 		local id = self:GetEjectStorage()
 		local ent = nil
+
 		for k, v in pairs(ents.GetAll()) do
 			if v:GetCreationID() == id then
 				ent = v
 				break
 			end
 		end
+
 		if !IsValid(ent) then return end
 
 		if !ent.cwInventory then
@@ -172,8 +176,10 @@ if SERVER then
 			local space = itemTable.storageSpace or itemTable.space
 
 			local model = string.lower(ent:GetModel())
+
 			if cwStorage.containerList[model] then
 				local containerWeight = cwStorage.containerList[model][1]
+
 				if (cw.inventory:CalculateWeight(ent.cwInventory) + math.max(weight, 0) > containerWeight) then
 					cw.entity:CreateItem(nil, v, ent:GetPos() + ent:GetUp() * 20)
 					continue
@@ -223,6 +229,7 @@ function ENT:Think()
 		if !self:GetIsWorking() then
 			if self:GetStopWorkTime() <= 0 then
 				local pos = self:GetSearchPos()
+
 				for k, v in pairs(ents.FindInBox(pos[1], pos[2])) do
 					if self:GetGarbageCount() != METAL_GARBAGE_COUNT_START then
 						if v:GetClass() != "cw_item" then continue end
@@ -242,12 +249,15 @@ function ENT:Think()
 			self.NextRandomSound = CurTime() + 0.65
 			self.NextWorkSound = nil
 		end
+
 		if self.NextRandomSound and CurTime() > self.NextRandomSound then
-			if math.Rand(0,1) > 0.8 then
+			if math.Rand(0, 1) > 0.8 then
 				self:EmitSound("plats/hall_elev_stop.wav")
 			end
+
 			self.NextRandomSound = CurTime() + 0.65
 		end
+
 		if self:GetIsWorking() then
 			if !self.NextGarbageDecrease then
 				self.NextGarbageDecrease = CurTime() + ((self:GetNextWorkTime() - self:GetStartWorkTime()) - 5) / METAL_GARBAGE_COUNT_START
@@ -256,6 +266,7 @@ function ENT:Think()
 				table.remove(self.Garbages)
 				self.NextGarbageDecrease = nil
 			end
+
 			if CurTime() > self:GetNextWorkTime() then
 				self:EndWork()
 			end
@@ -263,6 +274,7 @@ function ENT:Think()
 			if self.WorkSound and self.WorkSound:IsPlaying() then
 				self.WorkSound:Stop()
 			end
+
 			if self:GetStopWorkTime() > 0 then
 				local i = WORK_TIME - self:GetStopWorkTime()
 				self:SetStartWorkTime(CurTime() - i)
@@ -281,10 +293,10 @@ if CLIENT then
 
 		if IsValid(LocalPlayer():GetActiveWeapon()) then
 			if LocalPlayer():GetActiveWeapon():GetClass() == "gmod_tool" then
-				render.DrawLine(self:GetProductPos() - self:GetForward() * 12, self:GetProductPos() + self:GetForward() * 12, Color(255,255,255), true)
-				render.DrawLine(self:GetProductPos() - self:GetRight() * 12, self:GetProductPos() + self:GetRight() * 12, Color(255,255,255), true)
-				render.DrawLine(self:GetProductPos() - self:GetUp() * 12, self:GetProductPos() + self:GetUp() * 12, Color(255,255,255), true)
-				render.DrawLine(self:GetProductPos(), self:GetPos(), Color(255,255,255), true)
+				render.DrawLine(self:GetProductPos() - self:GetForward() * 12, self:GetProductPos() + self:GetForward() * 12, Color(255, 255, 255), true)
+				render.DrawLine(self:GetProductPos() - self:GetRight() * 12, self:GetProductPos() + self:GetRight() * 12, Color(255, 255, 255), true)
+				render.DrawLine(self:GetProductPos() - self:GetUp() * 12, self:GetProductPos() + self:GetUp() * 12, Color(255, 255, 255), true)
+				render.DrawLine(self:GetProductPos(), self:GetPos(), Color(255, 255, 255), true)
 			end
 		end
 
@@ -326,6 +338,7 @@ if CLIENT then
 				local _cur = CurTime() - self:GetStartWorkTime()
 				local _end = self:GetNextWorkTime() - self:GetStartWorkTime()
 				local var2 = math.Clamp((_cur / _end), 0, 1)
+
 				if !self:GetIsWorking() then
 					if self:GetStopWorkTime() > 0 then
 						local i = WORK_TIME - self:GetStopWorkTime()
@@ -343,7 +356,7 @@ if CLIENT then
 				local bar = math.Clamp((var * 114) - 2, 0, 114)
 				surface.DrawRect(128 / 2 - 114 / 2 + 1, 100 / 2 - 16 / 2 + 1, bar, 16 - 2)
 
-				local text = self:GetGarbageCount() .. "/" .. METAL_GARBAGE_COUNT_START
+				local text = self:GetGarbageCount().."/"..METAL_GARBAGE_COUNT_START
 				surface.SetTextColor(255, 255, 255, 150)
 				surface.SetFont("_GR_CMB_FONT_1")
 				local w, h = surface.GetTextSize(text)
@@ -356,7 +369,7 @@ if CLIENT then
 				local bar = math.Clamp((var2 * 114) - 2, 0, 114)
 				surface.DrawRect(128 / 2 - 114 / 2 + 1, 100 / 2 - 16 / 2 + 1 + 20, bar, 16 - 2)
 
-				local text = math.Round((var2 * 100))  .. "%"
+				local text = math.Round((var2 * 100)).."%"
 				surface.SetTextColor(255, 255, 255, 150)
 				surface.SetFont("_GR_CMB_FONT_1")
 				local w, h = surface.GetTextSize(text)
@@ -389,10 +402,10 @@ hook.Add("PostDrawOpaqueRenderables", "Factories", function()
 				   self:GetClass() != "cw_factory_garbage_paper" or
 				   self:GetClass() != "cw_factory_garbage_plastic") then continue end
 
-				render.DrawLine(self:GetProductPos() - self:GetForward() * 12, self:GetProductPos() + self:GetForward() * 12, Color(255,255,255), true)
-				render.DrawLine(self:GetProductPos() - self:GetRight() * 12, self:GetProductPos() + self:GetRight() * 12, Color(255,255,255), true)
-				render.DrawLine(self:GetProductPos() - self:GetUp() * 12, self:GetProductPos() + self:GetUp() * 12, Color(255,255,255), true)
-				render.DrawLine(self:GetProductPos(), self:GetPos(), Color(255,255,255), true)
+				render.DrawLine(self:GetProductPos() - self:GetForward() * 12, self:GetProductPos() + self:GetForward() * 12, Color(255, 255, 255), true)
+				render.DrawLine(self:GetProductPos() - self:GetRight() * 12, self:GetProductPos() + self:GetRight() * 12, Color(255, 255, 255), true)
+				render.DrawLine(self:GetProductPos() - self:GetUp() * 12, self:GetProductPos() + self:GetUp() * 12, Color(255, 255, 255), true)
+				render.DrawLine(self:GetProductPos(), self:GetPos(), Color(255, 255, 255), true)
 			end
 		end
 	end

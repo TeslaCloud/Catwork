@@ -33,7 +33,7 @@ end
 SWEP.Instructions = "Primary Fire: Toggle."
 SWEP.Contact = ""
 SWEP.Purpose = "For looking like a proper businessman."
-SWEP.Author	= "kurozael"
+SWEP.Author = "kurozael"
 
 SWEP.ViewModel = "models/weapons/c_arms.mdl"
 SWEP.WorldModel = ""
@@ -50,7 +50,7 @@ SWEP.Primary.Ammo = ""
 SWEP.Secondary.DefaultClip = 0
 SWEP.Secondary.Automatic = false
 SWEP.Secondary.ClipSize = -1
-SWEP.Secondary.Ammo	= ""
+SWEP.Secondary.Ammo = ""
 
 SWEP.NoIronSightFovChange = true
 SWEP.NoIronSightAttack = true

@@ -12,7 +12,7 @@ COMMAND.text = "#Command_Eventlocal_Syntax"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "o"
 COMMAND.arguments = 1
-COMMAND.alias = {"LocalEvent", "EL"}
+COMMAND.alias = { "LocalEvent", "EL" }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
@@ -22,7 +22,7 @@ function COMMAND:OnRun(player, arguments)
 		text = string.gsub(text, "eventlocal ", "", 1)
 	end
 
-	chatbox.AddText(nil, "* "..text, {filter = "player_events", textColor = Color("#FFAB00"), icon = false, position = player:GetPos()})
+	chatbox.AddText(nil, "* "..text, { filter = "player_events", textColor = Color("#FFAB00"), icon = false, position = player:GetPos() })
 end
 
-COMMAND:Register();
+COMMAND:Register()

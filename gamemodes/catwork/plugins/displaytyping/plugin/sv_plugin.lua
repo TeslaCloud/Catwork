@@ -40,4 +40,4 @@ concommand.Add("cwTypingFinish", function(player, command, arguments)
 
 		player:SetNetVar("Typing", 0)
 	end
-end);
+end)

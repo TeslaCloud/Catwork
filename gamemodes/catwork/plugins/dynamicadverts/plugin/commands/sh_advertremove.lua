@@ -37,4 +37,4 @@ function COMMAND:OnRun(player, arguments)
 	cwDynamicAdverts:SaveDynamicAdverts()
 end
 
-COMMAND:Register();
+COMMAND:Register()

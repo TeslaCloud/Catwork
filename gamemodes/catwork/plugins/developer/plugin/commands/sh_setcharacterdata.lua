@@ -9,7 +9,7 @@ COMMAND.tip = "#Command_Setchardata_Description"
 COMMAND.text = "#Command_Setchardata_Syntax"
 COMMAND.access = "s"
 COMMAND.arguments = 2
-COMMAND.alias = {"CharSetData", "SetCharacterData"}
+COMMAND.alias = { "CharSetData", "SetCharacterData" }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
@@ -56,4 +56,4 @@ function COMMAND:OnRun(player, arguments)
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

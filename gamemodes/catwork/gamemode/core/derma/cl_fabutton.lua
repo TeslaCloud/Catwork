@@ -106,7 +106,7 @@ function PANEL:Paint(w, h)
 	end
 
 	if (self.iconID) then
-		//draw.RoundedBox(0, self.iconX, self.iconY, self.iconSize, self.iconSize, Color(255, 0, 0)) --debug
+		// draw.RoundedBox(0, self.iconX, self.iconY, self.iconSize, self.iconSize, Color(255, 0, 0)) --debug
 		cw.FontIcons:Draw(self.iconID, (self.iconX or 0) + 1, (self.iconY or 0) - 1, (self.iconH or 16), (self.overrideColor or textColor or Color(255, 255, 255)))
 	end
 
@@ -130,14 +130,14 @@ function PANEL:Think()
 		self.shouldDrawText = true
 
 		if (!self.wasOpen) then
-			//self:SizeToText()
+			// self:SizeToText()
 		end
 	else
 		self.shouldDrawText = false
 		self.wasOpen = false
 
 		if (self.iconW) then
-			//self:SetSize((self.iconW + self.iconX * 2) or 32, (self.iconH + self.iconY * 2) or 32)
+			// self:SetSize((self.iconW + self.iconX * 2) or 32, (self.iconH + self.iconY * 2) or 32)
 		end
 	end
 end
@@ -149,9 +149,11 @@ function PANEL:FadeOut(speed, Callback)
 
 		if (animation.Finished) then
 			panel:SetVisible(false)
+
 				if (Callback) then
 					Callback()
 				end
+
 			self.animation = nil
 		end
 	end)
@@ -206,4 +208,4 @@ concommand.Add("cw_testButton", function()
 	button:SetText("It works even if I put in a bunch of text!")
 	button:SizeToText()
 	button:SetOpen(false)
-end);
+end)

@@ -6,4 +6,4 @@
 	with contributions from Cloud Sixteen community.
 --]]
 
-config.AddToSystem("#TakePhyscannon", "take_physcannon", "#TakePhyscannonDesc");
+config.AddToSystem("#TakePhyscannon", "take_physcannon", "#TakePhyscannonDesc")

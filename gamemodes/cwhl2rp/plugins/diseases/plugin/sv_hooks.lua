@@ -22,7 +22,7 @@ local coughSounds = {
 function PLUGIN:OnePlayerSecond(player, curTime, infoTable)
 	local faction = player:GetFaction()
 	local curTime = CurTime()
-	
+
 	if (player:Alive()) then
 		if (player:GetCharacterData("diseases") == "cough" or player:GetCharacterData("diseases") == "pneumonia") then
 			if (math.random(1, 50) == 1 and player:GetCharacterData("diseases") == "cough") then
@@ -35,35 +35,35 @@ function PLUGIN:OnePlayerSecond(player, curTime, infoTable)
 						player:EmitSound(table.Random(coughSounds), 100, 100)
 
 						if (math.random(1, 2) == 1) then
-							chatbox.AddText(nil, L("Diseases_Emote_PneumoniaCough"), {isPlayerMessage = true, sender = player, noStyling = true, fakeName = true, position = player:GetPos(), textColor = Color("#89D235"), filter = "player_events", icon = false})
+							chatbox.AddText(nil, L("Diseases_Emote_PneumoniaCough"), { isPlayerMessage = true, sender = player, noStyling = true, fakeName = true, position = player:GetPos(), textColor = Color("#89D235"), filter = "player_events", icon = false })
 						else
-							chatbox.AddText(nil, L("Diseases_Emote_Gasp"), {isPlayerMessage = true, sender = player, noStyling = true, fakeName = true, position = player:GetPos(), textColor = Color("#89D235"), filter = "player_events", icon = false})
+							chatbox.AddText(nil, L("Diseases_Emote_Gasp"), { isPlayerMessage = true, sender = player, noStyling = true, fakeName = true, position = player:GetPos(), textColor = Color("#89D235"), filter = "player_events", icon = false })
 						end
 
-						player.nextCough = curTime + math.random(15,45)
+						player.nextCough = curTime + math.random(15, 45)
 					else
 						player:EmitSound(table.Random(coughSounds), 100, 100)
-						chatbox.AddText(nil, L("Diseases_Emote_Cough"), {isPlayerMessage = true, sender = player, noStyling = true, fakeName = true, position = player:GetPos(), textColor = Color("#89D235"), filter = "player_events", icon = false})
-						player.nextCough = curTime + math.random(15,45)
+						chatbox.AddText(nil, L("Diseases_Emote_Cough"), { isPlayerMessage = true, sender = player, noStyling = true, fakeName = true, position = player:GetPos(), textColor = Color("#89D235"), filter = "player_events", icon = false })
+						player.nextCough = curTime + math.random(15, 45)
 					end
 				end
 			end
 		elseif (player:GetCharacterData("diseases") == "fever") then
 			if (!player.nextFever or curTime > player.nextFever) then
 				if (!player:IsNoClipping()) then
-					chatbox.AddText(nil, L("Diseases_Emote_Fever"), {isPlayerMessage = true, sender = player, noStyling = true, fakeName = true, position = player:GetPos(), textColor = Color("#89D235"), filter = "player_events", icon = false})
-					player.nextFever = curTime + math.random(120,300)
+					chatbox.AddText(nil, L("Diseases_Emote_Fever"), { isPlayerMessage = true, sender = player, noStyling = true, fakeName = true, position = player:GetPos(), textColor = Color("#89D235"), filter = "player_events", icon = false })
+					player.nextFever = curTime + math.random(120, 300)
 				end
 			end
 		elseif (player:GetCharacterData("diseases") == "gastrits") then
 			if (!player.nextStomach or curTime > player.nextStomach) then
 				if (!player:IsNoClipping()) then
 					player:EmitSound(table.Random(coughSounds), 100, 100)
-					chatbox.AddText(nil, L("Diseases_Emote_Stomach"), {isPlayerMessage = true, sender = player, noStyling = true, fakeName = true, position = player:GetPos(), textColor = Color("#89D235"), filter = "player_events", icon = false})
+					chatbox.AddText(nil, L("Diseases_Emote_Stomach"), { isPlayerMessage = true, sender = player, noStyling = true, fakeName = true, position = player:GetPos(), textColor = Color("#89D235"), filter = "player_events", icon = false })
 					player.nextStomach = curTime + math.random(60, 90)
 				end
 			end
-		else 
+		else
 			if (!player.nextTrigger or curTime > player.nextTrigger) then
 				if (math.random(1, 200) == 1) then
 					player:SetCharacterData("diseases", "cough")
@@ -81,7 +81,7 @@ function PLUGIN:OnePlayerSecond(player, curTime, infoTable)
 					player:SetCharacterData("diseases", "colorblindness")
 				end
 
-				player.nextTrigger = curTime + math.random(300,600)
+				player.nextTrigger = curTime + math.random(300, 600)
 			end
 		end
 
@@ -90,11 +90,11 @@ function PLUGIN:OnePlayerSecond(player, curTime, infoTable)
 			if (!player.nextInject or curTime > player.nextInject) then
 				if (!player:IsNoClipping()) then
 					if (player:GetGender() == GENDER_FEMALE) then
-						player:EmitSound("vo/npc/female01/pain0"..math.random(1, 9)..".wav", 30, 100 )
+						player:EmitSound("vo/npc/female01/pain0"..math.random(1, 9)..".wav", 30, 100)
 					else
-						player:EmitSound("vo/npc/male01/pain0"..math.random(1, 9)..".wav", 30, 100 )
+						player:EmitSound("vo/npc/male01/pain0"..math.random(1, 9)..".wav", 30, 100)
 					end
-					
+
 					if (player:Health() >= 5) then
 						player:SetHealth(player:Health() - 1)
 					else
@@ -105,7 +105,7 @@ function PLUGIN:OnePlayerSecond(player, curTime, infoTable)
 					if (player:GetCharacterData("diseases") == "fast_deathinjection") then
 						player.nextInject = curTime + 0.5
 					else
-						player.nextInject = curTime + math.random(4,6)
+						player.nextInject = curTime + math.random(4, 6)
 					end
 				end
 			end
@@ -186,8 +186,8 @@ function PLUGIN:PlayerUseItem(player, itemTable, itemEntity)
 
 	if (player:GetCharacterData("diseases") == "diarrhea" and (itemTable.hunger or itemTable.thirst or itemTable.fatigue)) then
 		timer.Simple(math.random(5, 15), function()
-			chatbox.AddText(nil, L("Diseases_Emote_Vomit"), {isPlayerMessage = true, sender = player, noStyling = true, fakeName = true, position = player:GetPos(), textColor = Color("#89D235"), filter = "player_events", icon = false})
+			chatbox.AddText(nil, L("Diseases_Emote_Vomit"), { isPlayerMessage = true, sender = player, noStyling = true, fakeName = true, position = player:GetPos(), textColor = Color("#89D235"), filter = "player_events", icon = false })
 			player:TakeDamage(math.random(5, 30))
 		end)
-	end	
+	end
 end

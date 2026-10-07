@@ -109,7 +109,7 @@ function PLUGIN:OnePlayerSecond(player, curTime, infoTable)
 	if (player:HasInitialized() and hook.Run("PlayerHasNeeds", player)) then
 		local thirst = tonumber(player:GetCharacterData("Thirst")) or 0
 		local hunger = math.Clamp(tonumber(player:GetCharacterData("Hunger")) or 0, 0, thirst)
-		local fatigue =  tonumber(player:GetCharacterData("Fatigue")) or 0
+		local fatigue = tonumber(player:GetCharacterData("Fatigue")) or 0
 		local stamina = tonumber(player:GetCharacterData("Stamina")) or 0
 		local step = 100 / math.Round(tonumber(config.GetVal("hunger_tick")) or 3600)
 		local thirstStep = 100 / math.Round(tonumber(config.GetVal("thirst_tick")) or 3600)

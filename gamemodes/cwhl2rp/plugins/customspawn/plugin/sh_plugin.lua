@@ -8,4 +8,4 @@
 
 PLUGIN:SetGlobalAlias("cwCustomSpawn")
 
-util.Include("sv_hooks.lua");
+util.Include("sv_hooks.lua")

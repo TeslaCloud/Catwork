@@ -12,7 +12,7 @@ COMMAND.text = "#Command_Plydemote_Syntax"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "s"
 COMMAND.arguments = 1
-COMMAND.alias = {"Demote"}
+COMMAND.alias = { "Demote" }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
@@ -37,4 +37,4 @@ function COMMAND:OnRun(player, arguments)
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

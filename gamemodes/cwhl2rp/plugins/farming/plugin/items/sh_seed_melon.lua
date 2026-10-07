@@ -14,5 +14,5 @@ ITEM.model = "models/props_lab/box01a.mdl"
 ITEM.uniqueID = "seed_melon"
 ITEM.PlantModel = "models/props/cs_office/plant01_p1.mdl"
 ITEM.PlantName = "#Farming_Plant_Melon"
-ITEM.GrowTime = {3600, 7200}
-ITEM.Harvest = {"seed_melon", "melon"}
+ITEM.GrowTime = { 3600, 7200 }
+ITEM.Harvest = { "seed_melon", "melon" }

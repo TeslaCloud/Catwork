@@ -6,7 +6,7 @@ COMMAND.text = "#Command_Charsethunger_Syntax"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "a"
 COMMAND.arguments = 2
-COMMAND.alias = {"SetHunger"}
+COMMAND.alias = { "SetHunger" }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
@@ -19,7 +19,8 @@ function COMMAND:OnRun(player, arguments)
 
 		if (target) then
 			target:SetCharacterData("Hunger", amount)
-			if (player != target)	then
+
+			if (player != target) then
 				cw.player:Notify(target, L("Hunger_HungerSetBy", player:Name(), amount))
 				cw.player:Notify(player, L("Hunger_HungerSet", target:Name(), amount))
 			else
@@ -30,4 +31,4 @@ function COMMAND:OnRun(player, arguments)
 		end
 end
 
-COMMAND:Register();
+COMMAND:Register()

@@ -13,11 +13,11 @@ ITEM.weight = 1
 ITEM.useText = "#ITEM_Wear"
 ITEM.category = "#ITEM_Cat_Clothing"
 ITEM.description = "Default Bodygroup Clothing Item."
-ITEM.bodyGroup 	= -1
+ITEM.bodyGroup = -1
 ITEM.bodyGroupVal = -1
-ITEM.requiredBG	= {-1, -1}
-ITEM.isCombine	= false
-ITEM.protection	= 0
+ITEM.requiredBG = { -1, -1 }
+ITEM.isCombine = false
+ITEM.protection = 0
 
 function ITEM:SetBodygroup(player, bg, val)
 	if (bg <= player:GetNumBodyGroups()) then
@@ -43,6 +43,7 @@ function ITEM:OnUse(player, itemEntity)
 
 	if (self.requiredBG[1] != -1) then
 		local bgData = clothesData[self.requiredBG[1]]
+
 		if (!bgData) then
 			cw.player:Notify(player, "#ITEM_ErrCantWear")
 

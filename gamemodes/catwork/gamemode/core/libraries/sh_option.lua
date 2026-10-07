@@ -53,9 +53,9 @@ function cw.option:PlaySound(name)
 	end
 end
 
-cw.option:SetKey("default_date", {month = 1, year = 2010, day = 1})
-cw.option:SetKey("default_time", {minute = 0, hour = 0, day = 1})
-cw.option:SetKey("default_days", {"#Monday", "#Tuesday", "#Wednesday", "#Thursday", "#Friday", "#Saturday", "#Sunday"})
+cw.option:SetKey("default_date", { month = 1, year = 2010, day = 1 })
+cw.option:SetKey("default_time", { minute = 0, hour = 0, day = 1 })
+cw.option:SetKey("default_days", { "#Monday", "#Tuesday", "#Wednesday", "#Thursday", "#Friday", "#Saturday", "#Sunday" })
 cw.option:SetKey("description_business", "#BusinessDesc")
 cw.option:SetKey("description_inventory", "#InventoryDesc")
 cw.option:SetKey("description_directory", "#DirectoryDesc")
@@ -126,15 +126,15 @@ if (CLIENT) then
 	cw.option:SetColor("basic_form_highlight", Color(0, 0, 0, 255))
 	cw.option:SetColor("basic_form_color", Color(0, 0, 0, 255))
 
-	cw.option:SetKey("icon_data_classes", {path = "tag", size = nil})
-	cw.option:SetKey("icon_data_settings", {path = "wrench", size = nil})
-	cw.option:SetKey("icon_data_system", {path = "cog", size = nil})
-	cw.option:SetKey("icon_data_scoreboard", {path = "list-alt", size = 3})
-	cw.option:SetKey("icon_data_inventory", {path = "inbox", size = nil})
-	cw.option:SetKey("icon_data_directory", {path = "book", size = nil})
-	cw.option:SetKey("icon_data_attributes", {path = "bar-chart", size = 2})
-	cw.option:SetKey("icon_data_business", {path = "briefcase", size = 2})
-	cw.option:SetKey("icon_data_traits", {path = "star", size = 2})
+	cw.option:SetKey("icon_data_classes", { path = "tag", size = nil })
+	cw.option:SetKey("icon_data_settings", { path = "wrench", size = nil })
+	cw.option:SetKey("icon_data_system", { path = "cog", size = nil })
+	cw.option:SetKey("icon_data_scoreboard", { path = "list-alt", size = 3 })
+	cw.option:SetKey("icon_data_inventory", { path = "inbox", size = nil })
+	cw.option:SetKey("icon_data_directory", { path = "book", size = nil })
+	cw.option:SetKey("icon_data_attributes", { path = "bar-chart", size = 2 })
+	cw.option:SetKey("icon_data_business", { path = "briefcase", size = 2 })
+	cw.option:SetKey("icon_data_traits", { path = "star", size = 2 })
 
 	cw.option:SetKey("top_bar_width_scale", 0.3)
 

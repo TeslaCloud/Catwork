@@ -6,16 +6,16 @@
 --]]
 
 ITEM.isBaseItem = true
-ITEM.name 			= "Skin Base"
-ITEM.model 			= "models/tnb/items/shirt_citizen1.mdl"
-ITEM.skin 			= 1
-ITEM.weight 		= 1
-ITEM.useText 		= "#ITEM_Wear"
-ITEM.category 		= "#ITEM_Cat_Clothing"
-ITEM.description 	= "Default Skin Clothing Item."
-ITEM.playerSkin 	= -1
-ITEM.isCombine		= false
-ITEM.protection		= 0
+ITEM.name = "Skin Base"
+ITEM.model = "models/tnb/items/shirt_citizen1.mdl"
+ITEM.skin = 1
+ITEM.weight = 1
+ITEM.useText = "#ITEM_Wear"
+ITEM.category = "#ITEM_Cat_Clothing"
+ITEM.description = "Default Skin Clothing Item."
+ITEM.playerSkin = -1
+ITEM.isCombine = false
+ITEM.protection = 0
 
 function ITEM:SetSkin(player, skin)
 		if (skin <= player:SkinCount()) then
@@ -109,4 +109,3 @@ function ITEM:HasPlayerEquipped(player, bIsValidWeapon)
 function ITEM:OnPlayerUnequipped(player, extraData)
 		player:SetSkinClothes(self, true)
 	end
-

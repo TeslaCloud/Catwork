@@ -16,7 +16,8 @@ COMMAND.arguments = 1
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
 	good_doors = 0
-	for k,v in pairs(ents.GetAll()) do
+
+	for k, v in pairs(ents.GetAll()) do
 		if(IsValid(v) and cw.entity:IsDoor(v)) then
 			local data = {
 				position = v:GetPos(),
@@ -39,4 +40,4 @@ function COMMAND:OnRun(player, arguments)
 	cw.player:Notify(player, L("DoorCmds_AllDoorsReminder"))
 end
 
-COMMAND:Register();
+COMMAND:Register()

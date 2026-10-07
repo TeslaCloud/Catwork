@@ -33,7 +33,7 @@ function cwKarma:PaintInfoMenuExtras(info)
 
 	draw.TexturedRect(x + 16, y + 18, barWidth, 28, mat_karma)
 
-	local centerPos = x + 16 + (barWidth / 2 - 2) 
+	local centerPos = x + 16 + (barWidth / 2 - 2)
 	local sliderPos = centerPos + ((barWidth / 2) * normal)
 
 	draw.RoundedBox(0, sliderPos, y + 14, 4, 36, Color(255, 255, 255))

@@ -7,15 +7,15 @@ BLUEPRINT.category = "#Craft_Category_Materials"
 BLUEPRINT.description = "#Blueprint_BlueprintElectronics_Description"
 BLUEPRINT.reqatt = {}
 BLUEPRINT.updatt = {
-	{"rem", 15}
+	{ "rem", 15 }
 }
 BLUEPRINT.required = {
-	{"screw_driver", 1}
+	{ "screw_driver", 1 }
 }
 BLUEPRINT.recipe = {
-	{"scrap_electronics", 2}
+	{ "scrap_electronics", 2 }
 }
 BLUEPRINT.finish = {
-	{"refined_electronics", 1}
+	{ "refined_electronics", 1 }
 }
-BLUEPRINT:Register();
+BLUEPRINT:Register()

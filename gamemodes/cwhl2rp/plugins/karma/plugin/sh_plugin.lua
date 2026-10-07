@@ -16,7 +16,7 @@ cwKarma.stored = stored
 function cwKarma:AddKarmaLevel(bottom, ceiling, phrase)
 	if (!bottom or !ceiling or !phrase) then return end
 
-	table.insert(stored, {phrase = phrase, bottom = bottom, ceiling = ceiling})
+	table.insert(stored, { phrase = phrase, bottom = bottom, ceiling = ceiling })
 end
 
 cwKarma:AddKarmaLevel(-100, -90, "#Karma_Monster")

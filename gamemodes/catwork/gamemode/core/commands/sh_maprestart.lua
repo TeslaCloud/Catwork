@@ -11,7 +11,7 @@ COMMAND.tip = "#Command_Maprestart_Description"
 COMMAND.text = "#Command_Maprestart_Syntax"
 COMMAND.access = "a"
 COMMAND.optionalArguments = 1
-COMMAND.alias = {"Restart"}
+COMMAND.alias = { "Restart" }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
@@ -34,4 +34,4 @@ function COMMAND:OnRun(player, arguments)
 	end)
 end
 
-COMMAND:Register();
+COMMAND:Register()

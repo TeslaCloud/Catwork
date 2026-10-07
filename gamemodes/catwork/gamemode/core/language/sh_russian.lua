@@ -28,7 +28,7 @@ lang["#DeathScreen_SpawnPercentage"] = "ВОЗРОЖДЕНИЕ: #1"
 
 lang["#Err_CantUse_Tied"] = "Вы не можете сделать это, пока связаны!"
 
---Random
+-- Random
 lang["#HookErrors"] = "Обнаружены ошибки клиентской части сервера."
 lang["#PlayerDisconnected"] = " отключился от сервера."
 lang["#PlayerConnected"] = " подключился к серверу."
@@ -440,7 +440,7 @@ lang["#ArmorAffectsChest"] = "Armor Affects Chest Only"
 lang["#MinimumPhysicalDescription"] = "Minimum Physical Description Length"
 lang["#WoodBreaksFall"] = "Wood Breaks Fall"
 lang["#VignetteEnabled"] = "Vignette Enabled"
-lang["#HeartbeatSounds"] = "Heartbeat Sounds Enabled"; //Day 132. Still converting strings..
+lang["#HeartbeatSounds"] = "Heartbeat Sounds Enabled" // Day 132. Still converting strings..
 lang["#CrosshairEnabled"] = "Crosshair Enabled"
 lang["#FreeAiming"] = "Free Aiming Enabled"
 lang["#RecogniseSystem"] = "Recognise System Enabled"
@@ -476,7 +476,7 @@ lang["#CustomWeaponColor"] = "Custom Weapon Color"
 lang["#GiveKeys"] = "Give Keys"
 lang["#WagesName"] = "Wages Name"
 lang["#JumpPower"] = "Jump Power"
-lang["#RespawnDelay"] = "Respawn Delay"; // Send help...
+lang["#RespawnDelay"] = "Respawn Delay" // Send help...
 lang["#MaximumWalkSpeed"] = "Maximum Walk Speed"
 lang["#MaximumRunSpeed"] = "Maximum Run Speed"
 lang["#DoorPrice"] = "Door Price"
@@ -591,7 +591,7 @@ lang["#BusinessMenu_NoAccess"] = "У вас нет доступа к #1 меню
 lang["#BusinessMenu_Free"] = "Бесплатно"
 
 -- Attributes Menu
-lang["#AttributesMenu_NoAccess"] = "У вас нет доступа ни к каким атрибутам!"; -- i assume #1 here is 'attributes'
+lang["#AttributesMenu_NoAccess"] = "У вас нет доступа ни к каким атрибутам!" -- i assume #1 here is 'attributes'
 
 -- Classes Menu
 lang["#ClassesMenu_NoStay"] = "Выбранные вами классы не будут прикреплены к вашему персонажу."
@@ -695,7 +695,7 @@ lang["#Commands_cwLua_accessDenied"] = "Вы не имеете доступа к
 lang["#Doors_Name"] = "Дверь"
 lang["#Doors_Unownable"] = "Этой дверью нельзя владеть."
 lang["#Doors_CanBePurchased"] = "Эта дверь может быть приобретена."
-lang["#Doors_CanBeOwned"]= "Этой дверью можно владеть."
+lang["#Doors_CanBeOwned"] = "Этой дверью можно владеть."
 lang["#Doors_HasBeenPurchased"] = "Эта дверь была приобретена."
 lang["#Doors_HasBeenOwned"] = "Этой дверью завладели."
 
@@ -807,7 +807,7 @@ lang["#Inventory"] = "Инвентарь"
 lang["#Weight"] = "Вес"
 lang["#Space"] = "Место"
 
-lang["#RecogniseMenu"] = "ВЫБЕРИТЕ, КТО СМОЖЕТ УЗНАВАТЬ ВАС";
+lang["#RecogniseMenu"] = "ВЫБЕРИТЕ, КТО СМОЖЕТ УЗНАВАТЬ ВАС"
 
 lang["#Command_A_Description"] = "Отправить приватное сообщение администрации."
 lang["#Command_A_Syntax"] = "<текст>"

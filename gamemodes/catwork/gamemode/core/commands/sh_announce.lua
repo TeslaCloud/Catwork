@@ -20,4 +20,4 @@ function COMMAND:OnRun(player, arguments)
  	cw.player:NotifyAll(text)
 end
 
-COMMAND:Register();
+COMMAND:Register()

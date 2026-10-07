@@ -7,19 +7,19 @@ BLUEPRINT.category = "#Craft_Category_Ammo"
 BLUEPRINT.description = "#Blueprint_BlueprintAmmoAr2_Description"
 BLUEPRINT.craftplace = "cw_craft_bullet"
 BLUEPRINT.reqatt = {
-	{"rem", 55}
+	{ "rem", 55 }
 }
 BLUEPRINT.updatt = {
-	{"rem", 35}
+	{ "rem", 35 }
 }
 BLUEPRINT.required = {
-	{"weld", 1}
+	{ "weld", 1 }
 }
 BLUEPRINT.recipe = {
-	{"energy_cell", 1},
-	{"refined_metal", 1}
+	{ "energy_cell", 1 },
+	{ "refined_metal", 1 }
 }
 BLUEPRINT.finish = {
-	{"ammo_ar2", 1}
+	{ "ammo_ar2", 1 }
 }
-BLUEPRINT:Register();
+BLUEPRINT:Register()

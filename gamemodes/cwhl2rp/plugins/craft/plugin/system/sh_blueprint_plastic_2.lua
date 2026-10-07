@@ -7,14 +7,14 @@ BLUEPRINT.category = "#Craft_Category_Recycling"
 BLUEPRINT.description = "#Blueprint_BlueprintPlastic2_Description"
 BLUEPRINT.craftplace = "cw_craft_furnace"
 BLUEPRINT.updatt = {
-	{"rem", 5}
+	{ "rem", 5 }
 }
 BLUEPRINT.required = {}
 BLUEPRINT.recipe = {
-	{"empty_tin_can", 1},
-	{"empty_plastic_bottle", 2},
+	{ "empty_tin_can", 1 },
+	{ "empty_plastic_bottle", 2 }
 }
 BLUEPRINT.finish = {
-	{"plastic", 1}
+	{ "plastic", 1 }
 }
-BLUEPRINT:Register();
+BLUEPRINT:Register()

@@ -17,7 +17,7 @@ function PANEL:Init()
 
 	-- Called when the button is clicked.
 	function self.btnClose.DoClick(button)
-		self:Close(); self:Remove()
+		self:Close() self:Remove()
 		gui.EnableScreenClicker(false)
 	end
 
@@ -72,9 +72,9 @@ function PANEL:Init()
 			-- Called when an option is selected.
 			self.comboBox.OnSelect = function(multiChoice, index, value, data)
 				if (value == L("#DoorMenu_ShareAccess")) then
-					netstream.Start("DoorManagement", {cw.door:GetEntity(), "Share"})
+					netstream.Start("DoorManagement", { cw.door:GetEntity(), "Share" })
 				else
-					netstream.Start("DoorManagement", {cw.door:GetEntity(), "Unshare"})
+					netstream.Start("DoorManagement", { cw.door:GetEntity(), "Unshare" })
 				end
 			end
 
@@ -91,9 +91,9 @@ function PANEL:Init()
 			-- Called when an option is selected.
 			self.parentText.OnSelect = function(multiChoice, index, value, data)
 				if (value == L("#DoorMenu_ShareText")) then
-					netstream.Start("DoorManagement", {cw.door:GetEntity(), "Share", "Text"})
+					netstream.Start("DoorManagement", { cw.door:GetEntity(), "Share", "Text" })
 				else
-					netstream.Start("DoorManagement", {cw.door:GetEntity(), "Unshare", "Text"})
+					netstream.Start("DoorManagement", { cw.door:GetEntity(), "Unshare", "Text" })
 				end
 			end
 		end
@@ -113,19 +113,19 @@ function PANEL:Init()
 			function button.DoClick(button)
 				if (doorCost > 0) then
 					Derma_Query(L("#DoorMenu_SellQuery"), L("#DoorMenu_SellTitle"), L("Yes"), function()
-						netstream.Start("DoorManagement", {cw.door:GetEntity(), "Sell"})
+						netstream.Start("DoorManagement", { cw.door:GetEntity(), "Sell" })
 
 						gui.EnableScreenClicker(false)
-						self:Close(); self:Remove()
+						self:Close() self:Remove()
 					end, L("No"), function()
 						gui.EnableScreenClicker(false)
 					end)
 				else
 					Derma_Query(L("#DoorMenu_UnownQuery"), L("#DoorMenu_UnownTitle"), L("Yes"), function()
-						netstream.Start("DoorManagement", {cw.door:GetEntity(), "Sell"})
+						netstream.Start("DoorManagement", { cw.door:GetEntity(), "Sell" })
 
 						gui.EnableScreenClicker(false)
-						self:Close(); self:Remove()
+						self:Close() self:Remove()
 					end, L("No"), function()
 						gui.EnableScreenClicker(false)
 					end)
@@ -174,7 +174,7 @@ function PANEL:Rebuild()
 						categories[index] = {}
 					end
 
-					categories[index][#categories[index] + 1] = {v, name}
+					categories[index][#categories[index] + 1] = { v, name }
 				end
 			end
 		end
@@ -209,25 +209,25 @@ function PANEL:Rebuild()
 					if (access == DOOR_ACCESS_COMPLETE) then
 						options = {
 							[L("#DoorMenu_TakeCompleteAccess")] = function()
-								netstream.Start("DoorManagement", {door, "Access", player, access})
+								netstream.Start("DoorManagement", { door, "Access", player, access })
 							end
 						}
 					elseif (access == DOOR_ACCESS_BASIC) then
 						options = {
 							[L("#DoorMenu_TakeBasicAccess")] = function()
-								netstream.Start("DoorManagement", {door, "Access", player, access})
+								netstream.Start("DoorManagement", { door, "Access", player, access })
 							end,
 							[L("#DoorMenu_GiveCompleteAccess")] = function()
-								netstream.Start("DoorManagement", {door, "Access", player, DOOR_ACCESS_COMPLETE})
+								netstream.Start("DoorManagement", { door, "Access", player, DOOR_ACCESS_COMPLETE })
 							end
 						}
 					else
 						options = {
 							[L("#DoorMenu_GiveBasicAccess")] = function()
-								netstream.Start("DoorManagement", {door, "Access", player, DOOR_ACCESS_BASIC})
+								netstream.Start("DoorManagement", { door, "Access", player, DOOR_ACCESS_BASIC })
 							end,
 							[L("#DoorMenu_GiveCompleteAccess")] = function()
-								netstream.Start("DoorManagement", {door, "Access", player, DOOR_ACCESS_COMPLETE})
+								netstream.Start("DoorManagement", { door, "Access", player, DOOR_ACCESS_COMPLETE })
 							end
 						}
 					end
@@ -262,6 +262,7 @@ function PANEL:Rebuild()
 		end
 	end
 end
+
 -- Called each frame.
 function PANEL:Think()
 	local entity = cw.door:GetEntity()
@@ -272,7 +273,7 @@ function PANEL:Think()
 	self:SetPos((scrW / 2) - (self:GetWide() / 2), (scrH / 2) - (self:GetTall() / 2))
 
 	if (!IsValid(entity) or entity:GetPos():Distance(cw.client:GetPos()) > 192) then
-		self:Close(); self:Remove()
+		self:Close() self:Remove()
 
 		gui.EnableScreenClicker(false)
 	end
@@ -292,7 +293,7 @@ netstream.Hook("PurchaseDoor", function(data)
 
 	if (doorCost > 0) then
 		Derma_Query(L("#DoorMenu_PurchaseQuery:"..cw.core:FormatCash(config.GetVal("door_cost"), nil, true)..";"), L("#DoorMenu_PurchaseTitle"), L("Yes"), function()
-			netstream.Start("DoorManagement", {data, "Purchase"})
+			netstream.Start("DoorManagement", { data, "Purchase" })
 
 			gui.EnableScreenClicker(false)
 		end, L("No"), function()
@@ -300,7 +301,7 @@ netstream.Hook("PurchaseDoor", function(data)
 		end)
 	else
 		Derma_Query(L("#DoorMenu_OwnQuery"), L("#DoorMenu_OwnTitle"), L("Yes"), function()
-			netstream.Start("DoorManagement", {data, "Purchase"})
+			netstream.Start("DoorManagement", { data, "Purchase" })
 
 			gui.EnableScreenClicker(false)
 		end, L("No"), function()
@@ -370,4 +371,4 @@ netstream.Hook("DoorManagement", function(data)
 	if (!cw.entity:HasOwner(data.entity) or IsValid(data.owner)) then
 		cw.door.panel.textEntry:SetValue(cw.entity:GetDoorText(data.entity))
 	end
-end);
+end)

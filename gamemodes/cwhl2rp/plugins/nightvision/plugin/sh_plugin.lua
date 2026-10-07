@@ -14,9 +14,9 @@ if CLIENT then
 	local CurScale = 0.5
 	local DrawNightVision = false
 	local oldNight = false
-	local matNightVision = CreateMaterial("NightVisionMaterial","UnlitTwoTexture",{
+	local matNightVision = CreateMaterial("NightVisionMaterial", "UnlitTwoTexture", {
 		["$additive"] = "1",
-		["$basetexture"] ="_rt_FullFrameFB",
+		["$basetexture"] = "_rt_FullFrameFB",
 		["$texture2"] = "nightvision_noise",
 		["Proxies"] =
 		{
@@ -35,9 +35,9 @@ if CLIENT then
 		["$pp_colour_addg"] = -0.4,
 		["$pp_colour_addb"] = -1,
 		["$pp_colour_brightness"] = 0.8,
-		["$pp_colour_contrast"]  = 2,
+		["$pp_colour_contrast"] = 2,
 		["$pp_colour_colour"] = 0,
-		["$pp_colour_mulr"] = 0 ,
+		["$pp_colour_mulr"] = 0,
 		["$pp_colour_mulg"] = 0.1,
 		["$pp_colour_mulb"] = 0
 	}
@@ -75,9 +75,10 @@ if CLIENT then
 			colorTable["$pp_colour_brightness"] = CurScale * 0.8
 			colorTable["$pp_colour_contrast"] = CurScale * 2
 			DrawColorModify(colorTable)
-			DrawBloom(Bloom_Darken, CurScale * Bloom_Multiply, Bloom_Blur, Bloom_Blur, Bloom_Passes, CurScale * Bloom_ColorMul, 0, 1, 0)													 -- Blue
+			DrawBloom(Bloom_Darken, CurScale * Bloom_Multiply, Bloom_Blur, Bloom_Blur, Bloom_Passes, CurScale * Bloom_ColorMul, 0, 1, 0) -- Blue
 		end
 	end
+
 	hook.Add("RenderScreenspaceEffects", "NightVisionFX", NightVisionFX)
 else
 	function PLUGIN:PlayerThink(player, infoTable)
@@ -103,10 +104,12 @@ function Schema:PlayerCanUseNightvision(player)
 			return true
 		end
 	end
+
 	if cw.player:HasFlags(player, "9") then
 		return true
 	end
+
 	return false
 end
 
-cw.flag:Add("9", "Nightvision", "Access to the nightvision ability.");
+cw.flag:Add("9", "Nightvision", "Access to the nightvision ability.")

@@ -11,14 +11,14 @@ COMMAND.tip = "#Command_Plyrespawnstay_Description"
 COMMAND.text = "#Command_Plyrespawnstay_Syntax"
 COMMAND.arguments = 1
 COMMAND.access = "o"
-COMMAND.alias = {"PlyRStay", "RespawnStay"}
+COMMAND.alias = { "PlyRStay", "RespawnStay" }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
 	local target = _player.Find(arguments[1])
 
 	if (target) then
-		--cw.player:LightSpawn(target, true, true, false)
+		-- cw.player:LightSpawn(target, true, true, false)
 		local pos = target:GetPos()
 		target:Spawn()
 		target:SetPos(pos)
@@ -28,4 +28,4 @@ function COMMAND:OnRun(player, arguments)
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

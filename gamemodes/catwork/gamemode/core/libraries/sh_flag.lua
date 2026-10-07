@@ -87,4 +87,4 @@ cw.flag:Add("n", "Spawn NPCs", "#Flag_SpawnNPCs_Details")
 cw.flag:Add("t", "Tool Gun", "#Flag_ToolGun_Details")
 cw.flag:Add("G", "Give Item", "#Flag_GiveItem_Details")
 cw.flag:Add("D", "Door Access", "#Flag_DoorAccess_Details")
-cw.flag:Add("x", "Voice Access", "#Flag_VoiceAccess_Details");
+cw.flag:Add("x", "Voice Access", "#Flag_VoiceAccess_Details")

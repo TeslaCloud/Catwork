@@ -10,4 +10,3 @@ ITEM.business = true
 ITEM.description = "#Item_Lenses_Description"
 
 function ITEM:OnDrop(player, position) end
-

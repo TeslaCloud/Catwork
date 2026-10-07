@@ -9,7 +9,7 @@ COMMAND.tip = "#Command_Charsetattribute_Description"
 COMMAND.text = "#Command_Charsetattribute_Syntax"
 COMMAND.access = "s"
 COMMAND.arguments = 3
-COMMAND.alias = {"SetAttribute"}
+COMMAND.alias = { "SetAttribute" }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
@@ -31,4 +31,4 @@ function COMMAND:OnRun(player, arguments)
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

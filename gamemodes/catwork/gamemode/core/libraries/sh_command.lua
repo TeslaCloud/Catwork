@@ -26,7 +26,7 @@ CMD_HEAVY = bit.bor(CMD_DEAD, CMD_RAGDOLLED)
 CMD_ALL = bit.bor(CMD_DEAD, CMD_VEHICLE, CMD_RAGDOLLED)
 
 --[[ Set the __index meta function of the class. --]]
-local CLASS_TABLE = {__index = CLASS_TABLE}
+local CLASS_TABLE = { __index = CLASS_TABLE }
 
 -- A function to register a new command.
 function CLASS_TABLE:Register()
@@ -119,6 +119,7 @@ end
  	@details Returns command's table by alias or unique id.
 	@param ID Identifier of the command to find. Can be alias or original command name.
 --]]
+
 function cw.command:FindByAlias(identifier)
 	return stored[alias[string.lower(string.gsub(identifier, "%s", ""))]]
 end
@@ -127,6 +128,7 @@ end
 	@codebase Shared
 	@details Returns table of all command alias indexed by alias' names.
 --]]
+
 function cw.command:GetAlias()
 	return alias
 end

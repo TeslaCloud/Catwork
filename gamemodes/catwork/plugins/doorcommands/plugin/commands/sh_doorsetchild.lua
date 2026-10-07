@@ -20,7 +20,7 @@ function COMMAND:OnRun(player, arguments)
 			if (cwDoorCmds.parentData[door] != player.cwParentDoor) then
 				if (player.cwParentDoor != door) then
 					cwDoorCmds.parentData[door] = player.cwParentDoor
-					cwDoorCmds:SaveParentData();		
+					cwDoorCmds:SaveParentData()
 
 					cw.entity:SetDoorParent(door, player.cwParentDoor)
 					cw.player:Notify(player, L("DoorCmds_ChildAdded"))
@@ -43,4 +43,4 @@ function COMMAND:OnRun(player, arguments)
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

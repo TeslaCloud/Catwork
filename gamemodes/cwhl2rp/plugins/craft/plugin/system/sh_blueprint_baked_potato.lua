@@ -8,13 +8,13 @@ BLUEPRINT.description = "#Blueprint_BlueprintBakedPotato_Description"
 BLUEPRINT.craftplace = "cw_craft_cook"
 BLUEPRINT.reqatt = {}
 BLUEPRINT.updatt = {
-	{"cook", 10}
+	{ "cook", 10 }
 }
 BLUEPRINT.required = {}
 BLUEPRINT.recipe = {
-	{"potato", 1},
+	{ "potato", 1 }
 }
 BLUEPRINT.finish = {
-	{"baked_potato", 1}
+	{ "baked_potato", 1 }
 }
-BLUEPRINT:Register();
+BLUEPRINT:Register()

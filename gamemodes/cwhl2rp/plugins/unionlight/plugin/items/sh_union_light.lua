@@ -4,7 +4,7 @@ ITEM.PrintName = "#Item_UnionLight_PrintName"
 ITEM.cost = 50
 ITEM.model = "models/props_combine/combine_light001a.mdl"
 ITEM.weight = 4
-ITEM.classes = {CLASS_EMP, CLASS_EOW}
+ITEM.classes = { CLASS_EMP, CLASS_EOW }
 ITEM.category = "Lights"
 ITEM.useText = "#Item_UnionLight_UseText"
 ITEM.business = true
@@ -16,7 +16,6 @@ function ITEM:OnUse(player, itemEntity)
 	local entity = ents.Create("cw_unionlight")
 
 	if (trace.HitPos:Distance(player:GetShootPos()) <= 192) then
-
 		cw.player:GiveProperty(player, entity)
 
 		entity:SetModel(self.model)
@@ -50,4 +49,3 @@ end
 
 -- Called when a player drops the item.
 function ITEM:OnDrop(player, position) end
-

@@ -41,4 +41,4 @@ config.ShareKey("show_business")
 config.ShareKey("chat_multiplier")
 config.ShareKey("enable_looc_icons")
 config.ShareKey("block_cash_binds")
-config.ShareKey("block_fallover_binds");
+config.ShareKey("block_fallover_binds")

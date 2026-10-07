@@ -9,7 +9,7 @@ COMMAND.tip = "#Command_Charsetbodygroup_Description"
 COMMAND.text = "#Command_Charsetbodygroup_Syntax"
 COMMAND.access = "a"
 COMMAND.arguments = 2
-COMMAND.alias = {"SetBodyGroup", "CharBodyGroup"}
+COMMAND.alias = { "SetBodyGroup", "CharBodyGroup" }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
@@ -29,4 +29,4 @@ function COMMAND:OnRun(player, arguments)
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

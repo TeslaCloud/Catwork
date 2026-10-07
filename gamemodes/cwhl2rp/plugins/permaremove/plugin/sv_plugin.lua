@@ -17,11 +17,13 @@ function PLUGIN:LoadRemoves()
 		end
 	end
 	--]]
+
 	for k1, v1 in pairs(ents.GetAll()) do
 		for k, v in pairs(removeData) do
 			if v1:GetPos() == v.position and v1:GetClass() == v.class then
 				v1:Remove()
 			end
+
 			--[[
 			local entity = positions[tostring(v.position)]
 

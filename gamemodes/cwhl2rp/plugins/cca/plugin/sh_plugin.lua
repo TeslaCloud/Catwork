@@ -28,7 +28,7 @@ function cca.AppendLog(appender, player, entry, type)
 		local logs = player:GetCharacterData("CCA_Logs") or {}
 		local appenderName = (IsValid(appender) and appender:Name()) or "#PDA_Log_Overwatch"
 
-		table.insert(logs, {entry = entry, type = type, time = os.time(), appender = appenderName})
+		table.insert(logs, { entry = entry, type = type, time = os.time(), appender = appenderName })
 
 		player:SetCharacterData("CCA_Logs", logs)
 		player:SetNetVar("CCA_Logs", table.Copy(logs))

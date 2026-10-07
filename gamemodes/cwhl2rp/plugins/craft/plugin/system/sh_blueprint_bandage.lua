@@ -6,13 +6,13 @@ BLUEPRINT.model = "models/props_wasteland/prison_toiletchunk01f.mdl"
 BLUEPRINT.category = "#Craft_Category_Misc"
 BLUEPRINT.description = "#Blueprint_BlueprintBandage_Description"
 BLUEPRINT.updatt = {
-	{"med", 15}
+	{ "med", 15 }
 }
 BLUEPRINT.required = {}
 BLUEPRINT.recipe = {
-	{"cloth", 1}
+	{ "cloth", 1 }
 }
 BLUEPRINT.finish = {
-	{"bandage", 1}
+	{ "bandage", 1 }
 }
-BLUEPRINT:Register();
+BLUEPRINT:Register()

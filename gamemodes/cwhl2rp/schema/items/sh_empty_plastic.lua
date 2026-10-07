@@ -11,4 +11,3 @@ ITEM.description = "#Item_EmptyPlastic_Description"
 
 -- Called when a player drops the item.
 function ITEM:OnDrop(player, position) end
-

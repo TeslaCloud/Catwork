@@ -11,7 +11,7 @@ COMMAND.tip = "#Command_Charsetname_Description"
 COMMAND.text = "#Command_Charsetname_Syntax"
 COMMAND.access = "o"
 COMMAND.arguments = 2
-COMMAND.alias = {"SetName"}
+COMMAND.alias = { "SetName" }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)

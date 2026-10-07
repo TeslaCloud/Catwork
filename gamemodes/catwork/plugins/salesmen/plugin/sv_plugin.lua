@@ -172,7 +172,7 @@ netstream.Hook("SalesmanAdd", function(player, data)
 		local salesman = ents.Create("cw_salesman")
 		local angles = player:GetAngles()
 
-		angles.pitch = 0; angles.roll = 0
+		angles.pitch = 0 angles.roll = 0
 		angles.yaw = angles.yaw + 180
 
 		salesman:SetPos(player.cwSalesmanPos or player.cwSalesmanHitPos)

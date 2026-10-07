@@ -7,17 +7,18 @@
 --]]
 
 if (cw.player) then return end
-if (!plugin) then include("sh_plugin.lua"); end
-if (!config) then include("sh_config.lua"); end
-if (!cw.attribute) then include("sh_attribute.lua"); end
-if (!cw.faction) then include("sh_faction.lua"); end
-if (!cw.class) then include("sh_class.lua"); end
-if (!cw.command) then include("sh_command.lua"); end
-if (!cw.attribute) then include("sh_attribute.lua"); end
-if (!cw.option) then include("sh_option.lua"); end
-if (!cw.entity) then include("sh_entity.lua"); end
-if (!item) then include("sh_item.lua"); end
-if (!cw.inventory) then include("sh_inventory.lua"); end
+
+if (!plugin) then include("sh_plugin.lua") end
+if (!config) then include("sh_config.lua") end
+if (!cw.attribute) then include("sh_attribute.lua") end
+if (!cw.faction) then include("sh_faction.lua") end
+if (!cw.class) then include("sh_class.lua") end
+if (!cw.command) then include("sh_command.lua") end
+if (!cw.attribute) then include("sh_attribute.lua") end
+if (!cw.option) then include("sh_option.lua") end
+if (!cw.entity) then include("sh_entity.lua") end
+if (!item) then include("sh_item.lua") end
+if (!cw.inventory) then include("sh_inventory.lua") end
 
 library.New("player", cw)
 
@@ -87,6 +88,7 @@ end
 	@param Function Alter the value that gets networked.
 	@param Bool Whether or not the data is networked to the player only (defaults to false.)
 --]]
+
 function cw.player:AddCharacterData(name, nwType, default, playerOnly, callback)
 	characterData[name] = {
 		default = default,
@@ -105,6 +107,7 @@ end
 	@param Function Alter the value that gets networked.
 	@param Bool Whether or not the data is networked to the player only (defaults to false.)
 --]]
+
 function cw.player:AddPlayerData(name, nwType, default, playerOnly, callback)
 	playerData[name] = {
 		default = default,
@@ -119,6 +122,7 @@ end
 	@details A function to get a player's rank within their faction.
 	@param Userdata The player whose faction rank you are trying to obtain.
 --]]
+
 function cw.player:GetFactionRank(player, character)
 	if (character) then
 		local faction = faction.FindByID(character.faction)
@@ -159,6 +163,7 @@ end
 	@param Userdata The player whose permissions you are trying to check.
 	@param Userdata The player who may be promoted.
 --]]
+
 function cw.player:CanPromote(player, target)
 	local stringRank, rank = self:GetFactionRank(player)
 
@@ -180,6 +185,7 @@ end
 	@param Userdata The player whose permissions you are trying to check.
 	@param Userdata The player who may be demoted.
 --]]
+
 function cw.player:CanDemote(player, target)
 	local stringRank, rank = self:GetFactionRank(player)
 

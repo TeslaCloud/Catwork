@@ -96,7 +96,7 @@ function cw.voices:ClockworkInitialized()
 				cw.directory:AddCategory(k, "Voice Commands")
 
 				for k2, v2 in SortedPairs(v.voices) do
-					if (!v2.phrase) then v2.phrase = ""; end
+					if (!v2.phrase) then v2.phrase = "" end
 
 					cw.directory:AddCode(k, [[
 						<div class="cwTitleSeperator">]]..string.upper(v2.command)..[[</div>

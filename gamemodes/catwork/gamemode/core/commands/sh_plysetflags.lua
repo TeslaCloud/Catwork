@@ -11,7 +11,7 @@ COMMAND.tip = "#Command_Plysetflags_Description"
 COMMAND.text = "#Command_Plysetflags_Syntax"
 COMMAND.access = "s"
 COMMAND.arguments = 2
-COMMAND.alias = {"SetFlags"}
+COMMAND.alias = { "SetFlags" }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
@@ -25,11 +25,11 @@ function COMMAND:OnRun(player, arguments)
 			return
 		end
 
-		cw.player:SetPlayerFlags(target, arguments[2]);		
+		cw.player:SetPlayerFlags(target, arguments[2])
 		cw.player:NotifyAll(L("Command_Plysetflags_Set", player:Name(), target:SteamName(), arguments[2]))
 	else
 		cw.player:Notify(player, L(player, "NotValidCharacter", arguments[1]))
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

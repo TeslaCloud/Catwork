@@ -7,10 +7,10 @@ ENT.Author = "DrodA, AleXXX_007, CYKA AAAAAAAAAAAAAA"
 
 ENT.Contact			= ""
 ENT.Purpose 		= ""
-ENT.Instructions 	= ""
+ENT.Instructions = ""
 
-ENT.Spawnable			= true
-ENT.AdminSpawnable		= true
+ENT.Spawnable = true
+ENT.AdminSpawnable = true
 
 ENT.RenderGroup = RENDERGROUP_TRANSLUCENT
 ENT.Model = "models/props_combine/combine_smallmonitor001.mdl"

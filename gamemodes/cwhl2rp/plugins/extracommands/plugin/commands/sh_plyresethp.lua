@@ -9,7 +9,7 @@ COMMAND.tip = "#Command_Plyresethealth_Description"
 COMMAND.text = "#Command_Plyresethealth_Syntax"
 COMMAND.access = "a"
 COMMAND.arguments = 1
-COMMAND.alias = {"ResetHP", "ResetHealth", "PlyResetHP"}
+COMMAND.alias = { "ResetHP", "ResetHealth", "PlyResetHP" }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
@@ -24,4 +24,4 @@ function COMMAND:OnRun(player, arguments)
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

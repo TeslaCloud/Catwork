@@ -8,16 +8,16 @@ BLUEPRINT.category = "#Craft_Category_Clothing"
 BLUEPRINT.description = "#Blueprint_BlueprintRebelLegs1_Description"
 BLUEPRINT.required = {}
 BLUEPRINT.updatt = {
-	{"cloth", 55}
+	{ "cloth", 55 }
 }
 BLUEPRINT.reqatt = {
-	{"cloth", 55}
+	{ "cloth", 55 }
 }
 BLUEPRINT.recipe = {
-	{"cloth", 5},
-	{"refined_metal", 1}
+	{ "cloth", 5 },
+	{ "refined_metal", 1 }
 }
 BLUEPRINT.finish = {
-	{"rebel_legs_1", 1}
+	{ "rebel_legs_1", 1 }
 }
-BLUEPRINT:Register();
+BLUEPRINT:Register()

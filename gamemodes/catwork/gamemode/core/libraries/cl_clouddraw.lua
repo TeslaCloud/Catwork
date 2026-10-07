@@ -138,10 +138,10 @@ end
 
 function cdraw.DrawEZPoly(x1, y1, w, h, pct, col)
 	local poly = {
-		{x = x1, y = y1},
-		{x = x1 + w, y = y1},
-		{x = x1 + w + pct, y = y1 + h},
-		{x = x1 + pct, y = y1 + h}
+		{ x = x1, y = y1 },
+		{ x = x1 + w, y = y1 },
+		{ x = x1 + w + pct, y = y1 + h },
+		{ x = x1 + pct, y = y1 + h }
 	}
 
 	surface.SetDrawColor(col)
@@ -151,10 +151,10 @@ end
 
 function cdraw.DrawEZHalfPoly(x1, y1, w, h, pct, col)
 	local poly = {
-		{x = x1, y = y1},
-		{x = x1 + w, y = y1},
-		{x = x1 + w + pct, y = y1 + h},
-		{x = x1, y = y1 + h}
+		{ x = x1, y = y1 },
+		{ x = x1 + w, y = y1 },
+		{ x = x1 + w + pct, y = y1 + h },
+		{ x = x1, y = y1 + h }
 	}
 
 	surface.SetDrawColor(col)
@@ -164,10 +164,10 @@ end
 
 function cdraw.DrawEZHalfPolyRight(x1, y1, w, h, pct, col)
 	local poly = {
-		{x = x1, y = y1},
-		{x = x1 + w, y = y1},
-		{x = x1 + w, y = y1 + h},
-		{x = x1 - pct, y = y1 + h}
+		{ x = x1, y = y1 },
+		{ x = x1 + w, y = y1 },
+		{ x = x1 + w, y = y1 + h },
+		{ x = x1 - pct, y = y1 + h }
 	}
 
 	surface.SetDrawColor(col)

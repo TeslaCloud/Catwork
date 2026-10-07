@@ -12,7 +12,7 @@ COMMAND.text = "#Command_Plytpto_Syntax"
 COMMAND.access = "o"
 COMMAND.arguments = 2
 COMMAND.optionalArguments = 1
-COMMAND.alias = {"PlyTPTo", "TPTo"}
+COMMAND.alias = { "PlyTPTo", "TPTo" }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
@@ -35,4 +35,4 @@ function COMMAND:OnRun(player, arguments)
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

@@ -5,7 +5,7 @@
 
 function PLUGIN:MenuItemsAdd(menuItems)
 	if (Schema:PlayerIsCombine(cw.client) or cw.client:GetFaction() == FACTION_CWU) then
-		menuItems:Add("#Combine_PDA", "cwCombinePDA", "#Combine_PDA_Desc", {path = "fa-mobile", size = 10})
+		menuItems:Add("#Combine_PDA", "cwCombinePDA", "#Combine_PDA_Desc", { path = "fa-mobile", size = 10 })
 	end
 end
 
@@ -53,15 +53,15 @@ function PLUGIN:AddCombinePDAButons(pda)
 	pda:AddButton("status", "#PDA_ChangeCitizenStatus", false, function()
 		if (Schema:PlayerIsCombine(cw.client)) then
 			Derma_Query("#Status_Desc", "#Status_Title",
-				"#Status_Unverified", 	function() plugin.Call("HandleCitizenStatusButton", pda, "Unverified") 	end,
-				"#Status_Citizen", 		function() plugin.Call("HandleCitizenStatusButton", pda, "Citizen") 	end,
-				"#Status_AntiCitizen", 	function() plugin.Call("HandleCitizenStatusButton", pda, "AntiCitizen") end,
-				"#Status_NoData", 		function() plugin.Call("HandleCitizenStatusButton", pda, "NoData") 		end
+				"#Status_Unverified", function() plugin.Call("HandleCitizenStatusButton", pda, "Unverified") end,
+				"#Status_Citizen", 		function() plugin.Call("HandleCitizenStatusButton", pda, "Citizen") end,
+				"#Status_AntiCitizen", function() plugin.Call("HandleCitizenStatusButton", pda, "AntiCitizen") end,
+				"#Status_NoData", 		function() plugin.Call("HandleCitizenStatusButton", pda, "NoData") end
 			)
 		else
 			Derma_Query("#Status_Desc", "#Status_Title",
-				"#Status_Unverified", 	function() plugin.Call("HandleCitizenStatusButton", pda, "Unverified") 	end,
-				"#Status_Citizen", 		function() plugin.Call("HandleCitizenStatusButton", pda, "Citizen") 	end
+				"#Status_Unverified", function() plugin.Call("HandleCitizenStatusButton", pda, "Unverified") end,
+				"#Status_Citizen", function() plugin.Call("HandleCitizenStatusButton", pda, "Citizen") end
 			)
 		end
 	end)
@@ -77,7 +77,7 @@ function PLUGIN:AddCombinePDAButons(pda)
 	end)
 
 	pda:AddButton("jobpoints", "#PDA_CWUPoints", false, function()
-		Derma_NumRequest("#PDA_CWUPoints", "#PDA_IssuePointsDesc", 0, 0, 20, 0, 
+		Derma_NumRequest("#PDA_CWUPoints", "#PDA_IssuePointsDesc", 0, 0, 20, 0,
 		function(value) plugin.Call("HandleJobPointsIssue", pda, value) end, nil, "#OK", "#Cancel")
 	end)
 
@@ -92,12 +92,12 @@ function PLUGIN:AddCombinePDAButons(pda)
 	end)
 
 	pda:AddButton("sub_loyalty", "#PDA_SubLP", true, function()
-		Derma_NumRequest("#PDA_SubLP", "#PDA_RemovePointsDesc", 0, 0, 10, 0, 
+		Derma_NumRequest("#PDA_SubLP", "#PDA_RemovePointsDesc", 0, 0, 10, 0,
 		function(value) plugin.Call("HandleLoyaltyPointsSubstract", pda, -value) end, nil, "#OK", "#Cancel")
 	end)
 
 	pda:AddButton("sub_crime", "#PDA_SubCP", true, function()
-		Derma_NumRequest("#PDA_SubCP", "#PDA_RemovePointsDesc", 0, 0, 20, 0, 
+		Derma_NumRequest("#PDA_SubCP", "#PDA_RemovePointsDesc", 0, 0, 20, 0,
 		function(value) plugin.Call("HandleCrimePointsSubstract", pda, -value) end, nil, "#OK", "#Cancel")
 	end)
 
@@ -111,7 +111,7 @@ function PLUGIN:AddCombinePDAButons(pda)
 	pda:AddButton("unjail", "#PDA_Unjail", true, function()
 		Derma_Query("#PDA_UnjailConfirm", "#PDA_Unjail",
 			"#OK", function() plugin.Call("HandleUnjailButton", pda) end,
-			"#Cancel", 	function() end
+			"#Cancel", function() end
 		)
 	end)
 end

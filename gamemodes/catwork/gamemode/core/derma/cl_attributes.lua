@@ -40,9 +40,9 @@ function PANEL:Rebuild()
 				local category = v.category
 
 				attributes[category] = attributes[category] or {}
-				attributes[category][#attributes[category] + 1] = {k, cw.lang:TranslateText(v.name)}
+				attributes[category][#attributes[category] + 1] = { k, cw.lang:TranslateText(v.name) }
 			else
-				miscellaneous[#miscellaneous + 1] = {k, cw.lang:TranslateText(v.name)}
+				miscellaneous[#miscellaneous + 1] = { k, cw.lang:TranslateText(v.name) }
 			end
 		end
 	end
@@ -155,12 +155,12 @@ function PANEL:OnMenuOpened()
 end
 
 -- Called when the panel is selected.
-function PANEL:OnSelected() self:Rebuild(); end
+function PANEL:OnSelected() self:Rebuild() end
 
 -- Called when the layout should be performed.
 function PANEL:PerformLayout(w, h)
-	--self.panelList:StretchToParent(4, 4, 4, 4)
-	--self:SetSize(w, math.min(self.panelList.pnlCanvas:GetTall() + 32, ScrH() * 0.75))
+	-- self.panelList:StretchToParent(4, 4, 4, 4)
+	-- self:SetSize(w, math.min(self.panelList.pnlCanvas:GetTall() + 32, ScrH() * 0.75))
 end
 
 -- Called when the panel is painted.
@@ -359,7 +359,7 @@ end
 
 -- A function to set the panel's percentage text.
 function PANEL:SetPercentageText(maximum, default, boost)
-	--local percentage = math.Clamp(math.Round((100 / maximum) * (default + boost)), -100, 100)
+	-- local percentage = math.Clamp(math.Round((100 / maximum) * (default + boost)), -100, 100)
 
 	self.percentageText:SetText(math.Round(default + boost).."/"..maximum)
 	self.percentageText:SizeToContents()
@@ -399,4 +399,4 @@ function PANEL:PerformLayout(w, h)
 	end
 end
 
-vgui.Register("cwAttributesItem", PANEL, "DPanel");
+vgui.Register("cwAttributesItem", PANEL, "DPanel")

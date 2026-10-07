@@ -18,4 +18,4 @@ ITEM.bodyGroup = 2
 ITEM.bodyGroupVal = 1
 ITEM.description = ""
 ITEM.isCombine = true
-ITEM.requiredBG = {5, 1}
+ITEM.requiredBG = { 5, 1 }

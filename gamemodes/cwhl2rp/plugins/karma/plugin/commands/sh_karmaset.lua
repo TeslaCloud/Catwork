@@ -4,7 +4,7 @@ COMMAND.text = "#Command_Karmaset_Syntax"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "o"
 COMMAND.arguments = 2
-COMMAND.alias = {"CharSetKarma", "SetKarma"}
+COMMAND.alias = { "CharSetKarma", "SetKarma" }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)

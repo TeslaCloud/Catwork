@@ -54,4 +54,4 @@ function PANEL:Paint(width, height)
 	return true
 end
 
-vgui.Register("cwPanelList", PANEL, "DCategoryList");
+vgui.Register("cwPanelList", PANEL, "DCategoryList")

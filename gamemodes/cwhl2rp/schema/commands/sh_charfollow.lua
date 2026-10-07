@@ -23,7 +23,7 @@ function COMMAND:OnRun(player, arguments)
 						local distance = v:GetPos():Distance(scanner:GetPos())
 
 						if (!closest or distance < closest[2]) then
-							closest = {v, distance}
+							closest = { v, distance }
 						end
 					end
 				end
@@ -44,4 +44,4 @@ function COMMAND:OnRun(player, arguments)
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

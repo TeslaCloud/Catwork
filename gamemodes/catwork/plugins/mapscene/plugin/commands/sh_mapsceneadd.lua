@@ -27,4 +27,4 @@ function COMMAND:OnRun(player, arguments)
 	cw.player:Notify(player, L("MapScene_Added"))
 end
 
-COMMAND:Register();
+COMMAND:Register()

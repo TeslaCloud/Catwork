@@ -10,7 +10,7 @@ ITEM.uniqueID = "combine_lock_1"
 ITEM.cost = 0
 ITEM.model = "models/props_combine/combine_lock01.mdl"
 ITEM.weight = 4
-ITEM.classes = {CLASS_EMP, CLASS_EOW}
+ITEM.classes = { CLASS_EMP, CLASS_EOW }
 ITEM.useText = "#Item_CombineLock_UseText"
 ITEM.business = true
 ITEM.description = "#Item_CombineLock1_Description"
@@ -66,4 +66,3 @@ end
 
 -- Called when a player drops the item.
 function ITEM:OnDrop(player, position) end
-

@@ -23,41 +23,41 @@ end
 cw.fonts:Add("cwChatBoxFont", {
 	font		= "Roboto",
 	size		= chatFontSize,
-	weight		= 500,
-	extended 	= true
+	weight = 500,
+	extended = true
 })
 
 cw.fonts:Add("cwChatBoxFontBold", {
 	font		= "Roboto",
 	size		= chatFontSize,
-	weight		= 1000,
-	extended 	= true
+	weight = 1000,
+	extended = true
 })
 
 cw.fonts:Add("cwChatBoxSyntax", {
 	font		= "Roboto",
 	size		= 20,
-	weight		= 500,
-	extended 	= true
+	weight = 500,
+	extended = true
 })
 
 library.New("chatbox", _G)
 
-local history 		= chatbox.history or {}
-local display		= chatbox.display or {}
-local filters 		= chatbox.filters or {}
-local types 		= chatbox.types or {}
-local emotes 		= chatbox.emotes or {}
-local codes 		= chatbox.codes or {}
+local history = chatbox.history or {}
+local display = chatbox.display or {}
+local filters = chatbox.filters or {}
+local types = chatbox.types or {}
+local emotes = chatbox.emotes or {}
+local codes = chatbox.codes or {}
 
-chatbox.history 	= history; -- Entire chat history. Last X meesages, configurable.
-chatbox.display		= display; -- Pre-parsed lines that are currently being drawn.
-chatbox.filters 	= filters; -- Table that stores filter data.
-chatbox.types 		= types; -- Table that stores message types data.
-chatbox.emotes 		= emotes -- Table that stores emotes data.
-chatbox.codes 		= codes; -- Table that stores BB-Codes data.
+chatbox.history 	= history -- Entire chat history. Last X meesages, configurable.
+chatbox.display		= display -- Pre-parsed lines that are currently being drawn.
+chatbox.filters 	= filters -- Table that stores filter data.
+chatbox.types = types -- Table that stores message types data.
+chatbox.emotes = emotes -- Table that stores emotes data.
+chatbox.codes = codes -- Table that stores BB-Codes data.
 
-chatbox.oldAddText 	= chatbox.oldAddText or chat.AddText
+chatbox.oldAddText = chatbox.oldAddText or chat.AddText
 
 -- A function to add text to the chat box.
 function chat.AddText(...)
@@ -349,7 +349,7 @@ function chatbox.ParseBBCodes(line, rich)
 								rm = true
 							end
 
-							local closure = {whole:find("%[", wE + 1)}
+							local closure = { whole:find("%[", wE + 1) }
 							local closurePos = closure[1]
 							local oldTextLength = 0
 
@@ -442,7 +442,7 @@ function chatbox.WrapText(msgData, maxWidth, initWidth)
 		text = cw.lang:TranslateText(text)
 	end
 
-	local parsed = {text}
+	local parsed = { text }
 	chatbox.ParseBBCodes(parsed, msgData.rich)
 
 	local fontSize = chatFontSize * ((msgData.data and msgData.data.sizeMultiplier) or 1)
@@ -501,6 +501,7 @@ function chatbox.WrapText(msgData, maxWidth, initWidth)
 						if (curWord != "") then
 							curText = curWord.." "
 						end
+
 					-- if it does
 					else
 						table.insert(wrapped, curText)
@@ -555,7 +556,7 @@ function chatbox.ParseText(messageData)
 		-- the following error:
 		-- [ERROR] gamemodes/clockwork/framework/libraries/client/cl_chatbox.lua:474: wrong number of arguments to 'insert'
 		local color = Color(255, 255, 255)
-		table.insert(parsed[1], color); -- this was line 474 from the error btw.
+		table.insert(parsed[1], color) -- this was line 474 from the error btw.
 		table.insert(parsed[1], "[SendTime:"..messageData.time.."]")
 		table.insert(parsed[1], " - ")
 		msgWidth = msgWidth + 50
@@ -752,6 +753,7 @@ end
 local function IsIcon(text)
 	return (text:StartWith("[icon:") and text:EndsWith(".png]"))
 end
+
 local function IsAvatar(text)
 	return (text == "[SenderAvatar]")
 end
@@ -1080,7 +1082,7 @@ end
 -- A function to get whether the player is typing a command.
 function chatbox.IsTypingCommand()
 	local text = chatbox.GetCurrentText()
-	local prefix = {"/", "/?"}
+	local prefix = { "/", "/?" }
 
 	for k, v in pairs(prefix) do
 		if (text:StartWith(v) and !chatbox.IsTypingOOC()) then
@@ -1171,7 +1173,7 @@ function chatbox.UpdateDisplay()
 
 	for k, v in SortedPairs(history, true) do
 		if (curMsg < chatbox.panel.scrollOffset) then
-			--nothing
+			-- nothing
 		else
 			if (i < maxMessages) then
 				local parsed = chatbox.ParseText(history[k])
@@ -1273,4 +1275,4 @@ netstream.Hook("ChatboxAddText", function(messageData)
 	table.insert(history, messageData)
 
 	chatbox.UpdateDisplay()
-end);
+end)

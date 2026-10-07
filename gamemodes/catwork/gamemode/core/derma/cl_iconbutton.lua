@@ -18,4 +18,4 @@ function PANEL:PerformLayout()
 	DLabel.PerformLayout(self)
 end
 
-vgui.Register("cwIconButton", PANEL, "DButton");
+vgui.Register("cwIconButton", PANEL, "DButton")

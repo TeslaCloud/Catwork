@@ -65,4 +65,4 @@ end
 
 cw.icon:GroupSet("superadmin", "SuperAdminShield", "icon16/shield.png")
 cw.icon:GroupSet("admin", "AdminStar", "icon16/star.png")
-cw.icon:GroupSet("operator", "OperatorSmile", "icon16/emoticon_smile.png");
+cw.icon:GroupSet("operator", "OperatorSmile", "icon16/emoticon_smile.png")

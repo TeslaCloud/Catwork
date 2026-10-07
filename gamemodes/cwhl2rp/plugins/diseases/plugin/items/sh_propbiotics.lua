@@ -9,7 +9,7 @@ ITEM.useText = "Swallow"
 ITEM.category = "Medical"
 ITEM.business = true
 ITEM.description = "#Item_Probiotics_Description"
-ITEM.customFunctions = {"Give"}
+ITEM.customFunctions = { "Give" }
 
 -- Called when a player uses the item.
 function ITEM:OnUse(player, itemEntity)
@@ -24,6 +24,7 @@ if (SERVER) then
 	function ITEM:OnCustomFunction(player, name)
 		if (name == "Give") then
 			local lookingPly = player:GetEyeTrace().Entity
+
 			if (lookingPly:IsPlayer()) then
 				if (lookingPly:GetCharacterData("diseases") == "diarrhea") then
 					lookingPly:SetCharacterData("diseases", "none")

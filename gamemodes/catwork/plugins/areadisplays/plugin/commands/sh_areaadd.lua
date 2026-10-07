@@ -64,4 +64,4 @@ function COMMAND:OnRun(player, arguments)
 	player.cwAreaData = nil
 end
 
-COMMAND:Register();
+COMMAND:Register()

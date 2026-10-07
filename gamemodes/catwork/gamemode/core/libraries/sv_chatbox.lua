@@ -4,7 +4,7 @@
 --]]
 
 library.New("chatbox", _G)
-chatbox.prefixes = chatbox.prefixes or {}; // Chatbox prefixes for serverside processing. Will be networked to clients for message styling.
+chatbox.prefixes = chatbox.prefixes or {} // Chatbox prefixes for serverside processing. Will be networked to clients for message styling.
 chatbox.filters = chatbox.filters or {}
 
 function chatbox.AddPrefix(prefix, callback)
@@ -142,7 +142,7 @@ do
 
 		if (text:StartWith(".//")) then
 			msgData.filter = "looc"
-			msgData.radius = config.GetVal("talk_radius"); -- todo
+			msgData.radius = config.GetVal("talk_radius") -- todo
 
 			while (text:StartWith(".// ")) do
 				text = ".//"..text:utf8sub(5, text:utf8len())
@@ -160,7 +160,7 @@ do
 
 		if (text:StartWith("[[")) then
 			msgData.filter = "looc"
-			msgData.radius = config.GetVal("talk_radius"); -- todo
+			msgData.radius = config.GetVal("talk_radius") -- todo
 
 			while (text:StartWith("[[ ")) do
 				text = "[["..text:utf8sub(4, text:utf8len())
@@ -229,7 +229,7 @@ function chatbox.PlayerCanHear(listener, messageData)
 end
 
 function chatbox.AddText(listeners, ...)
-	local args = {...}
+	local args = { ... }
 	local message = {
 		text = "",
 		filter = "default",
@@ -324,7 +324,7 @@ function chatbox.AddText(listeners, ...)
 end
 
 function chatbox.SayAsPlayer(player, radius, text)
-	chatbox.AddText(nil, "\""..text.."\"", {sender = player, isPlayerMessage = true, filter = "ic", radius = radius, textColor = Color(255, 255, 200, 255)})
+	chatbox.AddText(nil, "\""..text.."\"", { sender = player, isPlayerMessage = true, filter = "ic", radius = radius, textColor = Color(255, 255, 200, 255) })
 end
 
 function chatbox.SetClientMode(isclient)
@@ -368,6 +368,7 @@ local slanderPhrases = {
 
 netstream.Hook("ChatboxTextEntered", function(player, msgText)
 	if (!isstring(msgText) or msgText == "") then return end
+
 	if (!IsValid(player)) then
 		print("[Catwork Debug] Player is not valid. This should never happen.")
 
@@ -420,7 +421,7 @@ netstream.Hook("ChatboxTextEntered", function(player, msgText)
 		chatbox.GetPrefix("//").Callback(message)
 	else
 		for k, v in pairs(chatbox.prefixes) do
-			if (k == "//") then continue; end
+			if (k == "//") then continue end
 
 			if (msgText:StartWith(k)) then
 				if (v.Callback(message)) then
@@ -489,7 +490,7 @@ netstream.Hook("ChatboxTextEntered", function(player, msgText)
 					)
 
 					return
-				end	
+				end
 			end
 		end
 	elseif (message.filter == "ic") then
@@ -497,7 +498,7 @@ netstream.Hook("ChatboxTextEntered", function(player, msgText)
 			shouldSend = false
 		else
 			if (cw.player:GetDeathCode(player, true)) then
-				cw.player:UseDeathCode(player, nil, {message.text})
+				cw.player:UseDeathCode(player, nil, { message.text })
 			end
 
 			message.text = "\""..message.text.."\""
@@ -525,4 +526,4 @@ netstream.Hook("ChatboxTextEntered", function(player, msgText)
 	message.listeners = listeners or _player.GetAll()
 
 	hook.Run("ChatboxMessageSent", message)
-end);
+end)

@@ -6,4 +6,4 @@
 	with contributions from Cloud Sixteen community.
 --]]
 
-config.AddToSystem("#RemoveMapPhysics", "remove_map_physics", "#RemoveMapPhysicsDesc");
+config.AddToSystem("#RemoveMapPhysics", "remove_map_physics", "#RemoveMapPhysicsDesc")

@@ -13,4 +13,4 @@ ENT.Author = "kurozael"
 ENT.PrintName = "Belongings"
 ENT.Spawnable = false
 ENT.AdminSpawnable = false
-ENT.UsableInVehicle = true;
+ENT.UsableInVehicle = true

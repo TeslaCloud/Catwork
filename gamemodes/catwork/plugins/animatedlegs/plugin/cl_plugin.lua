@@ -11,13 +11,13 @@ cwAnimatedLegs.BoneHoldTypes = {
 		"ValveBiped.Bip01_Head1",
 		"ValveBiped.Bip01_Neck1",
 		"ValveBiped.Bip01_Spine4",
-		"ValveBiped.Bip01_Spine2",
+		"ValveBiped.Bip01_Spine2"
 	},
 	["fist"] = {
 		"ValveBiped.Bip01_Head1",
 		"ValveBiped.Bip01_Neck1",
 		"ValveBiped.Bip01_Spine4",
-		"ValveBiped.Bip01_Spine2",
+		"ValveBiped.Bip01_Spine2"
 	},
 	["chair"] = {
 		"ValveBiped.Bip01_Head1",
@@ -74,7 +74,7 @@ cwAnimatedLegs.BoneHoldTypes = {
 		"ValveBiped.Bip01_Head1",
 		"ValveBiped.Bip01_Neck1",
 		"ValveBiped.Bip01_Spine4",
-		"ValveBiped.Bip01_Spine2",
+		"ValveBiped.Bip01_Spine2"
 	}
 }
 
@@ -134,7 +134,7 @@ function cwAnimatedLegs:WeaponChanged(weapon)
 			self.LegsEntity:ManipulateBonePosition(i, vector_origin)
 		end
 
-		self.BonesToRemove = {"ValveBiped.Bip01_Head1"}
+		self.BonesToRemove = { "ValveBiped.Bip01_Head1" }
 
 		if (!cw.client:InVehicle()) then
 			if ((self.HoldType != "fist" or !cw.client:IsWeaponRaised())
@@ -154,7 +154,7 @@ function cwAnimatedLegs:WeaponChanged(weapon)
 
 			if (bone) then
 				self.LegsEntity:ManipulateBoneScale(bone, vector_origin)
-				self.LegsEntity:ManipulateBonePosition(bone, Vector(-10,-10,0))
+				self.LegsEntity:ManipulateBonePosition(bone, Vector(-10, -10, 0))
 			end
 		end
 	end

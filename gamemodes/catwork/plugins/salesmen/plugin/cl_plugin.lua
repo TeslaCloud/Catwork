@@ -139,4 +139,4 @@ netstream.Hook("SalesmanEdit", function(data)
 		cw.salesman.panel:Rebuild()
 		cw.salesman.panel:MakePopup()
 	end)
-end);
+end)

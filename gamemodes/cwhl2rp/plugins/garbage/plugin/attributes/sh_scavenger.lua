@@ -13,4 +13,4 @@ local ATTRIBUTE = cw.attribute:New()
 	ATTRIBUTE.description = "#Attribute_Scavenger_Desc"
 	ATTRIBUTE.isOnCharScreen = false
 	ATTRIBUTE.category = "#AttributeCategory_Skills"
-ATB_SCAVENGER = cw.attribute:Register(ATTRIBUTE);
+ATB_SCAVENGER = cw.attribute:Register(ATTRIBUTE)

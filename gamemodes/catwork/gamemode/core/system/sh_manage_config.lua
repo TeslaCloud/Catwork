@@ -263,7 +263,7 @@ else
 
 		if (configObject:IsValid()) then
 			if (type(configObject:Get()) == "string" and configObject("isPrivate")) then
-				netstream.Start(player, "SystemCfgValue", {data, "****"})
+				netstream.Start(player, "SystemCfgValue", { data, "****" })
 			else
 				netstream.Start(player, "SystemCfgValue", {
 					data, configObject:GetNext(configObject:Get())

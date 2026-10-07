@@ -120,7 +120,7 @@ function GM:TranslateActivity(player, act)
 			else
 				return animation
 			end
-		else			
+		else
 			local animation = "sitchair1"
 
 			if (isstring(animation)) then

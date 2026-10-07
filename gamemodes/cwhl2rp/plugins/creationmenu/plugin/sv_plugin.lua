@@ -12,4 +12,4 @@ config.Add("community_button_enable", false, true, true)
 
 config.Add("forum_name", "Forum")
 config.Add("forum_link", "http://forums.teslacloud.net/")
-config.Add("forum_button_enable", false, true, true);
+config.Add("forum_button_enable", false, true, true)

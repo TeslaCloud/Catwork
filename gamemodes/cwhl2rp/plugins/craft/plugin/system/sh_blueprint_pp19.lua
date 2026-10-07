@@ -7,23 +7,23 @@ BLUEPRINT.category = "#Craft_Category_Weapons"
 BLUEPRINT.description = "#Blueprint_BlueprintPp19_Description"
 BLUEPRINT.craftplace = "cw_craft_wep"
 BLUEPRINT.reqatt = {
-	{"rem", 65}
+	{ "rem", 65 }
 }
 BLUEPRINT.updatt = {
-	{"rem", 40}
+	{ "rem", 40 }
 }
 BLUEPRINT.required = {
-	{"screw_driver", 1},
-	{"weld", 1},
-	{"wrench", 1}
+	{ "screw_driver", 1 },
+	{ "weld", 1 },
+	{ "wrench", 1 }
 }
 BLUEPRINT.recipe = {
-	{"broken_pp19", 2},
-	{"reclaimed_metal", 3},
-	{"box_of_screws", 2},
-	{"box_of_bolts", 2}
+	{ "broken_pp19", 2 },
+	{ "reclaimed_metal", 3 },
+	{ "box_of_screws", 2 },
+	{ "box_of_bolts", 2 }
 }
 BLUEPRINT.finish = {
-	{"sxbase_pp19", 1}
+	{ "sxbase_pp19", 1 }
 }
-BLUEPRINT:Register();
+BLUEPRINT:Register()

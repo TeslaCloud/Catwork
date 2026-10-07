@@ -13,7 +13,7 @@ end
 
 -- Called when the local player has entered an area.
 function cwAreaDisplays:PlayerEnteredArea(name, minimum, maximum)
-	netstream.Start("EnteredArea", {name, minimum, maximum})
+	netstream.Start("EnteredArea", { name, minimum, maximum })
 end
 
 -- Called when the local player has exited an area.
@@ -35,7 +35,7 @@ end
 
 -- Called when the foreground HUD should be painted.
 function cwAreaDisplays:HUDPaintForeground()
-	local info = {x = ScrW() * 0.1, y = ScrH() * 0.6}
+	local info = { x = ScrW() * 0.1, y = ScrH() * 0.6 }
 
 	for k, v in pairs(self.activeDisplays) do
 		if (v.class == "Scrolling") then
@@ -63,7 +63,6 @@ function cwAreaDisplays:Tick()
 
 	for k, v in pairs(self.storedList) do
 		if (cw.entity:IsInBox(cw.client, v.minimum, v.maximum)) then
-
 			if (self.currentAreaDisplay != v.name) then
 				local bCalledHooks = self:HandleAreaTable(v, k)
 

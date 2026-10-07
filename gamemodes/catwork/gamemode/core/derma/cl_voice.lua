@@ -87,4 +87,4 @@ function PANEL:PerformLayout()
 end
 
 -- Called when the panel should be layed out.
-derma.DefineControl("VoiceNotify", "", PANEL, "DPanel");
+derma.DefineControl("VoiceNotify", "", PANEL, "DPanel")

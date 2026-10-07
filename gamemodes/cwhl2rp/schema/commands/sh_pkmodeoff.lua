@@ -18,4 +18,4 @@ function COMMAND:OnRun(player, arguments)
 	cw.player:NotifyAll(L("PKMode_Off", player:Name()))
 end
 
-COMMAND:Register();
+COMMAND:Register()

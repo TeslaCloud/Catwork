@@ -11,7 +11,7 @@ function COMMAND:OnRun(player, arguments)
 	cwRadSystem.stored[#cwRadSystem.stored + 1] = {
 		pos = trace.HitPos,
 		radius = tonumber(arguments[1]),
-		rad = tonumber(arguments[2]),
+		rad = tonumber(arguments[2])
 	}
 
 	cw.player:Notify(player, L("Containment_SphereAdded", arguments[1], arguments[2]))

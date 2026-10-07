@@ -3,7 +3,7 @@ library.New("blueprints", cw)
 local stored = cw.blueprints.stored or {}
 cw.blueprints.stored = stored
 
-local CLASS_TABLE = {__index = CLASS_TABLE}
+local CLASS_TABLE = { __index = CLASS_TABLE }
 CLASS_TABLE.name = "Base Blueprint"
 CLASS_TABLE.skin = 0
 CLASS_TABLE.model = "models/error.mdl"

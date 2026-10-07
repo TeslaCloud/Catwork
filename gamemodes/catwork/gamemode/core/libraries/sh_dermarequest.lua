@@ -22,18 +22,18 @@ if (SERVER) then
 
 	function cw.dermaRequest:RequestString(player, title, question, default, Callback)
 		local rID = self:GenerateID()
-		netstream.Start(player, "dermaRequest_stringQuery", {id = rID, title = title, question = question, default = default})
-		hooks[rID] = {Callback = Callback, player = player}
+		netstream.Start(player, "dermaRequest_stringQuery", { id = rID, title = title, question = question, default = default })
+		hooks[rID] = { Callback = Callback, player = player }
 	end
 
 	function cw.dermaRequest:RequestConfirmation(player, title, question, Callback)
 		local rID = self:GenerateID()
-		netstream.Start(player, "dermaRequest_confirmQuery", {id = rID, title = title, question = question})
-		hooks[rID] = {Callback = Callback, player = player}
+		netstream.Start(player, "dermaRequest_confirmQuery", { id = rID, title = title, question = question })
+		hooks[rID] = { Callback = Callback, player = player }
 	end
 
 	function cw.dermaRequest:Message(player, message, title, button)
-		netstream.Start(player, "dermaRequest_message", {message = message, title = title or nil, button = button or nil})
+		netstream.Start(player, "dermaRequest_message", { message = message, title = title or nil, button = button or nil })
 	end
 
 	-- An internal function to validate a return
@@ -53,7 +53,7 @@ if (SERVER) then
 	end)
 else
 	function cw.dermaRequest:Send(id, recv)
-		netstream.Start("dermaRequestCallback", {id = id, recv = recv})
+		netstream.Start("dermaRequestCallback", { id = id, recv = recv })
 	end
 
 	netstream.Hook("dermaRequest_stringQuery", function(data)
@@ -65,7 +65,7 @@ else
 	netstream.Hook("dermaRequest_confirmQuery", function(data)
 		Derma_Query(data.question, data.title,
 			"#DermaRequest_confirmQuery_Confirm", function() cw.dermaRequest:Send(data.id, true) end,
-			"#DermaRequest_confirmQuery_Cancel", function() cw.dermaRequest:Send(data.id, false); end)
+			"#DermaRequest_confirmQuery_Cancel", function() cw.dermaRequest:Send(data.id, false) end)
 	end)
 
 	netstream.Hook("dermaRequest_message", function(data)

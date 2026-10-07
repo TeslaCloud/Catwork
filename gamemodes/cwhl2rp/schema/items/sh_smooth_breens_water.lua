@@ -16,7 +16,7 @@ ITEM.weight = 0.35
 ITEM.access = "1"
 ITEM.useText = "Drink"
 ITEM.business = true
-ITEM.factions = {FACTION_MPF}
+ITEM.factions = { FACTION_MPF }
 ITEM.category = "Consumables"
 ITEM.description = "#ITEM_Smooth_Breens_Water_Desc"
 ITEM.thirst = 25
@@ -39,7 +39,7 @@ function ITEM:OnDrop(player, position) end
 function ITEM:OnEditFunctions(functions)
 	if (Schema:PlayerIsCombine(cw.client, false)) then
 		for k, v in pairs(functions) do
-			if (v == "Drink") then functions[k] = nil; end
+			if (v == "Drink") then functions[k] = nil end
 		end
 	end
 end

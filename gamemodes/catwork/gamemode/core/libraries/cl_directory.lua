@@ -76,7 +76,7 @@ end
 
 -- A function to replace a category's matches.
 function cw.directory:ReplaceMatches(category, htmlCode)
-	if (!self.matches[category]) then return htmlCode; end
+	if (!self.matches[category]) then return htmlCode end
 
 	for k, v in pairs(self.matches[category]) do
 		htmlCode = cw.core:Replace(htmlCode, k, v)
@@ -163,7 +163,7 @@ function cw.directory:AddCategory(category, parent)
 	end
 
 	if (!self:CategoryExists(category)) then
-		if (parent == false) then parent = nil; end
+		if (parent == false) then parent = nil end
 
 		self.stored[#self.stored + 1] = {
 			category = category,

@@ -23,7 +23,7 @@ ITEM.isAttachment = true
 ITEM.attachmentBone = "ValveBiped.Bip01_R_Hand"
 ITEM.attachmentOffsetAngles = Angle(0, 90, -10)
 ITEM.attachmentOffsetVector = Vector(0, 0, 4)
-ITEM.customFunctions = {"Unpack"}
+ITEM.customFunctions = { "Unpack" }
 
 -- A function to get whether the attachment is visible.
 function ITEM:GetAttachmentVisible(player, entity)

@@ -15,7 +15,7 @@ function PLUGIN:SavePlants()
 			position = v:GetPos(),
 			spawn = v:GetSpawnTime(),
 			grow = v:GetGrowTime(),
-			item = v:GetItem(),
+			item = v:GetItem()
 		}
 	end
 
@@ -37,7 +37,7 @@ function PLUGIN:LoadPlants()
 			plant:SetGrowTime(v.grow)
 			plant:SetSpawnTime(v.spawn)
 			plant:Spawn()
-			plant:SetModel(itemTable.PlantModel)			
+			plant:SetModel(itemTable.PlantModel)
 		end
 	end
 end

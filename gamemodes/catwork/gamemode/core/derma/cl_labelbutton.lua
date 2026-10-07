@@ -102,9 +102,11 @@ function PANEL:FadeOut(speed, Callback)
 
 		if (animation.Finished) then
 			panel:SetVisible(false)
+
 				if (Callback) then
 					Callback()
 				end
+
 			self.animation = nil
 		end
 	end)
@@ -215,4 +217,4 @@ function PANEL:SetCallback(Callback)
 	end
 end
 
-vgui.Register("cwLabelButton", PANEL, "DLabel");
+vgui.Register("cwLabelButton", PANEL, "DLabel")

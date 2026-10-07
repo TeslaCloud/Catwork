@@ -12,4 +12,4 @@ config.AddToSystem("#CommunityButtonEnable", "community_button_enable", "#Commun
 
 config.AddToSystem("#ForumName", "forum_name", "#ForumNameDesc")
 config.AddToSystem("#ForumLink", "forum_link", "#ForumLinkDesc")
-config.AddToSystem("#ForumButtonEnable", "forum_button_enable", "#ForumButtonEnableDesc");
+config.AddToSystem("#ForumButtonEnable", "forum_button_enable", "#ForumButtonEnableDesc")

@@ -45,4 +45,4 @@ function COMMAND:OnRun(player, arguments)
 	cwAreaDisplays:SaveAreaDisplays()
 end
 
-COMMAND:Register();
+COMMAND:Register()

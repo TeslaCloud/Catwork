@@ -52,4 +52,4 @@ function FACTION:OnTransferred(player, faction, name)
 	end
 end
 
-FACTION_CITIZEN = FACTION:Register();
+FACTION_CITIZEN = FACTION:Register()

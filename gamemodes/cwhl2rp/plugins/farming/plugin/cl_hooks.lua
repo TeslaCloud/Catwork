@@ -11,7 +11,7 @@ function PLUGIN:GetProgressBarInfo()
 
 	if (!cw.client:IsRagdolled()) then
 		if (action == "cleanup") then
-			return {text = L("#Farming_ProgressBar_Cleanup"), percentage = percentage, flash = percentage < 10}
+			return { text = L("#Farming_ProgressBar_Cleanup"), percentage = percentage, flash = percentage < 10 }
 		end
 	end
 end

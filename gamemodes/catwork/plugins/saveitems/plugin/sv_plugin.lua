@@ -13,7 +13,7 @@ function cwSaveItems:LoadShipments()
 	for k, v in pairs(shipments) do
 		if (item.GetStored()[v.item]) then
 			local entity = cw.entity:CreateShipment(
-				{key = v.key, uniqueID = v.uniqueID}, v.item, v.amount, v.position, v.angles
+				{ key = v.key, uniqueID = v.uniqueID }, v.item, v.amount, v.position, v.angles
 			)
 
 			if (IsValid(entity) and !v.isMoveable) then
@@ -63,7 +63,7 @@ function cwSaveItems:LoadItems()
 
 		if (itemTable) then
 			local entity = cw.entity:CreateItem(
-				{key = v.key, uniqueID = v.uniqueID}, itemTable, v.position, v.angles
+				{ key = v.key, uniqueID = v.uniqueID }, itemTable, v.position, v.angles
 			)
 
 			if (IsValid(entity) and !v.isMoveable) then

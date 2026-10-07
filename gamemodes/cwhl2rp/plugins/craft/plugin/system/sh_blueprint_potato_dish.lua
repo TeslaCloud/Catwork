@@ -7,21 +7,21 @@ BLUEPRINT.category = "#Craft_Category_Food"
 BLUEPRINT.description = "#Blueprint_BlueprintPotatoDish_Description"
 BLUEPRINT.craftplace = "cw_craft_cook"
 BLUEPRINT.reqatt = {
-	{"cook", 20}
+	{ "cook", 20 }
 }
 BLUEPRINT.updatt = {
-	{"cook", 40}
+	{ "cook", 40 }
 }
 BLUEPRINT.required = {
-	{"weapon_knife", 1},
-	{"weapon_hl2pan", 1}
+	{ "weapon_knife", 1 },
+	{ "weapon_hl2pan", 1 }
 }
 BLUEPRINT.recipe = {
-	{"potato", 1},
-	{"tomato", 1},
-	{"corn", 1}
+	{ "potato", 1 },
+	{ "tomato", 1 },
+	{ "corn", 1 }
 }
 BLUEPRINT.finish = {
-	{"potato_dish", 1}
+	{ "potato_dish", 1 }
 }
-BLUEPRINT:Register();
+BLUEPRINT:Register()

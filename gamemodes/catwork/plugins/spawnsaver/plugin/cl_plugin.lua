@@ -6,4 +6,4 @@
 	with contributions from Cloud Sixteen community.
 --]]
 
-config.AddToSystem("#SpawnWhereLeft", "spawn_where_left", "#SpawnWhereLeftDesc");
+config.AddToSystem("#SpawnWhereLeft", "spawn_where_left", "#SpawnWhereLeftDesc")

@@ -8,16 +8,16 @@
 
 local TOOL = cw.tool:New()
 
-TOOL.Name 			= "#tool.doorparent.name"
-TOOL.UniqueID 		= "doorparent"
-TOOL.Category		= "Clockwork"
-TOOL.Desc 			= "#tool.doorparent.desc"
-TOOL.HelpText		= "#tool.doorparent.0"
-TOOL.rightClickCMD	= "DoorUnparent"
-TOOL.reloadCMD		= "DoorResetParent"
-TOOL.reloadFire		= false
+TOOL.Name = "#tool.doorparent.name"
+TOOL.UniqueID = "doorparent"
+TOOL.Category = "Clockwork"
+TOOL.Desc = "#tool.doorparent.desc"
+TOOL.HelpText = "#tool.doorparent.0"
+TOOL.rightClickCMD = "DoorUnparent"
+TOOL.reloadCMD = "DoorResetParent"
+TOOL.reloadFire = false
 
-TOOL.ClientConVar["description"]	= ""
+TOOL.ClientConVar["description"] = ""
 
 function TOOL:LeftClick(tr)
 	if (CLIENT) then return true end
@@ -30,7 +30,7 @@ function TOOL:LeftClick(tr)
 			player:RunClockworkCmd("DoorSetChild")
 		else
 			player:RunClockworkCmd("DoorSetParent")
-		end		
+		end
 	else
 		cw.player:Notify(player, L("DoorCmds_NotValidDoor"))
 	end
@@ -38,11 +38,11 @@ end
 
 function TOOL.BuildCPanel(CPanel)
 	-- HEADER
-	CPanel:AddControl("Header", {Text = "#tool.doorparent.header", Description	= "#tool.doorparent.desc" })
+	CPanel:AddControl("Header", { Text = "#tool.doorparent.header", Description = "#tool.doorparent.desc" })
 	CPanel:AddControl("Header", {
 		Text = "#tool.doorparent.helpTitle",
-		Description	= "#tool.doorparent.help"
+		Description = "#tool.doorparent.help"
 	})
 end
 
-TOOL:Register();
+TOOL:Register()

@@ -60,7 +60,7 @@ lang["#ITEM_Rebel_Legs_2_Desc"] = "Blue pants with tactical gear attached to the
 
 lang["#ITEM_Rebel_Legs_3_Name"] = "Medic Pants"
 lang["#ITEM_Rebel_Legs_3_Plural"] = "Medic Pants"
-lang["#ITEM_Rebel_Legs_3_Desc"] = "Same as other tactical pants, but they offer greater protection against physical damage.";
+lang["#ITEM_Rebel_Legs_3_Desc"] = "Same as other tactical pants, but they offer greater protection against physical damage."
 
 lang["#ITEM_Cit_Uniform_2_Name"] = "Short-Sleeved Citizen Uniform"
 lang["#ITEM_Cit_Uniform_2_Plural"] = "Short-Sleeved Citizen Uniforms"

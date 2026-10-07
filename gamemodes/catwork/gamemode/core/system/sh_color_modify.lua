@@ -23,23 +23,23 @@ if (CLIENT) then
 	-- A function to get the key info.
 	function SYSTEM:GetKeyInfo(key)
 		if (key == "brightness") then
-			return {name = "#System_ColorModify_Brightness", minimum = -2, maximum = 2, decimals = 2}
+			return { name = "#System_ColorModify_Brightness", minimum = -2, maximum = 2, decimals = 2 }
 		elseif (key == "contrast") then
-			return {name = "#System_ColorModify_Contrast", minimum = 0, maximum = 10, decimals = 2}
+			return { name = "#System_ColorModify_Contrast", minimum = 0, maximum = 10, decimals = 2 }
 		elseif (key == "color") then
-			return {name = "#System_ColorModify_Color", minimum = 0, maximum = 5, decimals = 2}
+			return { name = "#System_ColorModify_Color", minimum = 0, maximum = 5, decimals = 2 }
 		elseif (key == "addr") then
-			return {name = "#System_ColorModify_AddRed", minimum = 0, maximum = 255, decimals = 0}
+			return { name = "#System_ColorModify_AddRed", minimum = 0, maximum = 255, decimals = 0 }
 		elseif (key == "addg") then
-			return {name = "#System_ColorModify_AddGreen", minimum = 0, maximum = 255, decimals = 0}
+			return { name = "#System_ColorModify_AddGreen", minimum = 0, maximum = 255, decimals = 0 }
 		elseif (key == "addb") then
-			return {name = "#System_ColorModify_AddBlue", minimum = 0, maximum = 255, decimals = 0}
+			return { name = "#System_ColorModify_AddBlue", minimum = 0, maximum = 255, decimals = 0 }
 		elseif (key == "mulr") then
-			return {name = "#System_ColorModify_MulRed", minimum = 0, maximum = 255, decimals = 0}
+			return { name = "#System_ColorModify_MulRed", minimum = 0, maximum = 255, decimals = 0 }
 		elseif (key == "mulg") then
-			return {name = "#System_ColorModify_MulGreen", minimum = 0, maximum = 255, decimals = 0}
+			return { name = "#System_ColorModify_MulGreen", minimum = 0, maximum = 255, decimals = 0 }
 		elseif (key == "mulb") then
-			return {name = "#System_ColorModify_MulBlue", minimum = 0, maximum = 255, decimals = 0}
+			return { name = "#System_ColorModify_MulBlue", minimum = 0, maximum = 255, decimals = 0 }
 		end
 	end
 
@@ -65,9 +65,10 @@ if (CLIENT) then
 		local checkBox = self.colorModForm:CheckBox("#System_Enabled")
 		checkBox.OnChange = function(checkBox, value)
 			if (value != cw.OverrideColorMod.enabled) then
-				netstream.Start("SystemColSet", {key = "enabled", value = value})
+				netstream.Start("SystemColSet", { key = "enabled", value = value })
 			end
 		end
+
 		checkBox:SetValue(cw.OverrideColorMod.enabled)
 
 		for k, v in pairs(cw.OverrideColorMod) do
@@ -79,12 +80,13 @@ if (CLIENT) then
 						local timerName = "ColorModifySet: "..k
 						timer.Create(timerName, 1, 0, function()
 							if (!input.IsMouseDown(MOUSE_LEFT)) then
-								netstream.Start("SystemColSet", {key = k, value = value})
+								netstream.Start("SystemColSet", { key = k, value = value })
 								timer.Remove(timerName)
 							end
 						end)
 					end
 				end
+
 				numSlider:SetValue(v)
 			end
 		end
@@ -127,6 +129,6 @@ if (!cw.OverrideColorMod) then
 		mulb = 0,
 		addr = 0,
 		addg = 0,
-		addb = 0,
+		addb = 0
 	}
 end

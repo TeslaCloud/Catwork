@@ -12,7 +12,7 @@ COMMAND.text = "#Command_Plyunban_Syntax"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "o"
 COMMAND.arguments = 1
-COMMAND.alias = {"Unban"}
+COMMAND.alias = { "Unban" }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
@@ -28,4 +28,4 @@ function COMMAND:OnRun(player, arguments)
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

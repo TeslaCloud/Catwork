@@ -9,7 +9,7 @@ COMMAND.arguments = 1
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
 	if (player:IsCombine()) then
-		if (Schema:IsPlayerCombineRank( player, {"SCN", "OfC", "EpU", "DvL", "SeC"}, true ) or player:GetFaction() == FACTION_OTA) then
+		if (Schema:IsPlayerCombineRank(player, { "SCN", "OfC", "EpU", "DvL", "SeC" }, true) or player:GetFaction() == FACTION_OTA) then
 			local camera = Entity(arguments[1])
 
 			if (!IsEntity(camera) or camera:GetClass() != "npc_combine_camera") then

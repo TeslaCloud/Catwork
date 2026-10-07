@@ -112,7 +112,7 @@ function cwPickupObjects:CalculatePosition(player)
 		if (player:IsUsingHands()) then
 			local shootPosition = player:GetShootPos()
 			local isRagdoll = entity:GetClass() == "prop_ragdoll"
-			local filter = {holdingGrab, entity, player}
+			local filter = { holdingGrab, entity, player }
 			local length = 32 + entity:BoundingRadius()
 			local entAngles = entity:GetAngles()
 			local oldAngles = player.cwHoldingAngles

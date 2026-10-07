@@ -6,16 +6,16 @@ BLUEPRINT.model = "models/props_c17/TrapPropeller_Lever.mdl"
 BLUEPRINT.category = "#Craft_Category_Tools"
 BLUEPRINT.description = "#Blueprint_BlueprintScrewdriver_Description"
 BLUEPRINT.reqatt = {
-	{"rem", 10}
+	{ "rem", 10 }
 }
 BLUEPRINT.updatt = {
-	{"rem", 15}
+	{ "rem", 15 }
 }
 BLUEPRINT.required = {}
 BLUEPRINT.recipe = {
-	{"refined_metal", 1}
+	{ "refined_metal", 1 }
 }
 BLUEPRINT.finish = {
-	{"screw_driver", 1}
+	{ "screw_driver", 1 }
 }
-BLUEPRINT:Register();
+BLUEPRINT:Register()

@@ -17,7 +17,7 @@ function COMMAND:OnRun(player, arguments)
 
 	for k, v in pairs(cwGather.nodePoints) do
 		if (v.position:Distance(position) <= 50000000) then
-			pointsCount = pointsCount + 1;	
+			pointsCount = pointsCount + 1
 			cwGather.nodePoints[k] = nil
 		end
 	end
@@ -35,4 +35,4 @@ function COMMAND:OnRun(player, arguments)
 	cwGather:SaveNodesSpawnPoints()
 end
 
-COMMAND:Register();
+COMMAND:Register()

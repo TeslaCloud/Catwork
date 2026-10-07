@@ -26,4 +26,4 @@ function COMMAND:OnRun(player, arguments)
 	netstream.Start(player, "SalesmanAdd", true)
 end
 
-COMMAND:Register();
+COMMAND:Register()

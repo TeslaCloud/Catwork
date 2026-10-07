@@ -14,7 +14,7 @@ COMMAND.flags = bit.bor(CMD_DEFAULT, CMD_FALLENOVER)
 COMMAND.arguments = 1
 COMMAND.optionalArguments = 1
 COMMAND.access = "o"
-COMMAND.alias = {"Slay", "Kill", "PlyKill"}
+COMMAND.alias = { "Slay", "Kill", "PlyKill" }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)

@@ -13,4 +13,4 @@ Schema:AddCustomPermit("Literature", "3", "models/props_lab/bindergreenlabel.mdl
 util.Include("cl_plugin.lua")
 util.Include("cl_hooks.lua")
 util.Include("sv_plugin.lua")
-util.Include("sv_hooks.lua");
+util.Include("sv_hooks.lua")

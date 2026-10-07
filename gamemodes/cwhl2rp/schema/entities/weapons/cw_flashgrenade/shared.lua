@@ -21,7 +21,7 @@ end
 SWEP.Instructions = "Primary Fire: Throw."
 SWEP.Purpose = "Disorientating characters with a bright white flash."
 SWEP.Contact = ""
-SWEP.Author	= "kurozael"
+SWEP.Author = "kurozael"
 
 SWEP.WorldModel = "models/weapons/w_grenade.mdl"
 SWEP.ViewModel = "models/weapons/v_grenade.mdl"
@@ -40,7 +40,7 @@ SWEP.Secondary.DefaultClip = 0
 SWEP.Secondary.Automatic = false
 SWEP.Secondary.ClipSize = -1
 SWEP.Secondary.Delay = 1
-SWEP.Secondary.Ammo	= ""
+SWEP.Secondary.Ammo = ""
 
 SWEP.NoIronSightFovChange = true
 SWEP.NoIronSightAttack = true

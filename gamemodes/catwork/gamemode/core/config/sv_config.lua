@@ -111,4 +111,4 @@ config.Add("modify_themes", true, true)
 config.Add("default_theme", "Schema", true)
 config.Add("enable_mouth_move", false)
 config.Add("block_cash_binds", true, true)
-config.Add("block_fallover_binds", false, true);
+config.Add("block_fallover_binds", false, true)

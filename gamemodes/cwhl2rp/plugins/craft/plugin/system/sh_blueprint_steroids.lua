@@ -7,17 +7,17 @@ BLUEPRINT.category = "#Craft_Category_Medical"
 BLUEPRINT.description = "#Blueprint_BlueprintSteroids_Description"
 BLUEPRINT.craftplace = "cw_craft_chem"
 BLUEPRINT.updatt = {
-	{"chem", 45}
+	{ "chem", 45 }
 }
 BLUEPRINT.reqatt = {
-	{"chem", 25}
+	{ "chem", 25 }
 }
 BLUEPRINT.required = {}
 BLUEPRINT.recipe = {
-	{"health_vial", 1},
-	{"antidepressants", 1}
+	{ "health_vial", 1 },
+	{ "antidepressants", 1 }
 }
 BLUEPRINT.finish = {
-	{"steroids", 1}
+	{ "steroids", 1 }
 }
-BLUEPRINT:Register();
+BLUEPRINT:Register()

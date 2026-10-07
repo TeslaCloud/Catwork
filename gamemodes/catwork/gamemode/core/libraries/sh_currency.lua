@@ -12,7 +12,7 @@ local stored = cw.currency.stored or {}
 cw.currency.stored = stored
 
 --[[ Set the __index meta function of the class. --]]
-local CLASS_TABLE = {__index = CLASS_TABLE}
+local CLASS_TABLE = { __index = CLASS_TABLE }
 
 function CLASS_TABLE:__call(parameter, failSafe)
 	return self:Query(parameter, failSafe)

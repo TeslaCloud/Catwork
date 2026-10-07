@@ -13,4 +13,4 @@ local ATTRIBUTE = cw.attribute:New()
 	ATTRIBUTE.description = "#Attribute_Repair_Desc"
 	ATTRIBUTE.isOnCharScreen = false
 	ATTRIBUTE.category = "#AttributeCategory_Skills"
-ATB_REPAIR = cw.attribute:Register(ATTRIBUTE);
+ATB_REPAIR = cw.attribute:Register(ATTRIBUTE)

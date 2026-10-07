@@ -9,9 +9,9 @@
 if (SERVER) then
 	AddCSLuaFile("shared.lua")
 
-	SWEP.Weight				= 5
-	SWEP.AutoSwitchTo		= false
-	SWEP.AutoSwitchFrom		= false
+	SWEP.Weight = 5
+	SWEP.AutoSwitchTo = false
+	SWEP.AutoSwitchFrom = false
 
 	resource.AddFile("models/weapons/w_fists_t.mdl")
 
@@ -29,60 +29,61 @@ if (SERVER) then
 end
 
 if (CLIENT) then
-	SWEP.PrintName			= L("#SWEPS_Hands")
-	SWEP.Instructions		= L("#SWEPS_Hands_Instructions")
+	SWEP.PrintName = L("#SWEPS_Hands")
+	SWEP.Instructions = L("#SWEPS_Hands_Instructions")
 	SWEP.Purpose			= L("#SWEPS_Hands_Purpose")
 	SWEP.Author 			= "Cloud Sixteen"
 	SWEP.Contact			= "CloudSixteen.com"
 
-	SWEP.DrawAmmo 			= false
-	SWEP.DrawCrosshair 		= false
-	SWEP.DrawSecondaryAmmo	= false
-	SWEP.ViewModelFOV		= 55
-	SWEP.ViewModelFlip		= false
-	SWEP.CSMuzzleFlashes	= false
+	SWEP.DrawAmmo = false
+	SWEP.DrawCrosshair = false
+	SWEP.DrawSecondaryAmmo = false
+	SWEP.ViewModelFOV = 55
+	SWEP.ViewModelFlip = false
+	SWEP.CSMuzzleFlashes = false
 
-	SWEP.Slot				= 1
-	SWEP.SlotPos			= 1
-	SWEP.IconLetter			= "j"
+	SWEP.Slot = 1
+	SWEP.SlotPos = 1
+	SWEP.IconLetter = "j"
 end
 
 SWEP.Category				= "Backsword"
 
 SWEP.HoldType				= "fist"
 
-SWEP.Spawnable				= true
-SWEP.AdminSpawnable			= true
+SWEP.Spawnable = true
+SWEP.AdminSpawnable = true
 
 SWEP.ViewModel 				= "models/weapons/c_arms.mdl"
 SWEP.WorldModel 			= ""
-SWEP.UseHands				= true
+SWEP.UseHands = true
 
-SWEP.Weight					= 5
-SWEP.AutoSwitchTo			= false
-SWEP.AutoSwitchFrom			= false
+SWEP.Weight = 5
+SWEP.AutoSwitchTo = false
+SWEP.AutoSwitchFrom = false
 
-SWEP.Primary.ClipSize		= -1
-SWEP.Primary.Damage			= 2
-SWEP.Primary.DefaultClip	= -1
-SWEP.Primary.Automatic		= false
-SWEP.Primary.Ammo			="none"
-SWEP.DrawAmmo 				= false
+SWEP.Primary.ClipSize = -1
+SWEP.Primary.Damage = 2
+SWEP.Primary.DefaultClip = -1
+SWEP.Primary.Automatic = false
+SWEP.Primary.Ammo = "none"
+SWEP.DrawAmmo = false
 
-SWEP.Secondary.ClipSize		= -1
-SWEP.Secondary.DefaultClip	= -1
-SWEP.Secondary.Damage		= 100
-SWEP.Secondary.Automatic	= false
-SWEP.Secondary.Ammo			= ""
+SWEP.Secondary.ClipSize = -1
+SWEP.Secondary.DefaultClip = -1
+SWEP.Secondary.Damage = 100
+SWEP.Secondary.Automatic = false
+SWEP.Secondary.Ammo = ""
 
 SWEP.WallSound 				= Sound("Flesh.ImpactHard")
 SWEP.SwingSound				= Sound("WeaponFrag.Throw")
 SWEP.HitDistance			= 38
-SWEP.LoweredAngles 			= Angle(0.000, 0.000, -22.000)
+SWEP.LoweredAngles = Angle(0.000, 0.000, -22.000)
 
 /*---------------------------------------------------------
 Initialize
 ---------------------------------------------------------*/
+
 function SWEP:Initialize()
 	self:SetWeaponHoldType(self.HoldType)
 end
@@ -90,6 +91,7 @@ end
 /*---------------------------------------------------------
 Deploy
 ---------------------------------------------------------*/
+
 function SWEP:Deploy()
 	local vm = self.Owner:GetViewModel()
 
@@ -102,6 +104,7 @@ end
 /*---------------------------------------------------------
 PrimaryAttack
 ---------------------------------------------------------*/
+
 function SWEP:PrimaryAttack()
 	if (SERVER) then
 		if (hook.Run("PlayerCanThrowPunch", self.Owner)) then
@@ -109,8 +112,8 @@ function SWEP:PrimaryAttack()
 			self.Owner:SetAnimation(PLAYER_ATTACK1)
 			self.Weapon:SetNextPrimaryFire(CurTime() + 0.5)
 			self.Weapon:SetNextSecondaryFire(CurTime() + 0.7)
-			timer.Simple(0.10, function ()self.Weapon:EmitSound(self.SwingSound); end)
-			self.Primary.Damage = self.Primary.Damage --+ cw.attributes:Get(self.Owner, ATB_MELEE, nil, true) * 0.03 + cw.attributes:Get(self.Owner, ATB_STRENGTH, nil, true) * 0.03
+			timer.Simple(0.10, function ()self.Weapon:EmitSound(self.SwingSound) end)
+			self.Primary.Damage = self.Primary.Damage -- + cw.attributes:Get(self.Owner, ATB_MELEE, nil, true) * 0.03 + cw.attributes:Get(self.Owner, ATB_STRENGTH, nil, true) * 0.03
 
 			local trace = self.Owner:GetEyeTraceNoCursor()
 
@@ -169,6 +172,7 @@ end
 /*---------------------------------------------------------
 SecondaryAttack
 ---------------------------------------------------------*/
+
 function SWEP:SecondaryAttack()
 	if (SERVER) then
 		local trace = self.Owner:GetEyeTraceNoCursor()
@@ -191,6 +195,7 @@ end
 /*---------------------------------------------------------
 KnockSound
 ---------------------------------------------------------*/
+
 function SWEP:PlayKnockSound()
 	if (SERVER) then
 		self.Weapon:CallOnClient("PlayKnockSound", "")
@@ -202,24 +207,24 @@ end
 /*---------------------------------------------------------
 Reload
 ---------------------------------------------------------*/
-function SWEP:Reload()
 
+function SWEP:Reload()
 	return false
 end
 
 /*---------------------------------------------------------
 OnRemove
 ---------------------------------------------------------*/
-function SWEP:OnRemove()
 
+function SWEP:OnRemove()
 	return true
 end
 
 /*---------------------------------------------------------
 Holster
 ---------------------------------------------------------*/
-function SWEP:Holster()
 
+function SWEP:Holster()
 	return true
 end
 
@@ -231,6 +236,7 @@ function SWEP:ShootEffects() end
 /*---------------------------------------------------------
 OnDrop
 ---------------------------------------------------------*/
+
 function SWEP:OnDrop()
 	self:Remove()
 end
@@ -238,6 +244,7 @@ end
 /*---------------------------------------------------------
 SetupDataTables
 ---------------------------------------------------------*/
+
 function SWEP:SetupDataTables()
 	self:NetworkVar("Float", 0, "NextMeleeAttack")
  	self:NetworkVar("Float", 1, "NextIdle")
@@ -246,6 +253,7 @@ end
 /*---------------------------------------------------------
 UpdateNextIdle
 ---------------------------------------------------------*/
+
 function SWEP:UpdateNextIdle()
  	local vm = self.Owner:GetViewModel()
 
@@ -255,6 +263,7 @@ end
 /*---------------------------------------------------------
 PunchEntity
 ---------------------------------------------------------*/
+
 function SWEP:PunchEntity()
 	local bounds = Vector(0, 0, 0)
 	local startPosition = self.Owner:GetShootPos()
@@ -286,19 +295,20 @@ end
 /*---------------------------------------------------------
 PunchingAnimation
 ---------------------------------------------------------*/
+
 function SWEP:PlayPunchAnimation()
 	if (SERVER) then
 		self.Weapon:CallOnClient("PlayPunchAnimation", "")
 	end
 
- 	if (self.left == nil) then self.left = true; else self.left = !self.left; end
+ 	if (self.left == nil) then self.left = true else self.left = !self.left end
 
 	local anim = "fists_right"
 	local ownerAnim = PLAYER_ATTACK1
 
  	if (self.left) then
 		anim = "fists_left"
-		--ownerAnim = PLAYER_ATTACK2
+		-- ownerAnim = PLAYER_ATTACK2
 	end
 
  	local vm = self.Owner:GetViewModel()

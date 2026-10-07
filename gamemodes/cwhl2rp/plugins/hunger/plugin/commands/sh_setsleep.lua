@@ -6,7 +6,7 @@ COMMAND.text = "#Command_Charsetfatigue_Syntax"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "a"
 COMMAND.arguments = 2
-COMMAND.alias = {"SetFatigue", "SetSleep", "CharSetSleep"}
+COMMAND.alias = { "SetFatigue", "SetSleep", "CharSetSleep" }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
@@ -20,7 +20,7 @@ function COMMAND:OnRun(player, arguments)
 		if (target) then
 			target:SetCharacterData("Fatigue", amount)
 
-			if (player != target)	then
+			if (player != target) then
 				cw.player:Notify(target, L("Hunger_SleepSetBy", player:Name(), amount))
 				cw.player:Notify(player, L("Hunger_SleepSet", target:Name(), amount))
 			else
@@ -31,4 +31,4 @@ function COMMAND:OnRun(player, arguments)
 		end
 end
 
-COMMAND:Register();
+COMMAND:Register()

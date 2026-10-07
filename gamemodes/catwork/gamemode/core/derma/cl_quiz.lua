@@ -37,6 +37,7 @@ function PANEL:Init()
 	self.disconnectButton:SetCallback(function(panel)
 		RunConsoleCommand("disconnect")
 	end)
+
 	self.disconnectButton:SizeToContents()
 	self.disconnectButton:SetMouseInputEnabled(true)
 	self.disconnectButton:SetPos((scrW * 0.2) - (self.disconnectButton:GetWide() / 2), scrH * 0.9)
@@ -48,6 +49,7 @@ function PANEL:Init()
 	self.continueButton:SetCallback(function(panel)
 		netstream.Start("QuizCompleted", true)
 	end)
+
 	self.continueButton:SizeToContents()
 	self.continueButton:SetMouseInputEnabled(true)
 	self.continueButton:SetPos((scrW * 0.8) - (self.continueButton:GetWide() / 2), scrH * 0.9)
@@ -83,7 +85,7 @@ function PANEL:Populate()
 	self.panelList:AddItem(self.questionsForm)
 
 	for k, v in pairs(quizQuestions) do
-		questions[k] = {k, v}
+		questions[k] = { k, v }
 	end
 
 	table.sort(questions, function(a, b)
@@ -104,7 +106,7 @@ function PANEL:Populate()
 
 		-- Called when an option is selected.
 		function panel:OnSelect(index, value, data)
-			netstream.Start("QuizAnswer", {key, index})
+			netstream.Start("QuizAnswer", { key, index })
 		end
 
 		for k2, v2 in pairs(v[2].possibleAnswers) do
@@ -133,4 +135,4 @@ function PANEL:Think()
 	self:InvalidateLayout(true)
 end
 
-vgui.Register("cw.quiz", PANEL, "DPanel");
+vgui.Register("cw.quiz", PANEL, "DPanel")

@@ -40,7 +40,7 @@ function PLUGIN:SaveUnionLights()
 			angles = v:GetAngles(),
 			moveable = moveable,
 			uniqueID = cw.entity:QueryProperty(v, "uniqueID"),
-			position = v:GetPos(),
+			position = v:GetPos()
 		}
 	end
 

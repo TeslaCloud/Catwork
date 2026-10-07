@@ -38,7 +38,7 @@ end
 
 function ENT:SetSpawnType(entType)
 	if (entType == TYPE_WATERCAN or entType == TYPE_SUPPLIES) then
-		self:SetDTInt(1,entType)
+		self:SetDTInt(1, entType)
 	end
 end
 
@@ -54,9 +54,7 @@ function ENT:PhysicsUpdate(physicsObject)
 end
 
 function ENT:Use(activator, caller)
-
 	if (activator:IsPlayer() and activator:GetEyeTraceNoCursor().Entity == self) then
-
 	local weapon = activator:GetActiveWeapon()
 
 		if ((activator:GetNetVar("tied") == 0 and activator:Crouching()) or (weapon:GetClass() == "cw_pushbroom")) then

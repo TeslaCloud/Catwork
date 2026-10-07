@@ -11,7 +11,7 @@ COMMAND.tip = "#Command_Plygiveaccess_Description"
 COMMAND.text = "#Command_Plygiveaccess_Syntax"
 COMMAND.access = "s"
 COMMAND.arguments = 2
-COMMAND.alias = {"GiveAccess"}
+COMMAND.alias = { "GiveAccess" }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
@@ -38,4 +38,4 @@ function COMMAND:OnRun(player, arguments)
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

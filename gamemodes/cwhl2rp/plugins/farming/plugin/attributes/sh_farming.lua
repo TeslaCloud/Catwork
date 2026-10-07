@@ -13,4 +13,4 @@ local ATTRIBUTE = cw.attribute:New()
 	ATTRIBUTE.description = "#Attribute_Farm_Desc"
 	ATTRIBUTE.isOnCharScreen = false
 	ATTRIBUTE.category = "#AttributeCategory_Skills"
-ATB_FARM = cw.attribute:Register(ATTRIBUTE);
+ATB_FARM = cw.attribute:Register(ATTRIBUTE)

@@ -12,7 +12,7 @@ COMMAND.text = "#Command_Plysetgroup_Syntax"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "s"
 COMMAND.arguments = 2
-COMMAND.alias = {"SetGroup"}
+COMMAND.alias = { "SetGroup" }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
@@ -39,4 +39,4 @@ function COMMAND:OnRun(player, arguments)
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

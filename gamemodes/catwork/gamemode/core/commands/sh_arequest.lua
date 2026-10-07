@@ -11,7 +11,7 @@ COMMAND.tip = "#Command_Arequest_Description"
 COMMAND.text = "#Command_Arequest_Syntax"
 COMMAND.access = "o"
 COMMAND.arguments = 1
-COMMAND.alias = {"AR"}
+COMMAND.alias = { "AR" }
 COMMAND.cooldown = 2
 
 -- Called when the command has been run.

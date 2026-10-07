@@ -34,6 +34,7 @@ function ENT:SpawnFunction(ply, trace)
 	ent:Activate()
 	return ent
 end
+
 function ENT:CanGarbageUsed(item)
 	if (table.HasValue(self.GARBAGE_ITEMS, item("uniqueID"))) then
 		return true
@@ -54,6 +55,7 @@ function ENT:StartWork()
 		if self:GetGarbageCount() < self.METAL_GARBAGE_COUNT_START then
 			return
 		end
+
 		self:SetStartWorkTime(CurTime())
 		self:SetNextWorkTime(CurTime() + self.WORK_TIME)
 	else
@@ -61,10 +63,10 @@ function ENT:StartWork()
 		self:SetStartWorkTime(CurTime() - i)
 		self:SetNextWorkTime((CurTime() + self.WORK_TIME) - i)
 	end
+
 	self:SetIsWorking(true)
 	self:EmitSound("plats/elevator_large_start1.wav")
 	self.NextWorkSound = CurTime() + 1.4
-
 end
 
 function ENT:Eject()
@@ -73,12 +75,14 @@ function ENT:Eject()
 
 	local id = self:GetEjectStorage()
 	local ent = nil
+
 	for k, v in pairs(ents.GetAll()) do
 		if v:GetCreationID() == id then
 			ent = v
 			break
 		end
 	end
+
 	if !IsValid(ent) then return end
 
 	if !ent.cwInventory then
@@ -94,8 +98,10 @@ function ENT:Eject()
 		local space = itemTable.storageSpace or itemTable.space
 
 		local model = string.lower(ent:GetModel())
+
 		if cwStorage.containerList[model] then
 			local containerWeight = cwStorage.containerList[model][1]
+
 			if (cw.inventory:CalculateWeight(ent.cwInventory) + math.max(weight, 0) > containerWeight) then
 				cw.entity:CreateItem(nil, v, ent:GetPos() + ent:GetUp() * 20)
 				continue

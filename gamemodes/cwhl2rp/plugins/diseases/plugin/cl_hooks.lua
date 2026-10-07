@@ -1,4 +1,4 @@
-local PLUGIN = PLUGIN;
+local PLUGIN = PLUGIN
 
 -- Called when the local player's motion blurs should be adjusted.
 function PLUGIN:PlayerAdjustMotionBlurs(motionBlurs)
@@ -6,7 +6,7 @@ function PLUGIN:PlayerAdjustMotionBlurs(motionBlurs)
 		local disease = cw.client:GetNetVar("diseases")
 
 		if (disease == "fever") then
-			motionBlurs.blurTable["fever"] = 0.25;
+			motionBlurs.blurTable["fever"] = 0.25
 		end
 
 		if (disease == "colorblindness") then

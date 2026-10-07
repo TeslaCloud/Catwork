@@ -89,9 +89,9 @@ if (CLIENT) then
 					pluginButtons[v2.name].DoClick = function(button)
 						if (!plugin.IsDisabled(v2.name)) then
 							if (plugin.IsUnloaded(v2.name)) then
-								netstream.Start("SystemPluginSet", {v2.name, false})
+								netstream.Start("SystemPluginSet", { v2.name, false })
 							else
-								netstream.Start("SystemPluginSet", {v2.name, true})
+								netstream.Start("SystemPluginSet", { v2.name, true })
 							end
 						end
 					end

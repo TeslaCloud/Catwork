@@ -10,14 +10,14 @@ local glow = CreateMaterial("_CMB_SMALLMONITOR_GLOW4", "UnlitGeneric", {
 	["$additive"] = "1",
 	["$selfilium"] = "1",
 	["$vertexcolor"] = "1",
-	["$vertexalpha"] = "1",
+	["$vertexalpha"] = "1"
 })
 local errorc = CreateMaterial("_CMB_ERROR", "Modulate", {
 	["$basetexture"] = "props/combine_monitor_access_off",
 	["$ignorez"] = "1",
 	["$vertexcolor"] = "1",
 	["$vertexalpha"] = "1",
-	["$translucent"] = "1",
+	["$translucent"] = "1"
 })
 
 surface.CreateFont("_CMB_FONT_1", {
@@ -25,44 +25,44 @@ surface.CreateFont("_CMB_FONT_1", {
 	size = 42,
 	weight = 1000,
 	antialias = true,
-	underline = false,
+	underline = false
 })
 surface.CreateFont("_CMB_FONT_2", {
 	font = "Myriad Pro",
 	size = 36,
 	weight = 1000,
 	antialias = true,
-	underline = false,
+	underline = false
 })
 surface.CreateFont("_CMB_FONT_3", {
 	font = "HalfLife2",
 	size = 60,
 	weight = 1000,
 	antialias = true,
-	underline = false,
+	underline = false
 })
 surface.CreateFont("_CMB_FONT_4", {
 	font = "System",
 	size = 72,
 	weight = 1000,
 	antialias = true,
-	underline = false,
+	underline = false
 })
 surface.CreateFont("_CMB_FONT_5", {
 	font = "System",
 	size = 9,
 	weight = 500,
 	antialias = false,
-	underline = false,
+	underline = false
 })
+
 function ENT:Initialize()
 	self.RT = GetRenderTarget("_CMB_SMALLMONITOR_ENT"..self:EntIndex()..CurTime(), 256, 256, false)
-	self.RTMat = CreateMaterial("_CMB_SMALLMONITOR_ENT_RTMAT" .. self:EntIndex() .. CurTime(), "UnlitTwoTexture", {
+	self.RTMat = CreateMaterial("_CMB_SMALLMONITOR_ENT_RTMAT"..self:EntIndex()..CurTime(), "UnlitTwoTexture", {
 		["$selfilium"] = "1",
 		["$texture2"] = "dev/dev_scanline",
 		["Proxies"] =
 		{
-
 			["TextureScroll"] =
 			{
 				["texturescrollvar"] = "$texture2transform",
@@ -77,9 +77,11 @@ end
 
 local function bitkek(int)
 	local str = ""
+
 	for i = 0, int do
-		str = str .. math.random(0,1)
+		str = str..math.random(0, 1)
 	end
+
 	return str
 end
 
@@ -100,13 +102,15 @@ function ENT:DrawTranslucent()
 			surface.SetDrawColor(255, 255, 255, 255)
 			surface.SetMaterial(Material("props/combine_monitor_access"))
 			surface.DrawTexturedRect(0, 0, 256, 256)
-			if self:GetDTInt(5)	== 2 then
+
+			if self:GetDTInt(5) == 2 then
 				if self.error then
 					surface.SetTextColor(255, 0, 0)
 					surface.SetFont("_CMB_FONT_4")
 					surface.SetTextPos(30, 50)
 					surface.DrawText("ERROR")
 				end
+
 				if CurTime() >= self.errorFlash then
 					self.error = !self.error
 					self.errorFlash = CurTime() + 0.4
@@ -143,19 +147,20 @@ function ENT:DrawTranslucent()
 				surface.DrawText("LEVEL:")
 				surface.SetDrawColor(255, 0, 0, 128)
 				surface.SetMaterial(Material("gui/gradient_up"))
-				surface.DrawTexturedRect(256 - 256/3.5 - 56/2, 256 - 256/3.5 - 56/2, 56, 56)
+				surface.DrawTexturedRect(256 - 256 / 3.5 - 56 / 2, 256 - 256 / 3.5 - 56 / 2, 56, 56)
 
 				surface.SetTextColor(255, 0, 0)
 				surface.SetFont("_CMB_FONT_3")
-				surface.SetTextPos(256 - 256/4 - 24, 256 - 128 + 21)
+				surface.SetTextPos(256 - 256 / 4 - 24, 256 - 128 + 21)
 				surface.DrawText(self:GetDTString(3) == "" and "0" or self:GetDTString(3))
 			end
+
 		cam.End2D()
 	render.PopRenderTarget()
 
 	self.RTMat:SetTexture("$basetexture", self.RT)
 
-	if self:GetDTInt(5)	!= 1 then
+	if self:GetDTInt(5) != 1 then
 		cam.Start3D2D(pos, ang, 0.064)
 			surface.SetDrawColor(255, 255, 255, 255)
 			surface.SetMaterial(self.RTMat)

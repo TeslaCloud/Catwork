@@ -24,6 +24,7 @@ DeriveGamemode("sandbox")
 	This is a hack to stop file.Read returning an unnecessary newline
 	at the end of each file when using Linux.
 --]]
+
 if (system.IsLinux()) then
 	ClockworkFileRead = ClockworkFileRead or file.Read
 
@@ -106,23 +107,23 @@ local cvars = cvars
 
 cw.Entities = cw.Entities or {}
 cw.HitGroupBonesCache = {
-	{"ValveBiped.Bip01_R_UpperArm", HITGROUP_RIGHTARM},
-	{"ValveBiped.Bip01_R_Forearm", HITGROUP_RIGHTARM},
-	{"ValveBiped.Bip01_L_UpperArm", HITGROUP_LEFTARM},
-	{"ValveBiped.Bip01_L_Forearm", HITGROUP_LEFTARM},
-	{"ValveBiped.Bip01_R_Thigh", HITGROUP_RIGHTLEG},
-	{"ValveBiped.Bip01_R_Calf", HITGROUP_RIGHTLEG},
-	{"ValveBiped.Bip01_R_Foot", HITGROUP_RIGHTLEG},
-	{"ValveBiped.Bip01_R_Hand", HITGROUP_RIGHTARM},
-	{"ValveBiped.Bip01_L_Thigh", HITGROUP_LEFTLEG},
-	{"ValveBiped.Bip01_L_Calf", HITGROUP_LEFTLEG},
-	{"ValveBiped.Bip01_L_Foot", HITGROUP_LEFTLEG},
-	{"ValveBiped.Bip01_L_Hand", HITGROUP_LEFTARM},
-	{"ValveBiped.Bip01_Pelvis", HITGROUP_STOMACH},
-	{"ValveBiped.Bip01_Spine2", HITGROUP_CHEST},
-	{"ValveBiped.Bip01_Spine1", HITGROUP_CHEST},
-	{"ValveBiped.Bip01_Head1", HITGROUP_HEAD},
-	{"ValveBiped.Bip01_Neck1", HITGROUP_HEAD}
+	{ "ValveBiped.Bip01_R_UpperArm", HITGROUP_RIGHTARM },
+	{ "ValveBiped.Bip01_R_Forearm", HITGROUP_RIGHTARM },
+	{ "ValveBiped.Bip01_L_UpperArm", HITGROUP_LEFTARM },
+	{ "ValveBiped.Bip01_L_Forearm", HITGROUP_LEFTARM },
+	{ "ValveBiped.Bip01_R_Thigh", HITGROUP_RIGHTLEG },
+	{ "ValveBiped.Bip01_R_Calf", HITGROUP_RIGHTLEG },
+	{ "ValveBiped.Bip01_R_Foot", HITGROUP_RIGHTLEG },
+	{ "ValveBiped.Bip01_R_Hand", HITGROUP_RIGHTARM },
+	{ "ValveBiped.Bip01_L_Thigh", HITGROUP_LEFTLEG },
+	{ "ValveBiped.Bip01_L_Calf", HITGROUP_LEFTLEG },
+	{ "ValveBiped.Bip01_L_Foot", HITGROUP_LEFTLEG },
+	{ "ValveBiped.Bip01_L_Hand", HITGROUP_LEFTARM },
+	{ "ValveBiped.Bip01_Pelvis", HITGROUP_STOMACH },
+	{ "ValveBiped.Bip01_Spine2", HITGROUP_CHEST },
+	{ "ValveBiped.Bip01_Spine1", HITGROUP_CHEST },
+	{ "ValveBiped.Bip01_Head1", HITGROUP_HEAD },
+	{ "ValveBiped.Bip01_Neck1", HITGROUP_HEAD }
 }
 
 cw.MeleeTranslation = {
@@ -138,22 +139,22 @@ cw.MeleeTranslation = {
 }
 
 cw.WorkshopMaps = {
-	md_venetianredux_b2fix 			= 106094354,
+	md_venetianredux_b2fix = 106094354,
 	rp_c18_v1 						= 132931674,
 	rp_c18_v2 						= 132937160,
-	rp_city8 						= 132913036,
-	rp_city8_2 						= 132940295,
-	rp_city8_canals 				= 132911524,
+	rp_city8 = 132913036,
+	rp_city8_2 = 132940295,
+	rp_city8_canals = 132911524,
 	rp_city8_district1 				= 132919876,
 	rp_city8_district9 				= 132916875,
 	rp_city11_night_v1b 			= 127632645,
-	rp_city17_v1 					= 113352748,
+	rp_city17_v1 = 113352748,
 	rp_city23_night 				= 143076340,
 	rp_city45_2013 					= 118759412,
-	rp_city45_catalyst_x1f_final 	= 221567663,
-	rp_nc_industrial17_v2 			= 698222128,
-	rp_nc_city8_v2a 				= 736405289,
-	rp_gc_city8						= 760771478
+	rp_city45_catalyst_x1f_final = 221567663,
+	rp_nc_industrial17_v2 = 698222128,
+	rp_nc_city8_v2a = 736405289,
+	rp_gc_city8 = 760771478
 }
 
 -- A function to save schema data.
@@ -432,6 +433,7 @@ function cw.core:HandleWeaponFireDelay(player, bIsRaised, weapon, curTime)
 			This is a terrible hotfix for the SMG not being able
 			to fire after loading ammunition.
 		--]]
+
 		if (weapon:GetClass() != "weapon_smg1") then
 			weapon:SetNextSecondaryFire(delaySecondaryFire)
 		end
@@ -510,7 +512,7 @@ end
 
 -- A function to get a ragdoll's hit group.
 function cw.core:GetRagdollHitGroup(entity, position)
-	local closest = {nil, HITGROUP_GENERIC}
+	local closest = { nil, HITGROUP_GENERIC }
 
 	for k, v in pairs(cw.HitGroupBonesCache) do
 		local bone = entity:LookupBone(v[1])
@@ -709,20 +711,20 @@ function cw.core:ServerLog(text)
 	local unixTime = os.time()
 
 	if (dateInfo) then
-		if (dateInfo.month < 10) then dateInfo.month = "0"..dateInfo.month; end
-		if (dateInfo.day < 10) then dateInfo.day = "0"..dateInfo.day; end
+		if (dateInfo.month < 10) then dateInfo.month = "0"..dateInfo.month end
+		if (dateInfo.day < 10) then dateInfo.day = "0"..dateInfo.day end
 		local fileName = dateInfo.year.."-"..dateInfo.month.."-"..dateInfo.day
 
-		if (dateInfo.hour < 10) then dateInfo.hour = "0"..dateInfo.hour; end
-		if (dateInfo.min < 10) then dateInfo.min = "0"..dateInfo.min; end
-		if (dateInfo.sec < 10) then dateInfo.sec = "0"..dateInfo.sec; end
+		if (dateInfo.hour < 10) then dateInfo.hour = "0"..dateInfo.hour end
+		if (dateInfo.min < 10) then dateInfo.min = "0"..dateInfo.min end
+		if (dateInfo.sec < 10) then dateInfo.sec = "0"..dateInfo.sec end
 		local time = dateInfo.hour..":"..dateInfo.min..":"..dateInfo.sec
 		local logText = time..": "..string.gsub(text, "\n", "")
 
 		catio.Append("logs/clockwork/"..fileName..".log", logText.."\n")
 	end
 
-	ServerLog(text.."\n"); hook.Run("ClockworkLog", text, unixTime)
+	ServerLog(text.."\n") hook.Run("ClockworkLog", text, unixTime)
 end
 
 -- the function below is from Gristwork I believe.
@@ -949,7 +951,7 @@ function playerMeta:Give(class, itemTable, bForceReturn)
 		local spawnWeapon = cw.player:GetSpawnWeapon(self, class)
 		local bCanHolster = (itemTable and hook.Run("PlayerCanHolsterWeapon", self, itemTable, true, true))
 
-		if (!spawnWeapon) then iTeamIndex = nil; end
+		if (!spawnWeapon) then iTeamIndex = nil end
 
 		for k, v in pairs(ragdollWeapons) do
 			if (v.weaponData["class"] == class
@@ -966,7 +968,7 @@ function playerMeta:Give(class, itemTable, bForceReturn)
 				itemTable = itemTable
 			},
 			canHolster = bCanHolster,
-			teamIndex = iTeamIndex,
+			teamIndex = iTeamIndex
 		}
 	elseif (!self:HasWeapon(class)) then
 		self.cwForceGive = true
@@ -1141,7 +1143,6 @@ function playerMeta:IsJumping()
 	return false
 end
 
-
 -- A function to strip a weapon from a player.
 function playerMeta:StripWeapon(weaponClass)
 	if (self:IsRagdolled()) then
@@ -1217,12 +1218,12 @@ end
 
 -- A function to enable God for a player.
 function playerMeta:GodEnable()
-	self.godMode = true; self:ClockworkGodEnable()
+	self.godMode = true self:ClockworkGodEnable()
 end
 
 -- A function to disable God for a player.
 function playerMeta:GodDisable()
-	self.godMode = nil; self:ClockworkGodDisable()
+	self.godMode = nil self:ClockworkGodDisable()
 end
 
 -- A function to get whether a player has God mode enabled.
@@ -1241,7 +1242,7 @@ do
 		["weapon_hl2pickaxe"] = 15,
 		["weapon_hl2pipe"] = 10,
 		["weapon_hl2pot"] = 10,
-		["weapon_hl2shovel"] = 15,
+		["weapon_hl2shovel"] = 15
 	}
 
 	-- A function to update whether a player's weapon has fired.
@@ -1389,34 +1390,34 @@ function playerMeta:GetCash()
 end
 
 -- A function to get a character's flags.
-function playerMeta:GetFlags() return self:QueryCharacter("Flags"); end
+function playerMeta:GetFlags() return self:QueryCharacter("Flags") end
 
 -- A function to get a player's faction.
-function playerMeta:GetFaction() return self:QueryCharacter("Faction"); end
+function playerMeta:GetFaction() return self:QueryCharacter("Faction") end
 
 -- A function to get a player's gender.
-function playerMeta:GetGender() return self:QueryCharacter("Gender"); end
+function playerMeta:GetGender() return self:QueryCharacter("Gender") end
 
 -- A function to get a player's inventory.
-function playerMeta:GetInventory() return self:QueryCharacter("Inventory"); end
+function playerMeta:GetInventory() return self:QueryCharacter("Inventory") end
 
 -- A function to get a player's attributes.
-function playerMeta:GetAttributes() return self:QueryCharacter("Attributes"); end
+function playerMeta:GetAttributes() return self:QueryCharacter("Attributes") end
 
 -- A function to get a player's saved ammo.
-function playerMeta:GetSavedAmmo() return self:QueryCharacter("Ammo"); end
+function playerMeta:GetSavedAmmo() return self:QueryCharacter("Ammo") end
 
 -- A function to get a player's default model.
-function playerMeta:GetDefaultModel() return self:QueryCharacter("Model"); end
+function playerMeta:GetDefaultModel() return self:QueryCharacter("Model") end
 
 -- A function to get a player's character ID.
-function playerMeta:GetCharacterID() return self:QueryCharacter("CharacterID"); end
+function playerMeta:GetCharacterID() return self:QueryCharacter("CharacterID") end
 
 -- A function to get the time when a player's character was created.
-function playerMeta:GetTimeCreated() return self:QueryCharacter("TimeCreated"); end
+function playerMeta:GetTimeCreated() return self:QueryCharacter("TimeCreated") end
 
 -- A function to get a player's character key.
-function playerMeta:GetCharacterKey() return self:QueryCharacter("Key"); end
+function playerMeta:GetCharacterKey() return self:QueryCharacter("Key") end
 
 -- A function to get a player's recognised names.
 function playerMeta:GetRecognisedNames()
@@ -1424,22 +1425,22 @@ function playerMeta:GetRecognisedNames()
 end
 
 -- A function to get a player's character table.
-function playerMeta:GetCharacter() return cw.player:GetCharacter(self); end
+function playerMeta:GetCharacter() return cw.player:GetCharacter(self) end
 
 -- A function to get a player's storage table.
-function playerMeta:GetStorageTable() return cw.storage:GetTable(self); end
+function playerMeta:GetStorageTable() return cw.storage:GetTable(self) end
 
 -- A function to get a player's ragdoll table.
-function playerMeta:GetRagdollTable() return cw.player:GetRagdollTable(self); end
+function playerMeta:GetRagdollTable() return cw.player:GetRagdollTable(self) end
 
 -- A function to get a player's ragdoll state.
-function playerMeta:GetRagdollState() return cw.player:GetRagdollState(self); end
+function playerMeta:GetRagdollState() return cw.player:GetRagdollState(self) end
 
 -- A function to get a player's storage entity.
-function playerMeta:GetStorageEntity() return cw.storage:GetEntity(self); end
+function playerMeta:GetStorageEntity() return cw.storage:GetEntity(self) end
 
 -- A function to get a player's ragdoll entity.
-function playerMeta:GetRagdollEntity() return cw.player:GetRagdollEntity(self); end
+function playerMeta:GetRagdollEntity() return cw.player:GetRagdollEntity(self) end
 
 -- A function to get a player's ragdoll weapons.
 function playerMeta:GetRagdollWeapons()
@@ -1510,7 +1511,7 @@ end
 
 -- A function to run a command on a player.
 function playerMeta:RunCommand(...)
-	netstream.Start(self, "RunCommand", {...})
+	netstream.Start(self, "RunCommand", { ... })
 end
 
 -- A function to run a Clockwork command on a player.
@@ -1670,6 +1671,7 @@ function playerMeta:GetMaxWeight()
 
 	for k, v in pairs(itemsList) do
 		local addInvWeight = v.addInvSpace
+
 		if (addInvWeight) then
 			weight = weight + addInvWeight
 		end
@@ -1687,6 +1689,7 @@ function playerMeta:GetMaxSpace()
 
 	for k, v in pairs(itemsList) do
 		local addInvSpace = v.addInvVolume
+
 		if (addInvSpace) then
 			space = space + addInvSpace
 		end
@@ -1769,6 +1772,7 @@ end
 function playerMeta:HasItemAsWeapon(itemTable)
 	for k, v in pairs(self:GetWeapons()) do
 		local weaponItemTable = item.GetByWeapon(v)
+
 		if (itemTable:IsTheSameAs(weaponItemTable)) then
 			return true
 		end
@@ -1781,6 +1785,7 @@ end
 function playerMeta:FindWeaponItemByID(uniqueID, itemID)
 	for k, v in pairs(self:GetWeapons()) do
 		local weaponItemTable = item.GetByWeapon(v)
+
 		if (weaponItemTable and weaponItemTable.uniqueID == uniqueID
 		and weaponItemTable.itemID == itemID) then
 			return weaponItemTable
@@ -1873,7 +1878,7 @@ function playerMeta:TakeItem(itemTable)
 
 	hook.Run("PlayerItemTaken", self, itemTable)
 		cw.inventory:RemoveInstance(inventory, itemTable)
-	netstream.Start(self, "InvTake", {itemTable.index, itemTable.itemID})
+	netstream.Start(self, "InvTake", { itemTable.index, itemTable.itemID })
 
 	cw.inventory:Rebuild(self)
 
@@ -1921,25 +1926,25 @@ end
 
 -- A function to set a player's run speed.
 function playerMeta:SetRunSpeed(speed, bClockwork)
-	if (!bClockwork) then self.cwRunSpeed = speed; end
+	if (!bClockwork) then self.cwRunSpeed = speed end
 	self:ClockworkSetRunSpeed(speed)
 end
 
 -- A function to set a player's walk speed.
 function playerMeta:SetWalkSpeed(speed, bClockwork)
-	if (!bClockwork) then self.cWalkSpeed = speed; end
+	if (!bClockwork) then self.cWalkSpeed = speed end
 	self:ClockworkSetWalkSpeed(speed)
 end
 
 -- A function to set a player's jump power.
 function playerMeta:SetJumpPower(power, bClockwork)
-	if (!bClockwork) then self.cwJumpPower = power; end
+	if (!bClockwork) then self.cwJumpPower = power end
 	self:ClockworkSetJumpPower(power)
 end
 
 -- A function to set a player's crouched walk speed.
 function playerMeta:SetCrouchedWalkSpeed(speed, bClockwork)
-	if (!bClockwork) then self.cwCrouchedSpeed = speed; end
+	if (!bClockwork) then self.cwCrouchedSpeed = speed end
 	self:ClockworkSetCrouchedWalkSpeed(speed)
 end
 
@@ -2444,7 +2449,7 @@ concommand.Add("cwc", function(player, command, arguments)
 					return
 				end
 
-				if (!arguments[3]) then print("You haven't entered any flags!"); return end
+				if (!arguments[3]) then print("You haven't entered any flags!") return end
 
 				cw.player:GiveFlags(target, arguments[3])
 
@@ -2466,7 +2471,7 @@ concommand.Add("cwc", function(player, command, arguments)
 					return
 				end
 
-				if (!arguments[3]) then print("You haven't entered any flags!"); return end
+				if (!arguments[3]) then print("You haven't entered any flags!") return end
 
 				cw.player:TakeFlags(target, arguments[3])
 
@@ -2479,8 +2484,9 @@ concommand.Add("cwc", function(player, command, arguments)
 			return
 		-- Everything else
 		else
-			MsgC(Color(255, 100, 0, 255), "'"..arguments[1].. "' command not found!\n")
+			MsgC(Color(255, 100, 0, 255), "'"..arguments[1].."' command not found!\n")
 		end
+
 	-- if not too bad, players are not allowed to use this swag
 	else
 		cw.player.Notify(player, L("Console_NotAllowed"))
@@ -2513,7 +2519,7 @@ function playerMeta:RemoveAccessory(itemTable)
 
 	accessoryData[itemID] = nil
 		netstream.Start(
-		self, "RemoveAccessory", {itemID = itemID}
+		self, "RemoveAccessory", { itemID = itemID }
 	)
 
 	if (itemTable.OnWearAccessory) then
@@ -2553,7 +2559,7 @@ function playerMeta:WearAccessory(itemTable)
 
 	accessoryData[itemID] = itemTable.uniqueID
 	netstream.Start(
-		self, "AddAccessory", {itemID = itemID, uniqueID = uniqueID}
+		self, "AddAccessory", { itemID = itemID, uniqueID = uniqueID }
 	)
 
 	if (itemTable.OnWearAccessory) then

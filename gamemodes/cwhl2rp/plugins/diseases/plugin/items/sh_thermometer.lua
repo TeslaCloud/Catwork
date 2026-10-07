@@ -12,7 +12,7 @@ ITEM.description = "#Item_Thermometer_Description"
 -- Called when a player uses the item.
 function ITEM:OnUse(player, itemEntity)
 	local lookingPly = player:GetEyeTrace().Entity
-	
+
 	if (lookingPly:IsPlayer()) then
 		if (lookingPly:GetCharacterData("diseases") == "fever") then
 			cw.player:Notify(player, L("Diseases_Temperature", math.random(40.1, 43.6)))

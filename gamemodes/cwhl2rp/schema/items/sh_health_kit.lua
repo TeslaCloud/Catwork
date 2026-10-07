@@ -13,13 +13,13 @@ ITEM.model = "models/items/healthkit.mdl"
 ITEM.weight = 1
 ITEM.access = "v"
 ITEM.useText = "Apply"
-ITEM.factions = {FACTION_MPF, FACTION_OTA}
+ITEM.factions = { FACTION_MPF, FACTION_OTA }
 ITEM.category = "Medical"
 ITEM.business = true
 ITEM.useSound = "items/medshot4.wav"
-ITEM.blacklist = {CLASS_MPR}
+ITEM.blacklist = { CLASS_MPR }
 ITEM.description = "#ITEM_Health_Kit_Desc"
-ITEM.customFunctions = {"Give"}
+ITEM.customFunctions = { "Give" }
 
 -- Called when a player uses the item.
 function ITEM:OnUse(player, itemEntity)

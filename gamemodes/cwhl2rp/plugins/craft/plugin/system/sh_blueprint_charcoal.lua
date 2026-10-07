@@ -8,9 +8,9 @@ BLUEPRINT.description = "#Blueprint_BlueprintCharcoal_Description"
 BLUEPRINT.craftplace = "cw_craft_furnace"
 BLUEPRINT.required = {}
 BLUEPRINT.recipe = {
-	{"wooden_parts", 3},
+	{ "wooden_parts", 3 }
 }
 BLUEPRINT.finish = {
-	{"charcoal", 1}
+	{ "charcoal", 1 }
 }
-BLUEPRINT:Register();
+BLUEPRINT:Register()

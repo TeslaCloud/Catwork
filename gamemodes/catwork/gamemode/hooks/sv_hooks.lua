@@ -12,6 +12,7 @@ DEFINE_BASECLASS("gamemode_base")
 	@codebase Server
 	@details Called when the server has initialized.
 --]]
+
 function GM:Initialize()
 	catio.Initialize()
 
@@ -24,7 +25,7 @@ function GM:Initialize()
 	local password = config.GetVal("mysql_password")
 	local database = config.GetVal("mysql_database")
 	local dateInfo = os.date("*t")
-	local host = string.gsub(config.GetVal("mysql_host"), "^http[s]?://", "", 1); -- Matches at beginning of string, matches http:// or https://, no need to check twice
+	local host = string.gsub(config.GetVal("mysql_host"), "^http[s]?://", "", 1) -- Matches at beginning of string, matches http:// or https://, no need to check twice
 	local port = config.GetVal("mysql_port")
 
 	cw.database.Module = "mysqloo"
@@ -234,7 +235,7 @@ function GM:PlayerDisconnected(player)
 		end
 
 		cw.core:PrintLog(LOGTYPE_MINOR, player:Name().." ("..player:SteamID().." / "..player:IPAddress()..") has disconnected.")
-		chatbox.AddText(nil, player:SteamName()..L"PlayerDisconnected", {filter = "events", icon = "icon16/user_delete.png", textColor = Color(180, 80, 150)})
+		chatbox.AddText(nil, player:SteamName()..L"PlayerDisconnected", { filter = "events", icon = "icon16/user_delete.png", textColor = Color(180, 80, 150) })
 	end
 end
 
@@ -301,6 +302,7 @@ end
 function GM:PlayerAddToSavedInventory(player, character, Callback)
 	for k, v in pairs(player:GetWeapons()) do
 		local weaponItemTable = item.GetByWeapon(v)
+
 		if (weaponItemTable) then
 			Callback(weaponItemTable)
 		end
@@ -366,7 +368,7 @@ do
 		["weapon_hl2pickaxe"] = 15,
 		["weapon_hl2pipe"] = 10,
 		["weapon_hl2pot"] = 10,
-		["weapon_hl2shovel"] = 15,
+		["weapon_hl2shovel"] = 15
 	}
 
 	-- Called when a player attempts to fire a weapon.
@@ -885,7 +887,7 @@ function GM:PlayerSpawn(player)
 
 				for k, v in pairs(ammo) do
 					if (!string.find(k, "p_") and !string.find(k, "s_")) then
-						player:GiveAmmo(v, k); ammo[k] = nil
+						player:GiveAmmo(v, k) ammo[k] = nil
 					end
 				end
 			else
@@ -1043,7 +1045,7 @@ function GM:InitPostEntity()
 			if (cw.entity:IsDoor(v)) then
 				local entIndex = v:EntIndex()
 
-				if (!cw.entity.DoorEntities) then cw.entity.DoorEntities = {}; end
+				if (!cw.entity.DoorEntities) then cw.entity.DoorEntities = {} end
 
 				local doorEnts = cw.entity.DoorEntities
 
@@ -1084,7 +1086,7 @@ function GM:PlayerInitialSpawn(player)
 
 	if (!player:IsKicked()) then
 		cw.core:PrintLog(LOGTYPE_MINOR, player:SteamName().." ("..player:SteamID().." / "..player:IPAddress()..") has connected.")
-		chatbox.AddText(nil, player:SteamName()..L"PlayerConnected", {filter = "events", icon = "icon16/user_add.png", textColor = Color(150, 80, 210)})
+		chatbox.AddText(nil, player:SteamName()..L"PlayerConnected", { filter = "events", icon = "icon16/user_add.png", textColor = Color(150, 80, 210) })
 	end
 end
 
@@ -1162,13 +1164,13 @@ function GM:GetFallDamage(player, velocity)
 	local ragdollEntity = nil
 	local position = player:GetPos()
 	local damage = math.max((velocity - 464) * 0.225225225, 0) * config.GetVal("scale_fall_damage")
-	local filter = {player}
+	local filter = { player }
 
 	if (config.GetVal("wood_breaks_fall")) then
 		if (player:IsRagdolled()) then
 			ragdollEntity = player:GetRagdollEntity()
 			position = ragdollEntity:GetPos()
-			filter = {player, ragdollEntity}
+			filter = { player, ragdollEntity }
 		end
 
 		local traceLine = util.TraceLine({
@@ -1206,7 +1208,7 @@ function GM:PlayerDataStreamInfoSent(player)
 			local faction = factions[math.random(1, #factions)]
 
 			if (faction) then
-				local genders = {GENDER_MALE, GENDER_FEMALE}
+				local genders = { GENDER_MALE, GENDER_FEMALE }
 				local gender = faction.singleGender or genders[math.random(1, #genders)]
 				local models = faction.models[string.lower(gender)]
 				local model = models[math.random(1, #models)]
@@ -1235,7 +1237,7 @@ function GM:PlayerDataStreamInfoSent(player)
 			if (whitelisted) then
 				for k, v in pairs(whitelisted) do
 					if (_faction.GetStored()[v]) then
-						netstream.Start(player, "SetWhitelisted", {v, true})
+						netstream.Start(player, "SetWhitelisted", { v, true })
 					else
 						whitelisted[k] = nil
 					end
@@ -1908,7 +1910,7 @@ function GM:CanExitVehicle(vehicle, player)
 			trace = {
 				start = trace.HitPos,
 				endpos = trace.HitPos - Vector(0, 0, 1024),
-				filter = {player, vehicle}
+				filter = { player, vehicle }
 			}
 
 			player.cwExitVehiclePos = util.TraceLine(trace).HitPos
@@ -2362,7 +2364,6 @@ function GM:EntityHandleMenuOption(player, entity, option, arguments)
 
 				player:SetItemEntity(nil)
 			end
-
 		end
 	elseif (class == "cw_item" and arguments == "cw.itemExamine") then
 		local itemTable = entity.cwItemTable
@@ -2477,13 +2478,13 @@ function GM:PlayerSpawnedProp(player, model, entity)
 
 		if (scalePropCost > 0) then
 			local cost = math.ceil(math.max((entity:BoundingRadius() / 2) * scalePropCost, 1))
-			local info = {cost = cost, name = L"PropCost_Name"}
+			local info = { cost = cost, name = L"PropCost_Name" }
 
 			hook.Run("PlayerAdjustPropCostInfo", player, entity, info)
 
 			if (cw.player:CanAfford(player, info.cost)) then
 				cw.player:GiveCash(player, -info.cost, info.name)
-				entity.cwGiveRefundTab = {CurTime() + 10, player, info.cost}
+				entity.cwGiveRefundTab = { CurTime() + 10, player, info.cost }
 			else
 				cw.player:Notify(player, L(player, "YouNeedAnother", cw.core:FormatCash(info.cost - player:GetCash(), nil, true)))
 				entity:Remove()
@@ -2609,7 +2610,7 @@ function GM:CanTool(player, trace, tool)
 
 				newTrace.start = trace.HitPos
 				newTrace.endpos = trace.HitPos + player:GetAimVector() * 16
-				newTrace.filter = {player, trace.Entity}
+				newTrace.filter = { player, trace.Entity }
 
 				newTrace = util.TraceLine(newTrace)
 
@@ -2770,7 +2771,6 @@ function GM:PlayerCharacterInitialized(player)
 
 	if (rankTable) then
 		if (rankTable.class and cw.class:GetAll()[rankTable.class]) then
-
 			cw.class:Set(player, rankTable.class)
 		end
 
@@ -2801,8 +2801,8 @@ function GM:PlayerCharacterLoaded(player)
 	player:SetNetVar("InvSpace", config.Get("default_inv_space"):Get())
 	player.cwCharLoadedTime = CurTime()
 	player.cwCrouchedSpeed = config.Get("crouched_speed"):Get()
-	player.cwClipTwoInfo = {weapon = NULL, ammo = 0}
-	player.cwClipOneInfo = {weapon = NULL, ammo = 0}
+	player.cwClipTwoInfo = { weapon = NULL, ammo = 0 }
+	player.cwClipOneInfo = { weapon = NULL, ammo = 0 }
 	player.cwInitialized = true
 	player.cwAttrBoosts = player.cwAttrBoosts or {}
 	player.cwRagdollTab = player.cwRagdollTab or {}
@@ -2948,7 +2948,7 @@ function GM:PlayerAdjustRadioInfo(player, info) end
 function GM:PlayerCanGainFrag(player, victim) return true end
 
 -- Called just after a player spawns.
-function GM:PostPlayerSpawn(player, lightSpawn, changeClass, firstSpawn)	
+function GM:PostPlayerSpawn(player, lightSpawn, changeClass, firstSpawn)
 	if (firstSpawn) then
 		local attrBoosts = player:GetCharacterData("AttrBoosts")
 		local health = player:GetCharacterData("Health")
@@ -3043,12 +3043,11 @@ end
 
 -- Called when a player dies.
 function GM:PlayerDeath(player, inflictor, attacker, damageInfo)
-
 	cw.core:CalculateSpawnTime(player, inflictor, attacker, damageInfo)
 
 	local ragdoll = player:GetRagdollEntity()
 
-	if (ragdoll) then		
+	if (ragdoll) then
 		if (IsValid(inflictor) and inflictor:GetClass() == "prop_combine_ball") then
 			if (damageInfo) then
 				cw.entity:Disintegrate(ragdoll, 3, damageInfo:GetDamageForce() * 32)
@@ -3259,7 +3258,6 @@ end
 
 -- Called when an entity takes damage.
 function GM:EntityTakeDamage(entity, damageInfo)
-
 	--[[if (entity:IsPlayer() and damageInfo:IsExplosionDamage() and !entity:IsRagdolled()) then
 		local data = {}
 			data.start = damageInfo:GetDamagePosition()
@@ -3534,6 +3532,7 @@ end
 	@param Player The player that is pressing a button.
 	@param Enum The button that was pressed.
 --]]
+
 function GM:PlayerButtonDown(player, button)
 	if (button == KEY_B) then
 		if (config.Get("quick_raise_enabled"):GetBoolean()) then
@@ -3609,6 +3608,7 @@ end
 	@param Table The attribute table of the attribute being progressed.
 	@param Number The amount that is being progressed for editing purposes.
 --]]
+
 function GM:OnAttributeProgress(player, attribute, amount)
 	amount = amount * config.Get("scale_attribute_progress"):Get()
 end
@@ -3618,6 +3618,7 @@ end
 	@details Called to add ammo types to be checked for and saved.
 	@param Table The table filled with the current ammo types.
 --]]
+
 function GM:AdjustAmmoTypes(ammoTable)
 	ammoTable["sniperpenetratedround"] = true
 	ammoTable["striderminigun"] = true

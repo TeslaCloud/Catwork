@@ -5,7 +5,7 @@
 --]]
 
 function cwSurfaceTexts:Save()
-	cw.core:SaveSchemaData("plugins/3dtexts/"..game.GetMap(), {self.stored, self.count})
+	cw.core:SaveSchemaData("plugins/3dtexts/"..game.GetMap(), { self.stored, self.count })
 end
 
 function cwSurfaceTexts:Load()

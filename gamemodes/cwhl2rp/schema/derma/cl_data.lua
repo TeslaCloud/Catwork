@@ -15,7 +15,7 @@ function PANEL:Init()
 
 	-- Called when the button is clicked.
 	function self.btnClose.DoClick(button)
-		self:Close(); self:Remove()
+		self:Close() self:Remove()
 
 		gui.EnableScreenClicker(false)
 	end
@@ -70,7 +70,7 @@ function PANEL:Populate(player, data)
 
 	-- Called when the button is clicked.
 	function button.DoClick(button)
-		self:Close(); self:Remove()
+		self:Close() self:Remove()
 
 		if (IsValid(player)) then
 			netstream.Start("EditData", { player, string.sub(textEntry:GetValue(), 0, 500) })
@@ -90,4 +90,4 @@ function PANEL:PerformLayout()
 	DFrame.PerformLayout(self)
 end
 
-vgui.Register("cwData", PANEL, "DFrame");
+vgui.Register("cwData", PANEL, "DFrame")

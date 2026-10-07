@@ -41,17 +41,17 @@ function PANEL:HandleUnequip(itemTable)
 		function(arguments)
 			if (arguments) then
 				netstream.Start(
-					"UnequipItem", {itemTable.uniqueID, itemTable.itemID, arguments}
+					"UnequipItem", { itemTable.uniqueID, itemTable.itemID, arguments }
 				)
 			else
 				netstream.Start(
-					"UnequipItem", {itemTable.uniqueID, itemTable.itemID}
+					"UnequipItem", { itemTable.uniqueID, itemTable.itemID }
 				)
 			end
 		end)
 	else
 		netstream.Start(
-			"UnequipItem", {itemTable.uniqueID, itemTable.itemID}
+			"UnequipItem", { itemTable.uniqueID, itemTable.itemID }
 		)
 	end
 end
@@ -84,8 +84,8 @@ function PANEL:Rebuild()
 		self.spaceForm:AddItem(vgui.Create("cwInventorySpace", self))
 	end
 
-	local itemsList = {inventory = {}, equipment = {}}
-	local categories = {inventory = {}, equipment = {}}
+	local itemsList = { inventory = {}, equipment = {} }
+	local categories = { inventory = {}, equipment = {} }
 
 	for k, v in pairs(cw.client:GetWeapons()) do
 		local itemTable = item.GetByWeapon(v)
@@ -165,7 +165,7 @@ function PANEL:Rebuild()
 				categoryList:SetSpacing(4)
 			categoryForm:SetContents(categoryList)
 
-			--collapsibleCategory:SetContents(categoryList)
+			-- collapsibleCategory:SetContents(categoryList)
 
 			table.sort(v.itemsList, function(a, b)
 				return a.itemID < b.itemID
@@ -239,7 +239,7 @@ function PANEL:OnMenuOpened()
 end
 
 -- Called when the panel is selected.
-function PANEL:OnSelected() self:Rebuild(); end
+function PANEL:OnSelected() self:Rebuild() end
 
 -- Called when the layout should be performed.
 function PANEL:PerformLayout(w, h)
@@ -258,6 +258,7 @@ end
 function PANEL:Think()
 	for k, v in pairs(cw.client:GetWeapons()) do
 		local weaponItem = item.GetByWeapon(v)
+
 		if (weaponItem and !v.cwIsWeaponItem) then
 			cw.inventory:Rebuild()
 			v.cwIsWeaponItem = true
@@ -350,7 +351,7 @@ function PANEL:Init()
 	local model, skin = item.GetIconInfo(self.itemTable)
 		self.spawnIcon:SetModel(model, skin)
 		self.spawnIcon:SetSize(48, 48)
-	self.cachedInfo = {model = model, skin = skin}
+	self.cachedInfo = { model = model, skin = skin }
 end
 
 -- Called each frame.
@@ -478,4 +479,4 @@ function PANEL:Think()
 	self.space:SizeToContents()
 end
 
-vgui.Register("cwInventorySpace", PANEL, "DPanel");
+vgui.Register("cwInventorySpace", PANEL, "DPanel")

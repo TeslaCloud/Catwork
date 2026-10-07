@@ -14,17 +14,17 @@ ITEM.category = "Weapons"
 ITEM.useInVehicle = false
 
 local defaultWeapons = {
-	["weapon_357"] = {"357", nil, true},
-	["weapon_ar2"] = {"ar2", "ar2altfire", 30},
-	["weapon_rpg"] = {"rpg_round", nil, 3},
-	["weapon_smg1"] = {"smg1", "smg1_grenade", true},
-	["weapon_slam"] = {"slam", nil, 2},
-	["sxbase_he"] = {"grenade", nil, 1},
-	["sxbase_fg"] = {"grenade", nil, 1},
-	["sxbase_sg"] = {"grenade", nil, 1},
-	["weapon_pistol"] = {"pistol", nil, true},
-	["weapon_shotgun"] = {"buckshot", nil, true},
-	["weapon_crossbow"] = {"xbowbolt", nil, 4},
+	["weapon_357"] = { "357", nil, true },
+	["weapon_ar2"] = { "ar2", "ar2altfire", 30 },
+	["weapon_rpg"] = { "rpg_round", nil, 3 },
+	["weapon_smg1"] = { "smg1", "smg1_grenade", true },
+	["weapon_slam"] = { "slam", nil, 2 },
+	["sxbase_he"] = { "grenade", nil, 1 },
+	["sxbase_fg"] = { "grenade", nil, 1 },
+	["sxbase_sg"] = { "grenade", nil, 1 },
+	["weapon_pistol"] = { "pistol", nil, true },
+	["weapon_shotgun"] = { "buckshot", nil, true },
+	["weapon_crossbow"] = { "xbowbolt", nil, 4 }
 }
 ITEM:AddData("ClipOne", 0, true)
 ITEM:AddData("ClipTwo", 0, true)
@@ -76,6 +76,7 @@ function ITEM:HasPlayerEquipped(player, bIsValidWeapon)
 		Just returning true here because there isn't
 		a GetWeapon function client-side. Yet...
 	--]]
+
 	if (CLIENT and bIsValidWeapon) then
 		return true
 	end
@@ -96,9 +97,11 @@ function ITEM:OnHandleUnequip(Callback)
 			menu:AddOption(L("Holster"), function()
 				Callback()
 			end)
+
 			menu:AddOption(L("Drop"), function()
 				Callback("drop")
 			end)
+
 		menu:Open()
 	else
 		Callback()

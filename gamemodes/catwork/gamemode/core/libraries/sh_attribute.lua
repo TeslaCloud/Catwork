@@ -14,7 +14,7 @@ cw.attribute.stored = stored
 cw.attribute.buffer = buffer
 
 --[[ Set the __index meta function of the class. --]]
-local CLASS_TABLE = {__index = CLASS_TABLE}
+local CLASS_TABLE = { __index = CLASS_TABLE }
 
 -- A function to register a new attribute.
 function CLASS_TABLE:Register()

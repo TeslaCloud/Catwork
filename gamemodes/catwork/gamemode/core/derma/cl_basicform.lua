@@ -252,4 +252,4 @@ function PANEL:ListBox(strLabel)
 	return right, left
 end
 
-vgui.Register("cwBasicForm", PANEL, "DPanelList");
+vgui.Register("cwBasicForm", PANEL, "DPanelList")

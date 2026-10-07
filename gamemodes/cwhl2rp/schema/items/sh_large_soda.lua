@@ -36,7 +36,7 @@ function ITEM:OnDrop(player, position) end
 function ITEM:OnEditFunctions(functions)
 	if (Schema:PlayerIsCombine(cw.client, false)) then
 		for k, v in pairs(functions) do
-			if (v == "Drink") then functions[k] = nil; end
+			if (v == "Drink") then functions[k] = nil end
 		end
 	end
 end

@@ -9,11 +9,11 @@
 local COMMAND = cw.command:New("Static")
 COMMAND.tip = "#Command_Static_Description"
 COMMAND.access = "o"
-COMMAND.alias = {"StaticAdd", "StaticPropAdd"}
+COMMAND.alias = { "StaticAdd", "StaticPropAdd" }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
 	plugin.Call("PlayerMakeStatic", player, true)
 end
 
-COMMAND:Register();
+COMMAND:Register()

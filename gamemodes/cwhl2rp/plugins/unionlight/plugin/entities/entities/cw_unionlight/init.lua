@@ -16,6 +16,7 @@ end
 -- Called when the entity is spawned.
 function ENT:SpawnFunction(ply, tr)
 	if (!tr.Hit) then return end
+
 	local ent = ents.Create("cw_unionlight")
 	ent:SetPos(tr.HitPos + tr.HitNormal * 16)
 	ent:Spawn()
@@ -23,6 +24,7 @@ function ENT:SpawnFunction(ply, tr)
 
 	return ent
 end
+
 ents.Create("prop_physics")
 
 function ENT:OnRemove()

@@ -11,7 +11,7 @@ COMMAND.tip = "#Command_Charfallover_Description"
 COMMAND.text = "#Command_Charfallover_Syntax"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.optionalArguments = 1
-COMMAND.alias = {"Fallover"}
+COMMAND.alias = { "Fallover" }
 COMMAND.cooldown = 5
 
 -- Called when the command has been run.
@@ -41,4 +41,4 @@ function COMMAND:OnRun(player, arguments)
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

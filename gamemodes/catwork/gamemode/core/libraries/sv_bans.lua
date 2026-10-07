@@ -15,6 +15,7 @@ cw.bans.stored = stored
 	A local function to handle ban deletion.
 	INTERNAL USE ONLY. DO NOT USE.
 --]]
+
 local function DELETE_BAN(identifier)
 	stored[identifier] = nil
 
@@ -28,6 +29,7 @@ end
 	A local function to handle the loading of bans.
 	INTERNAL USE ONLY. DO NOT USE.
 --]]
+
 local function BANS_LOAD_CALLBACK(result)
 	if (cw.database:IsResult(result)) then
 		stored = stored or {}
@@ -177,6 +179,7 @@ function cw.bans:Add(identifier, duration, reason, Callback, bSaveless)
 					Callback(steamName, duration, reason)
 				end
 			end)
+
 		queryObj:Execute()
 
 		return
@@ -184,7 +187,7 @@ function cw.bans:Add(identifier, duration, reason, Callback, bSaveless)
 
 	--[[ In this case we're banning them by their IP address. --]]
 	if (string.find(identifier, "%d+%.%d+%.%d+%.%d+")) then
-		local queryObj = cw.database:Select(playersTable);	
+		local queryObj = cw.database:Select(playersTable)
 			queryObj:Callback(function(result)
 				local steamName = identifier
 
@@ -223,6 +226,7 @@ function cw.bans:Add(identifier, duration, reason, Callback, bSaveless)
 					Callback(steamName, duration, reason)
 				end
 			end)
+
 			queryObj:Where("_IPAddress", identifier)
 		queryObj:Execute()
 

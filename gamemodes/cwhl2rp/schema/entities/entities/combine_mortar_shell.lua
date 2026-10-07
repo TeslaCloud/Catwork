@@ -11,14 +11,14 @@ function ENT:Initialize()
 		self:SetModel("models/props_phx/amraam.mdl")
 		self:SetMoveType(MOVETYPE_FLY)
 		self:SetSolid(SOLID_NONE)
-		self:SetCollisionBounds(Vector(-1,-10,-64),Vector(16,10,64))
+		self:SetCollisionBounds(Vector(-1, -10, -64), Vector(16, 10, 64))
 
-		self:SetAngles(Angle(90,0,0))
-		self:SetModelScale(0.8,0)
+		self:SetAngles(Angle(90, 0, 0))
+		self:SetModelScale(0.8, 0)
 
 		self.SmokeTrail = ents.Create("env_spritetrail")
-		self.SmokeTrail:SetParent(self)	
-		self.SmokeTrail:SetPos(self:GetPos() + Vector(7,0,60))
+		self.SmokeTrail:SetParent(self)
+		self.SmokeTrail:SetPos(self:GetPos() + Vector(7, 0, 60))
 		self.SmokeTrail:SetAngles(self:GetAngles())
 		self.SmokeTrail:SetKeyValue("lifetime", 2)
 		self.SmokeTrail:SetKeyValue("startwidth", 32)
@@ -39,12 +39,12 @@ if SERVER then
 		local ent = ents.Create("combine_mortar_shell")
 		local tr = util.TraceLine({
 			start = trace.HitPos,
-			endpos = trace.HitPos + Vector(0,0,1) * (10^14),
+			endpos = trace.HitPos + Vector(0, 0, 1) * (10 ^ 14),
 			mask = MASK_PLAYERSOLID,
 			filter = ent
 		})
 		ent:Spawn()
-		ent:SetPos(tr.HitPos - ent:OBBMaxs() - Vector(0,0,1))
+		ent:SetPos(tr.HitPos - ent:OBBMaxs() - Vector(0, 0, 1))
 		ent:Activate()
 		return ent
 	end
@@ -55,15 +55,16 @@ if SERVER then
 		end
 	end
 end
+
 function ENT:HitThink()
 	local tr = util.TraceHull({
 		start = self:GetPos(),
-		endpos = self:GetPos() - Vector(-7,0,60),
+		endpos = self:GetPos() - Vector(-7, 0, 60),
 		filter = self,
 		mins = Vector(-16, -16, -16),
 		maxs = Vector(16, 16, 16),
 		mask = MASK_SOLID
-	})	
+	})
 
 	if (tr.Hit or tr.HitWorld) and tr.Entity:GetClass() != "sammyservers_textscreen" then
 		local exp = ents.Create("env_explosion")
@@ -77,9 +78,10 @@ function ENT:HitThink()
 		SafeRemoveEntity(self)
 	end
 end
+
 function ENT:Think()
 	if SERVER then
-		self:SetVelocity(Vector(0,0,-1) * 10^1.5)
+		self:SetVelocity(Vector(0, 0, -1) * 10 ^ 1.5)
 
 		self:HitThink()
 	end
@@ -90,15 +92,16 @@ end
 
 if CLIENT then
 	function ENT:DrawTranslucent()
-		local pos = self:GetPos() + Vector(7,0,60)
+		local pos = self:GetPos() + Vector(7, 0, 60)
 
 		local ViewNormal = pos - EyePos()
 		local Distance = ViewNormal:Length()
 		ViewNormal:Normalize()
 		local ViewDot = 1
 		local LightPos = pos
+
 		if (ViewDot >= 0) then
-			local Visibile	= util.PixelVisible(LightPos, 8, self.PixVis)	
+			local Visibile = util.PixelVisible(LightPos, 8, self.PixVis)
 			if (!Visibile) then return end
 
 			local Size = math.Clamp(Distance * Visibile * ViewDot * 2, 64, 800)
@@ -113,21 +116,22 @@ if CLIENT then
 
 			render.SetMaterial(Material("sprites/light_ignorez"))
 
-			render.DrawSprite(LightPos, Size*3,Size*3, Color(200, 225, 255, Alpha3/3), Visibile * ViewDot)
-			render.DrawSprite(LightPos, Size,Size, Color(180, 200, 255, Alpha3), Visibile * ViewDot)
-			render.DrawSprite(LightPos, Size*2,Size*0.5, Color(180, 200, 255, Alpha3), Visibile * ViewDot)
-			render.DrawSprite(LightPos, Size2,Size2, Color(255,255,255,Alpha2))
-			render.DrawSprite(LightPos, Size3,Size3, Color(255,0,0,Alpha2))
-			render.DrawSprite(LightPos, Size3,Size3, Color(255,255,255,Alpha))
-			render.DrawSprite(LightPos, Size2,Size2, Color(255,255,255,Alpha))
-			render.DrawSprite(LightPos, Size4,Size2, Color(100,100,100,Alpha))
-			render.DrawSprite(LightPos, Size5,Size5, Color(0,20,30,Alpha))
+			render.DrawSprite(LightPos, Size * 3, Size * 3, Color(200, 225, 255, Alpha3 / 3), Visibile * ViewDot)
+			render.DrawSprite(LightPos, Size, Size, Color(180, 200, 255, Alpha3), Visibile * ViewDot)
+			render.DrawSprite(LightPos, Size * 2, Size * 0.5, Color(180, 200, 255, Alpha3), Visibile * ViewDot)
+			render.DrawSprite(LightPos, Size2, Size2, Color(255, 255, 255, Alpha2))
+			render.DrawSprite(LightPos, Size3, Size3, Color(255, 0, 0, Alpha2))
+			render.DrawSprite(LightPos, Size3, Size3, Color(255, 255, 255, Alpha))
+			render.DrawSprite(LightPos, Size2, Size2, Color(255, 255, 255, Alpha))
+			render.DrawSprite(LightPos, Size4, Size2, Color(100, 100, 100, Alpha))
+			render.DrawSprite(LightPos, Size5, Size5, Color(0, 20, 30, Alpha))
 		end
 	end
 
 	function ENT:Initialize()
 		self.PixVis = util.GetPixelVisibleHandle()
 	end
+
 	function ENT:Draw()
 		self:DrawModel()
 	end

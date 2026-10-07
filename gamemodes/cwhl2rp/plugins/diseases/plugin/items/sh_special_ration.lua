@@ -10,7 +10,7 @@ ITEM.category = "Medical"
 ITEM.business = true
 ITEM.description = "#Item_SpecialRation_Description"
 ITEM.hunger = 40
-ITEM.customFunctions = {"Give"}
+ITEM.customFunctions = { "Give" }
 
 -- Called when a player uses the item.
 function ITEM:OnUse(player, itemEntity)
@@ -21,7 +21,7 @@ function ITEM:OnUse(player, itemEntity)
 	player:SetHealth(math.Clamp(player:Health() + Schema:GetHealAmount(player, 1.5), 0, player:GetMaxHealth()))
 
 	hook.Run("PlayerHealed", player, player, self)
-end;
+end
 
 if (SERVER) then
 	function ITEM:OnCustomFunction(player, name)

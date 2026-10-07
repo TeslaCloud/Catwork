@@ -8,17 +8,17 @@
 
 local TOOL = cw.tool:New()
 
-TOOL.Name 			= "#tool.containertool.name"
-TOOL.UniqueID 		= "containertool"
-TOOL.Desc 			= "#tool.containertool.desc"
-TOOL.HelpText		= "#tool.containertool.0"
+TOOL.Name = "#tool.containertool.name"
+TOOL.UniqueID = "containertool"
+TOOL.Desc = "#tool.containertool.desc"
+TOOL.HelpText = "#tool.containertool.0"
 
-TOOL.ClientConVar["mode"]	 			= "1"
+TOOL.ClientConVar["mode"] = "1"
 TOOL.ClientConVar["contfillscale"]	= "1"
 TOOL.ClientConVar["fillcategory"]		= "Consumables"
-TOOL.ClientConVar["contname"]			= "A Container"
-TOOL.ClientConVar["contmessage"]		= "A Message"
-TOOL.ClientConVar["contpassword"] 	= "password"
+TOOL.ClientConVar["contname"] = "A Container"
+TOOL.ClientConVar["contmessage"] = "A Message"
+TOOL.ClientConVar["contpassword"] = "password"
 
 function TOOL:AddItems(entity)
 	local trace = entity
@@ -159,7 +159,6 @@ function TOOL:SetPassword(entity)
 end
 
 function TOOL:LeftClick(trace)
-
 	local mode = self:GetClientNumber("mode")
 	local player = self:GetOwner()
 	local container = player:GetEyeTraceNoCursor()
@@ -172,12 +171,15 @@ function TOOL:LeftClick(trace)
 		if(mode == 1) then
 			self:AddItems(container)
 		end
+
 		if(mode == 2) then
 			self:SetMessage(container)
 		end
+
 		if(mode == 3) then
 			self:SetName(container)
 		end
+
 		if(mode == 4) then
 			self:SetPassword(container)
 		end
@@ -185,9 +187,7 @@ function TOOL:LeftClick(trace)
 end
 
 if CLIENT then
-
 	local function AddDefControls(Panel)
-
 		Panel:ClearControls()
 
 		local mode = LocalPlayer():GetInfoNum("containertool_mode", 0)
@@ -196,13 +196,13 @@ if CLIENT then
 
 		local height = 90
 
-
-		list:SetSize(30,height)
-		--list:SizeToContents()
+		list:SetSize(30, height)
+		-- list:SizeToContents()
 		list:AddColumn(L("#tool.containertool.mode"))
 		list:SetMultiSelect(false)
+
 		function list:OnRowSelected(LineID, line)
-			if not (mode == LineID) then
+			if !(mode == LineID) then
 				RunConsoleCommand("cont_setmode", LineID)
 			end
 		end
@@ -212,16 +212,19 @@ if CLIENT then
 		else
 			list:AddLine(" 1   "..L("#tool.containertool.mode1"))
 		end
+
 		if (mode == 2) then
 			list:AddLine(" 2 **"..L("#tool.containertool.mode2").."**")
 		else
 			list:AddLine(" 2   "..L("#tool.containertool.mode2"))
 		end
+
 		if (mode == 3) then
 			list:AddLine(" 3 **"..L("#tool.containertool.mode3").."**")
 		else
 			list:AddLine(" 3   "..L("#tool.containertool.mode3").."  ")
 		end
+
 		if (mode == 4) then
 			list:AddLine(" 4 **"..L("#tool.containertool.mode4").."**")
 		else
@@ -232,33 +235,35 @@ if CLIENT then
 
 		Panel:AddItem(list)
 
-
 		if (mode == 1) then
 			Panel:AddControl("Slider",  {
-					Label	= "#tool.containertool.fillscale",
+					Label = "#tool.containertool.fillscale",
 					Type	= "Interger",
 					Min		= 1,
 					Max		= 5,
 					Command = "containertool_contfillscale",
-					Description = "#tool.containertool.fillscaledesc"}	)
+					Description = "#tool.containertool.fillscaledesc" })
 
 			Panel:AddControl("TextBox", {
 									 Label = "#tool.containertool.category",
 									 MaxLenth = "20",
 									 Command = "containertool_fillcategory" })
 		end
+
 		if (mode == 2) then
 			Panel:AddControl("TextBox", {
 									 Label = "#tool.containertool.message",
 									 MaxLenth = "20",
 									 Command = "containertool_contmessage" })
 		end
+
 		if (mode == 3) then
 			Panel:AddControl("TextBox", {
 						Label = "#tool.containertool.contname",
 						MaxLenth = "20",
 						Command = "containertool_contname" })
 		end
+
 		if (mode == 4) then
 			Panel:AddControl("TextBox", {
 									 Label = "#tool.containertool.password",
@@ -270,16 +275,19 @@ if CLIENT then
 	function cont_setmode(player, tool, args)
 		if LocalPlayer():GetInfoNum("containertool_mode", 3) != args[1] then
 			RunConsoleCommand("containertool_mode", args[1])
-			timer.Simple(0.05, function() cont_updatepanel(); end)
+			timer.Simple(0.05, function() cont_updatepanel() end)
 		end
 	end
+
 	concommand.Add("cont_setmode", cont_setmode)
 
 	function cont_updatepanel()
 		local Panel = controlpanel.Get("containertool")
 		if (!Panel) then return end
+
 		AddDefControls(Panel)
 	end
+
 	concommand.Add("cont_updatepanel", cont_updatepanel)
 
 	function TOOL.BuildCPanel(Panel)
@@ -291,8 +299,7 @@ local pluginTable = plugin.FindByID("Storage")
 
 if (pluginTable) then
 	if (plugin.IsDisabled(pluginTable.name) or plugin.IsUnloaded(pluginTable.name)) then
-
 	else
 		TOOL:Register()
-	end	
+	end
 end

@@ -1,5 +1,4 @@
 
-
 ITEM.name = "Gunpowder"
 ITEM.PrintName = "#Item_Gunpowder_Name"
 ITEM.model = "models/props_lab/box01a.mdl"
@@ -9,4 +8,3 @@ ITEM.description = "#Item_Gunpowder_Description"
 
 -- Called when a player drops the item.
 function ITEM:OnDrop(player, position) end
-

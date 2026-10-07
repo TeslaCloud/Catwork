@@ -14,4 +14,4 @@ ENT.PrintName = "Breach"
 ENT.Spawnable = false
 ENT.AdminSpawnable = false
 ENT.UsableInVehicle = true
-ENT.PhysgunDisabled = true;
+ENT.PhysgunDisabled = true

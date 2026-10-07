@@ -6,7 +6,6 @@
 	with contributions from Cloud Sixteen community.
 --]]
 
-
 ITEM.name = "Container Base"
 ITEM.model = "models/props_junk/garbage_bag001a.mdl"
 ITEM.weight = 2

@@ -12,7 +12,7 @@ COMMAND.text = "#Command_Plykick_Syntax"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "o"
 COMMAND.arguments = 2
-COMMAND.alias = {"Kick"}
+COMMAND.alias = { "Kick" }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
@@ -36,4 +36,4 @@ function COMMAND:OnRun(player, arguments)
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

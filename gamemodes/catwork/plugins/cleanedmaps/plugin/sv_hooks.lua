@@ -17,7 +17,7 @@ end
 
 -- Called when the map has loaded all the entities.
 function cwCleanedMaps:InitPostEntity()
-	local gunButtons = {"gundoor", "smgbutton", "shotgunbutton", "pistbutton", "gunstore"}
+	local gunButtons = { "gundoor", "smgbutton", "shotgunbutton", "pistbutton", "gunstore" }
 	local position = Vector(-1836.6316, 244.3225, 724.9510)
 
 	if (config.Get("remove_map_physics"):Get()) then
@@ -29,7 +29,7 @@ function cwCleanedMaps:InitPostEntity()
 	if (string.lower(game.GetMap()) == "rp_tb_city45_v02n") then
 		for k, v in pairs(ents.FindInSphere(Vector(226.2188, 4550, 238.0313), 32)) do
 			if (cw.entity:IsDoor(v)) then
-				v:Remove(); break
+				v:Remove() break
 			end
 		end
 
@@ -85,8 +85,8 @@ function cwCleanedMaps:InitPostEntity()
 		local coreTwo = ents.FindByName("core_refract2")
 		local coreTwo = ents.FindByName("core_refract2")
 
-		if (coreOne and IsValid(coreOne[1])) then coreOne[1]:Remove(); end
-		if (coreTwo and IsValid(coreTwo[1])) then coreTwo[1]:Remove(); end
+		if (coreOne and IsValid(coreOne[1])) then coreOne[1]:Remove() end
+		if (coreTwo and IsValid(coreTwo[1])) then coreTwo[1]:Remove() end
 
 		if (specialDoor and IsValid(specialDoor[1])) then
 			specialDoor[1]:Remove()
@@ -122,7 +122,7 @@ function cwCleanedMaps:InitPostEntity()
 		end
 
 		for k, v in pairs(entities) do
-			v:Spawn(); cw.entity:MakeSafe(v, true, true, true)
+			v:Spawn() cw.entity:MakeSafe(v, true, true, true)
 		end
 	end
 end

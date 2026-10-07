@@ -1,0 +1,45 @@
+# proofreader configuration for Catwork.
+#
+# Only what differs from the built-in (Flux) defaults is listed here; everything else is stock.
+# `proofreader --show-readers <Reader>` prints the effective settings of a reader.
+
+AllReaders:
+  Include:
+    - 'gamemodes/**/*.lua'                           # nothing outside gamemodes/ is linted
+  Exclude:
+    - 'gamemodes/catwork/gamemode/thirdparty/**/*'   # md5, netstream, pon, utf8: vendored as-is
+
+# --- Indentation: Catwork is indented with tabs --------------------------------------------------
+
+Layout/IndentationStyle:
+  Enabled: false                         # only knows "spaces, not tabs"
+
+Layout/IndentationWidth:
+  AutoCorrect: false                     # tab-indented lines are not measured; the fix inserts spaces
+
+Layout/IndentationConsistency:
+  AutoCorrect: false                     # same: the fix re-indents with spaces
+
+Layout/LineLength:
+  AutoCorrect: false                     # the fix indents the lines it breaks off with spaces
+
+# --- Clockwork conventions -----------------------------------------------------------------------
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+Style/ParenthesesAroundCondition:
+  Enabled: false                         # `if (condition) then` is the house style
+
+Style/DocumentationMethod:
+  Enabled: false
+
+Naming/VariableName:
+  Enabled: false                         # locals and parameters are lowerCamelCase
+
+Lint/ShadowedLibrary:
+  # `player`, `team`, `file` and `sound` are free to use as variable names: the libraries are
+  # reachable through the `_player`, `_team`, `_file` and `_sound` aliases.
+  Libraries: ['table', 'string', 'math', 'util', 'net', 'hook', 'timer', 'render', 'surface',
+              'draw', 'ents', 'game', 'engine', 'input', 'gui', 'vgui', 'http', 'os', 'debug',
+              'bit']

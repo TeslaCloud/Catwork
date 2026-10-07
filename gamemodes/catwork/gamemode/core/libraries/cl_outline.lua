@@ -15,10 +15,10 @@ library.New("outline", cw)
 
 -- A function to add an entity outline.
 function cw.outline:Add(entity, glowColor, glowSize, bIgnoreZ)
-	if (!glowSize) then glowSize = 2; end
+	if (!glowSize) then glowSize = 2 end
 
 	if (type(entity) != "table") then
-		entity = {entity}
+		entity = { entity }
 	end
 
 	halo.Add(
@@ -67,4 +67,4 @@ end
 	before anything else.
 --]]
 
-plugin.Add("Outline", cw.outline);
+plugin.Add("Outline", cw.outline)

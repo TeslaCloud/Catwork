@@ -6,4 +6,4 @@
 
 PLUGIN = PLUGIN
 
-config.AddToSystem("#Apply_RecogniseEnable", "apply_recognise_enable", "#Apply_RecogniseEnableDesc");
+config.AddToSystem("#Apply_RecogniseEnable", "apply_recognise_enable", "#Apply_RecogniseEnableDesc")

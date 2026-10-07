@@ -33,7 +33,6 @@ function ITEM:OnUse(player, itemEntity)
 	player:GiveItem(item.CreateInstance("special_breens_water"), true)
 
 	hook.Run("PlayerUseRation", player)
-
 end
 
 -- Called when a player drops the item.

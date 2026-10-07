@@ -19,7 +19,7 @@ config.cache = cache
 config.map = map
 
 --[[ Set the __index meta function of the class. --]]
-local CLASS_TABLE = {__index = CLASS_TABLE}
+local CLASS_TABLE = { __index = CLASS_TABLE }
 
 -- Called when the config is invoked as a function.
 function CLASS_TABLE:__call(parameter, failSafe)
@@ -288,7 +288,7 @@ end
 if (SERVER) then
 	function config.Save(fileName, configTable)
 		if (configTable) then
-			local cfg = {global = {}, schema = {}}
+			local cfg = { global = {}, schema = {} }
 
 			for k, v in pairs(configTable) do
 				if (!v.map and !v.temporary and !string.find(k, "mysql_")) then
@@ -333,7 +333,7 @@ if (SERVER) then
 		if (!player) then
 			player = _player.GetAll()
 		else
-			player = {player}
+			player = { player }
 		end
 
 		if (key) then
@@ -370,7 +370,7 @@ if (SERVER) then
 	-- A function to load config from a file.
 	function config.Load(fileName, loadGlobal)
 		if (!fileName) then
-			local configClasses = {"default", "map"}
+			local configClasses = { "default", "map" }
 			local configTable
 			local map = string.lower(game.GetMap())
 
@@ -427,7 +427,7 @@ if (SERVER) then
 					value = value
 				}
 
-				local configClasses = {"global", "schema"}
+				local configClasses = { "global", "schema" }
 				local configObject = CLASS_TABLE:Create(key)
 
 				if (!isGlobal) then

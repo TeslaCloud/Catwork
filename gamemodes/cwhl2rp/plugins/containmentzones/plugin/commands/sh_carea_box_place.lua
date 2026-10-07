@@ -14,7 +14,7 @@ function COMMAND:OnRun(player, arguments)
 				cwRadSystem.stored[#cwRadSystem.stored + 1] = {
 					pos1 = player.cwRadSystemBoxInfo.startpos,
 					pos2 = player.cwRadSystemBoxInfo.endpos,
-					rad = tonumber(arguments[1]),
+					rad = tonumber(arguments[1])
 				}
 			else
 				cw.player:Notify(player, L("Containment_NoEndPos"))

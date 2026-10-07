@@ -46,4 +46,4 @@ function COMMAND:OnRun(player, arguments)
 	cw.player:Notify(player, L("DynamicAdverts_Added"))
 end
 
-COMMAND:Register();
+COMMAND:Register()

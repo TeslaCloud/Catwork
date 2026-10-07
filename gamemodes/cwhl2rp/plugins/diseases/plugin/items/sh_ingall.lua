@@ -9,14 +9,14 @@ ITEM.useText = "Use"
 ITEM.category = "Medical"
 ITEM.business = true
 ITEM.description = "#Item_Ingall_Description"
-ITEM.customFunctions = {"Use on..."}
+ITEM.customFunctions = { "Use on..." }
 
 -- Called when a player uses the item.
 function ITEM:OnUse(player, itemEntity)
 	if (player:GetCharacterData("diseases") == "pneumonia") then
 		timer.Simple(math.random(60, 120), function()
 			player:SetCharacterData("diseases", "none")
-		end)	
+		end)
 	end
 
 	hook.Run("PlayerHealed", player, player, self)

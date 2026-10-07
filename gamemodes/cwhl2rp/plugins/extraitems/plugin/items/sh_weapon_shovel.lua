@@ -1,4 +1,4 @@
-﻿--[[
+--[[
 © 2013 CloudSixteen.com do not share, re-distribute or modify
 without permission of its author (kurozael@gmail.com).
 --]]
@@ -20,4 +20,3 @@ ITEM.isAttachment = false
 ITEM.hasFlashlight = false
 ITEM.loweredOrigin = Vector(3, 0, -4)
 ITEM.isMeleeWeapon = true
-

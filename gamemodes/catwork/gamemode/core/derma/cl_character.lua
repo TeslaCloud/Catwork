@@ -76,6 +76,7 @@ function PANEL:Init()
 			cw.character:ResetCreationInfo()
 			cw.character:OpenNextCreationPanel()
 		end)
+
 		self.createButton:SizeToContents()
 		self.createButton:SetMouseInputEnabled(true)
 		self.createButton:SetPos(scrW * 0.25 - (self.createButton:GetWide() / 2), 16)
@@ -90,6 +91,7 @@ function PANEL:Init()
 				cw.character:RefreshPanelList()
 			end)
 		end)
+
 		self.loadButton:SizeToContents()
 		self.loadButton:SetMouseInputEnabled(true)
 		self.loadButton:SetPos(scrW * 0.75 - (self.loadButton:GetWide() / 2), 16)
@@ -107,6 +109,7 @@ function PANEL:Init()
 				RunConsoleCommand("disconnect")
 			end
 		end)
+
 		self.disconnectButton:SizeToContents()
 		self.disconnectButton:SetPos((scrW / 2) - (self.disconnectButton:GetWide() / 2), 16)
 		self.disconnectButton:SetMouseInputEnabled(true)
@@ -125,6 +128,7 @@ function PANEL:Init()
 				cw.character:OpenPreviousCreationPanel()
 			end
 		end)
+
 		self.previousButton:SizeToContents()
 		self.previousButton:SetMouseInputEnabled(true)
 		self.previousButton:SetPos((scrW * 0.2) - (self.previousButton:GetWide() / 2), scrH * 0.9)
@@ -143,6 +147,7 @@ function PANEL:Init()
 				cw.character:OpenNextCreationPanel()
 			end
 		end)
+
 		self.nextButton:SizeToContents()
 		self.nextButton:SetMouseInputEnabled(true)
 		self.nextButton:SetPos((scrW * 0.8) - (self.nextButton:GetWide() / 2), scrH * 0.9)
@@ -153,6 +158,7 @@ function PANEL:Init()
 		self.cancelButton:SetCallback(function(panel)
 			self:ReturnToMainMenu()
 		end)
+
 		self.cancelButton:SizeToContents()
 		self.cancelButton:SetMouseInputEnabled(true)
 		self.cancelButton:SetPos((scrW * 0.5) - (self.cancelButton:GetWide() / 2), scrH * 0.9)
@@ -284,7 +290,7 @@ function PANEL:OpenPanel(vguiName, childData, Callback)
 	if (!cw.theme:Call("PreCharacterMenuOpenPanel", self, vguiName, childData, Callback)) then
 		local panel = cw.character:GetActivePanel()
 
-		local y  = ScrH() * 0.275
+		local y = ScrH() * 0.275
 
 		if (ScrH() < 768) then
 			y = ScrH() * 0.11
@@ -292,13 +298,12 @@ function PANEL:OpenPanel(vguiName, childData, Callback)
 
 		if (panel) then
 			panel:FadeOut(0.5, function()
-				panel:Remove(); self.childData = childData
+				panel:Remove() self.childData = childData
 
 				cw.character.activePanel = vgui.Create(vguiName, self)
 				cw.character.activePanel:SetAlpha(0)
 				cw.character.activePanel:FadeIn(0.5)
 				cw.character.activePanel:MakePopup()
-
 
 				cw.character.activePanel:SetPos(ScrW() * 0.2, y)
 
@@ -389,12 +394,14 @@ function PANEL:Paint(w, h)
 			)
 
 			cw.core:DrawSimpleGradientBox(0, 0, progressY, scrW, progressHeight, boxColor)
+
 				for i = 1, numCreationPanels do
 					surface.SetDrawColor(
 						foregroundColor.r, foregroundColor.g, foregroundColor.b, 150
 					)
 					surface.DrawRect((scrW / numCreationPanels) * i, progressY, 1, progressHeight)
 				end
+
 			cw.core:DrawSimpleGradientBox(
 				0, 0, progressY, (scrW / 100) * creationProgress, progressHeight, colorTargetID
 			)
@@ -693,13 +700,13 @@ function PANEL:Think()
 
 	self.easingValue = math.Approach(self.easingValue, 1, FrameTime())
 
-	if (self.animation) then self.animation:Run(); end
+	if (self.animation) then self.animation:Run() end
 
 	while (self.selectedIdx > #self.characterPanels) do
 		self.selectedIdx = self.selectedIdx - 1
 	end
 
-	if (self.selectedIdx == 0) then self.selectedIdx = 1; end
+	if (self.selectedIdx == 0) then self.selectedIdx = 1 end
 
 	if (self.characterPanels[self.selectedIdx]) then
 		local centerPanel = self.characterPanels[self.selectedIdx]
@@ -777,11 +784,13 @@ function PANEL:Init()
 	self.factionLabel:SetPos(0, self.nameLabel.y + self.nameLabel:GetTall() + 4)
 
 	local color = Color(255, 255, 255, 255)
+
 	for k, class in pairs(cw.class:GetAll()) do
 		if (class.factions[1] == self.customData.faction) then
 			color = class.color
 		end
 	end
+
 	self.factionLabel:OverrideTextColor(color)
 
 	self.characterModel = vgui.Create("cw.characterModel", self)
@@ -847,7 +856,7 @@ function PANEL:Init()
 	-- Called when the button is clicked.
 	function self.useButton.DoClick(spawnIcon)
 		netstream.Start("InteractCharacter", {
-			characterID = self.customData.characterID, action = "use"}
+			characterID = self.customData.characterID, action = "use" }
 		)
 	end
 
@@ -856,7 +865,7 @@ function PANEL:Init()
 		cw.core:AddMenuFromData(nil, {
 			[L("Yes")] = function()
 				netstream.Start("InteractCharacter", {
-					characterID = self.customData.characterID, action = "delete"}
+					characterID = self.customData.characterID, action = "delete" }
 				)
 			end,
 			[L("No")] = function() end
@@ -875,7 +884,7 @@ function PANEL:Init()
 
 			options[L("Use")] = function()
 				netstream.Start("InteractCharacter", {
-					characterID = self.customData.characterID, action = "use"}
+					characterID = self.customData.characterID, action = "use" }
 				)
 			end
 
@@ -883,7 +892,7 @@ function PANEL:Init()
 			options[L("Delete")][L("No")] = function() end
 			options[L("Delete")][L("Yes")] = function()
 				netstream.Start("InteractCharacter", {
-					characterID = self.customData.characterID, action = "delete"}
+					characterID = self.customData.characterID, action = "delete" }
 				)
 			end
 
@@ -894,7 +903,7 @@ function PANEL:Init()
 			cw.core:AddMenuFromData(nil, options, function(menu, key, value)
 				menu:AddOption(key, function()
 					netstream.Start("InteractCharacter", {
-						characterID = self.customData.characterID, action = value}
+						characterID = self.customData.characterID, action = value }
 					)
 				end)
 			end)
@@ -926,7 +935,7 @@ function PANEL:Init()
 		label:SetText(string.upper(v.text))
 		label:OverrideTextColor(v.color)
 		label:SizeToContents()
-		label:SetPos((maxWidth / 2) - (label:GetWide()/2), labelY)
+		label:SetPos((maxWidth / 2) - (label:GetWide() / 2), labelY)
 		labelY = labelY + label:GetTall() + 4
 	end
 
@@ -1089,8 +1098,8 @@ function PANEL:Think()
 		self.x = self.forceX
 	end
 
-	--entity:ClearPoseParameters()
-	--self:InvalidateLayout(true)
+	-- entity:ClearPoseParameters()
+	-- self:InvalidateLayout(true)
 end
 
 -- A function to set the model details.
@@ -1159,7 +1168,7 @@ function PANEL:Init()
 
 		local sequence = entity:LookupSequence("idle")
 		local menuSequence = cw.animation:GetMenuSequence(model, true)
-		local leanBackAnims = {"LineIdle01", "LineIdle02", "LineIdle03"}
+		local leanBackAnims = { "LineIdle01", "LineIdle02", "LineIdle03" }
 
 		local leanBackAnim = entity:LookupSequence(
 			leanBackAnims[math.random(1, #leanBackAnims)]
@@ -1300,7 +1309,7 @@ function PANEL:RemovePoint()
 end
 
 -- A function to get the total points.
-function PANEL:GetTotalPoints()	
+function PANEL:GetTotalPoints()
 	return self.totalPoints
 end
 
@@ -1780,6 +1789,7 @@ function PANEL:OnNext()
 	if (self.bPhysDesc) then
 		local minimumPhysDesc = config.GetVal("minimum_physdesc")
 			self.info.physDesc = self.physDescTextEntry:GetValue()
+
 		if (string.utf8len(self.info.physDesc) < minimumPhysDesc) then
 			cw.character:SetFault("#CharCreation_Appearance_ErrorMessage7:"..minimumPhysDesc..";")
 			return false
@@ -1925,7 +1935,7 @@ function PANEL:Init()
 						self.genderMultiChoice:AddChoice(L"#Gender_Male")
 					end
 
-					cw.CurrentFactionSelected = {self, value}
+					cw.CurrentFactionSelected = { self, value }
 
 					break
 				end
@@ -1943,7 +1953,7 @@ function PANEL:Init()
 					self.genderMultiChoice:AddChoice(L"#Gender_Male")
 				end
 
-				cw.CurrentFactionSelected = {self, v.name}
+				cw.CurrentFactionSelected = { self, v.name }
 				self.forcedFaction = v.name
 
 				break
@@ -1953,7 +1963,7 @@ function PANEL:Init()
 
 	if (self.factionMultiChoice) then
 		for k, v in pairs(factions) do
-			self.factionMultiChoice:AddChoice(v, {__PhraseName = v})
+			self.factionMultiChoice:AddChoice(v, { __PhraseName = v })
 		end
 	end
 
@@ -1962,15 +1972,16 @@ function PANEL:Init()
 
 	if (self.customChoices) then
 		self.customPanels = {}
+
 		for k2, v2 in pairs(self.customChoices) do
 			if (!v2.type or string.lower(v2.type) == "combobox") then
-				table.insert(self.customPanels, {v2, self.settingsForm:ComboBox(v2.name)})
+				table.insert(self.customPanels, { v2, self.settingsForm:ComboBox(v2.name) })
 
 				for k3, v3 in ipairs(v2.choices) do
 					self.customPanels[#self.customPanels][2]:AddChoice(v3)
 				end
 			elseif (string.lower(v2.type) == "textentry") then
-				table.insert(self.customPanels, {v2, self.settingsForm:TextEntry(v2.name)})
+				table.insert(self.customPanels, { v2, self.settingsForm:TextEntry(v2.name) })
 			end
 		end
 	end

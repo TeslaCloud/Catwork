@@ -38,7 +38,7 @@ function cwGarbage:SpawnGarbage(pointTable)
 end
 
 function cwGarbage:AddItem(id, chance)
-	table.insert(self.stored, {id, chance})
+	table.insert(self.stored, { id, chance })
 end
 
 do

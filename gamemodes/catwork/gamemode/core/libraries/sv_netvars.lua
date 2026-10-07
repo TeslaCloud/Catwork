@@ -113,4 +113,4 @@ end)
 
 hook.Add("PlayerInitialSpawn", "nSync", function(client)
 	client:SyncVars()
-end);
+end)

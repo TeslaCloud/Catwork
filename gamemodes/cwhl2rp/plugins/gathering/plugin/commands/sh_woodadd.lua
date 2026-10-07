@@ -28,7 +28,7 @@ function COMMAND:OnRun(player, arguments)
 	entity:Spawn()
 
 	if (IsValid(entity)) then
-		local Angles = Angle(0, player:EyeAngles().yaw + 180,0)
+		local Angles = Angle(0, player:EyeAngles().yaw + 180, 0)
 		entity:SetAngles(Angles)
 
 		table.insert(cwGather.nodePoints, {
@@ -45,4 +45,4 @@ function COMMAND:OnRun(player, arguments)
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

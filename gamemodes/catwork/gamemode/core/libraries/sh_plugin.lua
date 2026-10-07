@@ -26,6 +26,7 @@ local hooksCache = {}
 	@details A function to get the local stored table that contains all registered plugins.
 	@returns Table The local stored plugin table.
 --]]
+
 function plugin.GetStored()
 	return stored
 end
@@ -35,6 +36,7 @@ end
 	@details A function to get the local plugin module table that contains all registered plugin modules.
 	@returns Table The local plugin module table.
 --]]
+
 function plugin.GetModules()
 	return modules
 end
@@ -44,6 +46,7 @@ end
 	@details A function to get the local unloaded table that contains all unloaded plugins.
 	@returns Table The local stored unloaded plugin table.
 --]]
+
 function plugin.GetUnloaded()
 	return unloaded
 end
@@ -53,6 +56,7 @@ end
 	@details A function to get the extras that will be included in each plugin.
 	@returns Table The local table of extras to be searched for in plugins.
 --]]
+
 function plugin.GetExtras()
 	return extras
 end
@@ -62,6 +66,7 @@ end
 	@details A function to get the local plugin hook cache.
 	@returns Table The local plugin hook cache table.
 --]]
+
 function plugin.GetCache()
 	return hooksCache
 end
@@ -70,7 +75,7 @@ function plugin.DebugPrintCache()
 	PrintTable(hooksCache)
 end
 
-PLUGIN_META = {__index = PLUGIN_META}
+PLUGIN_META = { __index = PLUGIN_META }
 PLUGIN_META.description = "An undescribed plugin or schema."
 PLUGIN_META.hookOrder = 0
 PLUGIN_META.version = 1.0
@@ -80,7 +85,7 @@ PLUGIN_META.name = "Unknown"
 PLUGIN_META.SetGlobalAlias = function(PLUGIN_META, aliasName)
 	_G[aliasName] = PLUGIN_META
 	PLUGIN_META.alias = aliasName
-end	
+end
 
 PLUGIN_META.GetDescription = function(PLUGIN_META)
 	return PLUGIN_META.description
@@ -434,7 +439,7 @@ function plugin.CacheFunctions(obj, id)
 	for k, v in pairs(obj) do
 		if (isfunction(v)) then
 			hooksCache[k] = hooksCache[k] or {}
-			table.insert(hooksCache[k], {v, obj, id = id})
+			table.insert(hooksCache[k], { v, obj, id = id })
 		end
 	end
 end

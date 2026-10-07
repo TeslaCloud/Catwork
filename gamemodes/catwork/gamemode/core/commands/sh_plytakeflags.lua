@@ -11,7 +11,7 @@ COMMAND.tip = "#Command_Plytakeflags_Description"
 COMMAND.text = "#Command_Plytakeflags_Syntax"
 COMMAND.access = "s"
 COMMAND.arguments = 2
-COMMAND.alias = {"TakeFlags", "RemoveFlags"}
+COMMAND.alias = { "TakeFlags", "RemoveFlags" }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
@@ -33,4 +33,4 @@ function COMMAND:OnRun(player, arguments)
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

@@ -15,7 +15,7 @@ ITEM.weight = 0.5
 ITEM.access = "V"
 ITEM.useText = "Place"
 ITEM.business = true
-ITEM.blacklist = {CLASS_MPR}
+ITEM.blacklist = { CLASS_MPR }
 ITEM.description = "#ITEM_Breach_Desc"
 
 -- Called when a player uses the item.
@@ -27,7 +27,7 @@ function ITEM:OnUse(player, itemEntity)
 		if (entity:GetPos():Distance(player:GetShootPos()) <= 192) then
 			if (!IsValid(entity.breach)) then
 				if (hook.Run("PlayerCanBreachEntity", player, entity)) then
-					local breach = ents.Create("cw_breach"); breach:Spawn()
+					local breach = ents.Create("cw_breach") breach:Spawn()
 
 					breach:SetBreachEntity(entity, trace)
 				else

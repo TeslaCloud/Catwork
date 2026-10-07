@@ -11,7 +11,7 @@ COMMAND.tip = "#Command_A_Description"
 COMMAND.text = "#Command_A_Syntax"
 COMMAND.access = "o"
 COMMAND.arguments = 1
-COMMAND.alias = {"AD", "OP"}
+COMMAND.alias = { "AD", "OP" }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
@@ -24,7 +24,7 @@ function COMMAND:OnRun(player, arguments)
 		end
 	end
 
-	chatbox.AddText(listeners, table.concat(arguments, " "), {filter = "admin", sender = player})
+	chatbox.AddText(listeners, table.concat(arguments, " "), { filter = "admin", sender = player })
 end
 
 COMMAND:Register()

@@ -2,7 +2,7 @@ COMMAND = cw.command:New("VortHowl")
 COMMAND.tip = "#Command_Vorthowl_Description"
 COMMAND.text = "#Command_Vorthowl_Syntax"
 COMMAND.arguments = 1
-COMMAND.alias = {"vhowl"}
+COMMAND.alias = { "vhowl" }
 
 Shouts = {
 	Sound("vo/outland_01/intro/ol01_vortcall01.wav"),
@@ -29,8 +29,8 @@ function COMMAND:OnRun(player, arguments)
 			end
 		end
 
-		chatbox.AddText(vorts, "\""..table.concat(arguments, " ").."\"", {suffix = " #VortHowl_ShoutsSuffix ", sender = player, isPlayerMessage = true, filter = "ic", radius = 99999, textColor = Color(220, 110, 110, 255)})
-		chatbox.AddText(people, "shouts something in Vortigese.", {sender = player, isPlayerMessage = true, filter = "ic", radius = 500, textColor = Color(160, 160, 160, 255)})
+		chatbox.AddText(vorts, "\""..table.concat(arguments, " ").."\"", { suffix = " #VortHowl_ShoutsSuffix ", sender = player, isPlayerMessage = true, filter = "ic", radius = 99999, textColor = Color(220, 110, 110, 255) })
+		chatbox.AddText(people, "shouts something in Vortigese.", { sender = player, isPlayerMessage = true, filter = "ic", radius = 500, textColor = Color(160, 160, 160, 255) })
 	else
 		if (!player:IsCombine()) then
 			if (faction != FACTION_CWU) then
@@ -50,4 +50,4 @@ function COMMAND:OnRun(player, arguments)
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

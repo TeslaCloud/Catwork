@@ -15,7 +15,7 @@ lang["#Factory_Supplements"] = "Гражданскую Еду"
 lang["#Factory_Water"] = "Воду Брина"
 lang["#Factory_Ration"] = "Рацион"
 lang["#Factory_Contains"] = "Содержит:"
-lang["#Factory_Ready"] = "Готов к упаковке!";
+lang["#Factory_Ready"] = "Готов к упаковке!"
 
 lang["#Factory_Water_Title"] = "Вода Брина"
 lang["#Factory_RationDispenser"] = "Раздатчик рационов"

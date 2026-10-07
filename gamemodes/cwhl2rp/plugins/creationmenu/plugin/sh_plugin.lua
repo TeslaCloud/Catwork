@@ -29,7 +29,7 @@ function cw.core:DrawBackgroundBlurs()
 			for i = 0.33, 1, 0.33 do
 				cw.ScreenBlur:SetFloat("$blur", fraction * 5 * i)
 				cw.ScreenBlur:Recompute()
-				if (render) then render.UpdateScreenEffectTexture();end
+				if (render) then render.UpdateScreenEffectTexture() end
 				surface.DrawTexturedRect(x, y, scrW, scrH)
 			end
 

@@ -12,7 +12,7 @@ COMMAND.text = "#Command_Chartransfer_Syntax"
 COMMAND.access = "o"
 COMMAND.arguments = 2
 COMMAND.optionalArguments = 1
-COMMAND.alias = {"Transfer", "PlyTransfer"}
+COMMAND.alias = { "Transfer", "PlyTransfer" }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
@@ -28,7 +28,7 @@ function COMMAND:OnRun(player, arguments)
 			return
 		end
 
-		--if (!_faction.GetStored()[faction].whitelist or cw.player:IsWhitelisted(target, faction)) then
+		-- if (!_faction.GetStored()[faction].whitelist or cw.player:IsWhitelisted(target, faction)) then
 			local targetFaction = target:GetFaction()
 
 			if (targetFaction == faction) then
@@ -58,12 +58,13 @@ function COMMAND:OnRun(player, arguments)
 			else
 				cw.player:Notify(player, fault or L("Command_Chartransfer_CannotTransfer", target:Name(), faction))
 			end
-		--else
-			--cw.player:Notify(player, target:Name().." is not on the "..faction.." whitelist!")
-		--end
+
+		-- else
+			-- cw.player:Notify(player, target:Name().." is not on the "..faction.." whitelist!")
+		-- end
 	else
 		cw.player:Notify(player, L("NotValidPlayer", arguments[1]))
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

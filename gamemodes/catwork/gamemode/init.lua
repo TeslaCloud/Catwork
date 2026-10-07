@@ -83,6 +83,7 @@ do
 	--[[
 		Include pON and UTF-8 library.
 	--]]
+
 	if (!string.utf8len or !pon or !netstream or !vnet) then
 		include("thirdparty/utf8.lua")
 		include("thirdparty/pon.lua")
@@ -93,11 +94,11 @@ do
 	include("shared.lua")
 
 	if (cw and cwBootComplete) then
-		MsgC(Color(0, 255, 100, 255), "[Catwork] AutoRefresh handled serverside in "..GetTimeSinceBoot().. " second(s)\n")
+		MsgC(Color(0, 255, 100, 255), "[Catwork] AutoRefresh handled serverside in "..GetTimeSinceBoot().." second(s)\n")
 	else
 		local version = cw.core:GetVersionBuild()
 
-		MsgC(Color(0, 255, 100, 255), "[Catwork] Framework version ["..version.."] loading took "..GetTimeSinceBoot().. " second(s)\n")
+		MsgC(Color(0, 255, 100, 255), "[Catwork] Framework version ["..version.."] loading took "..GetTimeSinceBoot().." second(s)\n")
 
 		-- For benchmarking.
 		cw.LastBootTime = startTime

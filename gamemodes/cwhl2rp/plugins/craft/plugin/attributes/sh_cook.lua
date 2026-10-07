@@ -13,4 +13,4 @@ local ATTRIBUTE = cw.attribute:New()
 	ATTRIBUTE.description = "#Attribute_Cook_Desc"
 	ATTRIBUTE.isOnCharScreen = false
 	ATTRIBUTE.category = "#AttributeCategory_Skills"
-ATB_COOK = cw.attribute:Register(ATTRIBUTE);
+ATB_COOK = cw.attribute:Register(ATTRIBUTE)

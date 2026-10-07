@@ -13,4 +13,3 @@ function ITEM:OnDrop(player, position) end
 function ITEM:OnEntitySpawned(entity)
 		entity:SetMaterial("models/props_foliage/tree_deciduous_01a_trunk")
 	end
-

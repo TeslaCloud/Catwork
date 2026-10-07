@@ -13,7 +13,7 @@ COMMAND.tip = "#Command_Givecash_Description"
 COMMAND.text = "#Command_Givecash_Syntax"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.arguments = 1
-COMMAND.alias = {"GiveCash", "GiveTokens", "ДатьТокены", "Заплатить"}
+COMMAND.alias = { "GiveCash", "GiveTokens", "ДатьТокены", "Заплатить" }
 COMMAND.cooldown = 5
 
 -- Called when the command has been run.
@@ -22,7 +22,7 @@ function COMMAND:OnRun(player, arguments)
 	local cash = math.floor(tonumber((arguments[1] or 0)))
 
 	if (target and target:IsPlayer()) then
-		if (target:GetShootPos():Distance(player:GetShootPos()) <= 192) then			
+		if (target:GetShootPos():Distance(player:GetShootPos()) <= 192) then
 			if (cash and cash >= 1) then
 				if (cw.player:CanAfford(player, cash)) then
 					local playerName = player:Name()
@@ -56,4 +56,4 @@ function COMMAND:OnRun(player, arguments)
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

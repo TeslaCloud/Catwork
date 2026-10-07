@@ -54,7 +54,7 @@ function cwGarbage:PlayerTakeGarbage(player, entity)
 	local roll, roll2, roll3 = math.random(0, 100), math.random(0, 100), math.random(0, 100)
 
 	if (roll == 1 and roll2 == 55 and roll3 == 78) then
-		chosenEnt = {"weapon_rpg", 100}
+		chosenEnt = { "weapon_rpg", 100 }
 	elseif (roll == 74 and roll2 == 22 and roll3 == 40) then
 		chosenEnt = math.random(200, 1500)
 	elseif (roll == 33 and roll2 == 78 and roll3 == 0 and math.random(0, 100) == 99) then

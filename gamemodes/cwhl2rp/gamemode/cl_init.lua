@@ -6,4 +6,4 @@
 	with contributions from Cloud Sixteen community.
 --]]
 
-DeriveGamemode("catwork");
+DeriveGamemode("catwork")

@@ -38,7 +38,7 @@ end
 
 function ENT:SetSpawnType(entType)
 	if (entType == TYPE_WATERCAN or entType == TYPE_SUPPLIES) then
-		self:SetDTInt(1,entType)
+		self:SetDTInt(1, entType)
 	end
 end
 
@@ -55,7 +55,6 @@ end
 
 function ENT:Use(activator, caller)
 	if (activator:IsPlayer() and activator:GetEyeTraceNoCursor().Entity == self) then
-
 		if (activator:GetNetVar("tied") == 0 and activator:Crouching()) then
 			local time = hook.Run("GetGarbageTime", activator)
 

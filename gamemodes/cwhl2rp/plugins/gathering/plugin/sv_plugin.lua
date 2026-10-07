@@ -73,6 +73,6 @@ function cwGather:PlayerBreaksWood(player, ent)
 		end
 	end
 
-	--cw.player:Notify(player, "Масса объекта: "..ent:GetPhysicsObject():GetMass())
+	-- cw.player:Notify(player, "Масса объекта: "..ent:GetPhysicsObject():GetMass())
 	player:ProgressAttribute(ATB_SCAVENGER, math.Round(math.Clamp(mass / 10, 5, 25)), true)
 end

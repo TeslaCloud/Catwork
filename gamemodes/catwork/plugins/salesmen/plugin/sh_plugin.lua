@@ -17,4 +17,4 @@ util.Include("cl_plugin.lua")
 util.Include("sv_plugin.lua")
 util.Include("sv_hooks.lua")
 
-cwSalesmen.salesmen = cwSalesmen.salesmen or {};
+cwSalesmen.salesmen = cwSalesmen.salesmen or {}

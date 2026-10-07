@@ -41,6 +41,7 @@ function PANEL:Rebuild()
 				self.system = nil
 				self:Rebuild()
 			end
+
 		self.navigationForm:AddItem(backButton)
 
 		local systemTable = cw.system:FindByID(self.system)
@@ -98,9 +99,9 @@ function PANEL:Rebuild()
 				systemButton:SetShowIcon(false)
 			self.systemCategoryForm:AddItem(systemButton)
 
-			--self.systemCategoryForm:SetPos(0, totalY)
+			-- self.systemCategoryForm:SetPos(0, totalY)
 
-			--totalY = totalY + 100
+			-- totalY = totalY + 100
 		end
 	end
 
@@ -117,18 +118,18 @@ function PANEL:IsButtonVisible()
 end
 
 -- Called when the panel is selected.
-function PANEL:OnSelected() self:Rebuild(); end
+function PANEL:OnSelected() self:Rebuild() end
 
 -- Called when the layout should be performed.
 function PANEL:PerformLayout(w, h)
-	--self.panelList:StretchToParent(4, 4, 4, 4)
-	--self:SetSize(w, math.min(self.panelList.pnlCanvas:GetTall() + 32, ScrH() * 0.75))
+	-- self.panelList:StretchToParent(4, 4, 4, 4)
+	-- self:SetSize(w, math.min(self.panelList.pnlCanvas:GetTall() + 32, ScrH() * 0.75))
 end
 
 -- Called when the panel is painted.
 function PANEL:Paint(w, h)
-	--DERMA_SLICED_BG:Draw(0, 0, w, h, 8, COLOR_WHITE)
+	-- DERMA_SLICED_BG:Draw(0, 0, w, h, 8, COLOR_WHITE)
 	return true
 end
 
-vgui.Register("cwSystem", PANEL, "EditablePanel");
+vgui.Register("cwSystem", PANEL, "EditablePanel")

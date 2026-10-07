@@ -16,6 +16,7 @@ COMMAND.arguments = 1
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
 	local charName = string.lower(arguments[1])
+
 	for k, v in ipairs(_player.GetAll()) do
 		if (v:HasInitialized()) then
 			if (string.lower(v:Name()) == charName) then
@@ -54,7 +55,8 @@ function COMMAND:OnRun(player, arguments)
 				cw.player:Notify(player, L("NotValidCharacter", arguments[1]))
 			end
 		end)
+
 	queryObj:Execute()
 end
 
-COMMAND:Register();
+COMMAND:Register()

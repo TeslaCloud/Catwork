@@ -71,6 +71,7 @@ function PANEL:Init()
 		self.communityButton:SetCallback(function(panel)
 			gui.OpenURL("https://iron-wall.com/")
 		end)
+
 		self.communityButton:SizeToContents()
 		self.communityButton:SetMouseInputEnabled(true)
 		self.communityButton:SetPos(scrW * 0.1, scrH * 0.65)
@@ -88,6 +89,7 @@ function PANEL:Init()
 			cw.character:ResetCreationInfo()
 			cw.character:OpenNextCreationPanel()
 		end)
+
 		self.createButton:SizeToContents()
 		self.createButton:SetMouseInputEnabled(true)
 		self.createButton:SetPos(scrW * 0.1, scrH * 0.72)
@@ -102,6 +104,7 @@ function PANEL:Init()
 				cw.character:RefreshPanelList()
 			end)
 		end)
+
 		self.loadButton:SizeToContents()
 		self.loadButton:SetMouseInputEnabled(true)
 		self.loadButton:SetPos(scrW * 0.1, scrH * 0.79)
@@ -114,6 +117,7 @@ function PANEL:Init()
 		self.forumButton:SetCallback(function(panel)
 			gui.OpenURL("http://404")
 		end)
+
 		self.forumButton:SizeToContents()
 		self.forumButton:SetMouseInputEnabled(true)
 		self.forumButton:SetPos(scrW * 0.1, scrH * 0.86)
@@ -131,6 +135,7 @@ function PANEL:Init()
 				RunConsoleCommand("disconnect")
 			end
 		end)
+
 		self.disconnectButton:SizeToContents()
 		self.disconnectButton:SetMouseInputEnabled(true)
 		self.disconnectButton:SetPos(scrW * 0.1, self.forumButton.y + (scrH * 0.07))
@@ -149,6 +154,7 @@ function PANEL:Init()
 				cw.character:OpenPreviousCreationPanel()
 			end
 		end)
+
 		self.previousButton:SizeToContents()
 		self.previousButton:SetMouseInputEnabled(true)
 		self.previousButton:SetPos((scrW * 0.2) - (self.previousButton:GetWide() / 2), scrH * 0.9)
@@ -167,6 +173,7 @@ function PANEL:Init()
 				cw.character:OpenNextCreationPanel()
 			end
 		end)
+
 		self.nextButton:SizeToContents()
 		self.nextButton:SetMouseInputEnabled(true)
 		self.nextButton:SetPos((scrW * 0.8) - (self.nextButton:GetWide() / 2), scrH * 0.9)
@@ -177,6 +184,7 @@ function PANEL:Init()
 		self.cancelButton:SetCallback(function(panel)
 			self:ReturnToMainMenu()
 		end)
+
 		self.cancelButton:SizeToContents()
 		self.cancelButton:SetMouseInputEnabled(true)
 		self.cancelButton:SetPos((scrW * 0.5) - (self.cancelButton:GetWide() / 2), scrH * 0.9)
@@ -258,6 +266,7 @@ function PANEL:ReturnToMainMenu()
 					panel:Remove()
 				self:FadeInTitle()
 			end)
+
 --		else
 --			cw.character.activePanel = nil
 	--		panel:Remove()
@@ -323,7 +332,7 @@ function PANEL:OpenPanel(vguiName, childData, Callback)
 	if (!cw.theme:Call("PreCharacterMenuOpenPanel", self, vguiName, childData, Callback)) then
 		local panel = cw.character:GetActivePanel()
 
-		local y  = ScrH() * 0.275
+		local y = ScrH() * 0.275
 
 		if (ScrH() < 768) then
 			y = ScrH() * 0.11
@@ -331,13 +340,12 @@ function PANEL:OpenPanel(vguiName, childData, Callback)
 
 		if (panel) then
 			panel:FadeOut(0.5, function()
-				panel:Remove(); self.childData = childData
+				panel:Remove() self.childData = childData
 
 				cw.character.activePanel = vgui.Create(vguiName, self)
 				cw.character.activePanel:SetAlpha(0)
 				cw.character.activePanel:FadeIn(0.5)
 				cw.character.activePanel:MakePopup()
-
 
 				cw.character.activePanel:SetPos(ScrW() * 0.2, y)
 
@@ -428,12 +436,14 @@ function PANEL:Paint(w, h)
 			)
 
 			cw.core:DrawSimpleGradientBox(0, 0, progressY, scrW, progressHeight, boxColor)
+
 				for i = 1, numCreationPanels do
 					surface.SetDrawColor(
 						foregroundColor.r, foregroundColor.g, foregroundColor.b, 150
 					)
 					surface.DrawRect((scrW / numCreationPanels) * i, progressY, 1, progressHeight)
 				end
+
 			cw.core:DrawSimpleGradientBox(
 				0, 0, progressY, (scrW / 100) * creationProgress, progressHeight, colorTargetID
 			)
@@ -543,15 +553,12 @@ function PANEL:Think()
 		end
 
 		if (config.GetVal("community_name")) then
-
 			self.communityButton:SetText(string.utf8upper(config.GetVal("community_name")))
 		elseif (config.GetVal("community_link")) then
-
 			self.communityButton:SetCallback(function(panel)
 				gui.OpenURL(string.lower(config.GetVal("community_link")))
 			end)
 		elseif (config.GetVal("community_link")) then
-
 			self.forumButton:SetCallback(function(panel)
 				gui.OpenURL(string.lower(config.GetVal("forum_link")))
 			end)
@@ -588,4 +595,4 @@ function PANEL:Think()
 	end
 end
 
-vgui.Register("cw.characterMenu", PANEL, "DPanel");
+vgui.Register("cw.characterMenu", PANEL, "DPanel")

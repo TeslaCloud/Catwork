@@ -10,7 +10,7 @@ local cwSpawnPoints = cwSpawnPoints
 local spawnPointData
 local cwClass = cw.class
 
---Called when the plugin is initialized.
+-- Called when the plugin is initialized.
 function cwSpawnPoints:Initialize()
 	CW_CONVAR_SPAWNPOINTESP = cw.core:CreateClientConVar("cwSpawnPointESP", 0, true, true)
 
@@ -57,4 +57,4 @@ end
 -- Called to sync up the ESP data from the server.
 netstream.Hook("SpawnPointESPSync", function(data)
 	spawnPointData = data
-end);
+end)

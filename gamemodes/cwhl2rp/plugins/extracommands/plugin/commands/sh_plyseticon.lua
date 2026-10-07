@@ -9,7 +9,7 @@ COMMAND.tip = "#Command_Plyseticon_Description"
 COMMAND.text = "#Command_Plyseticon_Syntax"
 COMMAND.access = "s"
 COMMAND.arguments = 2
-COMMAND.alias = {"SetIcon"}
+COMMAND.alias = { "SetIcon" }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
@@ -27,7 +27,7 @@ function COMMAND:OnRun(player, arguments)
 				path = icon
 			end
 
-			target:SetData("CustomIcon", {icon = icon, path = path})
+			target:SetData("CustomIcon", { icon = icon, path = path })
 			Schema:SendIconData(target, true)
 
 			cw.player:Notify(player, L("ExtraCommands_IconSet", target:Name()).." "..icon.." ["..path.."].")
@@ -39,4 +39,4 @@ function COMMAND:OnRun(player, arguments)
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

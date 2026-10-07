@@ -9,4 +9,3 @@ ITEM.business = true
 ITEM.description = "#Item_GeigerCounter_Description"
 
 function ITEM:OnDrop(player, position) end
-

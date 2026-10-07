@@ -43,15 +43,15 @@ function ENT:GetNearestButton(client)
 			local position = self:GetPos()
 			local f, r, u = self:GetForward(), self:GetRight(), self:GetUp()
 
-			self.buttons[1] = position + f*18 + r*-24.4 + u*5.3
-			self.buttons[2] = position + f*18 + r*-24.4 + u*3.35
-			self.buttons[3] = position + f*18 + r*-24.4 + u*1.35
-			self.buttons[4] = position + f*18 + r*-24.4 + u*(-0.7)
+			self.buttons[1] = position + f * 18 + r * -24.4 + u * 5.3
+			self.buttons[2] = position + f * 18 + r * -24.4 + u * 3.35
+			self.buttons[3] = position + f * 18 + r * -24.4 + u * 1.35
+			self.buttons[4] = position + f * 18 + r * -24.4 + u * (-0.7)
 		end
 
 		local data = {}
 			data.start = client:GetShootPos()
-			data.endpos = data.start + client:GetAimVector()*96
+			data.endpos = data.start + client:GetAimVector() * 96
 			data.filter = client
 		local trace = util.TraceLine(data)
 		local hitPos = trace.HitPos
@@ -73,22 +73,22 @@ if (SERVER) then
 		local position = self:GetPos()
 		local f, r, u = self:GetForward(), self:GetRight(), self:GetUp()
 
-		self.buttons[1] = position + f*18 + r*-24.4 + u*5.3
-		self.buttons[2] = position + f*18 + r*-24.4 + u*3.35
-		self.buttons[3] = position + f*18 + r*-24.4 + u*1.35
-		self.buttons[4] = position + f*18 + r*-24.4 + u*(-0.7)
+		self.buttons[1] = position + f * 18 + r * -24.4 + u * 5.3
+		self.buttons[2] = position + f * 18 + r * -24.4 + u * 3.35
+		self.buttons[3] = position + f * 18 + r * -24.4 + u * 1.35
+		self.buttons[4] = position + f * 18 + r * -24.4 + u * (-0.7)
 
 		self:SetModel("models/props_interiors/vendingmachinesoda01a.mdl")
 		self:PhysicsInit(SOLID_VPHYSICS)
 		self:SetSolid(SOLID_VPHYSICS)
 		self:SetUseType(SIMPLE_USE)
 
-		--self:SetSharedVar("stocks", {10, 5, 5})
+		-- self:SetSharedVar("stocks", {10, 5, 5})
 		self:SetDTFloat(1, 10)
 		self:SetDTFloat(2, 5)
 		self:SetDTFloat(3, 5)
 		self:SetDTFloat(4, 5)
-		--self:SetSharedVar("active", true)
+		-- self:SetSharedVar("active", true)
 		self:SetDTBool(0, true)
 		local physObj = self:GetPhysicsObject()
 
@@ -118,12 +118,12 @@ if (SERVER) then
 		end
 
 		local button = self:GetNearestButton(activator)
-		--local stocks = self:GetSharedVar("stocks")
+		-- local stocks = self:GetSharedVar("stocks")
 
 		if (Schema:PlayerIsCombine(activator)) then
 			if (activator:KeyDown(IN_SPEED) and button and self:GetDTFloat(button)) then
 				if (self:GetDTFloat(button) > 0) then
-					--return activator:SendOverlayText("NO REFILL IS REQUIRED FOR THIS MACHINE.")
+					-- return activator:SendOverlayText("NO REFILL IS REQUIRED FOR THIS MACHINE.")
 					cw.player:Notify(activator, L("NutVend_Full"))
 					return
 				end
@@ -131,10 +131,10 @@ if (SERVER) then
 				self:EmitSound("buttons/button5.wav")
 
 				if (!cw.player:CanAfford(activator, 25)) then
-					--return activator:SendOverlayText("INSUFFICIENT FUNDS (25 TOKENS) TO REFILL MACHINE.")
+					-- return activator:SendOverlayText("INSUFFICIENT FUNDS (25 TOKENS) TO REFILL MACHINE.")
 					return cw.player:Notify(activator, L("NutVend_NeedTokensToRefill", 25))
 				else
-					--activator:SendOverlayText("25 TOKENS HAVE BEEN TAKEN TO REFILL MACHINE.")
+					-- activator:SendOverlayText("25 TOKENS HAVE BEEN TAKEN TO REFILL MACHINE.")
 					cw.player:GiveCash(activator, -25, L("NutVend_CashReason_Refill"))
 				end
 
@@ -142,12 +142,12 @@ if (SERVER) then
 					if (!IsValid(self)) then return end
 
 					self:SetDTFloat(button, (button == 1 and 10 or 5))
-					--self:SetSharedVar("stocks", stocks)
+					-- self:SetSharedVar("stocks", stocks)
 				end)
 
 				return
 			else
-				--self:SetSharedVar("active", !self:GetSharedVar("active"))
+				-- self:SetSharedVar("active", !self:GetSharedVar("active"))
 				self:SetDTBool(0, !self:GetDTBool(0))
 				self:EmitSound("buttons/combine_button1.wav" or "buttons/combine_button2.wav")
 
@@ -181,8 +181,8 @@ if (SERVER) then
 
 			local position = self:GetPos()
 			local f, r, u = self:GetForward(), self:GetRight(), self:GetUp()
-			local itemPosition = position + f*19 + r*4 + u*-26
-			--local entity = nut.item.Spawn(itemPosition, nil, item)
+			local itemPosition = position + f * 19 + r * 4 + u * -26
+			-- local entity = nut.item.Spawn(itemPosition, nil, item)
 			local entity = cw.entity:CreateItem(activator, item.CreateInstance(itemName), itemPosition, self:GetAngles())
 
 			if (IsValid(entity)) then
@@ -212,10 +212,10 @@ else
 		local position = self:GetPos()
 		local f, r, u = self:GetForward(), self:GetRight(), self:GetUp()
 
-		self.buttons[1] = position + f*18 + r*-24.4 + u*5.3
-		self.buttons[2] = position + f*18 + r*-24.4 + u*3.35
-		self.buttons[3] = position + f*18 + r*-24.4 + u*1.35
-		self.buttons[4] = position + f*18 + r*-24.4 + u*(-0.7)
+		self.buttons[1] = position + f * 18 + r * -24.4 + u * 5.3
+		self.buttons[2] = position + f * 18 + r * -24.4 + u * 3.35
+		self.buttons[3] = position + f * 18 + r * -24.4 + u * 1.35
+		self.buttons[4] = position + f * 18 + r * -24.4 + u * (-0.7)
 	end
 
 	function ENT:Draw()
@@ -228,7 +228,7 @@ else
 
 		local f, r, u = self:GetForward(), self:GetRight(), self:GetUp()
 
-		cam.Start3D2D(position + f*17.33 + r*-19.5 + u*5.75, angles, 0.06)
+		cam.Start3D2D(position + f * 17.33 + r * -19.5 + u * 5.75, angles, 0.06)
 			draw_SimpleText("#NutVend_Label_Regular", "hl2_MainText", 0, 0, color_white, 0, 0)
 			draw_SimpleText("#NutVend_Label_Sparkling", "hl2_MainText", 0, 36, color_white, 0, 0)
 			draw_SimpleText("#NutVend_Label_Lemonade", "hl2_MainText", 0, 72, color_white, 0, 0)
@@ -241,13 +241,13 @@ else
 			local position = self:GetPos()
 			local f, r, u = self:GetForward(), self:GetRight(), self:GetUp()
 
-			self.buttons[1] = position + f*18 + r*-24.4 + u*5.3
-			self.buttons[2] = position + f*18 + r*-24.4 + u*3.35
-			self.buttons[3] = position + f*18 + r*-24.4 + u*1.35
-			self.buttons[4] = position + f*18 + r*-24.4 + u*(-0.7)
+			self.buttons[1] = position + f * 18 + r * -24.4 + u * 5.3
+			self.buttons[2] = position + f * 18 + r * -24.4 + u * 3.35
+			self.buttons[3] = position + f * 18 + r * -24.4 + u * 1.35
+			self.buttons[4] = position + f * 18 + r * -24.4 + u * (-0.7)
 
 			local closest = self:GetNearestButton()
-			--local stocks = self:GetSharedVar("stocks")
+			-- local stocks = self:GetSharedVar("stocks")
 
 			for k, v in pairs(self.buttons) do
 				local color = color_green

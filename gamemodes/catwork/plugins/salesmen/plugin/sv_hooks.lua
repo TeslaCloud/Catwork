@@ -72,5 +72,5 @@ function cwSalesmen:PlayerUseSalesman(player, entity)
 		flags = entity.cwFlags
 	})
 
-	entity:TalkToPlayer(player,	entity.cwTextTab.start,	L("Salesman_Default_Start"))
+	entity:TalkToPlayer(player, entity.cwTextTab.start, L("Salesman_Default_Start"))
 end

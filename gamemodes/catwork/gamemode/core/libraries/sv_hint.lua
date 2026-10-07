@@ -18,6 +18,7 @@ cw.hint.stored = stored
 	@param String The body of the hint.
 	@param Function A callback with the player as an argument, return false to hide.
 --]]
+
 function cw.hint:Add(name, text, Callback)
 	stored[name] = {
 		Callback = Callback,
@@ -30,6 +31,7 @@ end
 	@details Remove an existing hint from the list.
 	@param String A unique identifier.
 --]]
+
 function cw.hint:Remove(name)
 	stored[name] = nil
 end
@@ -40,6 +42,7 @@ end
 	@param String A unique identifier.
 	@returns Table The hint table matching the identifier.
 --]]
+
 function cw.hint:Find(name)
 	return stored[name]
 end
@@ -48,6 +51,7 @@ end
 	@codebase Server
 	@details Distribute a hint to each player.
 --]]
+
 function cw.hint:Distribute()
 	local hintText, Callback = self:Get()
 	local hintInterval = config.Get("hint_interval"):Get()
@@ -74,6 +78,7 @@ end
 	@option Bool:String Specify a custom sound or false for no sound.
 	@option Bool Specify wether to display duplicates of this hint.
 --]]
+
 function cw.hint:SendCenter(player, text, delay, color, bNoSound, showDuplicated)
 	netstream.Start(player, "Hint", {
 		text = cw.core:ParseData(text),
@@ -92,6 +97,7 @@ end
 	@param Float The delay before it fades.
 	@param Color The color of the hint text.
 --]]
+
 function cw.hint:SendCenterAll(text, delay, color)
 	for k, v in ipairs(_player.GetAll()) do
 		if (v:HasInitialized()) then
@@ -110,6 +116,7 @@ end
 	@option Bool:String Specify a custom sound or false for no sound.
 	@option Bool Specify wether to display duplicates of this hint.
 --]]
+
 function cw.hint:Send(player, text, delay, color, bNoSound, showDuplicated)
 	netstream.Start(player, "Hint", {
 		text = cw.core:ParseData(text), delay = delay, color = color, noSound = bNoSound, showDuplicates = showDuplicated
@@ -123,6 +130,7 @@ end
 	@param Float The delay before it fades.
 	@param Color The color of the hint text.
 --]]
+
 function cw.hint:SendAll(text, delay, color)
 	for k, v in ipairs(_player.GetAll()) do
 		if (v:HasInitialized()) then
@@ -137,6 +145,7 @@ end
 	@returns String The random hint text.
 	@returns Function The random hint callback.
 --]]
+
 function cw.hint:Get()
 	local hints = {}
 
@@ -185,4 +194,4 @@ end)
 
 cw.hint:Add("Target Recognises", "#Hint_Target_Recognises", function(player)
 	return config.Get("recognise_system"):Get()
-end);
+end)

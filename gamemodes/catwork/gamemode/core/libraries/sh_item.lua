@@ -58,7 +58,6 @@ CItem.proxies = {}
 
 -- Call it in the constructor.
 function CItem:CItem()
-
 end
 
 -- Called when the item is converted to a string.
@@ -109,6 +108,7 @@ end
 	just a nicer way to set a value to go along with
 	the method of querying.
 --]]
+
 function CItem:Override(varName, value)
 	self[varName] = value
 end
@@ -173,9 +173,9 @@ end
 
 -- A function to add a new recipe for this item.
 function CItem:AddRecipe(...)
-	local arguments = {...}
+	local arguments = { ... }
 	local currentItem = nil
-	local recipeTable = {ingredients = {}}
+	local recipeTable = { ingredients = {} }
 
 	for k, v in pairs(arguments) do
 		if (type(v) == "string") then
@@ -313,7 +313,7 @@ if (SERVER) then
 	end
 else
 	function CItem:SubmitOption(option, data, entity)
-		netstream.Start("MenuOption", {option = option, data = data, item = self.itemID, entity = entity})
+		netstream.Start("MenuOption", { option = option, data = data, item = self.itemID, entity = entity })
 	end
 end
 
@@ -431,6 +431,7 @@ function item.GetByWeapon(weapon)
 
 	if (IsValid(weapon)) then
 		local itemID = tonumber(weapon:GetNWString("ItemID"))
+
 		if (itemID and itemID != 0) then
 			return item.FindInstance(itemID)
 		end
@@ -440,7 +441,7 @@ end
 -- A function to create an instance of an item.
 function item.CreateInstance(uniqueID, itemID, data, customData)
 	local itemTable = item.FindByID(uniqueID)
-	
+
 	item.Validate(itemTable)
 
 	if (itemID) then itemID = tonumber(itemID) end
@@ -511,7 +512,7 @@ end
 function item.GetSignature(itemTable)
 	item.Validate(itemTable)
 
-	return {uniqueID = itemTable.uniqueID, itemID = itemTable.itemID}
+	return { uniqueID = itemTable.uniqueID, itemID = itemTable.itemID }
 end
 
 -- A function to get an item by its name.
@@ -770,6 +771,7 @@ if (SERVER) then
 		@codebase Server
 		@details A function to send an item to a player.
 	--]]
+
 	function item.SendToPlayer(player, itemTable)
 		if (itemTable) then
 			netstream.Start(
@@ -783,6 +785,7 @@ if (SERVER) then
 		@details A function to send an item update to it's observers.
 		@returns Table The table of observers.
 	--]]
+
 	function item.SendUpdate(itemTable, data)
 		item.Validate(itemTable)
 
@@ -801,7 +804,7 @@ if (SERVER) then
 		})
 
 		return info.observers
-	end	
+	end
 else
 	function item.GetIconInfo(itemTable)
 		item.Validate(itemTable)

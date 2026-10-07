@@ -64,7 +64,6 @@ function PLUGIN:AdjustRollNumber(player, roll, max, target)
 					return adjustInCombineFavor(player, target, 4, -2)
 				end
 
-
 				local rankPos, endRankPos = playerName:find(".0")
 
 				if (rankPos) then

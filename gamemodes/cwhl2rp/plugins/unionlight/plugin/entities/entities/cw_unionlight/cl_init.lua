@@ -12,6 +12,7 @@ end
 -- Called when the entity should think.
 function ENT:Think()
 	local dlight = DynamicLight(self:EntIndex())
+
 	if (dlight) then
 		local r, g, b, a = self:GetColor()
 		dlight.Pos = self:GetPos()

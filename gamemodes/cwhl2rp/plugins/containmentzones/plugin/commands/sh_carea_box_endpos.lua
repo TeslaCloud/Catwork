@@ -9,10 +9,12 @@ function COMMAND:OnRun(player, arguments)
 	local trace = player:GetEyeTraceNoCursor()
 
 	if !player.cwRadSystemBoxInfo then player.cwRadSystemBoxInfo = {} end
+
 	if !player.cwRadSystemBoxInfo.startpos then
 		cw.player:Notify(player, L("Containment_NoStartPoint"))
 		return
 	end
+
 	if player.cwRadSystemBoxInfo then
 		player.cwRadSystemBoxInfo.endpos = trace.HitPos
 	end

@@ -11,4 +11,4 @@ PLUGIN:SetGlobalAlias("cwPermaDoors")
 cwPermaDoors.stored = cwPermaDoors.stored or {}
 
 util.Include("sv_plugin.lua")
-util.Include("sv_hooks.lua");
+util.Include("sv_hooks.lua")

@@ -94,4 +94,4 @@ config.AddToSystem("#PlayersChangeThemes", "modify_themes", "#PlayersChangeTheme
 config.AddToSystem("#DefaultTheme", "default_theme", "#DefaultThemeDesc")
 config.AddToSystem("#EnableMouthMove", "enable_mouth_move", "#EnableMouthMoveDesc")
 config.AddToSystem("#BlockCashBinds", "block_cash_binds", "#BlockCashBindsDesc")
-config.AddToSystem("#BlockFalloverBinds", "block_fallover_binds", "#BlockFalloverBindsDesc");
+config.AddToSystem("#BlockFalloverBinds", "block_fallover_binds", "#BlockFalloverBindsDesc")

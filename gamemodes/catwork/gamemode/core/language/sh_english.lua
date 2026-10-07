@@ -29,7 +29,7 @@ lang["#DeathScreen_SpawnPercentage"] = "RESPAWNING: #1"
 -- Config Print
 lang["#ConfigVariablesPrinted"] = "The config variables have been printed to the console."
 
---Random
+-- Random
 lang["#HookErrors"] = "Something is creating hook errors!"
 lang["#PlayerDisconnected"] = " has disconnected from the server."
 lang["#PlayerConnected"] = " has connected to the server."
@@ -376,7 +376,7 @@ lang["#ArmorAffectsChest"] = "Armor Affects Chest Only"
 lang["#MinimumPhysicalDescription"] = "Minimum Physical Description Length"
 lang["#WoodBreaksFall"] = "Wood Breaks Fall"
 lang["#VignetteEnabled"] = "Vignette Enabled"
-lang["#HeartbeatSounds"] = "Heartbeat Sounds Enabled"; //Day 132. Still converting strings..
+lang["#HeartbeatSounds"] = "Heartbeat Sounds Enabled" // Day 132. Still converting strings..
 lang["#CrosshairEnabled"] = "Crosshair Enabled"
 lang["#FreeAiming"] = "Free Aiming Enabled"
 lang["#RecogniseSystem"] = "Recognise System Enabled"
@@ -413,7 +413,7 @@ lang["#CustomWeaponColor"] = "Custom Weapon Color"
 lang["#GiveKeys"] = "Give Keys"
 lang["#WagesName"] = "Wages Name"
 lang["#JumpPower"] = "Jump Power"
-lang["#RespawnDelay"] = "Respawn Delay"; // Send help...
+lang["#RespawnDelay"] = "Respawn Delay" // Send help...
 lang["#MaximumWalkSpeed"] = "Maximum Walk Speed"
 lang["#MaximumRunSpeed"] = "Maximum Run Speed"
 lang["#DoorPrice"] = "Door Price"
@@ -620,7 +620,7 @@ lang["#Schema_Credits"] = "A roleplaying game designed by #1."
 lang["#Doors_Name"] = "Door"
 lang["#Doors_Unownable"] = "This door is unownable."
 lang["#Doors_CanBePurchased"] = "This door can be purchased."
-lang["#Doors_CanBeOwned"]= "This door can be owned."
+lang["#Doors_CanBeOwned"] = "This door can be owned."
 lang["#Doors_HasBeenPurchased"] = "This door has been purchased."
 lang["#Doors_HasBeenOwned"] = "This door is owned."
 
@@ -732,7 +732,7 @@ lang["#Inventory"] = "Inventory"
 lang["#Weight"] = "Weight"
 lang["#Space"] = "Space"
 
-lang["#RecogniseMenu"] = "SELECT WHO CAN RECOGNISE YOU";
+lang["#RecogniseMenu"] = "SELECT WHO CAN RECOGNISE YOU"
 
 lang["#Command_A_Description"] = "Send a private message to all staff."
 lang["#Command_A_Syntax"] = "<string Msg>"

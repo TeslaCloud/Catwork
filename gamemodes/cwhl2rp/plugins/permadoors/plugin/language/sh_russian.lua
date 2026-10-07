@@ -8,7 +8,7 @@
 
 local lang = cw.lang:GetTable("ru")
 
-lang["#Door_Vacant"] = "Свободно";
+lang["#Door_Vacant"] = "Свободно"
 
 -- Notifications.
 lang["#PermaDoors_Assigned"] = "Эта дверь успешно закреплена за игроком #1."

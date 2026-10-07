@@ -40,6 +40,7 @@ end
 
 function cwCraft:SaveCraftTables()
 	local craftTables = {}
+
 	for k, v in ipairs(ents.GetAll()) do
 		if (v.IsCraft) then
 			craftTables[#craftTables + 1] = {
@@ -49,12 +50,13 @@ function cwCraft:SaveCraftTables()
 			}
 		end
 	end
+
 	cw.core:SaveSchemaData("plugins/craft/"..game.GetMap(), craftTables)
 end
 
 function cwCraft:LoadCraftTables()
 	local craftTables = cw.core:RestoreSchemaData("plugins/craft/"..game.GetMap())
-	
+
 	for k, v in pairs(craftTables) do
 		local device = ents.Create(v.class)
 

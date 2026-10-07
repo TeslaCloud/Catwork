@@ -12,7 +12,7 @@ COMMAND.text = "#Command_Plymute_Syntax"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "o"
 COMMAND.arguments = 2
-COMMAND.alias = {"Mute"}
+COMMAND.alias = { "Mute" }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
@@ -36,4 +36,4 @@ function COMMAND:OnRun(player, arguments)
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

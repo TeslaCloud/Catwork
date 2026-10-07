@@ -14,9 +14,9 @@ function COMMAND:OnRun(player)
 	local radius = config.Get("talk_radius"):Get()
 
 	if (!player:IsCombine()) then
-		chatbox.AddText(nil, '"'..name..'."', {sender = player, isPlayerMessage = true, filter = "ic", radius = radius, textColor = Color(255, 255, 200, 255)})
+		chatbox.AddText(nil, '"'..name..'."', { sender = player, isPlayerMessage = true, filter = "ic", radius = radius, textColor = Color(255, 255, 200, 255) })
 	else
-		chatbox.AddText(nil, '"Юнит '..name..'."', {sender = player, isPlayerMessage = true, filter = "ic", radius = radius, textColor = Color(255, 255, 200, 255)})
+		chatbox.AddText(nil, '"Юнит '..name..'."', { sender = player, isPlayerMessage = true, filter = "ic", radius = radius, textColor = Color(255, 255, 200, 255) })
 	end
 
 	for k, v in ipairs(_player.GetAll()) do
@@ -28,4 +28,4 @@ function COMMAND:OnRun(player)
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

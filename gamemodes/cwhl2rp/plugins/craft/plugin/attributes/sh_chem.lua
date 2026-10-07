@@ -13,4 +13,4 @@ local ATTRIBUTE = cw.attribute:New()
 	ATTRIBUTE.description = "#Attribute_Chem_Desc"
 	ATTRIBUTE.isOnCharScreen = false
 	ATTRIBUTE.category = "#AttributeCategory_Skills"
-ATB_CHEM = cw.attribute:Register(ATTRIBUTE);
+ATB_CHEM = cw.attribute:Register(ATTRIBUTE)

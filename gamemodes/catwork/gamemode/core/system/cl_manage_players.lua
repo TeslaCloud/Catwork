@@ -40,7 +40,7 @@ function SYSTEM:OnDisplay(systemPanel, systemForm)
 		end)
 
 		if (#v > 0) then
-			classes[#classes + 1] = {name = k, players = v}
+			classes[#classes + 1] = { name = k, players = v }
 		end
 	end
 
@@ -95,4 +95,4 @@ function SYSTEM:OnDisplay(systemPanel, systemForm)
 	end
 end
 
-SYSTEM:Register();
+SYSTEM:Register()

@@ -16,7 +16,7 @@ function PLUGIN:ClockworkInitPostEntity()
 			for k, v in pairs(ents.GetAll()) do
 				local model = v:GetModel()
 
-				if (model) then model = model:lower(); end
+				if (model) then model = model:lower() end
 
 				if (!v:IsPlayer() and model and (model:find("wood") or model:find("table") or model:find("bench")
 				or model:find("table") or model:find("chair") or model:find("box") or model:find("cardboard")

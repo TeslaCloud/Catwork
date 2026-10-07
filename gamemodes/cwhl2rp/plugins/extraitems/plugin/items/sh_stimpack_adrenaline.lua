@@ -34,7 +34,6 @@ end
 -- Called when a player drops the item.
 function ITEM:OnDrop(player, position) end
 
-
 local eng = cw.lang:GetTable("en")
 local ru = cw.lang:GetTable("ru")
 

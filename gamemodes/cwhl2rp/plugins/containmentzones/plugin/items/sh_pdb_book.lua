@@ -14,6 +14,7 @@ ITEM.description = "#Item_PdbBook_Description"
 function ITEM:OnUse(player, itemEntity)
 	local atrs = player:GetAttributes()
 	local medical = atrs[ATB_MEDICAL]
+
 	if player:GetFaction() != FACTION_OTA then
 		if medical then
 			if tonumber(medical.amount) < 50 then
@@ -24,7 +25,8 @@ function ITEM:OnUse(player, itemEntity)
 			end
 		end
 	end
+
 	return false
 end
-function ITEM:OnDrop(player, position) end
 
+function ITEM:OnDrop(player, position) end

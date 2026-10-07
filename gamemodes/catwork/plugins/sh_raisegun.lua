@@ -55,7 +55,7 @@ end
 function playerMeta:ToggleWeaponRaised()
 	if (hook.Run("CanWeaponBeToggled", self, self:GetActiveWeapon())) then
 		if (self:IsWeaponRaised()) then
-			self:SetWeaponRaised(false)	
+			self:SetWeaponRaised(false)
 		else
 			self:SetWeaponRaised(true)
 		end

@@ -16,7 +16,7 @@ ITEM.useText = "Apply"
 ITEM.category = "Medical"
 ITEM.business = true
 ITEM.description = "#ITEM_Bandage_Desc"
-ITEM.customFunctions = {"Give"}
+ITEM.customFunctions = { "Give" }
 
 -- Called when a player uses the item.
 function ITEM:OnUse(player, itemEntity)

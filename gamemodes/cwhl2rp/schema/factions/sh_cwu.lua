@@ -52,4 +52,4 @@ function FACTION:OnTransferred(player, faction, name)
 	end
 end
 
-FACTION_CWU = FACTION:Register();
+FACTION_CWU = FACTION:Register()

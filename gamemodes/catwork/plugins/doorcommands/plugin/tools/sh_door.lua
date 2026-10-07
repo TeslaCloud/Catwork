@@ -8,13 +8,13 @@
 
 local TOOL = cw.tool:New()
 
-TOOL.Name 		= "#tool.doortool.name"
-TOOL.UniqueID 	= "doortool"
-TOOL.Desc 		= "#tool.doortool.desc"
-TOOL.HelpText 	= "#tool.doortool.0"
+TOOL.Name = "#tool.doortool.name"
+TOOL.UniqueID = "doortool"
+TOOL.Desc = "#tool.doortool.desc"
+TOOL.HelpText = "#tool.doortool.0"
 
 -- Create the convars for the client.
-TOOL.ClientConVar["mode"] 	= "1"
+TOOL.ClientConVar["mode"] = "1"
 TOOL.ClientConVar["doorname"]	= "A Door"
 TOOL.ClientConVar["doordesc"]	= "It seems to have a handle."
 
@@ -88,7 +88,7 @@ if (CLIENT) then
 		panel:AddItem(list)
 
 		if (mode == 1) then
-			panel:AddControl("Header", {Text = "#tool.doortool.mode1", Description = "#tool.doortool.mode1desc" })
+			panel:AddControl("Header", { Text = "#tool.doortool.mode1", Description = "#tool.doortool.mode1desc" })
 		elseif (mode == 2) then
 			panel:AddControl("TextBox", {
 				Label = "#tool.doortool.doorname",
@@ -138,4 +138,4 @@ if (CLIENT) then
 	concommand.Add("door_updatepanel", DoorUpdatePanel)
 end
 
-TOOL:Register();
+TOOL:Register()

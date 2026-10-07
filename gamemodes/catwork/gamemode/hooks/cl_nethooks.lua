@@ -248,6 +248,7 @@ netstream.Hook("CfgListVars", function(data)
 
 			cw.client:PrintMessage(2, v[1].." = \""..v[2].."\";\n")
 		end
+
 	cw.client:PrintMessage(2, "######## [Catwork] Config ########\n")
 end)
 

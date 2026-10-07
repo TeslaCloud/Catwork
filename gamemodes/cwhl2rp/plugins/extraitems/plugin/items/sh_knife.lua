@@ -15,4 +15,3 @@ ITEM.isAttachment = false
 ITEM.hasFlashlight = false
 ITEM.loweredOrigin = Vector(3, 0, -4)
 ITEM.isMeleeWeapon = true
-

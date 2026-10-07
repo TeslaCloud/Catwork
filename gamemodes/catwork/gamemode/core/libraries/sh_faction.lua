@@ -44,7 +44,7 @@ FACTION_CITIZENS_MALE = {
 }
 
 --[[ Set the __index meta function of the class. --]]
-local CLASS_TABLE = {__index = CLASS_TABLE}
+local CLASS_TABLE = { __index = CLASS_TABLE }
 
 -- A function to register a new faction.
 function CLASS_TABLE:Register()

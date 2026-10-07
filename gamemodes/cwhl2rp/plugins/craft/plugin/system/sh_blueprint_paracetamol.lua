@@ -7,19 +7,19 @@ BLUEPRINT.category = "#Craft_Category_Medical"
 BLUEPRINT.description = "#Blueprint_BlueprintParacetamol_Description"
 BLUEPRINT.craftplace = "cw_craft_chem"
 BLUEPRINT.updatt = {
-	{"chem", 35}
+	{ "chem", 35 }
 }
 BLUEPRINT.reqatt = {
-	{"chem", 15}
+	{ "chem", 15 }
 }
 BLUEPRINT.required = {}
 BLUEPRINT.recipe = {
-	{"health_vial", 1},
-	{"charcoal", 1},
-	{"vodka", 1}
+	{ "health_vial", 1 },
+	{ "charcoal", 1 },
+	{ "vodka", 1 }
 }
 BLUEPRINT.finish = {
-	{"paracetamol", 1},
-	{"empty_glass_bottle", 1},
+	{ "paracetamol", 1 },
+	{ "empty_glass_bottle", 1 }
 }
-BLUEPRINT:Register();
+BLUEPRINT:Register()

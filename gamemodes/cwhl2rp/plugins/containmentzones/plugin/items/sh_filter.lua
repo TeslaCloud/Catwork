@@ -17,7 +17,7 @@ function ITEM:GetClientSideDescription()
 		local filter = self:GetData("energy")
 
 		if filter then
-			desc = L("#Item_Filter_Description") .. "\n" .. L("#Item_Filter_Condition:" .. filter .. ";")
+			desc = L("#Item_Filter_Description").."\n"..L("#Item_Filter_Condition:"..filter..";")
 		end
 
 		return (desc != "" and desc)
@@ -36,10 +36,13 @@ function ITEM:OnUse(player, itemEntity)
 		end
 	else
 		local gasmasks = player:GetInventory()["gasmask"]
+
 		if gasmasks then
 			local gasmask_equipped
+
 			for k, gasmask in pairs(gasmasks) do
 				if !gasmask:GetData("equip") then continue end
+
 				gasmask_equipped = gasmask
 			end
 
@@ -60,5 +63,5 @@ function ITEM:OnUse(player, itemEntity)
 		end
 	end
 end
-function ITEM:OnDrop(player, position) end
 
+function ITEM:OnDrop(player, position) end

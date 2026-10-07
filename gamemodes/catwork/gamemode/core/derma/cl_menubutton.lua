@@ -11,10 +11,10 @@ local PANEL = {}
 cw.fonts:Add("cwMenuButtonSmall", {
 	font		= "Roboto Condensed",
 	size		= 24,
-	weight		= 600,
-	antialiase	= true,
-	additive 	= false,
-	extended	= true
+	weight = 600,
+	antialiase = true,
+	additive = false,
+	extended = true
 })
 
 function PANEL:SetupLabel(menuItem, panel)
@@ -65,4 +65,4 @@ function PANEL:UpdatePositioning()
 	self:SetSize(200, 32)
 end
 
-vgui.Register("cw.menuButton", PANEL, "cwFAButton");
+vgui.Register("cw.menuButton", PANEL, "cwFAButton")

@@ -32,7 +32,7 @@ function cwDisplayTyping:PostDrawTranslucentRenderables()
 		if (player:HasInitialized() and player:Alive() and player:GetMoveType() != MOVETYPE_NOCLIP) then
 			local typing = player:GetNetVar("Typing") or false
 
-			if (typing != 0) then		
+			if (typing != 0) then
 				local plyPos = player:GetPos()
 				local fadeDistance = 192
 
@@ -49,7 +49,7 @@ function cwDisplayTyping:PostDrawTranslucentRenderables()
 				end
 
 				if (plyPos and clientPos and plyPos:Distance(clientPos) <= fadeDistance) then
-					local color = player:GetColor();	
+					local color = player:GetColor()
 					local curTime = UnPredictedCurTime()
 
 					if (player:GetMaterial() != "sprites/heatwave" and (a != 0 or player:IsRagdolled())) then

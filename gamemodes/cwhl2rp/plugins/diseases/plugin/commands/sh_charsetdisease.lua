@@ -9,9 +9,9 @@ COMMAND.arguments = 2
 function COMMAND:OnRun(player, arguments)
 	local target = _player.Find(arguments[1])
 	local disease = arguments[2]
-	
+
 	if (target) then
-		if (player != target)	then
+		if (player != target) then
 			cw.player:Notify(target, L("Diseases_SetByOther", player:Name(), disease))
 			cw.player:Notify(player, L("Diseases_SetOther", target:Name(), disease))
 		else

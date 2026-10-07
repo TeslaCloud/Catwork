@@ -13,7 +13,7 @@ COMMAND.tip = "#Command_Dropcash_Tip"
 COMMAND.text = "#Command_Givecash_Syntax"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.arguments = 1
-COMMAND.alias = {"DropCash", "DropTokens"}
+COMMAND.alias = { "DropCash", "DropTokens" }
 COMMAND.cooldown = 8
 
 -- Called when the command has been run.
@@ -45,4 +45,4 @@ function COMMAND:OnRun(player, arguments)
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

@@ -12,7 +12,7 @@ COMMAND.text = "#Command_Chargiveitem_Syntax"
 COMMAND.access = "s"
 COMMAND.arguments = 2
 COMMAND.optionalArguments = 1
-COMMAND.alias = {"PlyGiveItem", "GiveItem"}
+COMMAND.alias = { "PlyGiveItem", "GiveItem" }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
@@ -67,4 +67,4 @@ function COMMAND:OnRun(player, arguments)
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

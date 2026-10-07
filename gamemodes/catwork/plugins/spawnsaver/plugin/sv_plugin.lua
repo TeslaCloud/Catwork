@@ -6,4 +6,4 @@
 	with contributions from Cloud Sixteen community.
 --]]
 
-config.Add("spawn_where_left", false);
+config.Add("spawn_where_left", false)

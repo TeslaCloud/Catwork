@@ -34,4 +34,4 @@ function TOOL:RightClick(trace)
 	return true
 end
 
-TOOL:Register();
+TOOL:Register()

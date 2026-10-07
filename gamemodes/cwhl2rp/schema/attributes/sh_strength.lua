@@ -13,4 +13,4 @@ local ATTRIBUTE = cw.attribute:New()
 	ATTRIBUTE.description = "#Attribute_Strength_Desc"
 	ATTRIBUTE.isOnCharScreen = true
 	ATTRIBUTE.category = "#AttributeCategory_Stats"
-ATB_STRENGTH = cw.attribute:Register(ATTRIBUTE);
+ATB_STRENGTH = cw.attribute:Register(ATTRIBUTE)

@@ -52,7 +52,7 @@ function ENT:Draw()
 			local isPlayer = player:IsPlayer()
 
 			if (position and angles) then
-				self:SetPos(position); self:SetAngles(angles)
+				self:SetPos(position) self:SetAngles(angles)
 			end
 
 			if (itemTable.GetAttachmentModelScale) then

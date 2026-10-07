@@ -50,7 +50,7 @@ function PANEL:Rebuild()
 			end
 		end)
 
-		categories[#categories + 1] = {category = k, settings = v}
+		categories[#categories + 1] = { category = k, settings = v }
 	end
 
 	table.sort(categories, function(a, b)
@@ -170,7 +170,7 @@ function PANEL:OnMenuOpened()
 end
 
 -- Called when the panel is selected.
-function PANEL:OnSelected() self:Rebuild(); end
+function PANEL:OnSelected() self:Rebuild() end
 
 -- Called when the layout should be performed.
 function PANEL:PerformLayout(w, h) end
@@ -183,4 +183,4 @@ function PANEL:Paint(w, h)
 	return true
 end
 
-vgui.Register("cwSettings", PANEL, "EditablePanel");
+vgui.Register("cwSettings", PANEL, "EditablePanel")

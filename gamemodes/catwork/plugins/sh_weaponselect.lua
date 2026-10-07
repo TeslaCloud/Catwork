@@ -82,10 +82,10 @@ function PLUGIN:DrawWeaponInformation(itemTable, weapon, x, y, alpha)
 		end
 	end
 
-	if (!weapon.Instructions) then weapon.Instructions = ""; end
-	if (!weapon.Purpose) then weapon.Purpose = ""; end
-	if (!weapon.Contact) then weapon.Contact = ""; end
-	if (!weapon.Author) then weapon.Author = ""; end
+	if (!weapon.Instructions) then weapon.Instructions = "" end
+	if (!weapon.Purpose) then weapon.Purpose = "" end
+	if (!weapon.Contact) then weapon.Contact = "" end
+	if (!weapon.Author) then weapon.Author = "" end
 
 	if (itemTable or primaryAmmo or secondaryAmmo or (weapon.DrawWeaponInfoBox
 	and (weapon.Author != "" or weapon.Contact != "" or weapon.Purpose != ""

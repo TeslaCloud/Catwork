@@ -13,7 +13,7 @@ COMMAND.flags = CMD_DEFAULT
 COMMAND.arguments = 1
 COMMAND.optionalArguments = 1
 COMMAND.access = "o"
-COMMAND.alias = {"ForceCharFallover"}
+COMMAND.alias = { "ForceCharFallover" }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
@@ -38,4 +38,4 @@ function COMMAND:OnRun(player, arguments)
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

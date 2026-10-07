@@ -41,4 +41,4 @@ function FACTION:OnTransferred(player, faction, name)
 	end
 end
 
-FACTION_ADMIN = FACTION:Register();
+FACTION_ADMIN = FACTION:Register()

@@ -63,7 +63,7 @@ function PANEL:Paint(w, h)
 			surface.SetDrawColor(255, 255, 255, 50)
 			surface.DrawRect(x, y, width, height)
 		end
-	end	
+	end
 
 	return true
 end
@@ -197,4 +197,4 @@ function PANEL:SetInfoColor(color)
 	end
 end
 
-vgui.Register("cwInfoText", PANEL, "DPanel");
+vgui.Register("cwInfoText", PANEL, "DPanel")

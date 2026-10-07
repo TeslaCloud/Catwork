@@ -5,38 +5,37 @@ surface.CreateFont("_GR_CMB_FONT_1", {
 	size = 13,
 	weight = 1000,
 	antialias = false,
-	underline = false,
+	underline = false
 })
 surface.CreateFont("_GR_CMB_FONT_2", {
 	font = "Default",
 	size = 11,
 	weight = 1000,
 	antialias = false,
-	underline = false,
+	underline = false
 })
 surface.CreateFont("_GR_CMB_FONT_3", {
 	font = "Verdana",
 	size = 10,
 	weight = 800,
 	antialias = false,
-	underline = false,
+	underline = false
 })
 surface.CreateFont("_GR_CMB_FONT_4", {
 	font = "System",
 	size = 40,
 	weight = 1000,
 	antialias = false,
-	underline = false,
+	underline = false
 })
 
 function ENT:Initialize()
 	self.RT = GetRenderTargetEx("_cmb_FIndicatorRT"..self:EntIndex()..CurTime(), 128, 85, RT_SIZE_DEFAULT, MATERIAL_RT_DEPTH_SHARED, 0x0001, CREATERENDERTARGETFLAGS_UNFILTERABLE_OK, IMAGE_FORMAT_DEFAULT)
-	self.RTMat = CreateMaterial("_cmb_FIndicatorRTMAT" .. self:EntIndex() .. CurTime(), "UnlitTwoTexture", {
+	self.RTMat = CreateMaterial("_cmb_FIndicatorRTMAT"..self:EntIndex()..CurTime(), "UnlitTwoTexture", {
 		["$selfilium"] = "1",
 		["$texture2"] = "dev/dev_scanline",
 		["Proxies"] =
 		{
-
 			["TextureScroll"] =
 			{
 				["texturescrollvar"] = "$texture2transform",
@@ -52,10 +51,10 @@ function ENT:Draw()
 
 	if IsValid(LocalPlayer():GetActiveWeapon()) then
 		if LocalPlayer():GetActiveWeapon():GetClass() == "gmod_tool" then
-			render.DrawLine(self:GetProductPos() - self:GetForward() * 12, self:GetProductPos() + self:GetForward() * 12, Color(255,255,255), true)
-			render.DrawLine(self:GetProductPos() - self:GetRight() * 12, self:GetProductPos() + self:GetRight() * 12, Color(255,255,255), true)
-			render.DrawLine(self:GetProductPos() - self:GetUp() * 12, self:GetProductPos() + self:GetUp() * 12, Color(255,255,255), true)
-			render.DrawLine(self:GetProductPos(), self:GetPos(), Color(255,255,255), true)
+			render.DrawLine(self:GetProductPos() - self:GetForward() * 12, self:GetProductPos() + self:GetForward() * 12, Color(255, 255, 255), true)
+			render.DrawLine(self:GetProductPos() - self:GetRight() * 12, self:GetProductPos() + self:GetRight() * 12, Color(255, 255, 255), true)
+			render.DrawLine(self:GetProductPos() - self:GetUp() * 12, self:GetProductPos() + self:GetUp() * 12, Color(255, 255, 255), true)
+			render.DrawLine(self:GetProductPos(), self:GetPos(), Color(255, 255, 255), true)
 		end
 	end
 
@@ -97,6 +96,7 @@ function ENT:Draw()
 			local _cur = CurTime() - self:GetStartWorkTime()
 			local _end = self:GetNextWorkTime() - self:GetStartWorkTime()
 			local var2 = math.Clamp((_cur / _end), 0, 1)
+
 			if !self:GetIsWorking() then
 				if self:GetStopWorkTime() > 0 then
 					local i = self.WORK_TIME - self:GetStopWorkTime()
@@ -114,7 +114,7 @@ function ENT:Draw()
 			local bar = math.Clamp((var * 114) - 2, 0, 114)
 			surface.DrawRect(128 / 2 - 114 / 2 + 1, 100 / 2 - 16 / 2 + 1, bar, 16 - 2)
 
-			local text = math.Round(self:GetGarbageCount(), 2) .. "/" .. self.METAL_GARBAGE_COUNT_START
+			local text = math.Round(self:GetGarbageCount(), 2).."/"..self.METAL_GARBAGE_COUNT_START
 			surface.SetTextColor(255, 255, 255, 150)
 			surface.SetFont("_GR_CMB_FONT_1")
 			local w, h = surface.GetTextSize(text)
@@ -127,7 +127,7 @@ function ENT:Draw()
 			local bar = math.Clamp((var2 * 114) - 2, 0, 114)
 			surface.DrawRect(128 / 2 - 114 / 2 + 1, 100 / 2 - 16 / 2 + 1 + 20, bar, 16 - 2)
 
-			local text = math.Round((var2 * 100))  .. "%"
+			local text = math.Round((var2 * 100)).."%"
 			surface.SetTextColor(255, 255, 255, 150)
 			surface.SetFont("_GR_CMB_FONT_1")
 			local w, h = surface.GetTextSize(text)

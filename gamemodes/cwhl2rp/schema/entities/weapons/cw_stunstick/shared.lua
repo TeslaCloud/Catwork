@@ -32,7 +32,7 @@ end
 SWEP.Instructions = "ЛКМ: Удар.\nПКМ: Толкать\n Стучать."
 SWEP.Purpose = "Этим можно избивать жалких людишек. Можно засунуть ее куда-нибудь."
 SWEP.Contact = ""
-SWEP.Author	= "kurozael"
+SWEP.Author = "kurozael"
 
 SWEP.WorldModel = "models/weapons/w_stunbaton.mdl"
 SWEP.ViewModel = "models/weapons/v_stunstick.mdl"
@@ -53,7 +53,7 @@ SWEP.Secondary.DefaultClip = 0
 SWEP.Secondary.Automatic = false
 SWEP.Secondary.ClipSize = -1
 SWEP.Secondary.Delay = 1
-SWEP.Secondary.Ammo	= ""
+SWEP.Secondary.Ammo = ""
 
 SWEP.NoIronSightFovChange = true
 SWEP.NoIronSightAttack = true
@@ -232,6 +232,7 @@ function SWEP:ViewModelDrawn()
 								render.DrawSprite(attachment.Pos, 1, 1, Color(255, 255, 255, 255))
 							end
 						end
+
 					cam.End3D()
 				end
 			end
@@ -251,7 +252,7 @@ function SWEP:PrimaryAttack()
 	self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
 	self:SetNextSecondaryFire(CurTime() + self.Primary.Delay)
 
-	self:DoAnimations(); self:DoHitEffects()
+	self:DoAnimations() self:DoHitEffects()
 
 	if (SERVER) then
 		if (self.Owner.LagCompensation) then

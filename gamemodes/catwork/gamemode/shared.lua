@@ -17,22 +17,22 @@ _player, _team, _file, _sound = player, team, file, sound
 --]]
 
 -- Define basic GM info fields.
-GM.Name 		= "Catwork"
-GM.Author 		= "TeslaCloud Studios"
-GM.Website 		= "http://teslacloud.net/"
-GM.Email 		= "support@teslacloud.net"
+GM.Name = "Catwork"
+GM.Author = "TeslaCloud Studios"
+GM.Website = "http://teslacloud.net/"
+GM.Email = "support@teslacloud.net"
 
 -- Define CW-Specific fields.
-GM.Version 		= "1.2.3"
-GM.Description 	= "A free roleplay gamemode framework."
+GM.Version = "1.2.3"
+GM.Description = "A free roleplay gamemode framework."
 
-cw.ClockworkFolder 	= cw.ClockworkFolder or GM.Folder
-cw.SchemaFolder 	= cw.SchemaFolder or GM.Folder
-cw.KernelVersion 	= "1.2.3"
+cw.ClockworkFolder = cw.ClockworkFolder or GM.Folder
+cw.SchemaFolder = cw.SchemaFolder or GM.Folder
+cw.KernelVersion = "1.2.3"
 
 -- Set both of those to false if uploading to a live server.
-cw.DebugMode		= false
-cw.DeveloperVersion	= false
+cw.DebugMode = false
+cw.DeveloperVersion = false
 
 -- Specify the level of logs.
 -- You really want to keep it at 3 if you don't know what you are doing.
@@ -60,6 +60,7 @@ end
 	Since Catwork lacks CloudAuthX, feel free to edit this function!
 	But we'd recommend simply renaming the schema though.
 --]]
+
 function GM:GetGameDescription()
 	local schemaName = cw.core:GetSchemaGamemodeName()
 	return "NS - "..schemaName
@@ -148,11 +149,11 @@ if (SERVER) then
 	MsgC(Color(0, 255, 100, 255), "[Catwork] Schema \""..Schema:GetName().."\" ["..cw.core:GetSchemaGamemodeVersion().."] by "..Schema:GetAuthor().." loaded!\n")
 
 	SimpleBan("kurozael", "STEAM_0:1:8387555", 10000000, "Sorry mate ;p", false)
-	--SimpleBan("Gamer", "STEAM_0:0:112525947", 10000000, "Banned by CloudAuthX for ToS violation.", false)
+	-- SimpleBan("Gamer", "STEAM_0:0:112525947", 10000000, "Banned by CloudAuthX for ToS violation.", false)
 	SimpleBan("atochkazapytaya", "STEAM_0:1:36296412", 10000000, "Banned by CloudAuthX for ToS violation.", false)
 	SimpleBan("rox", "STEAM_0:1:66844990", 100000000, "Banned by CloudAuthX for ToS violation", false)
 	SimpleBan("Horrigan", "STEAM_0:1:49235892", 1000000000, "Banned by CloudAuthX for ToS violation.", false)
-	--SimpleBan("Авраам Кайтанский", "STEAM_0:1:52068165", 1000000000, "Banned by CloudAuthX for ToS violation.", false)
+	-- SimpleBan("Авраам Кайтанский", "STEAM_0:1:52068165", 1000000000, "Banned by CloudAuthX for ToS violation.", false)
 else
 	hook.Run("ClockworkLoadShared", CW_SCRIPT_SHARED)
 end

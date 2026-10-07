@@ -11,7 +11,7 @@ COMMAND.tip = "#Command_Plysethealth_Description"
 COMMAND.text = "#Command_Plysethealth_Syntax"
 COMMAND.arguments = 2
 COMMAND.access = "o"
-COMMAND.alias = {"PlyHealth", "Health", "SetHealth"}
+COMMAND.alias = { "PlyHealth", "Health", "SetHealth" }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
@@ -25,4 +25,4 @@ function COMMAND:OnRun(player, arguments)
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

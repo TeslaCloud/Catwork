@@ -66,7 +66,7 @@ function PANEL:SetActiveButton(active)
 		return
 	end
 
-	if (self.ActiveButton && self.ActiveButton.Target) then	
+	if (self.ActiveButton and self.ActiveButton.Target) then
 		self.ActiveButton.Target:SetVisible(false)
 		self.ActiveButton:SetSelected(false)
 		self.ActiveButton:SetColor(cw.option:GetColor("columnsheet_text_normal"))
@@ -81,4 +81,4 @@ function PANEL:SetActiveButton(active)
 	self.Content:InvalidateLayout()
 end
 
-vgui.Register("cwColumnSheet", PANEL, "DColumnSheet");
+vgui.Register("cwColumnSheet", PANEL, "DColumnSheet")

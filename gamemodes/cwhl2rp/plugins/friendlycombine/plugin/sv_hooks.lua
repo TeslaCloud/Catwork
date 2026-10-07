@@ -8,7 +8,7 @@
 
 local stored = {
 	"npc_metropolice",
-	"npc_combine_s" ,
+	"npc_combine_s",
 	"npc_manhack",
 	"npc_scanner",
 	"combine_mine",
@@ -97,11 +97,11 @@ function PLUGIN:PlayerTakeDamage(victim, inflictor, attacker, hitGroup, damageIn
 
 		if (class and table.HasValue(stored, class:lower())) then
 			if (Schema:PlayerIsCombine(victim) or victim:HasItemByID("combine_security_card")) then
-				damageInfo:ScaleDamage(0); -- �������� �� �������� �����
+				damageInfo:ScaleDamage(0) -- �������� �� �������� �����
 			elseif (victim:GetRagdollState() == RAGDOLL_FALLENOVER) then
-				damageInfo:ScaleDamage(0.2); -- ���� � ��������� �������� 20% �� �����
+				damageInfo:ScaleDamage(0.2) -- ���� � ��������� �������� 20% �� �����
 			elseif (class:lower() == "npc_turret_floor" or class:lower() == "npc_turret_ceiling") then
-				damageInfo:ScaleDamage(5); -- ������ ������� 500% ����� �� ��-���������
+				damageInfo:ScaleDamage(5) -- ������ ������� 500% ����� �� ��-���������
 			end
 		end
 	end

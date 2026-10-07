@@ -13,12 +13,12 @@ ITEM.model = "models/healthvial.mdl"
 ITEM.weight = 0.5
 ITEM.access = "v"
 ITEM.useText = "Drink"
-ITEM.factions = {FACTION_MPF, FACTION_OTA}
+ITEM.factions = { FACTION_MPF, FACTION_OTA }
 ITEM.category = "Medical"
 ITEM.business = true
 ITEM.useSound = "items/medshot4.wav"
 ITEM.description = "#ITEM_Health_Vial_Desc"
-ITEM.customFunctions = {"Give"}
+ITEM.customFunctions = { "Give" }
 
 -- Called when a player uses the item.
 function ITEM:OnUse(player, itemEntity)

@@ -76,7 +76,7 @@ function cw.storage:GetWeight(player)
 			weight = 0
 		end
 
-		for k, v in pairs(cw.inventory:GetAsItemsList(inventory)) do		
+		for k, v in pairs(cw.inventory:GetAsItemsList(inventory)) do
 			weight = weight + (math.max((v.storageWeight or v.weight), 0))
 		end
 
@@ -97,7 +97,7 @@ function cw.storage:GetSpace(player)
 			space = 0
 		end
 
-		for k, v in pairs(cw.inventory:GetAsItemsList(inventory)) do		
+		for k, v in pairs(cw.inventory:GetAsItemsList(inventory)) do
 			space = space + (math.max((v.storageSpace or v.space), 0))
 		end
 
@@ -288,7 +288,7 @@ function cw.storage:SyncItem(player, itemTable)
 		end
 
 		if (player:HasItemInstance(itemTable)) then
-			netstream.Start(players, "StorageGive", { index = itemTable.index, itemList = {definition}})
+			netstream.Start(players, "StorageGive", { index = itemTable.index, itemList = { definition } })
 		else
 			netstream.Start(players, "StorageTake", item.GetSignature(itemTable))
 		end
@@ -301,6 +301,7 @@ function cw.storage:GiveTo(player, itemTable)
 	if (!storageTable) then return false end
 
 	local inventory = self:Query(player, "inventory")
+
 	if (!self:CanGiveTo(player, itemTable)) then
 		return false
 	end
@@ -344,7 +345,7 @@ function cw.storage:GiveTo(player, itemTable)
 	end
 
 	netstream.Start(
-		players, "StorageGive", { index = itemTable.index, itemList = {definition}}
+		players, "StorageGive", { index = itemTable.index, itemList = { definition } }
 	)
 
 	player:TakeItem(itemTable)
@@ -451,6 +452,6 @@ function cw.storage:UpdateByID(player, uniqueID)
 			}
 		end
 
-		netstream.Start(player, "StorageGive", {index = itemTable.index, itemList = itemList})
+		netstream.Start(player, "StorageGive", { index = itemTable.index, itemList = itemList })
 	end
 end

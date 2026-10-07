@@ -18,7 +18,6 @@ local whitelistedEntities = {
 	"gmod_"
 }
 
-
 function cwStaticEnts:PlayerMakeStatic(player, bIsStatic)
 	if (!IsValid(player)) then return end
 

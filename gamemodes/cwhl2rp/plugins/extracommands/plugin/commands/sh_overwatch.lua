@@ -32,11 +32,11 @@ function COMMAND:OnRun(player, arguments)
 			radius = 0,
 			textColor = Color(10, 200, 10, 255),
 			forceName = true,
-			data = {overwatch = true}
+			data = { overwatch = true }
 		})
 	else
 		cw.player:Notify(player, L("ExtraCommands_MessageTooShort"))
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

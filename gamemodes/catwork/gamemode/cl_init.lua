@@ -11,6 +11,7 @@ cw = cw or {}
 --[[
 	Include pON and UTF-8 library
 --]]
+
 if (!string.utf8len or !pon or !netstream) then
 	include("thirdparty/utf8.lua")
 	include("thirdparty/pon.lua")

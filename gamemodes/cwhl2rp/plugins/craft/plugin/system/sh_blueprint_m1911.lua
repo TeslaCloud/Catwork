@@ -7,21 +7,21 @@ BLUEPRINT.category = "#Craft_Category_Weapons"
 BLUEPRINT.description = "#Blueprint_BlueprintM1911_Description"
 BLUEPRINT.craftplace = "cw_craft_wep"
 BLUEPRINT.reqatt = {
-	{"rem", 40}
+	{ "rem", 40 }
 }
 BLUEPRINT.updatt = {
-	{"rem", 20}
+	{ "rem", 20 }
 }
 BLUEPRINT.required = {
-	{"screw_driver", 1},
-	{"wrench", 1}
+	{ "screw_driver", 1 },
+	{ "wrench", 1 }
 }
 BLUEPRINT.recipe = {
-	{"broken_m1911", 2},
-	{"reclaimed_metal", 2},
-	{"box_of_screws", 2}
+	{ "broken_m1911", 2 },
+	{ "reclaimed_metal", 2 },
+	{ "box_of_screws", 2 }
 }
 BLUEPRINT.finish = {
-	{"sxbase_m1911", 1}
+	{ "sxbase_m1911", 1 }
 }
-BLUEPRINT:Register();
+BLUEPRINT:Register()

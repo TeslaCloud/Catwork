@@ -24,4 +24,4 @@ function PANEL:TextEntry(strLabel)
 	return textEntryPanel, labelPanel
 end
 
-vgui.Register("cwForm", PANEL, "DForm");
+vgui.Register("cwForm", PANEL, "DForm")

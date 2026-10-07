@@ -30,37 +30,37 @@ if (CLIENT) then
 	SWEP.PrintName = L("#SWEPS_Keys")
 end
 
-SWEP.Instructions 			= L("#SWEPS_Keys_Instructions")
+SWEP.Instructions = L("#SWEPS_Keys_Instructions")
 SWEP.Purpose 				= L("#SWEPS_Keys_Purpose")
 SWEP.Contact 				= "Cloudsixteen.com"
-SWEP.Author					= "Cloudsixteen"
+SWEP.Author = "Cloudsixteen"
 
 SWEP.WorldModel 			= ""
 SWEP.ViewModel 				= "models/weapons/c_arms.mdl"
-SWEP.HoldType 				= "fist"
+SWEP.HoldType = "fist"
 
-SWEP.AdminSpawnable 		= false
-SWEP.Spawnable 				= false
+SWEP.AdminSpawnable = false
+SWEP.Spawnable = false
 
-SWEP.Primary.DefaultClip 	= 0
-SWEP.Primary.Automatic 		= true
-SWEP.Primary.ClipSize 		= -1
-SWEP.Primary.Damage 		= 1
-SWEP.Primary.Ammo 			= ""
+SWEP.Primary.DefaultClip = 0
+SWEP.Primary.Automatic = true
+SWEP.Primary.ClipSize = -1
+SWEP.Primary.Damage = 1
+SWEP.Primary.Ammo = ""
 
-SWEP.Secondary.DefaultClip 	= 0
-SWEP.Secondary.Automatic 	= false
-SWEP.Secondary.ClipSize 	= -1
-SWEP.Secondary.Ammo			= ""
+SWEP.Secondary.DefaultClip = 0
+SWEP.Secondary.Automatic = false
+SWEP.Secondary.ClipSize = -1
+SWEP.Secondary.Ammo = ""
 
-SWEP.NoIronSightFovChange 	= true
-SWEP.NoIronSightAttack 		= true
+SWEP.NoIronSightFovChange = true
+SWEP.NoIronSightAttack = true
 SWEP.IronSightPos 			= Vector(0, 0, 0)
 SWEP.IronSightAng 			= Vector(0, 0, 0)
-SWEP.NeverRaised 			= true
-SWEP.LoweredAngles 			= Angle(0.000, 0.000, -22.000)
+SWEP.NeverRaised = true
+SWEP.LoweredAngles = Angle(0.000, 0.000, -22.000)
 
---[[Bunch of key functionality bullshit.]]--
+--[[Bunch of key functionality bullshit.]] --
 
 -- Called when the SWEP is deployed.
 function SWEP:Deploy()

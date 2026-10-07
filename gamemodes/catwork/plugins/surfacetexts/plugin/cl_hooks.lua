@@ -24,9 +24,10 @@ function cwSurfaceTexts:PostDrawOpaqueRenderables()
 		angle:RotateAroundAxis(angle:Right(), 270)
 
 		cam.Start3D2D(pos + (normal * 1.25), angle, 0.1 * scale)
+
 			if (style >= 5) then
 				local extraColor = Color(tool:GetClientInfo("extraColor") or "#FF000033")
-				draw.RoundedBox(0, -w / 2 - 32, -h / 2 - 16, w + 64, h + 32, ColorAlpha(extraColor, 40))	
+				draw.RoundedBox(0, -w / 2 - 32, -h / 2 - 16, w + 64, h + 32, ColorAlpha(extraColor, 40))
 			end
 
 			draw.SimpleText(text, font, -w / 2, -h / 2, ColorAlpha(color, 60))
@@ -62,6 +63,7 @@ function cwSurfaceTexts:PostDrawOpaqueRenderables()
 
 		if (style >= 2) then
 			cam.Start3D2D(pos + (normal * 0.4), angle, 0.1 * scale)
+
 				if (style >= 5) then
 					local boxAlpha = backColor.a
 
@@ -75,6 +77,7 @@ function cwSurfaceTexts:PostDrawOpaqueRenderables()
 				if (style != 3) then
 					draw.SimpleText(text, font, posX, posY, ColorAlpha(textColor, math.Clamp(fadeAlpha, 0, 60)):Darken(30))
 				end
+
 			cam.End3D2D()
 		end
 

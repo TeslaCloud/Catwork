@@ -1,4 +1,4 @@
-﻿--[[
+--[[
 	mysql - 1.0.2
 	A simple MySQL wrapper for Garry's Mod.
 
@@ -110,15 +110,15 @@ function QUERY_CLASS:Select(fieldName)
 end
 
 function QUERY_CLASS:Insert(key, value)
-	self.insertList[#self.insertList + 1] = {"`"..key.."`", "\""..self:Escape(value).."\""}
+	self.insertList[#self.insertList + 1] = { "`"..key.."`", "\""..self:Escape(value).."\"" }
 end
 
 function QUERY_CLASS:Update(key, value)
-	self.updateList[#self.updateList + 1] = {"`"..key.."`", "\""..self:Escape(value).."\""}
+	self.updateList[#self.updateList + 1] = { "`"..key.."`", "\""..self:Escape(value).."\"" }
 end
 
 function QUERY_CLASS:Create(key, value)
-	self.createList[#self.createList + 1] = {"`"..key.."`", value}
+	self.createList[#self.createList + 1] = { "`"..key.."`", value }
 end
 
 function QUERY_CLASS:PrimaryKey(key)
@@ -134,7 +134,7 @@ function QUERY_CLASS:Offset(value)
 end
 
 local function BuildSelectQuery(queryObj)
-	local queryString = {"SELECT"}
+	local queryString = { "SELECT" }
 
 	if (!istable(queryObj.selectList) or #queryObj.selectList == 0) then
 		queryString[#queryString + 1] = " *"
@@ -168,7 +168,7 @@ local function BuildSelectQuery(queryObj)
 end
 
 local function BuildInsertQuery(queryObj)
-	local queryString = {"INSERT INTO"}
+	local queryString = { "INSERT INTO" }
 	local keyList = {}
 	local valueList = {}
 
@@ -195,7 +195,7 @@ local function BuildInsertQuery(queryObj)
 end
 
 local function BuildUpdateQuery(queryObj)
-	local queryString = {"UPDATE"}
+	local queryString = { "UPDATE" }
 
 	if (isstring(queryObj.tableName)) then
 		queryString[#queryString + 1] = " `"..queryObj.tableName.."`"
@@ -230,7 +230,7 @@ local function BuildUpdateQuery(queryObj)
 end
 
 local function BuildDeleteQuery(queryObj)
-	local queryString = {"DELETE FROM"}
+	local queryString = { "DELETE FROM" }
 
 	if (isstring(queryObj.tableName)) then
 		queryString[#queryString + 1] = " `"..queryObj.tableName.."`"
@@ -253,7 +253,7 @@ local function BuildDeleteQuery(queryObj)
 end
 
 local function BuildDropQuery(queryObj)
-	local queryString = {"DROP TABLE"}
+	local queryString = { "DROP TABLE" }
 
 	if (isstring(queryObj.tableName)) then
 		queryString[#queryString + 1] = " `"..queryObj.tableName.."`"
@@ -266,7 +266,7 @@ local function BuildDropQuery(queryObj)
 end
 
 local function BuildTruncateQuery(queryObj)
-	local queryString = {"TRUNCATE TABLE"}
+	local queryString = { "TRUNCATE TABLE" }
 
 	if (isstring(queryObj.tableName)) then
 		queryString[#queryString + 1] = " `"..queryObj.tableName.."`"
@@ -279,7 +279,7 @@ local function BuildTruncateQuery(queryObj)
 end
 
 local function BuildCreateQuery(queryObj)
-	local queryString = {"CREATE TABLE IF NOT EXISTS"}
+	local queryString = { "CREATE TABLE IF NOT EXISTS" }
 
 	if (isstring(queryObj.tableName)) then
 		queryString[#queryString + 1] = " `"..queryObj.tableName.."`"
@@ -451,7 +451,7 @@ function cw.database:Connect(host, username, password, database, port, socket, f
 
 			self.connections[id].onConnectionFailed = function(database, errorText)
 				self:OnConnectionFailed(errorText)
-			end		
+			end
 
 			self.connections[id]:connect()
 		else
@@ -494,7 +494,7 @@ function cw.database:RawQuery(query, callback, flags, ...)
 		queryObj.onSuccess = function(queryObj, result)
 			if (callback) then
 				-- FFFFFFFUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU
-				local bStatus, value = pcall(callback, result)//, queryObj:status(), queryObj:lastInsert())
+				local bStatus, value = pcall(callback, result) // , queryObj:status(), queryObj:lastInsert())
 
 				if (!bStatus) then
 					ErrorNoHalt(string.format("[CW:Database] MySQL Callback Error!\n%s\n", value))
@@ -529,7 +529,7 @@ end
 -- A function to add a query to the queue.
 function cw.database:Queue(queryString, callback)
 	if (isstring(queryString)) then
-		QueueTable[#QueueTable + 1] = {queryString, callback}
+		QueueTable[#QueueTable + 1] = { queryString, callback }
 	end
 end
 
@@ -550,7 +550,7 @@ end
 function cw.database:Disconnect(id)
 	if (self.connection) then
 		if (self.Module == "tmysql4") then
-			return self.connection:Disconnect()	
+			return self.connection:Disconnect()
 		end
 	end
 
@@ -718,6 +718,7 @@ function cw.database:EasyWrite(tableName, where, data)
 	end
 
 	local query = self:Select(tableName)
+
 		if (istable(where[1])) then
 			for k, v in pairs(where) do
 				query:Where(v[1], v[2])
@@ -781,6 +782,7 @@ function cw.database:EasyRead(tableName, where, callback)
 	end
 
 	local query = self:Select(tableName)
+
 		if (istable(where[1])) then
 			for k, v in pairs(where) do
 				query:Where(v[1], v[2])

@@ -11,7 +11,7 @@ COMMAND.tip = "#Command_Charphysdesc_Description"
 COMMAND.text = "#Command_Charphysdesc_Syntax"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.arguments = 0
-COMMAND.alias = {"PhysDesc", "ChangeDesc", "ChangeDescription"}
+COMMAND.alias = { "PhysDesc", "ChangeDesc", "ChangeDescription" }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
@@ -33,4 +33,4 @@ function COMMAND:OnRun(player, arguments)
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

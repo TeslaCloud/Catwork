@@ -21,7 +21,7 @@ function cw.class:GetBuffer()
 end
 
 --[[ Set the __index meta function of the class. --]]
-local CLASS_TABLE = {__index = CLASS_TABLE}
+local CLASS_TABLE = { __index = CLASS_TABLE }
 
 -- A function to register a new class.
 function CLASS_TABLE:Register()

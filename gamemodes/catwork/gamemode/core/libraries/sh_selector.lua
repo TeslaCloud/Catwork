@@ -13,7 +13,7 @@ cw.selector.COLOR_GREEN = Color(150, 215, 50, 255)
 cw.selector.COLOR_RED = Color(215, 50, 50, 255)
 
 --[[ Set the __index meta function of the class. --]]
-local CLASS_TABLE = {__index = CLASS_TABLE}
+local CLASS_TABLE = { __index = CLASS_TABLE }
 
 -- A function to start creating a new selector.
 function cw.selector:New()
@@ -22,7 +22,7 @@ function cw.selector:New()
 	if (CLIENT) then
 		selector.paginated = {}
 		selector.isCreated = false
-		selector.pages = { {}}
+		selector.pages = { {} }
 		selector.page = 1
 		selector.key = 0
 	else
@@ -52,11 +52,11 @@ end
 
 -- A function to add text to the selector.
 function CLASS_TABLE:AddText(text, color)
-	if (text) then text = tostring(text); end
+	if (text) then text = tostring(text) end
 
 	if (CLIENT) then
 		if (#self.pages[self.page] == 6 and self.paginateText) then
-			self.page = self.page + 1; self.key = 1
+			self.page = self.page + 1 self.key = 1
 			self.pages[self.page] = {}
 		end
 
@@ -76,11 +76,11 @@ end
 
 -- A function to add an option to the selector.
 function CLASS_TABLE:AddOption(text, color)
-	if (text) then text = tostring(text); end
+	if (text) then text = tostring(text) end
 
 	if (CLIENT) then
 		if (self.key == 6) then
-			self.page = self.page + 1; self.key = 1
+			self.page = self.page + 1 self.key = 1
 			self.pages[self.page] = {}
 		else
 			self.key = self.key + 1
@@ -108,7 +108,7 @@ if (SERVER) then
 	-- A function to set the selector's player.
 	function CLASS_TABLE:SetPlayer(player)
 		if (type(player) != "table") then
-			self.player = {player}
+			self.player = { player }
 		else
 			self.player = player
 		end
@@ -154,9 +154,9 @@ else
 	{
 		font		= "Verdana",
 		size		= 14,
-		weight		= 700,
-		antialiase	= true,
-		additive 	= false
+		weight = 700,
+		antialiase = true,
+		additive = false
 	})
 
 	-- A function to select a selector's option by key.
@@ -203,21 +203,21 @@ else
 	-- A function to go to the selector's next page.
 	function CLASS_TABLE:NextPage()
 		if (self.pages[self.page + 1]) then
-			self.page = self.page + 1; self:Create()
+			self.page = self.page + 1 self:Create()
 		end
 	end
 
 	-- A function to go to the selector's previous page.
 	function CLASS_TABLE:PreviousPage()
 		if (self.pages[self.page - 1]) then
-			self.page = self.page - 1; self:Create()
+			self.page = self.page - 1 self:Create()
 		end
 	end
 
 	-- A function to create the selector.
 	function CLASS_TABLE:Create()
 		if (!self.isCreated) then
-			self.page = 1; self.isCreated = true
+			self.page = 1 self.isCreated = true
 		end
 
 		if (!self.paginated[self.page]) then
@@ -298,7 +298,7 @@ else
 		selector:SetCanExit(data.canExit)
 
 		selector:SetCallback(function(page, key, text)
-			netstream.Start("Selector", {page, key, text})
+			netstream.Start("Selector", { page, key, text })
 		end)
 
 		for k, v in pairs(data.data) do

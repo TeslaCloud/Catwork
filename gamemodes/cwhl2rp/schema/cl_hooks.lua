@@ -55,13 +55,14 @@ function Schema:PlayerBusinessRebuilt(panel, categories)
 
 			if (cw.player:HasFlags(cw.client, "x")) then
 				for k, v in pairs(permits) do
-					panel.customData = {information = v}
+					panel.customData = { information = v }
 
 					if (k == "generalGoods") then
 						panel.customData.description = L("#Business_GeneralGoodsDesc")
 						panel.customData.Callback = function()
 							cw.core:RunCommand("PermitBuy", "generalgoods")
 						end
+
 						panel.customData.model = "models/props_junk/cardboard_box004a.mdl"
 						panel.customData.name = "#Business_GeneralGoods"
 					else
@@ -71,6 +72,7 @@ function Schema:PlayerBusinessRebuilt(panel, categories)
 								panel.customData.Callback = function()
 									cw.core:RunCommand("PermitBuy", k2)
 								end
+
 								panel.customData.model = v2.model
 								panel.customData.name = v2.name
 
@@ -404,7 +406,7 @@ function Schema:PlayerAdjustColorModify(colorModify)
 
 	if (antiDepressants) then
 		if (antiDepressants > curTime) then
-			self.colorModify.brightness = math.Approach(self.colorModify.brightness, 0,interval)
+			self.colorModify.brightness = math.Approach(self.colorModify.brightness, 0, interval)
 			self.colorModify.contrast = math.Approach(self.colorModify.contrast, 1, interval)
 			self.colorModify.color = math.Approach(self.colorModify.color, 1, interval)
 		else

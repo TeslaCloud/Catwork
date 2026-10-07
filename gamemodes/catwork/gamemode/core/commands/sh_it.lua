@@ -22,7 +22,7 @@ function COMMAND:OnRun(player, arguments)
 		return
 	end
 
-	chatbox.AddText(nil, text, {position = player:GetPos(), textColor = Color("#3599D2"), filter = "player_events", icon = false})
+	chatbox.AddText(nil, text, { position = player:GetPos(), textColor = Color("#3599D2"), filter = "player_events", icon = false })
 end
 
 COMMAND:Register()

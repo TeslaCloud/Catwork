@@ -40,7 +40,7 @@ function cw.inventory:CalculateSpace(inventory)
 
 	for k, v in pairs(self:GetAsItemsList(inventory)) do
 		local spaceUsed = v.space
-		if (spaceUsed) then space = space + spaceUsed; end
+		if (spaceUsed) then space = space + spaceUsed end
 	end
 
 	return space
@@ -62,12 +62,15 @@ end
 -- A function to create a duplicate of an inventory.
 function cw.inventory:CreateDuplicate(inventory)
 	local duplicate = {}
+
 		for k, v in pairs(inventory) do
 			duplicate[k] = {}
+
 			for k2, v2 in pairs(v) do
 				duplicate[k][k2] = v2
 			end
 		end
+
 	return duplicate
 end
 
@@ -96,6 +99,7 @@ function cw.inventory:FindItemByID(inventory, uniqueID, itemID)
 		end
 	else
 		local firstValue = table.GetFirstValue(itemsList)
+
 		if (firstValue) then
 			return itemsList[firstValue.itemID]
 		end
@@ -149,9 +153,11 @@ end
 -- A function to get an inventory as an items list.
 function cw.inventory:GetAsItemsList(inventory)
 	local itemsList = {}
+
 		for k, v in pairs(inventory) do
 			table.Add(itemsList, v)
 		end
+
 	return itemsList
 end
 
@@ -162,6 +168,7 @@ end
 	@param Int ID of item looked up in the inventory to get the amount.
 	@returns Int Number of items in the inventory that match the ID.
 --]]
+
 function cw.inventory:GetItemCountByID(inventory, uniqueID)
 	local itemTable = item.FindByID(uniqueID)
 
@@ -187,6 +194,7 @@ end
 	@param Int Amount of items the entity needs to have in order to return true.
 	@returns Bool Whether the entity has a specific amount of items in its inventory or not.
 --]]
+
 function cw.inventory:HasItemCountByID(inventory, uniqueID, amount)
 	local amountInInventory = self:GetItemCountByID(inventory, uniqueID)
 
@@ -206,6 +214,7 @@ end
 -- A function to get whether an inventory is empty.
 function cw.inventory:IsEmpty(inventory)
 	if (!inventory) then return true end
+
 	local bEmpty = true
 
 	for k, v in pairs(inventory) do
@@ -233,7 +242,7 @@ end
 -- A function to remove a uniquen ID from a table.
 function cw.inventory:RemoveUniqueID(inventory, uniqueID, itemID)
 	local itemTable = item.FindByID(uniqueID)
-	if (itemID) then itemID = tonumber(itemID); end
+	if (itemID) then itemID = tonumber(itemID) end
 
 	if (itemTable and inventory[itemTable.uniqueID]) then
 		if (!itemID) then
@@ -432,7 +441,7 @@ else
 	function cw.inventory:SendUpdateByInstance(player, itemTable)
 		if (itemTable) then
 			netstream.Start(
-				player, "InvUpdate", {item.GetDefinition(itemTable, true)}
+				player, "InvUpdate", { item.GetDefinition(itemTable, true) }
 			)
 		end
 	end

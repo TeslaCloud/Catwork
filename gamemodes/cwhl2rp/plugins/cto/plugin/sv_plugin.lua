@@ -27,8 +27,8 @@ function cwCTO:SafelyPrepareCamera(combineCamera)
 	if (self.fixedCameras) then
 		if (!combineCamera:CreatedByMap()) then
 			-- Essentially statics the NPC so that it will load when the server restarts.
-			combineCamera:SetNetworkedString( "cw_Name", " " )
-			combineCamera:SetNetworkedString( "cw_Title", " " )
+			combineCamera:SetNetworkedString("cw_Name", " ")
+			combineCamera:SetNetworkedString("cw_Title", " ")
 		end
 	end
 end
@@ -72,7 +72,7 @@ function cwCTO:HalfSecond()
 							violations[#violations + 1] = self.VIOLATION_CROUCHING
 						end
 
-						if (player:GetRagdollState() ~= RAGDOLL_NONE and player:GetRagdollState() ~= RAGDOLL_RESET) then
+						if (player:GetRagdollState() != RAGDOLL_NONE and player:GetRagdollState() != RAGDOLL_RESET) then
 							violations[#violations + 1] = self.VIOLATION_FALLEN_OVER
 						end
 
@@ -95,7 +95,7 @@ function cwCTO:HalfSecond()
 
 	local players = {}
 
-	for k, v in ipairs( _player.GetAll() ) do
+	for k, v in ipairs(_player.GetAll()) do
 		if (Schema:PlayerIsCombine(v) and !v:GetSharedVar("IsBiosignalGone")) then
 			players[#players + 1] = v
 		end
@@ -113,9 +113,9 @@ function cwCTO:DoPostBiosignalLoss(player)
 
 	-- Alert all other units.
 	Schema:AddCombineDisplayLine(L("CTO_Display_DownloadingLostBiosignal"), Color(255, 255, 255, 255))
-	--Schema:AddCombineDisplayLine("WARNING! Biosignal lost for protection team unit "..digits.." at "..location.."...", Color(255, 0, 0, 255))
-	for k, v in ipairs( _player.GetAll() ) do
-		if (Schema:PlayerIsCombine(v) and v ~= player and !v:GetSharedVar("IsBiosignalGone")) then
+	-- Schema:AddCombineDisplayLine("WARNING! Biosignal lost for protection team unit "..digits.." at "..location.."...", Color(255, 0, 0, 255))
+	for k, v in ipairs(_player.GetAll()) do
+		if (Schema:PlayerIsCombine(v) and v != player and !v:GetSharedVar("IsBiosignalGone")) then
 			v:EmitSound("npc/metropolice/vo/on"..math.random(1, 2)..".wav")
 			v:EmitSound("npc/overwatch/radiovoice/lostbiosignalforunit.wav")
 		end
@@ -135,12 +135,12 @@ function cwCTO:DoPostBiosignalLoss(player)
 			["9"] = "nine"
 		}
 
-		for k, v in ipairs( _player.GetAll() ) do
+		for k, v in ipairs(_player.GetAll()) do
 			for i = 1, string.len(digits) do
 				timer.Simple(2.1 + ((i - 1) * 0.5), function()
 					local voNum = englishDigits[string.sub(digits, i, i)]
 
-					if (Schema:PlayerIsCombine(v) and v ~= player and !v:GetSharedVar("IsBiosignalGone")) then
+					if (Schema:PlayerIsCombine(v) and v != player and !v:GetSharedVar("IsBiosignalGone")) then
 						v:EmitSound("npc/overwatch/radiovoice/"..voNum..".wav")
 					end
 				end)
@@ -148,8 +148,8 @@ function cwCTO:DoPostBiosignalLoss(player)
 		end
 
 		timer.Simple(2.1 + (string.len(digits) * 0.5), function()
-			for k, v in ipairs( _player.GetAll() ) do
-				if (Schema:PlayerIsCombine(v) and v ~= player and !v:GetSharedVar("IsBiosignalGone")) then
+			for k, v in ipairs(_player.GetAll()) do
+				if (Schema:PlayerIsCombine(v) and v != player and !v:GetSharedVar("IsBiosignalGone")) then
 					v:EmitSound("npc/overwatch/radiovoice/remainingunitscontain.wav")
 					timer.Simple(1.4, function()
 						v:EmitSound("npc/metropolice/vo/off"..math.random(1, 4)..".wav")
@@ -173,7 +173,6 @@ function cwCTO:SetPlayerBiosignal(player, bEnable)
 				player:SetSharedVar("IsBiosignalGone", false)
 
 				timer.Simple(0.1, function()
-
 					local location = Schema:PlayerGetLocation(player)
 
 					-- Alert this unit.
@@ -185,7 +184,7 @@ function cwCTO:SetPlayerBiosignal(player, bEnable)
 					Schema:AddCombineDisplayLine(L("CTO_Display_DownloadingFoundBiosignal"), Color(255, 255, 255, 255))
 					Schema:AddCombineDisplayLine(L("CTO_Display_BiosignalFound", digits, location), Color(0, 255, 0, 255))
 
-					for k, v in ipairs( _player.GetAll() ) do
+					for k, v in ipairs(_player.GetAll()) do
 						if (Schema:PlayerIsCombine(v) and !v:GetSharedVar("IsBiosignalGone")) then
 							v:EmitSound("npc/metropolice/vo/on"..math.random(1, 2)..".wav")
 							v:EmitSound("npc/overwatch/radiovoice/engagingteamisnoncohesive.wav")
@@ -193,13 +192,12 @@ function cwCTO:SetPlayerBiosignal(player, bEnable)
 					end
 
 					timer.Simple(1.5, function()
-						for k, v in ipairs( _player.GetAll() ) do
+						for k, v in ipairs(_player.GetAll()) do
 							if (Schema:PlayerIsCombine(v) and !v:GetSharedVar("IsBiosignalGone")) then
 								v:EmitSound("npc/metropolice/vo/off"..math.random(1, 4)..".wav")
 							end
 						end
 					end)
-
 				end)
 			else
 				-- Alert this unit.
@@ -220,7 +218,7 @@ function cwCTO:PostPlayerSpawn(player, lightSpawn, changeClass, firstSpawn)
 	player:SetSharedVar("IsBiosignalGone", false)
 
 	if (player:IsCombine()) then
-		netstream.Start(player, "RecalculateHUDObjectives", {cwCTO.socioStatus, Schema.combineObjectives})
+		netstream.Start(player, "RecalculateHUDObjectives", { cwCTO.socioStatus, Schema.combineObjectives })
 	end
 
 	if (!self.fixedCameras) then
@@ -232,8 +230,8 @@ function cwCTO:PostPlayerSpawn(player, lightSpawn, changeClass, firstSpawn)
 
 			if (!combineCamera:CreatedByMap()) then
 				-- Essentially statics the NPC so that it will load when the server restarts.
-				combineCamera:SetNetworkedString( "cw_Name", " " )
-				combineCamera:SetNetworkedString( "cw_Title", " " )
+				combineCamera:SetNetworkedString("cw_Name", " ")
+				combineCamera:SetNetworkedString("cw_Title", " ")
 			end
 		end
 
@@ -244,7 +242,7 @@ end
 function cwCTO:DispatchRequestSignal(player, text)
 	local players = {}
 
-	for k, v in ipairs( _player.GetAll() ) do
+	for k, v in ipairs(_player.GetAll()) do
 		if (Schema:PlayerIsCombine(v) and !v:GetSharedVar("IsBiosignalGone")) then
 			players[#players + 1] = v
 
@@ -254,14 +252,14 @@ function cwCTO:DispatchRequestSignal(player, text)
 	end
 
 	timer.Simple(1.8, function()
-		for k, v in ipairs( _player.GetAll() ) do
+		for k, v in ipairs(_player.GetAll()) do
 			if (Schema:PlayerIsCombine(v) and !v:GetSharedVar("IsBiosignalGone")) then
 				v:EmitSound("npc/metropolice/vo/off"..math.random(1, 4)..".wav")
 			end
 		end
 	end)
 
-	netstream.Start(players, "CombineRequestSignal", {player, text})
+	netstream.Start(players, "CombineRequestSignal", { player, text })
 end
 
 -- Called when a player has been ragdolled.
@@ -279,7 +277,7 @@ end
 
 -- Called when Clockwork has loaded all of the entities.
 function cwCTO:InitPostEntity()
-	for k, v in pairs( ents.FindByClass("npc_combine_camera") ) do
+	for k, v in pairs(ents.FindByClass("npc_combine_camera")) do
 		if (self.cameraData[v] == nil) then
 			self:SafelyPrepareCamera(v)
 		end

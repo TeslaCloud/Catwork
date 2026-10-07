@@ -149,7 +149,7 @@ end
 function PANEL:ClearNodes()
 	if (self.treeNode.Items) then
 		for k, v in pairs(self.treeNode.Items) do
-			if (IsValid(v)) then v:Remove(); end
+			if (IsValid(v)) then v:Remove() end
 		end
 	end
 
@@ -235,4 +235,4 @@ function PANEL:Think()
 	self:InvalidateLayout(true)
 end
 
-vgui.Register("cwDirectory", PANEL, "EditablePanel");
+vgui.Register("cwDirectory", PANEL, "EditablePanel")

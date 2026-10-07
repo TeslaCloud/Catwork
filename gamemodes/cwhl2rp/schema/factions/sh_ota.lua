@@ -13,8 +13,8 @@ FACTION.whitelist = true
 FACTION.material = "halfliferp/factions/ota"
 FACTION.maximumAttributePoints = 70
 FACTION.models = {
-	female = {"models/combine_soldier.mdl"},
-	male = {"models/combine_soldier.mdl"}
+	female = { "models/combine_soldier.mdl" },
+	male = { "models/combine_soldier.mdl" }
 }
 
 -- Called when a player's name should be assigned for the faction.
@@ -48,4 +48,4 @@ function FACTION:OnTransferred(player, faction, name)
 	end
 end
 
-FACTION_OTA = FACTION:Register();
+FACTION_OTA = FACTION:Register()

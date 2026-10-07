@@ -7,15 +7,15 @@ BLUEPRINT.category = "#Craft_Category_Clothing"
 BLUEPRINT.description = "#Blueprint_BlueprintCitUniform2_Description"
 BLUEPRINT.required = {}
 BLUEPRINT.updatt = {
-	{"cloth", 35}
+	{ "cloth", 35 }
 }
 BLUEPRINT.reqatt = {
-	{"cloth", 10}
+	{ "cloth", 10 }
 }
 BLUEPRINT.recipe = {
-	{"cloth", 4},
+	{ "cloth", 4 }
 }
 BLUEPRINT.finish = {
-	{"cit_uniform_2", 1}
+	{ "cit_uniform_2", 1 }
 }
-BLUEPRINT:Register();
+BLUEPRINT:Register()

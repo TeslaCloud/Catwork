@@ -8,14 +8,14 @@ BLUEPRINT.description = "#Blueprint_BlueprintScrapmetal_Description"
 BLUEPRINT.craftplace = "cw_craft_furnace"
 BLUEPRINT.reqatt = {}
 BLUEPRINT.updatt = {
-	{"rem", 7}
+	{ "rem", 7 }
 }
 BLUEPRINT.required = {}
 BLUEPRINT.recipe = {
-	{"empty_soda_can", 5},
-	{"charcoal", 1}
+	{ "empty_soda_can", 5 },
+	{ "charcoal", 1 }
 }
 BLUEPRINT.finish = {
-	{"scrap_metal", 1}
+	{ "scrap_metal", 1 }
 }
-BLUEPRINT:Register();
+BLUEPRINT:Register()

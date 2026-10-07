@@ -9,7 +9,7 @@ COMMAND.tip = "#Command_Charsetskin_Description"
 COMMAND.text = "#Command_Charsetskin_Syntax"
 COMMAND.access = "a"
 COMMAND.arguments = 2
-COMMAND.alias = {"SetSkin", "CharSkin"}
+COMMAND.alias = { "SetSkin", "CharSkin" }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
@@ -24,4 +24,4 @@ function COMMAND:OnRun(player, arguments)
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

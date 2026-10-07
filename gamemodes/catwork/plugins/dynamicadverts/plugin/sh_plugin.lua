@@ -18,4 +18,4 @@ util.Include("sv_plugin.lua")
 util.Include("sv_hooks.lua")
 util.Include("cl_hooks.lua")
 
-cwDynamicAdverts.storedList = cwDynamicAdverts.storedList or {};
+cwDynamicAdverts.storedList = cwDynamicAdverts.storedList or {}

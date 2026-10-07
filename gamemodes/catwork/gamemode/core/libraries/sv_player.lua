@@ -7,9 +7,9 @@
 --]]
 
 if (!cw.player) then include("sh_player.lua") end
-if (!cw.database) then include("sv_database.lua"); end
-if (!chatbox) then include("sv_chatbox.lua"); end
-if (!cw.hint) then include("sv_hint.lua"); end
+if (!cw.database) then include("sv_database.lua") end
+if (!chatbox) then include("sv_chatbox.lua") end
+if (!cw.hint) then include("sv_hint.lua") end
 
 local cwHint = cw.hint
 local cwDatabase = cw.database
@@ -342,7 +342,7 @@ function cw.player:CreateCharacterFromData(player, data)
 									player:SteamName().." has created a "..info.faction.." character called '"..info.name.."'."
 								)
 
-								netstream.Start(player, "CharacterFinish", {bSuccess = true})
+								netstream.Start(player, "CharacterFinish", { bSuccess = true })
 
 								player.cwIsCreatingChar = nil
 
@@ -355,6 +355,7 @@ function cw.player:CreateCharacterFromData(player, data)
 						)
 					end
 				end)
+
 			queryObj:Execute()
 		else
 			return self:SetCreateFault(player, L("CharCreation_CannotCreateMoreChars"))
@@ -422,7 +423,7 @@ function cw.player:StripGear(player)
 	if (!player.cwGearTab) then return end
 
 	for k, v in pairs(player.cwGearTab) do
-		if (IsValid(v)) then v:Remove(); end
+		if (IsValid(v)) then v:Remove() end
 	end
 
 	player.cwGearTab = {}
@@ -540,7 +541,7 @@ function cw.player:SetAction(player, action, duration, priority, Callback)
 		player:SetNetVar("ActName", action)
 
 		if (priority) then
-			player.cwAction = {action, priority}
+			player.cwAction = { action, priority }
 		else
 			player.cwAction = nil
 		end
@@ -578,7 +579,7 @@ end
 
 -- A function to run a Clockwork command on a player.
 function cw.player:RunClockworkCommand(player, command, ...)
-	return cw.command:ConsoleCommand(player, "cwCmd", {command, ...})
+	return cw.command:ConsoleCommand(player, "cwCmd", { command, ... })
 end
 
 -- A function to get a player's wages name.
@@ -608,7 +609,7 @@ function cw.player:CanSeePosition(player, position, iAllowance, tIgnoreEnts, tar
 	trace.mask = CONTENTS_SOLID + CONTENTS_MOVEABLE + CONTENTS_OPAQUE + CONTENTS_DEBRIS + CONTENTS_HITBOX + CONTENTS_MONSTER
 	trace.start = player:GetShootPos()
 	trace.endpos = position
-	trace.filter = {player, targetEnt}
+	trace.filter = { player, targetEnt }
 
 	if (tIgnoreEnts) then
 		if (type(tIgnoreEnts) == "table") then
@@ -841,7 +842,7 @@ end
 
 -- A function to get whether a player is drunk.
 function cw.player:GetDrunk(player)
-	if (player.cwDrunkTab) then return #player.cwDrunkTab; end
+	if (player.cwDrunkTab) then return #player.cwDrunkTab end
 end
 
 -- A function to set whether a player is drunk.
@@ -851,7 +852,7 @@ function cw.player:SetDrunk(player, expire)
 	if (expire == false) then
 		player.cwDrunkTab = nil
 	elseif (!player.cwDrunkTab) then
-		player.cwDrunkTab = {curTime + expire}
+		player.cwDrunkTab = { curTime + expire }
 	else
 		player.cwDrunkTab[#player.cwDrunkTab + 1] = curTime + expire
 	end
@@ -921,7 +922,7 @@ function cw.player:SetWhitelisted(player, faction, isWhitelisted)
 	end
 
 	netstream.Start(
-		player, "SetWhitelisted", {faction, isWhitelisted}
+		player, "SetWhitelisted", { faction, isWhitelisted }
 	)
 end
 
@@ -950,11 +951,11 @@ function cw.player:ConditionTimer(player, delay, Condition, Callback)
 
 		if (Condition()) then
 			if (CurTime() >= realDelay) then
-				Callback(true); player.cwConditionTimer = nil
+				Callback(true) player.cwConditionTimer = nil
 				timer.Remove("CondTimer"..uniqueID)
 			end
 		else
-			Callback(false); player.cwConditionTimer = nil
+			Callback(false) player.cwConditionTimer = nil
 			timer.Remove("CondTimer"..uniqueID)
 		end
 	end)
@@ -990,11 +991,11 @@ function cw.player:EntityConditionTimer(player, target, entity, delay, distance,
 		and traceLine.Entity:GetPos():Distance(player:GetShootPos()) <= distance
 		and Condition()) then
 			if (CurTime() >= realDelay) then
-				Callback(true); player.cwConditionEntTimer = nil
+				Callback(true) player.cwConditionEntTimer = nil
 				timer.Remove("EntityCondTimer"..uniqueID)
 			end
 		else
-			Callback(false); player.cwConditionEntTimer = nil
+			Callback(false) player.cwConditionEntTimer = nil
 			timer.Remove("EntityCondTimer"..uniqueID)
 		end
 	end)
@@ -1100,7 +1101,7 @@ end
 
 -- A function to play a sound to a player.
 function cw.player:PlaySound(player, sound)
-	netstream.Start(player, "PlaySound",sound)
+	netstream.Start(player, "PlaySound", sound)
 end
 
 -- A function to get a player's maximum characters.
@@ -1140,7 +1141,7 @@ function cw.player:SetSafePosition(player, position, filter)
 		player:SetPos(player:GetPos() + Vector(0, 0, 16))
 
 		if (!istable(filter) and !isfunction(filter)) then
-			filter = {filter}
+			filter = { filter }
 		end
 
 		if (istable(filter)) then
@@ -1479,7 +1480,7 @@ function cw.player:SayRadio(player, text, check, noEavesdrop)
 	local eavesdroppers = {}
 	local listeners = {}
 	local canRadio = true
-	local info = {listeners = {}, noEavesdrop = noEavesdrop, text = text}
+	local info = { listeners = {}, noEavesdrop = noEavesdrop, text = text }
 
 	hook.Run("PlayerAdjustRadioInfo", player, info)
 
@@ -1506,10 +1507,10 @@ function cw.player:SayRadio(player, text, check, noEavesdrop)
 	end
 
 	if (canRadio) then
-		info = chatbox.AddText(listeners, "\""..info.text.."\"", {suffix = " #Suffix_Radio ", sender = player, isPlayerMessage = true, filter = "ic", radius = 0, textColor = Color(10, 200, 10, 255), data = {radio = true}})
+		info = chatbox.AddText(listeners, "\""..info.text.."\"", { suffix = " #Suffix_Radio ", sender = player, isPlayerMessage = true, filter = "ic", radius = 0, textColor = Color(10, 200, 10, 255), data = { radio = true } })
 
 		if (info and IsValid(info.sender)) then
-			chatbox.AddText(eavesdroppers, info.text, {suffix = " #Suffix_Radio ", sender = player, isPlayerMessage = true, filter = "ic", radius = 0, textColor = Color(255, 255, 200, 255), data = {radio = true}})
+			chatbox.AddText(eavesdroppers, info.text, { suffix = " #Suffix_Radio ", sender = player, isPlayerMessage = true, filter = "ic", radius = 0, textColor = Color(255, 255, 200, 255), data = { radio = true } })
 
 			hook.Run("PlayerRadioUsed", player, info.text, listeners, eavesdroppers)
 		end
@@ -1608,7 +1609,7 @@ function cw.player:SetCreateFault(player, fault)
 		fault = L("CharFault_Unknown")
 	end
 
-	netstream.Start(player, "CharacterFinish", {bSuccess = false, fault = fault})
+	netstream.Start(player, "CharacterFinish", { bSuccess = false, fault = fault })
 end
 
 -- A function to force a player to delete a character.
@@ -1744,7 +1745,7 @@ end
 
 -- A function to format text based on a relationship.
 function cw.player:FormatRecognisedText(player, text, ...)
-	local arguments = {...}
+	local arguments = { ... }
 
 	for i = 1, #arguments do
 		if (string.find(text, "%%s") and IsValid(arguments[i])) then
@@ -2155,6 +2156,7 @@ end
 	@param String The text that will be sent to each admin.
 	@param String The name of the icon that will be used in the message, can be nil.
 --]]
+
 function cw.player:NotifyAdmins(adminLevel, text, icon)
 	for k, v in pairs(player.GetAll()) do
 		if (adminLevel == "operator" or adminLevel == "o") then
@@ -2181,20 +2183,20 @@ function cw.player:Notify(player, text, class, icon)
 		end
 	elseif (class == true) then
 		if (icon) then
-			local data = {icon = icon}
+			local data = { icon = icon }
 			chatbox.AddText(player, text, data)
 		else
 			chatbox.AddText(player, text)
 		end
 	elseif (!class) then
 		if (icon) then
-			local data = {icon = icon}
+			local data = { icon = icon }
 			chatbox.AddText(player, text, data)
 		else
 			chatbox.AddText(player, text)
 		end
 	else
-		netstream.Start(player, "Notification", {text = text, class = class})
+		netstream.Start(player, "Notification", { text = text, class = class })
 	end
 end
 
@@ -2213,12 +2215,12 @@ end
 
 -- A function to give ammo to a player from a table.
 function cw.player:GiveAmmo(player, ammo)
-	for k, v in pairs(ammo) do player:GiveAmmo(v, k); end
+	for k, v in pairs(ammo) do player:GiveAmmo(v, k) end
 end
 
 -- A function to set a player's ammo list from a table.
 function cw.player:SetAmmo(player, ammo)
-	for k, v in pairs(ammo) do player:SetAmmo(v, k); end
+	for k, v in pairs(ammo) do player:SetAmmo(v, k) end
 end
 
 -- A function to get a player's ammo list as a table.
@@ -2724,7 +2726,7 @@ function cw.player:LightSpawn(player, weapons, ammo, bForceReturn)
 	local health = player:Health()
 	local armor = player:Armor()
 	local model = player:GetModel()
-	local color = player:GetColor();	
+	local color = player:GetColor()
 	local skin = player:GetSkin()
 
 	if (ammo) then
@@ -2821,6 +2823,7 @@ function cw.player:GetCharacters(player, Callback)
 				Callback()
 			end
 		end)
+
 	queryObj:Execute()
 end
 
@@ -3133,6 +3136,7 @@ function cw.player:LoadData(player, Callback)
 				PLAYER = nil
 			end
 		end)
+
 	queryObj:Execute()
 
 	timer.Simple(2, function()
@@ -3205,6 +3209,7 @@ function cw.player:SaveCharacter(player, bCreate, character, Callback)
 		end
 
 		local queryObj = cwDatabase:Insert(charactersTable)
+
 			for k, v in pairs(character) do
 				local tableKey = "_"..cw.core:SetCamelCase(k, false)
 
@@ -3238,6 +3243,7 @@ function cw.player:SaveCharacter(player, bCreate, character, Callback)
 					end
 				end)
 			end
+
 		queryObj:Execute()
 	elseif (player:HasInitialized()) then
 		local currentCharacter = player:GetCharacter()
@@ -3276,6 +3282,7 @@ function cw.player:SaveCharacter(player, bCreate, character, Callback)
 				queryObj:Update("_Ammo", util.TableToJSON(character.ammo))
 				queryObj:Update("_Data", util.TableToJSON(character.data))
 			end
+
 		queryObj:Execute()
 
 		--[[ Save the player's data after pushing the update. --]]

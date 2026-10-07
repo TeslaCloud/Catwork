@@ -19,6 +19,7 @@ cw.character.creationPanels = cw.character.creationPanels or {}
 	@param String The name of the VGUI panel to use.
 	@param Function A callback to get the visibility of the process. Return false to hide.
 --]]
+
 function cw.character:RegisterCreationPanel(friendlyName, vguiName, index, Condition)
 	-- Prevent duplicates from being created on AutoRefresh.
 	for k, v in ipairs(cw.character.creationPanels) do
@@ -47,6 +48,7 @@ end
 	@codebase Client
 	@details Used to remove a character creation panel from use.
 --]]
+
 function cw.character:RemoveCreationPanel(name)
 	local removed = false
 	local index
@@ -74,6 +76,7 @@ end
 	@details Get the previous creation panel.
 	@returns Table The previous creation panel info.
 --]]
+
 function cw.character:GetPreviousCreationPanel()
 	local info = self:GetCreationInfo()
 	local index = info.index - 1
@@ -95,6 +98,7 @@ end
 	@details Get the next creation panel.
 	@returns Table The next creation panel info.
 --]]
+
 function cw.character:GetNextCreationPanel()
 	local info = self:GetCreationInfo()
 	local index = info.index + 1
@@ -115,8 +119,9 @@ end
 	@codebase Client
 	@details Reset the active character creation info.
 --]]
+
 function cw.character:ResetCreationInfo()
-	self:GetPanel().info = {index = 0}
+	self:GetPanel().info = { index = 0 }
 end
 
 --[[
@@ -124,6 +129,7 @@ end
 	@details Get the active character creation info.
 	@returns Table The active character creation info.
 --]]
+
 function cw.character:GetCreationInfo()
 	return self:GetPanel().info
 end
@@ -133,6 +139,7 @@ end
 	@details Get the creation progress as a percentage.
 	@returns Float A percentage of the creation progress.
 --]]
+
 function cw.character:GetCreationProgress()
 	return (100 / #self.creationPanels) * self:GetCreationInfo().index
 end
@@ -275,7 +282,7 @@ function cw.character:RefreshPanelList()
 
 		for k, v in pairs(self:GetAll()) do
 			local faction = hook.Run("GetPlayerCharacterScreenFaction", v)
-			if (!factionScreens[faction]) then factionScreens[faction] = {}; end
+			if (!factionScreens[faction]) then factionScreens[faction] = {} end
 
 			factionScreens[faction][#factionScreens[faction] + 1] = v
 		end
@@ -285,7 +292,7 @@ function cw.character:RefreshPanelList()
 				return hook.Run("CharacterScreenSortFactionCharacters", k, a, b)
 			end)
 
-			factionList[#factionList + 1] = {name = k, characters = v}
+			factionList[#factionList + 1] = { name = k, characters = v }
 		end
 
 		table.sort(factionList, function(a, b)

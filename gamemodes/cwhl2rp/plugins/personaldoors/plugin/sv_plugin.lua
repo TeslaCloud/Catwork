@@ -11,7 +11,7 @@ function PLUGIN:LoadDoorData()
 	self.personalDoors = {}
 
 	local positions = {}
-	local personalDoors = cw.core:RestoreSchemaData("plugins/personaldoors/" .. game.GetMap())
+	local personalDoors = cw.core:RestoreSchemaData("plugins/personaldoors/"..game.GetMap())
 
 	for k, v in pairs(ents.GetAll()) do
 		if (IsValid(v)) then
@@ -35,7 +35,7 @@ function PLUGIN:LoadDoorData()
 
 					table.insert(owners, owningPerson)
 
-					if(not entity._OwningPersons)then
+					if(!entity._OwningPersons)then
 						entity._OwningPersons = {}
 					end
 

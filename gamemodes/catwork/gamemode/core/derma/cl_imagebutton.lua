@@ -86,9 +86,11 @@ function PANEL:FadeOut(speed, Callback)
 
 		if (animation.Finished) then
 			panel:SetVisible(false)
+
 				if (Callback) then
 					Callback()
 				end
+
 			self.animation = nil
 		end
 	end)

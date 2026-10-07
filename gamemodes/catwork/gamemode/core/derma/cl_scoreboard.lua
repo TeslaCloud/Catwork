@@ -51,7 +51,7 @@ function PANEL:Rebuild()
 		end)
 
 		if (#v > 0) then
-			classes[#classes + 1] = {name = k, players = v}
+			classes[#classes + 1] = { name = k, players = v }
 		end
 	end
 
@@ -76,7 +76,7 @@ function PANEL:Rebuild()
 			local classColor = nil
 
 			if (classData) then
-				--classColor = classData.color
+				-- classColor = classData.color
 			end
 
 			local characterForm = vgui.Create("cwBasicForm", self)
@@ -130,7 +130,7 @@ function PANEL:OnMenuOpened()
 end
 
 -- Called when the panel is selected.
-function PANEL:OnSelected() self:Rebuild(); end
+function PANEL:OnSelected() self:Rebuild() end
 
 -- Called when the layout should be performed.
 function PANEL:PerformLayout(w, h) end
@@ -266,4 +266,4 @@ function PANEL:PerformLayout(w, h)
 	self.factionLabel:SetPos(92, self.nameLabel.y + self.nameLabel:GetTall() + 2)
 end
 
-vgui.Register("cwScoreboardItem", PANEL, "DPanel");
+vgui.Register("cwScoreboardItem", PANEL, "DPanel")

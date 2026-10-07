@@ -10,4 +10,3 @@ ITEM.description = "#Item_WoodenParts_Description"
 
 -- Called when a player drops the item.
 function ITEM:OnDrop(player, position) end
-

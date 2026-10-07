@@ -30,8 +30,8 @@ function cwCTO:UpdateBiosignalLocations()
 
 	-- Add active biosignals, update camera data.
 	if (!cw.client:GetSharedVar("IsBiosignalGone")) then
-		for _, v in pairs( _player.GetAll() ) do
-			if (Schema:PlayerIsCombine(v) and v ~= cw.client and !v:GetSharedVar("IsBiosignalGone") and v:Alive()) then
+		for _, v in pairs(_player.GetAll()) do
+			if (Schema:PlayerIsCombine(v) and v != cw.client and !v:GetSharedVar("IsBiosignalGone") and v:Alive()) then
 				local physBone = v:LookupBone("ValveBiped.Bip01_Head1")
 				local position
 
@@ -82,31 +82,31 @@ function cwCTO:HUDPaintForeground()
 				local toScreen = data.pos:ToScreen()
 
 				if (toScreen.visible) then
-					local text = "<:: " .. data.digits .. " ::>"
+					local text = "<:: "..data.digits.." ::>"
 					local color = _team.GetColor(unit:Team()) or colorWhite
 
 					local showDetail = (Vector(toScreen.x, toScreen.y):Distance(halfScrVector) <= lowDetailBox)
 
 					if (showDetail) then
-						text = "<:: " .. unit:Name() .. " ::>"
+						text = "<:: "..unit:Name().." ::>"
 					end
 
 					local timeSince = math.Round(curTime - data.time, 2)
-					timeSince = timeSince .. string.rep(0, (string.len(math.floor(timeSince)) + 3) - string.len(timeSince))
+					timeSince = timeSince..string.rep(0, (string.len(math.floor(timeSince)) + 3) - string.len(timeSince))
 
 					if (data.isLost) then
-						local text2 = "<:: " .. L("#CTO_HUD_Lost:" .. timeSince .. ";") .. " ::>"
+						local text2 = "<:: "..L("#CTO_HUD_Lost:"..timeSince..";").." ::>"
 
 						local timeUntil = math.Round((120 - (curTime - data.time)), 2)
-						timeUntil = timeUntil .. string.rep(0, (string.len(math.floor(timeUntil)) + 3) - string.len(timeUntil))
+						timeUntil = timeUntil..string.rep(0, (string.len(math.floor(timeUntil)) + 3) - string.len(timeUntil))
 
 						draw.SimpleText(text, "BudgetLabel", toScreen.x, toScreen.y, color, 1, 1)
 						toScreen.y = toScreen.y + fontHeight
 						draw.SimpleText(text2, "BudgetLabel", toScreen.x, toScreen.y, colorRed, 1, 1)
 						toScreen.y = toScreen.y + fontHeight
-						draw.SimpleText("<:: " .. L("#CTO_HUD_Removal:" .. timeUntil .. ";") .. " ::>", "BudgetLabel", toScreen.x, toScreen.y, colorRed, 1, 1)
+						draw.SimpleText("<:: "..L("#CTO_HUD_Removal:"..timeUntil..";").." ::>", "BudgetLabel", toScreen.x, toScreen.y, colorRed, 1, 1)
 					else
-						local text2 = "<:: " .. L("#CTO_HUD_Received:" .. timeSince .. ";") .. " ::>"
+						local text2 = "<:: "..L("#CTO_HUD_Received:"..timeSince..";").." ::>"
 						draw.SimpleText(text, "BudgetLabel", toScreen.x, toScreen.y, color, 1, 1)
 						toScreen.y = toScreen.y + fontHeight
 						draw.SimpleText(showDetail and text2 or lowDetailText, "BudgetLabel", toScreen.x, toScreen.y, colorWhite, 1, 1)
@@ -127,18 +127,18 @@ function cwCTO:HUDPaintForeground()
 				local toScreen = data.pos:ToScreen()
 
 				if (toScreen.visible) then
-					local text2 = "<:: " .. data.text .. " ::>"
+					local text2 = "<:: "..data.text.." ::>"
 
 					local showDetail = (Vector(toScreen.x, toScreen.y):Distance(halfScrVector) <= lowDetailBox)
 
 					local timeUntil = math.Round((60 - (curTime - data.time)), 2)
-					timeUntil = timeUntil .. string.rep(0, (string.len(math.floor(timeUntil)) + 3) - string.len(timeUntil))
+					timeUntil = timeUntil..string.rep(0, (string.len(math.floor(timeUntil)) + 3) - string.len(timeUntil))
 
 					draw.SimpleText("<:: #CTO_HUD_Request ::>", "BudgetLabel", toScreen.x, toScreen.y, requestColor, 1, 1)
 					toScreen.y = toScreen.y + fontHeight
 					draw.SimpleText(showDetail and text2 or lowDetailText, "BudgetLabel", toScreen.x, toScreen.y, colorWhite, 1, 1)
 					toScreen.y = toScreen.y + fontHeight
-					draw.SimpleText("<:: " .. L("#CTO_HUD_Removal:" .. timeUntil .. ";") .. " ::>", "BudgetLabel", toScreen.x, toScreen.y, colorRed, 1, 1)
+					draw.SimpleText("<:: "..L("#CTO_HUD_Removal:"..timeUntil..";").." ::>", "BudgetLabel", toScreen.x, toScreen.y, colorRed, 1, 1)
 				end
 			end
 		end
@@ -148,13 +148,13 @@ function cwCTO:HUDPaintForeground()
 				local toScreen = combineCamera:GetPos():ToScreen()
 
 				if (toScreen.visible) then
-					local text1 = "<:: C-i" .. combineCamera:EntIndex() .. " ::>"
+					local text1 = "<:: C-i"..combineCamera:EntIndex().." ::>"
 					local showDetail = (Vector(toScreen.x, toScreen.y):Distance(halfScrVector) <= lowDetailBox)
 
 					draw.SimpleText(showDetail and text1 or lowDetailText, "BudgetLabel", toScreen.x, toScreen.y, colorObject, 1, 1)
 
 					if (type(data) == "table") then
-						local text2 = "<:: " .. L("#CTO_HUD_InView:" .. table.Count(data) .. ";") .. " ::>"
+						local text2 = "<:: "..L("#CTO_HUD_InView:"..table.Count(data)..";").." ::>"
 
 						toScreen.y = toScreen.y + fontHeight
 						draw.SimpleText(showDetail and text2 or lowDetailText, "BudgetLabel", toScreen.x, toScreen.y, colorWhite, 1, 1)
@@ -200,11 +200,11 @@ function cwCTO:HUDPaintForeground()
 			maximumDistance = maximumDistance * 3
 		end
 
-		for _, v in pairs( _player.GetAll() ) do
+		for _, v in pairs(_player.GetAll()) do
 			if (!(Schema:PlayerIsCombine(v) and !v:GetSharedVar("IsBiosignalGone")) and clientEyePos:Distance(v:GetPos()) <= maximumDistance and !cw.player:IsNoClipping(v)) then
 				local physBone = v:LookupBone("ValveBiped.Bip01_Head1")
 				local position = nil
-									
+
 				if (physBone) then
 					local bonePosition = v:GetBonePosition(physBone)
 
@@ -234,7 +234,7 @@ function cwCTO:HUDPaintForeground()
 						violations[#violations + 1] = "<:: 1 x #CTO_HUD_Violation_Crouching ::>"
 					end
 
-					if (v:GetRagdollState() ~= RAGDOLL_NONE and v:GetRagdollState() ~= RAGDOLL_RESET) then
+					if (v:GetRagdollState() != RAGDOLL_NONE and v:GetRagdollState() != RAGDOLL_RESET) then
 						violations[#violations + 1] = "<:: 1 x #CTO_HUD_Violation_FallenOver ::>"
 					end
 
@@ -297,9 +297,9 @@ end)
 netstream.Hook("RecalculateHUDObjectives", function(data)
 	local lines = {}
 
-	for k, v in pairs( string.Split(data[2], "\n") ) do
+	for k, v in pairs(string.Split(data[2], "\n")) do
 		if (string.StartWith(v, "^")) then
-			table.insert(lines, "<:: " .. string.sub(v, 2) .. " ::>")
+			table.insert(lines, "<:: "..string.sub(v, 2).." ::>")
 		end
 	end
 
@@ -331,9 +331,9 @@ function cwCTO:HUDPaintTopScreen()
 
 		for k, v in ipairs(self.hudObjectives) do
 			local textColor = Color(colorWhite.r, colorWhite.g, colorWhite.b, 255 - blackFadeAlpha)
-				
+
 			draw.SimpleText(v, "BudgetLabel", info.x, info.y, textColor, TEXT_ALIGN_RIGHT)
-				
+
 			info.y = info.y + height
 		end
 	end
