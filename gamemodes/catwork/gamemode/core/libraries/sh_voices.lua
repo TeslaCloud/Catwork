@@ -145,7 +145,8 @@ function cw.voices:ChatboxAdjustMessageInfo(info)
             else
               info.text = voiceData.phrase
 
-              if info.data and (info.data.radio or info.data.dispatch or info.data.broadcast or info.data.overwatch) then
+              if info.data and
+                 (info.data.radio or info.data.dispatch or info.data.broadcast or info.data.overwatch) then
                 info.text = '"'..info.text..'"'
               end
             end

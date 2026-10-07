@@ -244,8 +244,8 @@ end
 --[[
   @codebase Client
   @details A function to get whether the currently active theme allows clients to change the information color.
-  @returns Bool Whether or not the active theme has a fixed information color or not. Returns false if players can change
-  the color.
+  @returns Bool Whether or not the active theme has a fixed information color or not. Returns false if players
+  can change the color.
 --]]
 
 function cw.theme:IsFixed()

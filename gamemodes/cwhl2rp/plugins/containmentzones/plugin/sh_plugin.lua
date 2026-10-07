@@ -218,7 +218,12 @@ if SERVER then
         if CurTime() >= ply.nextRadFall then
           if 4 > math.random(1, 1000) then
             cw.player:SetRagdollState(ply, RAGDOLL_KNOCKEDOUT, math.random(5, 15))
-            cw.chatBox:Add(ply, nil, 'sleep', '** Вы сильно устали, и Вам очень плохо. Вы ощущаете жар по всему телу...')
+            cw.chatBox:Add(
+              ply,
+              nil,
+              'sleep',
+              '** Вы сильно устали, и Вам очень плохо. Вы ощущаете жар по всему телу...'
+            )
             ply.nextRadFall = CurTime() + 20
           end
         end

@@ -226,12 +226,16 @@ else
                 )
               else
                 cw.player:NotifyAll(
-                  L('Config_ValueSet', player:Name(), keyPrefix..data.key).." '"..string.rep('*', string.utf8len(printValue))..
+                  L('Config_ValueSet', player:Name(), keyPrefix..data.key).." '"..string.rep('*', string.utf8len(
+                    printValue
+                  ))..
                     "'"
                 )
               end
             elseif configObject('needsRestart') then
-              cw.player:NotifyAll(L('Config_ValueSetRestart', player:Name(), keyPrefix..data.key).." '"..printValue.."'")
+              cw.player:NotifyAll(
+                L('Config_ValueSetRestart', player:Name(), keyPrefix..data.key).." '"..printValue.."'"
+              )
             else
               cw.player:NotifyAll(L('Config_ValueSet', player:Name(), keyPrefix..data.key).." '"..printValue.."'")
             end

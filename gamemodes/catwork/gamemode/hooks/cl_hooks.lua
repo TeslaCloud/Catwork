@@ -658,7 +658,8 @@ function GM:CalcView(player, origin, angles, fov)
         cw.VelSmooth = math.Clamp(cw.VelSmooth * 0.9 + velocity:Length() * 0.1, 0, 700)
         cw.WalkTimer = cw.WalkTimer + cw.VelSmooth * FrameTime() * 0.05
 
-        cw.LastStrafeRoll = (cw.LastStrafeRoll * 3) + (eyeAngles:Right():DotProduct(velocity) * 0.0001 * cw.VelSmooth * 0.3)
+        cw.LastStrafeRoll =
+          (cw.LastStrafeRoll * 3) + (eyeAngles:Right():DotProduct(velocity) * 0.0001 * cw.VelSmooth * 0.3)
         cw.LastStrafeRoll = cw.LastStrafeRoll * 0.25
         angles.r = angles.r + cw.LastStrafeRoll
 
@@ -1165,7 +1166,9 @@ function GM:HUDPaintForeground()
 
       cw.core:DrawBar(
         x, y, width, height, info.color or cw.option:GetColor('information'),
-        info.text or L('#ProgressBarInfo_Default'), info.percentage or 100, 100, info.flash, { uniqueID = info.uniqueID }
+        info.text or L('#ProgressBarInfo_Default'), info.percentage or 100, 100, info.flash, {
+          uniqueID = info.uniqueID
+        }
       )
     end
   end
@@ -1404,7 +1407,8 @@ function GM:HUDDrawTargetID()
             fadeDistance = hook.Run('GetTargetPlayerFadeDistance', entity)
           end
 
-          local alpha = math.Clamp(cw.core:CalculateAlphaFromDistance(fadeDistance, cw.client, trace.HitPos) * 1.5, 0, 255)
+          local alpha =
+            math.Clamp(cw.core:CalculateAlphaFromDistance(fadeDistance, cw.client, trace.HitPos) * 1.5, 0, 255)
 
           if alpha > 0 then
             alpha = math.min(alpha, math.Clamp(1 - ((cw.TargetIDData.fadeTime - curTime) / 3), 0, 1) * 255)
@@ -1447,7 +1451,16 @@ function GM:HUDDrawTargetID()
                     local wrappedTable = { unrecognisedName }
                     local teamColor = _team.GetColor(entity:Team())
                     local result =
-                      hook.Run('PlayerCanShowUnrecognised', entity, x, y, unrecognisedName, teamColor, alpha, flashAlpha)
+                      hook.Run(
+                        'PlayerCanShowUnrecognised',
+                        entity,
+                        x,
+                        y,
+                        unrecognisedName,
+                        teamColor,
+                        alpha,
+                        flashAlpha
+                      )
                     local newY
 
                     if isstring(result) then

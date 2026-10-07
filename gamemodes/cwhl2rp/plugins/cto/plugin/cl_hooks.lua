@@ -119,7 +119,15 @@ function cwCTO:HUDPaintForeground()
             local text2 = '<:: '..L('#CTO_HUD_Received:'..timeSince..';')..' ::>'
             draw.SimpleText(text, 'BudgetLabel', toScreen.x, toScreen.y, color, 1, 1)
             toScreen.y = toScreen.y + fontHeight
-            draw.SimpleText(showDetail and text2 or lowDetailText, 'BudgetLabel', toScreen.x, toScreen.y, colorWhite, 1, 1)
+            draw.SimpleText(
+              showDetail and text2 or lowDetailText,
+              'BudgetLabel',
+              toScreen.x,
+              toScreen.y,
+              colorWhite,
+              1,
+              1
+            )
 
             if data.isKnockedOut then
               toScreen.y = toScreen.y + fontHeight
@@ -146,7 +154,15 @@ function cwCTO:HUDPaintForeground()
 
           draw.SimpleText('<:: #CTO_HUD_Request ::>', 'BudgetLabel', toScreen.x, toScreen.y, requestColor, 1, 1)
           toScreen.y = toScreen.y + fontHeight
-          draw.SimpleText(showDetail and text2 or lowDetailText, 'BudgetLabel', toScreen.x, toScreen.y, colorWhite, 1, 1)
+          draw.SimpleText(
+            showDetail and text2 or lowDetailText,
+            'BudgetLabel',
+            toScreen.x,
+            toScreen.y,
+            colorWhite,
+            1,
+            1
+          )
           toScreen.y = toScreen.y + fontHeight
           draw.SimpleText(
             '<:: '..L('#CTO_HUD_Removal:'..timeUntil..';')..' ::>',
@@ -169,13 +185,29 @@ function cwCTO:HUDPaintForeground()
           local text1 = '<:: C-i'..combineCamera:EntIndex()..' ::>'
           local showDetail = (Vector(toScreen.x, toScreen.y):Distance(halfScrVector) <= lowDetailBox)
 
-          draw.SimpleText(showDetail and text1 or lowDetailText, 'BudgetLabel', toScreen.x, toScreen.y, colorObject, 1, 1)
+          draw.SimpleText(
+            showDetail and text1 or lowDetailText,
+            'BudgetLabel',
+            toScreen.x,
+            toScreen.y,
+            colorObject,
+            1,
+            1
+          )
 
           if type(data) == 'table' then
             local text2 = '<:: '..L('#CTO_HUD_InView:'..table.Count(data)..';')..' ::>'
 
             toScreen.y = toScreen.y + fontHeight
-            draw.SimpleText(showDetail and text2 or lowDetailText, 'BudgetLabel', toScreen.x, toScreen.y, colorWhite, 1, 1)
+            draw.SimpleText(
+              showDetail and text2 or lowDetailText,
+              'BudgetLabel',
+              toScreen.x,
+              toScreen.y,
+              colorWhite,
+              1,
+              1
+            )
 
             local violations = {}
 
@@ -195,7 +227,15 @@ function cwCTO:HUDPaintForeground()
 
             if #violations > 0 then
               toScreen.y = toScreen.y + fontHeight
-              draw.SimpleText('<:: #CTO_HUD_ViolationsInView ::>', 'BudgetLabel', toScreen.x, toScreen.y, colorRed, 1, 1)
+              draw.SimpleText(
+                '<:: #CTO_HUD_ViolationsInView ::>',
+                'BudgetLabel',
+                toScreen.x,
+                toScreen.y,
+                colorRed,
+                1,
+                1
+              )
 
               for i, violation in ipairs(violations) do
                 toScreen.y = toScreen.y + fontHeight

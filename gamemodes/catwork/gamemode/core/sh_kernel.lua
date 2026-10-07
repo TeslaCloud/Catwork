@@ -859,7 +859,8 @@ function cw.core:GetAmmoInformation(weapon)
     weapon.AmmoInfo.secondary.doesNotShoot = (weapon.AmmoInfo.secondary.clipBullets == -1)
 
     if !weapon.AmmoInfo.primary.doesNotShoot and weapon.AmmoInfo.primary.ownerAmmo > 0 then
-      weapon.AmmoInfo.primary.ownerClips = math.ceil(weapon.AmmoInfo.primary.clipSize / weapon.AmmoInfo.primary.ownerAmmo)
+      weapon.AmmoInfo.primary.ownerClips =
+        math.ceil(weapon.AmmoInfo.primary.clipSize / weapon.AmmoInfo.primary.ownerAmmo)
     else
       weapon.AmmoInfo.primary.ownerClips = 0
     end
@@ -1387,7 +1388,11 @@ function cw.core:ParseData(text)
 
       if amount then
         text =
-          string.gsub(text, v..string.gsub(key, '([%(%)])', '%%%1')..v, tostring(self:FormatCash(amount, k == 2, lower)))
+          string.gsub(
+            text,
+            v..string.gsub(key, '([%(%)])', '%%%1')..v,
+            tostring(self:FormatCash(amount, k == 2, lower))
+          )
       end
     end
   end

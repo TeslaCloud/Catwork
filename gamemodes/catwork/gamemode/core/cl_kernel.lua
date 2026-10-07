@@ -1262,7 +1262,13 @@ function cw.core:DrawBar(x, y, width, height, color, text, value, maximum, flash
         local limitText = cw.lang:TranslateText(barInfo.limitText)
         local textWide = util.GetTextSize(cw.fonts:GetSize('hl2_BarsFont', 15), limitText)
 
-        render.SetScissorRect(barInfo.x + width - length, barInfo.y, barInfo.x + width, barInfo.y + barInfo.height, true)
+        render.SetScissorRect(
+          barInfo.x + width - length,
+          barInfo.y,
+          barInfo.x + width,
+          barInfo.y + barInfo.height,
+          true
+        )
           draw.SimpleText(
             limitText,
             cw.fonts:GetSize('hl2_BarsFont', 15),
@@ -1422,7 +1428,16 @@ function cw.core:DrawInfo(text, x, y, color, alpha, bAlignLeft, Callback, shadow
       x, y = Callback(x, y, width, height)
     end
 
-    return self:DrawSimpleText(text, x, y, Color(color.r, color.g, color.b, alpha or color.a), nil, nil, nil, shadowDepth)
+    return self:DrawSimpleText(
+      text,
+      x,
+      y,
+      Color(color.r, color.g, color.b, alpha or color.a),
+      nil,
+      nil,
+      nil,
+      shadowDepth
+    )
   end
 end
 
@@ -2588,7 +2603,10 @@ function cw.core:RestoreSchemaData(fileName, failSafe)
         return value
       else
         if value then
-          MsgC(Color(255, 100, 0, 255), "[CW:Kernel] '"..fileName.."' schema data has failed to restore.\n"..value..'\n')
+          MsgC(
+            Color(255, 100, 0, 255),
+            "[CW:Kernel] '"..fileName.."' schema data has failed to restore.\n"..value..'\n'
+          )
         end
 
         self:DeleteSchemaData(fileName)
@@ -2614,7 +2632,10 @@ function cw.core:RestoreClockworkData(fileName, failSafe)
       if bSuccess and value != nil then
         return value
       else
-        MsgC(Color(255, 100, 0, 255), "[CW:Kernel] '"..fileName.."' clockwork data has failed to restore.\n"..value..'\n')
+        MsgC(
+          Color(255, 100, 0, 255),
+          "[CW:Kernel] '"..fileName.."' clockwork data has failed to restore.\n"..value..'\n'
+        )
 
         self:DeleteClockworkData(fileName)
       end

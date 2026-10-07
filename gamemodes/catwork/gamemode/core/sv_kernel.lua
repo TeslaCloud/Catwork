@@ -2357,7 +2357,10 @@ concommand.Add('cwc', function(player, command, arguments)
                     print("Console has banned '"..steamName.."' for "..hours..' hour(s) ('..reason..').')
                     cw.player:NotifyAll(L('Console_BannedHours', steamName, hours)..' '..reason)
                   else
-                    print("Console has banned '"..steamName.."' for "..math.Round(duration / 60)..' minute(s) ('..reason..').')
+                    print(
+                      "Console has banned '"..steamName.."' for "..math.Round(duration / 60)..' minute(s) ('..reason..
+                        ').'
+                    )
                     cw.player:NotifyAll(L('Console_BannedMinutes', steamName, math.Round(duration / 60))..' '..reason)
                   end
                 else
@@ -2412,7 +2415,10 @@ concommand.Add('cwc', function(player, command, arguments)
 
       if target then
         if arguments[3] == 'nil' then
-          MsgC(Color(255, 100, 0, 255), "You have to specify the name as the last argument, it also has to be 'quoted'.\n")
+          MsgC(
+            Color(255, 100, 0, 255),
+            "You have to specify the name as the last argument, it also has to be 'quoted'.\n"
+          )
 
           return
         else

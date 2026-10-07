@@ -884,7 +884,8 @@ function GM:PlayerSpawn(player)
                 v2:AddEntityRelationship(player, D_HT, 1)
               else
                 ErrorNoHalt(
-                  "Attempting to add relationship using invalid relation '"..v.."' towards faction '"..FACTION.name.."'.\r\n"
+                  "Attempting to add relationship using invalid relation '"..v.."' towards faction '"..FACTION.name..
+                    "'.\r\n"
                 )
               end
             end
@@ -2504,7 +2505,10 @@ function GM:PlayerSpawnedProp(player, model, entity)
         cw.player:GiveCash(player, -info.cost, info.name)
         entity.cwGiveRefundTab = { CurTime() + 10, player, info.cost }
       else
-        cw.player:Notify(player, L(player, 'YouNeedAnother', cw.core:FormatCash(info.cost - player:GetCash(), nil, true)))
+        cw.player:Notify(
+          player,
+          L(player, 'YouNeedAnother', cw.core:FormatCash(info.cost - player:GetCash(), nil, true))
+        )
         entity:Remove()
         return
       end
@@ -3310,8 +3314,8 @@ function GM:EntityTakeDamage(entity, damageInfo)
       data.endpos = entity:GetPos()
     local trace = util.TraceLine(data)
 
-    cw.player:SetRagdollState(entity, RAGDOLL_FALLENOVER, nil, nil, nil, nil, function(physicsObject, boneIndex, ragdoll,
-    velocity, force)
+    cw.player:SetRagdollState(entity, RAGDOLL_FALLENOVER, nil, nil, nil, nil,
+    function(physicsObject, boneIndex, ragdoll, velocity, force)
       physicsObject:SetVelocity(trace.Normal * damageInfo:GetReportedPosition())
     end)
     entity:SetDTBool(BOOL_FALLENOVER, true)
@@ -3419,8 +3423,10 @@ function GM:EntityTakeDamage(entity, damageInfo)
             if attacker:IsPlayer() then
               cw.core:PrintLog(
                 LOGTYPE_MAJOR,
-                player:Name()..' has taken '..tostring(math.ceil(damageInfo:GetDamage()))..' damage from '..attacker:Name()..
-                  ' with '..cw.player:GetWeaponClass(attacker, 'an unknown weapon')..', leaving them at '..player:Health()..
+                player:Name()..' has taken '..tostring(math.ceil(damageInfo:GetDamage()))..' damage from '..
+                  attacker:Name()..
+                  ' with '..cw.player:GetWeaponClass(attacker, 'an unknown weapon')..', leaving them at '..
+                  player:Health()..
                   ' health'..armor
               )
             else
@@ -3483,14 +3489,17 @@ function GM:EntityTakeDamage(entity, damageInfo)
           if attacker:IsPlayer() then
             cw.core:PrintLog(
               LOGTYPE_MAJOR,
-              player:Name()..' has taken '..tostring(math.ceil(damageInfo:GetDamage()))..' damage from '..attacker:Name()..
-                ' with '..cw.player:GetWeaponClass(attacker, 'an unknown weapon')..', leaving them at '..player:Health()..
+              player:Name()..' has taken '..tostring(math.ceil(damageInfo:GetDamage()))..' damage from '..
+                attacker:Name()..
+                ' with '..cw.player:GetWeaponClass(attacker, 'an unknown weapon')..', leaving them at '..
+                player:Health()..
                 ' health'..armor
             )
           else
             cw.core:PrintLog(
               LOGTYPE_MAJOR,
-              player:Name()..' has taken '..tostring(math.ceil(damageInfo:GetDamage()))..' damage from '..attacker:GetClass()..
+              player:Name()..' has taken '..tostring(math.ceil(damageInfo:GetDamage()))..' damage from '..
+                attacker:GetClass()..
                 ', leaving them at '..player:Health()..' health'..armor
             )
           end
@@ -3660,7 +3669,8 @@ function GM:PlayerSpawnedNPC(player, npc)
             npc:AddEntityRelationship(v, D_HT, 1)
           else
             ErrorNoHalt(
-              "Attempting to add relationship using invalid relation '"..v2.."' towards faction '"..faction.name.."'.\r\n"
+              "Attempting to add relationship using invalid relation '"..v2.."' towards faction '"..faction.name..
+                "'.\r\n"
             )
           end
         end

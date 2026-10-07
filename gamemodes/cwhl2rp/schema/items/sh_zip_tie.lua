@@ -70,7 +70,12 @@ function ITEM:OnUse(player, itemEntity)
                 if Schema:PlayerIsCombine(target) then
                   local location = Schema:PlayerGetLocation(player)
 
-                  Schema:AddCombineDisplayLine(L('Zip_Tie_LostContactInformation1'), Color(255, 255, 255, 255), nil, player)
+                  Schema:AddCombineDisplayLine(
+                    L('Zip_Tie_LostContactInformation1'),
+                    Color(255, 255, 255, 255),
+                    nil,
+                    player
+                  )
                   Schema:AddCombineDisplayLine(
                     L('Zip_Tie_LostContactInformation2', location),
                     Color(255, 0, 0, 255),

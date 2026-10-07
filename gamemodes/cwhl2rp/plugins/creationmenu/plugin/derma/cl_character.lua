@@ -41,7 +41,10 @@ function PANEL:Init()
       self.titleLabel:SetVisible(true)
       self.titleLabel:SizeToContents()
       self.titleLabel:SetPos((scrW / 2) - (self.titleLabel:GetWide() / 2), scrH * 0.4)
-      self.subLabel:SetPos((scrW / 2) - (self.subLabel:GetWide() / 2), self.titleLabel.y + self.titleLabel:GetTall() + 8)
+      self.subLabel:SetPos(
+        (scrW / 2) - (self.subLabel:GetWide() / 2),
+        self.titleLabel.y + self.titleLabel:GetTall() + 8
+      )
     else
       self.titleLabel:SetVisible(false)
       self.titleLabel:SetSize(512, 256)

@@ -227,7 +227,8 @@ function PANEL:Init()
 
   if info.avatarImage then
     self.avatarButton:SetTooltip(
-      L('#Scoreboard_SteamNameIs')..' '..info.steamName..'.\n'..L('#Scoreboard_SteamIDIs')..' '..info.player:SteamID()..'.'
+      L('#Scoreboard_SteamNameIs')..' '..info.steamName..'.\n'..L('#Scoreboard_SteamIDIs')..' '..info.player:SteamID()..
+        '.'
     )
     self.avatarButton.DoClick = function(button)
       if IsValid(info.player) then

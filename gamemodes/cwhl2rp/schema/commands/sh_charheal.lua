@@ -25,7 +25,9 @@ function COMMAND:OnRun(player, arguments)
         if !Schema.scanners[target] then
           if itemTable and arguments[1] == 'health_vial' then
             if player:HasItemByID('health_vial') then
-              target:SetHealth(math.Clamp(target:Health() + Schema:GetHealAmount(player, 1.5), 0, target:GetMaxHealth()))
+              target:SetHealth(
+                math.Clamp(target:Health() + Schema:GetHealAmount(player, 1.5), 0, target:GetMaxHealth())
+              )
               target:EmitSound('items/medshot4.wav')
 
               player:TakeItem(itemTable)

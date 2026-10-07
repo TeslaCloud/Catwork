@@ -276,7 +276,9 @@ function SWEP:PrimaryAttack()
           trace.Entity:SetVelocity(push)
 
           if trace.Entity:Health() > 10 then
-            trace.Entity:TakeDamageInfo(cw.core:FakeDamageInfo(1 + strength, self, self.Owner, trace.HitPos, DMG_CLUB, 2))
+            trace.Entity:TakeDamageInfo(
+              cw.core:FakeDamageInfo(1 + strength, self, self.Owner, trace.HitPos, DMG_CLUB, 2)
+            )
           end
 
           hook.Run('PlayerStunEntity', self.Owner, trace.Entity)
@@ -289,7 +291,9 @@ function SWEP:PrimaryAttack()
                 cw.core:FakeDamageInfo(5 + (strength * 2), self, self.Owner, trace.HitPos, DMG_CLUB, 2)
               )
             else
-              trace.Entity:TakeDamageInfo(cw.core:FakeDamageInfo(1 + strength, self, self.Owner, trace.HitPos, DMG_CLUB, 2))
+              trace.Entity:TakeDamageInfo(
+                cw.core:FakeDamageInfo(1 + strength, self, self.Owner, trace.HitPos, DMG_CLUB, 2)
+              )
             end
           end
 

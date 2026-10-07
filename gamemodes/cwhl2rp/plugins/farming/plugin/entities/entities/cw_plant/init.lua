@@ -54,7 +54,8 @@ function ENT:Use(activator)
 
       cw.player:SetAction(activator, 'farming', gathertime)
       cw.player:EntityConditionTimer(activator, self, self, gathertime, 192, function()
-        return activator:Alive() and !activator:IsRagdolled() and activator:GetNetVar('tied') == 0 and activator:Crouching()
+        return activator:Alive() and !activator:IsRagdolled() and activator:GetNetVar('tied') == 0 and
+          activator:Crouching()
       end,
       function(success)
         if success then

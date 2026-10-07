@@ -214,7 +214,8 @@ function cwAreaDisplays:DrawDisplayScrolling(displayInfo, info)
 
   if !displayInfo.scrollInfo.isGoingBack and sNextCharacter != '' then
     cw.core:DrawInfo(
-      string.upper(sNextCharacter), newX + textWidth, info.y, informationColor, math.max(displayInfo.alpha - 25, 0), true
+      string.upper(sNextCharacter), newX + textWidth, info.y, informationColor, math.max(displayInfo.alpha - 25, 0),
+      true
     )
   end
 

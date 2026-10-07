@@ -210,7 +210,10 @@ function cwAnimatedLegs:LegsThink(maxSeqGroundSpeed)
 
     if cw.client:InVehicle() then
       self.LegsEntity:SetColor(color_transparent)
-      self.LegsEntity:SetPoseParameter('vehicle_steer', (cw.client:GetVehicle():GetPoseParameter('vehicle_steer') * 2) - 1)
+      self.LegsEntity:SetPoseParameter(
+        'vehicle_steer',
+        (cw.client:GetVehicle():GetPoseParameter('vehicle_steer') * 2) - 1
+      )
     end
   end
 end

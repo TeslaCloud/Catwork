@@ -325,9 +325,14 @@ function Schema:GetPlayerScoreboardOptions(player, options, menu)
 
       if cw.command:FindByID('PlyRemoveServerWhitelist') then
         options['#ScoreboardOptions_ServerWhitelist']['#ScoreboardOptions_ServerWhitelist_Remove'] = function()
-          Derma_StringRequest(player:Name(), '#ScoreboardOptions_ServerWhitelist_Remove_StringRequest', '', function(text)
-            cw.core:RunCommand('PlyRemoveServerWhitelist', player:Name(), text)
-          end)
+          Derma_StringRequest(
+            player:Name(),
+            '#ScoreboardOptions_ServerWhitelist_Remove_StringRequest',
+            '',
+            function(text)
+              cw.core:RunCommand('PlyRemoveServerWhitelist', player:Name(), text)
+            end
+          )
         end
       end
     end

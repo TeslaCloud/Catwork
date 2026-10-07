@@ -60,7 +60,8 @@ function ENT:Use(activator, caller)
 
       cw.player:SetAction(activator, 'cleanup', time)
       cw.player:EntityConditionTimer(activator, self, self, time, 192, function()
-        return activator:Alive() and !activator:IsRagdolled() and activator:GetNetVar('tied') == 0 and activator:Crouching()
+        return activator:Alive() and !activator:IsRagdolled() and activator:GetNetVar('tied') == 0 and
+          activator:Crouching()
       end, function(success)
         if success then
           hook.Run('PlayerTakeGarbage', activator, self)

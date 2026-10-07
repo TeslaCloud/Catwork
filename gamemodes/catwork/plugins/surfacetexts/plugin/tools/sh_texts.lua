@@ -85,7 +85,10 @@ function TOOL.BuildCPanel(CPanel)
   CPanel:AddControl('Header', { Description = '#tool.texts.desc' })
 
   local controlPresets =
-    CPanel:AddControl('ComboBox', { MenuButton = 1, Folder = 'textstyle', Options = options, CVars = { 'texts_style' } })
+    CPanel:AddControl(
+      'ComboBox',
+      { MenuButton = 1, Folder = 'textstyle', Options = options, CVars = { 'texts_style' } }
+    )
   controlPresets.Button:SetVisible(false)
   controlPresets.DropDown:SetValue('#tool.texts.choose')
 

@@ -48,7 +48,10 @@ function COMMAND:OnRun(player, arguments)
             if string.utf8sub(itemTable.name, -1) == 's' and amount == 1 then
               cw.player:Notify(target, L('Command_Chargiveitem_Received', player:Name(), itemTable.PrintName))
             elseif amount > 1 then
-              cw.player:Notify(target, L('Command_Chargiveitem_ReceivedAmount', player:Name(), amount, itemTable.PrintName))
+              cw.player:Notify(
+                target,
+                L('Command_Chargiveitem_ReceivedAmount', player:Name(), amount, itemTable.PrintName)
+              )
             else
               cw.player:Notify(target, L('Command_Chargiveitem_Received', player:Name(), itemTable.PrintName))
             end

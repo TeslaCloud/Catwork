@@ -34,7 +34,8 @@ function cwDynamicAdverts:CacheMaterial(data)
   local exploded = string.Explode('/', data.url)
   local extension = '.'..string.GetExtensionFromFilename(exploded[#exploded])
   local path =
-    'catwork/schemas/'..cw.core:GetSchemaFolder()..'/plugins/adverts/'..game.GetMap()..'/'..util.CRC(data.url)..extension
+    'catwork/schemas/'..cw.core:GetSchemaFolder()..'/plugins/adverts/'..game.GetMap()..'/'..util.CRC(data.url)..
+    extension
 
   if _file.Exists(path, 'DATA') then
     data.material = Material('../data/'..path, 'noclamp smooth')

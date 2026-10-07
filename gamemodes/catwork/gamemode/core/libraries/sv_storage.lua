@@ -142,7 +142,8 @@ function cw.storage:Open(player, data)
   player.cwStorageTab = data
 
   netstream.Start(player, 'StorageStart', {
-    noCashWeight = data.noCashWeight, noCashSpace = data.noCashSpace, isOneSided = data.isOneSided, entity = data.entity,
+    noCashWeight =
+      data.noCashWeight, noCashSpace = data.noCashSpace, isOneSided = data.isOneSided, entity = data.entity,
     name = data.name
   })
 

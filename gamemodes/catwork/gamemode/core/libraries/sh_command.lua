@@ -222,10 +222,14 @@ if SERVER then
                     if table.concat(arguments, ' ') != '' then
                       cw.core:PrintLog(
                         LOGTYPE_GENERIC,
-                        player:Name(true).." has used '"..commandPrefix..commandTable.name..' '..table.concat(arguments, ' ').."'."
+                        player:Name(true).." has used '"..commandPrefix..commandTable.name..' '..
+                          table.concat(arguments, ' ').."'."
                       )
                     else
-                      cw.core:PrintLog(LOGTYPE_GENERIC, player:Name(true).." has used '"..commandPrefix..commandTable.name.."'.")
+                      cw.core:PrintLog(
+                        LOGTYPE_GENERIC,
+                        player:Name(true).." has used '"..commandPrefix..commandTable.name.."'."
+                      )
                     end
 
                     return value

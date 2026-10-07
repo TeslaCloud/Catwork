@@ -717,7 +717,8 @@ function cw.database:EasyWrite(tableName, where, data)
 
   if !where then
     ErrorNoHalt(
-      "[Catwork] Easy MySQL error! 'where' table is malformed! ([1] = "..type(where[1])..', [2] = '..type(where[2])..')\n'
+      "[Catwork] Easy MySQL error! 'where' table is malformed! ([1] = "..type(where[1])..', [2] = '..type(where[2])..
+        ')\n'
     )
 
     return
@@ -784,7 +785,8 @@ end
 function cw.database:EasyRead(tableName, where, callback)
   if !where then
     ErrorNoHalt(
-      "[Catwork] Easy MySQL Read error! 'where' table is malformed! ([1] = "..type(where[1])..', [2] = '..type(where[2])..
+      "[Catwork] Easy MySQL Read error! 'where' table is malformed! ([1] = "..type(where[1])..', [2] = '..
+        type(where[2])..
         ')\n'
     )
     return false

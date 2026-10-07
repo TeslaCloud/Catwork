@@ -164,8 +164,8 @@ end
 
   display table prototype:
 chatbox.display[1] = {
-  [1] = { 0, LocalPlayer(), Color(255, 255, 255), "[SendTime:"..os.time().."]", "[icon:icon16/shield.png]", Color(255, 0,
-  0), "[SenderAvatar]", "[OOC] ", Color(255, 255, 255), "Mr. Meow: ", "Test message Test Message"},
+  [1] = { 0, LocalPlayer(), Color(255, 255, 255), "[SendTime:"..os.time().."]", "[icon:icon16/shield.png]",
+  Color(255, 0, 0), "[SenderAvatar]", "[OOC] ", Color(255, 255, 255), "Mr. Meow: ", "Test message Test Message"},
   [2] = { 20, Color(255, 255, 255), "It is hardcoded btw. Render testing." }
 }
 --]]
@@ -650,7 +650,8 @@ function chatbox.ParseText(messageData)
     end
 
     if !isstring(messageData.playerName) then
-      messageData.playerName = (IsValid(messageData.sender) and messageData.sender:Name()) or L('#Chatbox_UnknownPlayer')
+      messageData.playerName =
+        (IsValid(messageData.sender) and messageData.sender:Name()) or L('#Chatbox_UnknownPlayer')
     end
 
     if messageData.filter != 'ic' and messageData.playerTeam and !messageData.noStyling then

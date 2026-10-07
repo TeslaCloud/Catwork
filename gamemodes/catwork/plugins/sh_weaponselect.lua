@@ -131,7 +131,8 @@ function PLUGIN:DrawWeaponInformation(itemTable, weapon, x, y, alpha)
     end
 
     if weapon.Author != '' then
-      text = text..titleColor..cw.lang:TranslateText('#SWEPS_Author'):utf8upper()..'</color>\n'..textColor..weapon.Author..
+      text = text..titleColor..cw.lang:TranslateText('#SWEPS_Author'):utf8upper()..'</color>\n'..textColor..
+        weapon.Author..
         '</color>\n'
     end
 

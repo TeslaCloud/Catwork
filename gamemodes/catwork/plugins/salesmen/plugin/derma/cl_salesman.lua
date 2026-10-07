@@ -246,7 +246,14 @@ function PANEL:Init()
       nil,
       L('#Salesman_ItemsTip')
     )
-    self.propertySheet:AddSheet(L'Settings', self.settingsPanel, 'icon16/tick.png', nil, nil, L('#Salesman_SettingsTip'))
+    self.propertySheet:AddSheet(
+      L'Settings',
+      self.settingsPanel,
+      'icon16/tick.png',
+      nil,
+      nil,
+      L('#Salesman_SettingsTip')
+    )
   cw.core:SetNoticePanel(self)
 end
 

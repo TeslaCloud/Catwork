@@ -962,8 +962,8 @@ end
 function Schema:PlayerCanUseCharacter(player, character)
   if character.data['permakilled'] then
     return L('CharIsPermaKilled', character.name)
-  -- elseif (character.faction == FACTION_OTA) and !self:IsStringCombineRank(character.name, "GUARD") and !self.OTACanUse
-  -- then
+  -- elseif (character.faction == FACTION_OTA) and !self:IsStringCombineRank(character.name, "GUARD")
+  -- and !self.OTACanUse then
   --	return "Overwatch Transhuman Arms сейчас в стазисе!"
   elseif character.faction == FACTION_MPF then
     if !self:CanUseCP(player) and self:GetPlayerCombineRank(player) < 6 then

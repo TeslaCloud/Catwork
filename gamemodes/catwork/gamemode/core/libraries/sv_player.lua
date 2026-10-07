@@ -2075,7 +2075,8 @@ function cw.player:GiveCash(player, amount, reason, bNoMsg)
       if !bNoMsg then
         if reason then
           cwHint:Send(
-            player, L('CashHint_Gained', cw.core:FormatCash(roundedAmount)..' ')..'('..reason..').', 4, positiveHintColor
+            player, L('CashHint_Gained', cw.core:FormatCash(roundedAmount)..' ')..'('..reason..').', 4,
+            positiveHintColor
           )
         else
           cwHint:Send(

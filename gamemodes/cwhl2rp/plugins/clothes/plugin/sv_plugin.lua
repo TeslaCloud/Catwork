@@ -25,7 +25,8 @@ function playerMeta:SetBodygroupClothes(itemTable, bShouldUnwear)
     clothesData[bodygroup] = clothesData[bodygroup] or {}
 
     if clothesData[bodygroup].itemID then
-      local oldItemTable = cw.inventory:FindItemByID(self:GetInventory(), clothesData.uniqueID, clothesData.realID) or {}
+      local oldItemTable =
+        cw.inventory:FindItemByID(self:GetInventory(), clothesData.uniqueID, clothesData.realID) or {}
 
       if oldItemTable.OnChangeClothes then
         local bSuccess, value = pcall(oldItemTable.OnChangeClothes, oldItemTable, self, bShouldUnwear)
@@ -83,7 +84,8 @@ function playerMeta:SetSkinClothes(itemTable, bShouldUnwear)
       clothesData[skin] = clothesData[skin] or {}
 
       if clothesData[skin].itemID then
-        local oldItemTable = cw.inventory:FindItemByID(self:GetInventory(), clothesData.uniqueID, clothesData.realID) or {}
+        local oldItemTable =
+          cw.inventory:FindItemByID(self:GetInventory(), clothesData.uniqueID, clothesData.realID) or {}
 
         if oldItemTable.OnChangeClothes then
           local bSuccess, value = pcall(oldItemTable.OnChangeClothes, oldItemTable, self, bShouldUnwear)

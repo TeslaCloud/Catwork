@@ -41,7 +41,8 @@ function COMMAND:OnRun(player, arguments)
 
           cw.player:Notify(
             player,
-            L('Developer_ModifiedKey').." '"..key.."', "..L('Developer_Value')..' '..tostring(val)..' ('..type(val)..'). '..
+            L('Developer_ModifiedKey').." '"..key.."', "..L('Developer_Value')..' '..tostring(val)..' ('..type(val)..
+              '). '..
               L('Developer_OriginalType')..' '..dataType
           )
         else

@@ -66,8 +66,8 @@ local function ZAR3_S(msg)
     -- No stuff until this has been done.
     wep:SetNextPrimaryFire(math.max(CurTime() + wep:SequenceDuration(), wep:GetNextPrimaryFire()))
     wep:SetNextSecondaryFire(math.max(CurTime() + wep:SequenceDuration(), wep:GetNextSecondaryFire()))
-    -- There seems to be a repeating-glitch, somehow, avoid that. Yes, if you start shooting it will break the animation,
-    -- but it's better than having to re-draw all the time.
+    -- There seems to be a repeating-glitch, somehow, avoid that. Yes, if you start shooting it will break the
+    -- animation, but it's better than having to re-draw all the time.
     timer.Simple(
       vm:SequenceDuration(),
       function() if IsValid(wep) and wep == LocalPlayer():GetActiveWeapon() then wep:SendWeaponAnim(ACT_VM_IDLE) end end
