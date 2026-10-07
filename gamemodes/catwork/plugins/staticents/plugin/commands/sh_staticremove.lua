@@ -7,7 +7,7 @@
 --]]
 
 local COMMAND = cw.command:New("UnStatic")
-COMMAND.tip = "Remove static entities at your target position."
+COMMAND.tip = "#Command_Unstatic_Description"
 COMMAND.access = "a"
 COMMAND.alias = {"StaticRemove", "StaticPropRemove"}
 

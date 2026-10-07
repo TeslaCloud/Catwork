@@ -45,7 +45,7 @@ function ITEM:OnUse(player, itemEntity)
 			cw.entity:MakeFlushToGround(entity, trace.HitPos, trace.HitNormal)
 		end
 	else
-		cw.player:Notify(player, "You cannot drop a book that far away!")
+		cw.player:Notify(player, "#CantDropFar")
 
 		return false
 	end

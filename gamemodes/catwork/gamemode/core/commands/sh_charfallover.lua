@@ -36,7 +36,7 @@ function COMMAND:OnRun(player, arguments)
 				player:SetDTBool(BOOL_FALLENOVER, true)
 			end
 		else
-			cw.player:Notify(player, "You cannot do this action at the moment!")
+			cw.player:Notify(player, L("CannotActionRightNow"))
 		end
 	end
 end

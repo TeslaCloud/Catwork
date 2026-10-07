@@ -7,10 +7,10 @@
 
 ITEM.baseItem = "bodygroup_base"
 ITEM.name = "gasmask1"
-ITEM.PrintName = "Маска Юнита ГО"
+ITEM.PrintName = "#ITEM_Cmb_Gasmask_1_Name"
 ITEM.cost = 150
 ITEM.model = "models/half_life2/jnstudio/props/gasmask_1.mdl"
-ITEM.plural = "Маски Юнитов ГО"
+ITEM.plural = "#ITEM_Cmb_Gasmask_1_Plural"
 ITEM.weight = 0.5
 ITEM.uniqueID = "cmb_gasmask1"
 ITEM.business = false

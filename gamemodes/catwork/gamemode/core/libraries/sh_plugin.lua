@@ -323,12 +323,15 @@ function plugin.Register(pluginTable)
 				</div>
 				<div class="cwContentText">
 					<div class="cwCodeText">
-						developed by ]]..pluginTable:GetAuthor()..[[
+						[developedBy] ]]..pluginTable:GetAuthor()..[[
 					</div>
 					]]..pluginTable:GetDescription()..[[
 				</div>
 				<br>
-			]], true, pluginTable:GetAuthor())
+			]], true, pluginTable:GetAuthor(), function(htmlCode)
+				-- This is a language phrase, so it is translated when the page is shown.
+				return string.Replace(htmlCode, "[developedBy]", L("#Directory_PluginDevelopedBy"))
+			end)
 		end
 	end
 

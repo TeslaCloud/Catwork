@@ -7,8 +7,8 @@
 --]]
 
 local COMMAND = cw.command:New("AnimMotion")
-COMMAND.tip = "Make your character motion to something in a direction."
-COMMAND.text = "<string Left|Right|Behind>"
+COMMAND.tip = "#Command_Animmotion_Description"
+COMMAND.text = "#Command_Animmotion_Syntax"
 COMMAND.flags = CMD_DEFAULT
 
 -- Called when the command has been run.
@@ -32,7 +32,7 @@ function COMMAND:OnRun(player, arguments)
 			end
 
 			if (forcedAnimation and cwEmoteAnimscwEmoteAnims[forcedAnimation.animation]) then
-				cw.player:Notify(player, "You cannot do this action at the moment!")
+				cw.player:Notify(player, L("CannotActionRightNow"))
 			else
 				player:SetForcedAnimation(animation, 2.5)
 				player:SetNetVar("StancePos", player:GetPos())
@@ -40,10 +40,10 @@ function COMMAND:OnRun(player, arguments)
 				player:SetNetVar("StanceIdle", false)
 			end
 		else
-			cw.player:Notify(player, "The model that you are using cannot perform this action!")
+			cw.player:Notify(player, L("EmoteAnims_ModelCannotPerform"))
 		end
 	else
-		cw.player:Notify(player, "You cannot do another stance or gesture yet!")
+		cw.player:Notify(player, L("EmoteAnims_CannotDoAnotherYet"))
 	end
 end
 

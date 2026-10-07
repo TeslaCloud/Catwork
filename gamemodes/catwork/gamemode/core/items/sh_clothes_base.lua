@@ -12,7 +12,7 @@ ITEM.model = "models/props_c17/suitcase_passenger_physics.mdl"
 ITEM.weight = 2
 ITEM.useText = "Wear"
 ITEM.category = "Clothing"
-ITEM.description = "A suitcase full of clothes."
+ITEM.description = "#Item_ClothesBase_Description"
 
 -- A function to get the model name.
 function ITEM:GetModelName(player, group)
@@ -119,7 +119,7 @@ end
 -- Called when a player uses the item.
 function ITEM:OnUse(player, itemEntity)
 	if (self.whitelist and !table.HasValue(self.whitelist, player:GetFaction())) then
-		cw.player:Notify(player, L"#FactionCantWear")
+		cw.player:Notify(player, "#FactionCantWear")
 		return false
 	end
 
@@ -129,7 +129,7 @@ function ITEM:OnUse(player, itemEntity)
 			return true
 		end
 	else
-		cw.player:Notify(player, L"#CantDoThisNow")
+		cw.player:Notify(player, "#CantDoThisNow")
 	end
 
 	return false

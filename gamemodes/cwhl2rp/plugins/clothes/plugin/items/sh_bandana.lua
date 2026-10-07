@@ -16,4 +16,4 @@ ITEM.uniqueID = "bandana"
 ITEM.business = false
 ITEM.bodyGroup = 4
 ITEM.bodyGroupVal = 1
-ITEM.description = "#ITEM_Bandana_Name_Desc"
+ITEM.description = "#ITEM_Bandana_Desc"

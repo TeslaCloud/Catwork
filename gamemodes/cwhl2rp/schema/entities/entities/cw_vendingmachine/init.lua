@@ -114,7 +114,7 @@ function ENT:Use(activator, caller)
 
 						activator.nextVendingMachine = curTime + 600
 
-						cw.player:GiveCash(activator, -8, "vending machine")
+						cw.player:GiveCash(activator, -8, L("VendingMachine_CashReason"))
 					else
 						self:SetFlashDuration(3)
 					end

@@ -29,7 +29,7 @@ function COMMAND:OnRun(player, arguments)
 
 		if (useMap) then
 			useMap = string.lower(cw.core:Replace(useMap, ".bsp", ""))
-			keyPrefix = useMap.."'s "
+			keyPrefix = "("..useMap..") "
 
 			if (!file.Exists("maps/"..useMap..".bsp", "GAME")) then
 				cw.player:Notify(player, L(player, "NotValidMap", useMap))
@@ -45,14 +45,14 @@ function COMMAND:OnRun(player, arguments)
 
 				if (configObject("isPrivate")) then
 					if (configObject("needsRestart")) then
-						cw.player:NotifyAll(player:Name().." set "..keyPrefix..key.." to '"..string.rep("*", string.utf8len(printValue)).."' for the next restart.")
+						cw.player:NotifyAll(L("Config_ValueSetRestart", player:Name(), keyPrefix..key).." '"..string.rep("*", string.utf8len(printValue)).."'")
 					else
-						cw.player:NotifyAll(player:Name().." set "..keyPrefix..key.." to '"..string.rep("*", string.utf8len(printValue)).."'.")
+						cw.player:NotifyAll(L("Config_ValueSet", player:Name(), keyPrefix..key).." '"..string.rep("*", string.utf8len(printValue)).."'")
 					end
 				elseif (configObject("needsRestart")) then
-					cw.player:NotifyAll(player:Name().." set "..keyPrefix..key.." to '"..printValue.."' for the next restart.")
+					cw.player:NotifyAll(L("Config_ValueSetRestart", player:Name(), keyPrefix..key).." '"..printValue.."'")
 				else
-					cw.player:NotifyAll(player:Name().." set "..keyPrefix..key.." to '"..printValue.."'.")
+					cw.player:NotifyAll(L("Config_ValueSet", player:Name(), keyPrefix..key).." '"..printValue.."'")
 				end
 			else
 				cw.player:Notify(player, L(player, "ConfigUnableToSet", key))

@@ -216,7 +216,7 @@ function ENT:Use(act, call, type, val)
 		end;
 
 		self:EmitSound("buttons/combine_button5.wav", 140, 100 + (self.mode - 1) * 15);
-		cw.player:Notify(act, "Changed force field mode to: "..cwForceField.modes[self.mode]);
+		cw.player:Notify(act, L("ForceField_ModeChanged").." "..cwForceField.modes[self.mode]);
 
 		plugin.Call("SaveForceFields")
 	end

@@ -1,14 +1,15 @@
-ITEM.name = "Пачка активированного угля"
+ITEM.name = "Pack of Activated Charcoal"
+ITEM.PrintName = "#Item_ActivatedCoal_PrintName"
 ITEM.uniqueID = "activated_coal"
 ITEM.cost = 0
 ITEM.model = "models/props_lab/powerbox02c.mdl"
 ITEM.weight = 0.2
 ITEM.access = "q"
-ITEM.useText = "Употребить"
-ITEM.category = "Медицина"
+ITEM.useText = "Swallow"
+ITEM.category = "Medical"
 ITEM.business = true
-ITEM.description = "Коробка с надписью 'Активированный уголь'."
-ITEM.customFunctions = {"Дать"}
+ITEM.description = "#Item_ActivatedCoal_Description"
+ITEM.customFunctions = {"Give"}
 
 -- Called when a player uses the item.
 function ITEM:OnUse(player, itemEntity)
@@ -23,7 +24,7 @@ end
 
 if (SERVER) then
 	function ITEM:OnCustomFunction(player, name)
-		if (name == "Дать") then
+		if (name == "Give") then
 			local lookingPly = player:GetEyeTrace().Entity
 
 			if (lookingPly:IsPlayer()) then
@@ -34,11 +35,11 @@ if (SERVER) then
 				end
 
 				player:TakeItem(player:FindItemByID("activated_coal"))
-				cw.player:Notify(player, "Вы дали персонажу активированного угля.")
+				cw.player:Notify(player, L("Diseases_Gave_ActivatedCoal"))
 
 				hook.Run("PlayerHealed", lookingPly, player, self)
 			else
-				cw.player:Notify(player, "Вы должны смотреть на человека!")
+				cw.player:Notify(player, L("Diseases_MustLookAtPerson"))
 
 				return false
 			end

@@ -7,7 +7,7 @@
 --]]
 
 ITEM.name = "Baked Potato"
-ITEM.PrintName = "Печеный картофель"
+ITEM.PrintName = "#Item_BakedPotato_PrintName"
 ITEM.cost = 5
 ITEM.model = "models/bioshockinfinite/hext_potato.mdl"
 ITEM.weight = 0.1
@@ -16,7 +16,7 @@ ITEM.uniqueID = "baked_potato"
 ITEM.useText = "Eat"
 ITEM.category = "Consumables"
 ITEM.business = true
-ITEM.description = "Приятная на ощупь печеная картошка."
+ITEM.description = "#Item_BakedPotato_Description"
 ITEM.hunger = 25
 
 -- Called when a player uses the item.

@@ -5,8 +5,8 @@
 --]]
 
 local COMMAND = cw.command:New("CharSetBodyGroup")
-COMMAND.tip = "Sets player's bodygroup."
-COMMAND.text = "<string Player> <number BodyGroup> [number BodyGroup Value]"
+COMMAND.tip = "#Command_Charsetbodygroup_Description"
+COMMAND.text = "#Command_Charsetbodygroup_Syntax"
 COMMAND.access = "a"
 COMMAND.arguments = 2
 COMMAND.alias = {"SetBodyGroup", "CharBodyGroup"}

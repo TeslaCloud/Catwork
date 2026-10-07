@@ -277,6 +277,12 @@ function cw.directory:GetPanel()
 	return self.panel
 end
 
+-- The category names are used as identifiers, so only their displayed names are language phrases.
+cw.directory:SetFriendlyName("Commands", "#Directory_Commands")
+cw.directory:SetFriendlyName("Plugins", "#Directory_Plugins")
+cw.directory:SetFriendlyName("Flags", "#Directory_Flags")
+cw.directory:SetFriendlyName("Voice Commands", "#Directory_VoiceCommands")
+
 cw.directory:SetCategorySorting("Commands", function(a, b)
 	return (a.sortData or a.htmlCode) < (b.sortData or b.htmlCode)
 end)

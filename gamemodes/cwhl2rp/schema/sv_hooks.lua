@@ -49,7 +49,7 @@ function Schema:EntityHandleMenuOption(player, entity, option, arguments)
 			player:EmitSound("physics/body/body_medium_impact_soft"..math.random(1, 7)..".wav")
 
 			cw.storage:Open(player, {
-				name = "Труп",
+				name = "#Storage_Corpse",
 				weight = 8,
 				entity = entity,
 				distance = 192,
@@ -67,7 +67,7 @@ function Schema:EntityHandleMenuOption(player, entity, option, arguments)
 		player:EmitSound("physics/body/body_medium_impact_soft"..math.random(1, 7)..".wav")
 
 		cw.storage:Open(player, {
-			name = "Вещи",
+			name = "#Storage_Belongings",
 			weight = 100,
 			entity = entity,
 			distance = 192,
@@ -106,12 +106,12 @@ function Schema:EntityHandleMenuOption(player, entity, option, arguments)
 				if (start == 1 and finish > 0 and finish < 10 and decimal > 0 and decimal < 10) then
 					entity:SetFrequency(arguments)
 
-					cw.player:Notify(player, "Вы установили частоту данного радио: "..arguments..".")
+					cw.player:Notify(player, L("Radio_FrequencySetStationary", arguments))
 				else
-					cw.player:Notify(player, "Частота должна быть в диапазоне 101.1 - 199.9!")
+					cw.player:Notify(player, L("Radio_FrequencyRange"))
 				end
 			else
-				cw.player:Notify(player, "Частота должна иметь вид xxx.x!")
+				cw.player:Notify(player, L("Radio_FrequencyFormat"))
 			end
 		elseif (arguments == "cw_radioToggle") then
 			entity:Toggle()
@@ -362,7 +362,7 @@ function Schema:ShowSpare1(player)
 	local itemTable = player:FindItemByID("zip_tie")
 
 	if (!itemTable) then
-		cw.player:Notify(player, "У Вас нет веревки!")
+		cw.player:Notify(player, L("ZipTie_NotOwned"))
 
 		return
 	end
@@ -386,14 +386,14 @@ function Schema:PlayerSpawnProp(player, model)
 				model = string.lower(model)
 
 				if (string.find(model, "bed")) then
-					cw.player:Notify(player, "Вы не состоите в ГСР!")
+					cw.player:Notify(player, L("CWU_NotMember"))
 
 					return false
 				end
 
 				for k, v in pairs(self.cwuProps) do
 					if (string.lower(v) == model) then
-						cw.player:Notify(player, "Вы не состоите в ГСР!")
+						cw.player:Notify(player, L("CWU_NotMember"))
 
 						return false
 					end
@@ -406,7 +406,7 @@ end
 -- Called when a player spawns an object.
 function Schema:PlayerSpawnObject(player)
 	if (player:GetNetVar("tied") != 0 or self.scanners[player]) then
-		cw.player:Notify(player, "Вы не имеете права для совершения этого действия!")
+		cw.player:Notify(player, L("Err_NoPermissionRightNow"))
 
 		return false
 	end
@@ -454,12 +454,12 @@ function Schema:PlayerCanRadio(player, text, listeners, eavesdroppers)
 
 	if (isCombine or player:HasItemByID("handheld_radio") or self.scanners[player]) then
 		if (!isCombine and !player:GetCharacterData("frequency")) then
-			cw.player:Notify(player, "Вам необходимо установить частоту!")
+			cw.player:Notify(player, L("Radio_NeedFrequency"))
 
 			return false
 		end
 	else
-		cw.player:Notify(player, "У Вас нет рации!")
+		cw.player:Notify(player, L("Radio_NotOwned"))
 
 		return false
 	end
@@ -487,7 +487,7 @@ function Schema:PlayerCharacterInitialized(player)
 			end
 		end
 	elseif (faction == FACTION_CITIZEN) then
-		self:AddCombineDisplayLine("Обновление гражданской базы данных...", Color(255, 100, 255, 255))
+		self:AddCombineDisplayLine(L("CombineDisplay_CitizenDatabase"), Color(255, 100, 255, 255))
 	end
 end
 
@@ -693,7 +693,7 @@ function Schema:PlayerCanSwitchCharacter(player, character)
 	end
 
 	if (player:GetNetVar("tied") != 0) then
-		return false, "Вы не можете сменить персонажа, будучи связанным!"
+		return false, L("CantSwitchWhenTied")
 	end
 end
 
@@ -707,7 +707,7 @@ end
 -- Called when a player's character screen info should be adjusted.
 function Schema:PlayerAdjustCharacterScreenInfo(player, character, info)
 	if (character.data["permakilled"]) then
-		info.details = "Этот персонаж перманентно убит."
+		info.details = L("CharScreen_PermaKilled")
 	end
 
 	if (info.faction == FACTION_OTA) then
@@ -716,13 +716,13 @@ function Schema:PlayerAdjustCharacterScreenInfo(player, character, info)
 		end
 
 	--	if self.OTACanUse then
-			info.details = "Overwatch Transhuman Arms в данный момент могут быть задействованы."
+			info.details = L("CharScreen_OTAAvailable")
 	--	else
 	--		info.details = "Overwatch Transhuman Arms в данный момент в стазисе."
 	--	end
 	elseif (self:IsCombineFaction(info.faction)) then
 		if (!self:CanUseCP(player) and self:GetPlayerCombineRank(player) < 6) then
-			info.details = "Доступ запрещен: Слишком много юнитов ГО в сети."
+			info.details = L("CharScreen_TooManyCP")
 		end
 
 		if (self:IsStringCombineRank(info.name, "SCN")) then
@@ -775,7 +775,7 @@ function Schema:PlayerRadioUsed(player, text, listeners, eavesdroppers)
 	end
 
 	if (table.Count(newEavesdroppers) > 0) then
-		chatbox.AddText(newEavesdroppers, text, {suffix = " radios: ", sender = player, isPlayerMessage = true, filter = "ic", radius = 0, textColor = Color(255, 255, 200, 255)})
+		chatbox.AddText(newEavesdroppers, text, {suffix = " #Suffix_StationaryRadio ", sender = player, isPlayerMessage = true, filter = "ic", radius = 0, textColor = Color(255, 255, 200, 255)})
 	end
 end
 
@@ -912,7 +912,7 @@ function Schema:PlayerRestoreData(player, data)
 
 	if (serverWhitelistIdentity != "") then
 		if (!data["serverwhitelist"][serverWhitelistIdentity]) then
-			player:Kick("You aren't whitelisted")
+			player:Kick(cw.lang:GetString("en", "#ServerWhitelist_KickReason"))
 		end
 	end
 end
@@ -935,7 +935,7 @@ end
 -- Called when a player's attribute has been updated.
 function Schema:PlayerAttributeUpdated(player, attributeTable, amount)
 	if (self:PlayerIsCombine(player) and amount and amount > 0) then
-		self:AddCombineDisplayLine("Обновление физ. показателей...", Color(255, 125, 0, 255), player)
+		self:AddCombineDisplayLine(L("CombineDisplay_AttributesUpdated"), Color(255, 125, 0, 255), player)
 	end
 end
 
@@ -956,12 +956,12 @@ end
 -- Called when a player attempts to use a character.
 function Schema:PlayerCanUseCharacter(player, character)
 	if (character.data["permakilled"]) then
-		return character.name.." мёртв и не может быть использован!"
+		return L("CharIsPermaKilled", character.name)
 	--elseif (character.faction == FACTION_OTA) and !self:IsStringCombineRank(character.name, "GUARD") and !self.OTACanUse then
 	--	return "Overwatch Transhuman Arms сейчас в стазисе!"
 	elseif (character.faction == FACTION_MPF) then
 		if (!self:CanUseCP(player) and self:GetPlayerCombineRank(player) < 6) then
-			return "Слишком много юнитов ГО в сети."
+			return L("TooManyCPOnline")
 		end
 
 		if (self:IsStringCombineRank(character.name, "SCN")) then
@@ -976,7 +976,7 @@ function Schema:PlayerCanUseCharacter(player, character)
 			end
 
 			if (amount >= 3) then
-				return "Слишком много сканеров в сети!"
+				return L("TooManyScannersOnline")
 			end
 		end
 	end
@@ -994,7 +994,7 @@ function Schema:PlayerCanUseCommand(player, commandTable, arguments)
 		}
 
 		if (table.HasValue(blacklisted, commandTable.name)) then
-			cw.player:Notify(player, "Вы не можете использовать эту команду, будучи связанным!")
+			cw.player:Notify(player, L("CantUseCommandWhenTied"))
 
 			return false
 		end
@@ -1034,37 +1034,37 @@ end
 -- Called when a player attempts to change class.
 function Schema:PlayerCanChangeClass(player, class)
 	if (player:GetNetVar("tied") != 0) then
-		cw.player:Notify(player, "Вы не можете сменить класс, будучи связанным!")
+		cw.player:Notify(player, L("CantChangeClassWhenTied"))
 
 		return false
 	elseif (self:PlayerIsCombine(player)) then
 		if (class == CLASS_MPS and !self:IsPlayerCombineRank(player, "SCN")) then
-			cw.player:Notify(player, "Ваш ранг слишком низок.")
+			cw.player:Notify(player, L("CombineRank_TooLow"))
 
 			return false
 		elseif (class == CLASS_MPR and !self:IsPlayerCombineRank(player, "RCT")) then
-			cw.player:Notify(player, "Ваш ранг слишком низок.")
+			cw.player:Notify(player, L("CombineRank_TooLow"))
 
 			return false
 		elseif (class == CLASS_EMP and !self:IsPlayerCombineRank(player, "EpU")) then
-			cw.player:Notify(player, "Ваш ранг слишком низок.")
+			cw.player:Notify(player, L("CombineRank_TooLow"))
 
 			return false
 		elseif (class == CLASS_OWS and !self:IsPlayerCombineRank(player, "OWS")) then
-			cw.player:Notify(player, "Ваш ранг слишком низок.")
+			cw.player:Notify(player, L("CombineRank_TooLow"))
 
 			return false
 		elseif (class == CLASS_EOW and !self:IsPlayerCombineRank(player, "EOW")) then
-			cw.player:Notify(player, "Ваш ранг слишком низок.")
+			cw.player:Notify(player, L("CombineRank_TooLow"))
 
 			return false
 		elseif (class == CLASS_MPU) then
 			if (self:IsPlayerCombineRank(player, "EpU")) then
-				cw.player:Notify(player, "Ваш ранг слишком высок.")
+				cw.player:Notify(player, L("CombineRank_TooHigh"))
 
 				return false
 			elseif (self:IsPlayerCombineRank(player, "RCT")) then
-				cw.player:Notify(player, "Ваш ранг слишком низок.")
+				cw.player:Notify(player, L("CombineRank_TooLow"))
 
 				return false
 			end
@@ -1141,13 +1141,13 @@ end
 function Schema:PlayerCanDestroyItem(player, itemTable, noMessage)
 	if (self.scanners[player]) then
 		if (!noMessage) then
-			cw.player:Notify(player, "Вы не можете уничтожать предметы, будучи сканером!")
+			cw.player:Notify(player, L("Scanner_CantDestroyItems"))
 		end
 
 		return false
 	elseif (player:GetNetVar("tied") != 0) then
 		if (!noMessage) then
-			cw.player:Notify(player, "Вы не можете уничтожать предметы, будучи связанным.")
+			cw.player:Notify(player, L("Tied_CantDestroyItems"))
 		end
 
 		return false
@@ -1158,13 +1158,13 @@ end
 function Schema:PlayerCanDropItem(player, itemTable, noMessage)
 	if (self.scanners[player]) then
 		if (!noMessage) then
-			cw.player:Notify(player, "Вы не можете выбрасывать предметы, будучи сканером.")
+			cw.player:Notify(player, L("Scanner_CantDropItems"))
 		end
 
 		return false
 	elseif (player:GetNetVar("tied") != 0) then
 		if (!noMessage) then
-			cw.player:Notify(player, "Вы не можете выбрасывать предметы, будучи связанным.")
+			cw.player:Notify(player, L("Tied_CantDropItems"))
 		end
 
 		return false
@@ -1175,13 +1175,13 @@ end
 function Schema:PlayerCanUseItem(player, itemTable, noMessage)
 	if (self.scanners[player]) then
 		if (!noMessage) then
-			cw.player:Notify(player, "Вы не можете использовать предметы, будучи сканером.")
+			cw.player:Notify(player, L("Scanner_CantUseItems"))
 		end
 
 		return false
 	elseif (player:GetNetVar("tied") != 0) then
 		if (!noMessage) then
-			cw.player:Notify(player, "Вы не можете использовать предметы, будучи связанным.")
+			cw.player:Notify(player, L("Tied_CantUseItems"))
 		end
 
 		return false
@@ -1212,13 +1212,13 @@ function Schema:PlayerCanUseItem(player, itemTable, noMessage)
 		if (itemTable.weight >= 1) then
 			if (itemTable.weight <= 2) then
 				if (secondaryWeapon) then
-					fault = "Вы не можете использовать еще одно второстепенное оружие."
+					fault = L("Weapon_CantUseAnotherSecondary")
 				end
 			elseif (primaryWeapon) then
-				fault = "Вы не можете использовать еще одно второстепенное оружие."
+				fault = L("Weapon_CantUseAnotherPrimary")
 			end
 		elseif (sideWeapon) then
-			fault = "Вы не можете использовать еще одно оружие ближнего боя."
+			fault = L("Weapon_CantUseAnotherMelee")
 		end
 
 		if (fault) then
@@ -1349,10 +1349,10 @@ function Schema:PlayerDestroyGenerator(player, entity, generator)
 		end
 
 		for k, v in pairs(players) do
-			cw.player:GiveCash(v, generator.cash / 4, "уничтожение "..string.lower(generator.name))
+			cw.player:GiveCash(v, generator.cash / 4, L("CashReason_DestroyGenerator", string.lower(generator.name)))
 		end
 	else
-		cw.player:GiveCash(v, generator.cash / 4, "уничтожение "..string.lower(generator.name))
+		cw.player:GiveCash(v, generator.cash / 4, L("CashReason_DestroyGenerator", string.lower(generator.name)))
 	end
 end
 
@@ -1424,7 +1424,7 @@ function Schema:PlayerDeath(player, inflictor, attacker, damageInfo)
 
 		player:SetCharacterData("cash", math.Round(player:GetCash() * math.random(40, 60) * 0.01), true)
 
-		cw.player:Notify(player, "Вы потеряли деньги и некоторые вещи.")
+		cw.player:Notify(player, L("Death_LostCashAndItems"))
 	end
 end
 
@@ -1639,8 +1639,8 @@ function Schema:EntityTakeDamage(entity, damageInfo)
 				if (!player.nextUnderFire or curTime >= player.nextUnderFire) then
 					player.nextUnderFire = curTime + 15
 
-					Schema:AddCombineDisplayLine("Загрузка данных травмы...", Color(255, 255, 255, 255), nil, player)
-					Schema:AddCombineDisplayLine("ВНИМАНИЕ! Юнит получил тяжелую травму в локации "..location.."...", Color(255, 0, 0, 255), nil, player)
+					Schema:AddCombineDisplayLine(L("CombineDisplay_TraumaData"), Color(255, 255, 255, 255), nil, player)
+					Schema:AddCombineDisplayLine(L("CombineDisplay_UnitTrauma", location), Color(255, 0, 0, 255), nil, player)
 				end
 			end
 		end

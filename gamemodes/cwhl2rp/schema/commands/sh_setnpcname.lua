@@ -23,10 +23,10 @@ function COMMAND:OnRun(player, arguments)
 			target:SetNWString("cw_Name", arguments[1])
 			target:SetNWString("cw_Title", arguments[2])
 		else
-			cw.player:Notify(player, "This NPC is too far away!")
+			cw.player:Notify(player, L("Err_NPCTooFar"))
 		end
 	else
-		cw.player:Notify(player, "You must look at an NPC!")
+		cw.player:Notify(player, L("Err_MustLookAtNPC"))
 	end
 end
 

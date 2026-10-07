@@ -7,7 +7,7 @@
 --]]
 
 local COMMAND = cw.command:New("MapSceneRemove")
-COMMAND.tip = "Remove map scenes at your current position."
+COMMAND.tip = "#Command_Mapsceneremove_Description"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "a"
 
@@ -27,15 +27,15 @@ function COMMAND:OnRun(player, arguments)
 
 		if (removed > 0) then
 			if (removed == 1) then
-				cw.player:Notify(player, "You have removed "..removed.." map scene.")
+				cw.player:Notify(player, L("MapScene_RemovedOne", removed))
 			else
-				cw.player:Notify(player, "You have removed "..removed.." map scenes.")
+				cw.player:Notify(player, L("MapScene_RemovedMany", removed))
 			end
 		else
-			cw.player:Notify(player, "There were no map scenes near this position.")
+			cw.player:Notify(player, L("MapScene_NoneNear"))
 		end
 	else
-		cw.player:Notify(player, "There are no map scenes.")
+		cw.player:Notify(player, L("MapScene_None"))
 	end
 end
 

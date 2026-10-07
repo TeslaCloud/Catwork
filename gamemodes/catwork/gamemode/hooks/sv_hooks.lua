@@ -539,7 +539,7 @@ end
 function GM:PlayerCanTakeFromStorage(player, storageTable, itemTable)
 	if (itemTable.cwPropertyTab) then
 		if (cw.entity:BelongsToAnotherCharacter(player, itemTable)) then
-			cw.player:Notify(player, L"#CantTakeOthersCharactersItems")
+			cw.player:Notify(player, L"CantTakeOthersCharactersItems")
 			cw.core:PrintLog(LOGTYPE_MAJOR, player:Name().." has attempted to take an item stored by another character.")
 
 			return false
@@ -977,7 +977,7 @@ function GM:CheckPassword(steamID, ipAddress, svPassword, clPassword, name)
 				minutesLeft = tostring(minutesLeft)
 
 				bannedMessage = string.gsub(bannedMessage, "!t", minutesLeft)
-				bannedMessage = string.gsub(bannedMessage, "!f", "minutes(s)")
+				bannedMessage = string.gsub(bannedMessage, "!f", "minute(s)")
 			else
 				timeLeft = tostring(timeLeft)
 
@@ -1014,7 +1014,7 @@ end
 
 function GM:PlayerCanInteractCharacter(player, action, character)
 	if (cw.quiz:GetEnabled() and !cw.quiz:GetCompleted(player)) then
-		return false, 'Вы допустили ошибки в тесте!'
+		return false, L"CharFault_QuizFailed"
 	else
 		return true
 	end
@@ -1145,7 +1145,7 @@ end
 -- Called when a player attempts to create a character.
 function GM:PlayerCanCreateCharacter(player, character, characterID)
 	if (cw.quiz:GetEnabled() and !cw.quiz:GetCompleted(player)) then
-		return "Вы не прошли тестирование!"
+		return L"CharFault_QuizNotCompleted"
 	else
 		return true
 	end
@@ -1585,9 +1585,9 @@ function GM:PlayerCanDeleteCharacter(player, character) end
 -- Called when a player attempts to switch to a character.
 function GM:PlayerCanSwitchCharacter(player, character)
 	if (!player:Alive() and !player:IsCharacterMenuReset() and !player:GetNetVar("CharBanned")) then
-		return L"#CantSwitchWhenDead"
+		return L"CantSwitchWhenDead"
 	elseif (player:GetRagdollState() == RAGDOLL_KNOCKEDOUT) then
-		return L"#CantSwitchWhenUnc"
+		return L"CantSwitchWhenUnc"
 	end
 
 	return true
@@ -1596,7 +1596,7 @@ end
 -- Called when a player attempts to use a character.
 function GM:PlayerCanUseCharacter(player, character)
 	if (character.data["CharBanned"]) then
-		return character.name..L"#CharIsBanned"
+		return character.name..L"CharIsBanned"
 	end
 
 	local faction = faction.FindByID(character.faction)
@@ -1619,11 +1619,11 @@ function GM:PlayerCanUseCharacter(player, character)
 	end
 
 	if (faction.playerLimit and factionCount >= faction.playerLimit) then
-		return L"#TooManyCharFaction"
+		return L"TooManyCharFaction"
 	end
 
 	if (rank and rank.playerLimit and rankCount >= rank.playerLimit) then
-		return L"#TooManyCharClass"
+		return L"TooManyCharClass"
 	end
 end
 
@@ -2405,7 +2405,7 @@ function GM:EntityHandleMenuOption(player, entity, option, arguments)
 		player:EmitSound("physics/body/body_medium_impact_soft"..math.random(1, 7)..".wav")
 
 		cw.storage:Open(player, {
-			name = "Belongings",
+			name = "#Storage_Belongings",
 			cash = entity.cwCash,
 			weight = 100,
 			space = 200,
@@ -2437,7 +2437,7 @@ function GM:EntityHandleMenuOption(player, entity, option, arguments)
 		player:FakePickup(entity)
 
 		cw.storage:Open(player, {
-			name = "Shipment",
+			name = "#Storage_Shipment",
 			weight = entity.cwWeight,
 			space = entity.cwSpace,
 			entity = entity,
@@ -2477,7 +2477,7 @@ function GM:PlayerSpawnedProp(player, model, entity)
 
 		if (scalePropCost > 0) then
 			local cost = math.ceil(math.max((entity:BoundingRadius() / 2) * scalePropCost, 1))
-			local info = {cost = cost, name = "Prop"}
+			local info = {cost = cost, name = L"PropCost_Name"}
 
 			hook.Run("PlayerAdjustPropCostInfo", player, entity, info)
 

@@ -1,7 +1,7 @@
 local PLUGIN = PLUGIN
 
 local COMMAND = cw.command:New("EntPermaRemove")
-COMMAND.tip = "Permanently Remove an entity. (Warning! Be super careful with this.)"
+COMMAND.tip = "#Command_Entpermaremove_Description"
 COMMAND.text = "<none>"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "s"
@@ -21,9 +21,9 @@ function COMMAND:OnRun(player, arguments)
 		PLUGIN:SaveRemoves()
 		ent:Remove()
 
-		cw.player:Notify(player, "This entity will no longer spawn.")
+		cw.player:Notify(player, L("PermaRemove_Removed"))
 	else
-		cw.player:Notify(player, "This is not a valid entity!")
+		cw.player:Notify(player, L("PermaRemove_NotValidEntity"))
 	end
 end
 

@@ -155,34 +155,34 @@ function cw.hint:Get()
 	end
 end
 
-cw.hint:Add("OOC", "Введите // перед вашим сообщением, чтобы написать в общий чат (ООС).")
-cw.hint:Add("LOOC", "Введите .// или [[ перед вашим сообщением, чтобы писать в локальный чат (LOOC).")
-cw.hint:Add("Ducking", "Зажмите :+speed: и нажмите :+walk:, пока стоите на месте, чтобы пригнуться.")
-cw.hint:Add("Directory", "Нажмите :+showscores: и кликните на кнопку 'Помощь' для получения необходимой информации.")
-cw.hint:Add("F1 Hotkey", "Нажмите :gm_showhelp:, чтобы посмотреть информацию о Вашем персонаже.")
-cw.hint:Add("F2 Hotkey", "Нажмите :gm_showteam:, пока смотрите на дверь, чтобы открыть меню двери.")
-cw.hint:Add("Tab Hotkey", "Нажмите или зажмите :+showscores:, чтобы открыть главное меню.")
+cw.hint:Add("OOC", "#Hints_OOC")
+cw.hint:Add("LOOC", "#Hints_LOOC")
+cw.hint:Add("Ducking", "#Hints_Ducking")
+cw.hint:Add("Directory", "#Hints_Directory")
+cw.hint:Add("F1 Hotkey", "#Hints_F1_Hotkey")
+cw.hint:Add("F2 Hotkey", "#Hints_F2_Hotkey")
+cw.hint:Add("Tab Hotkey", "#Hints_Tab_Hotkey")
 
-cw.hint:Add("Context Menu", "Зажмите :+menu_context: и нажмите на предмет правой кнопкой мыши, чтобы открыть меню действий над предметом.", function(player)
+cw.hint:Add("Context Menu", "#Hints_Context_Menu", function(player)
 	return !config.Get("use_opens_entity_menus"):Get()
 end)
 
-cw.hint:Add("Entity Menu", "Нажмите :+use:, смотря на предмет, чтобы открыть меню действий над предметом.", function(player)
+cw.hint:Add("Entity Menu", "#Hints_Entity_Menu", function(player)
 	return config.Get("use_opens_entity_menus"):Get()
 end)
 
-cw.hint:Add("Phys Desc", "Изменить физическое описание Вашего персонажа можно с помощью команды $command_prefix$CharPhysDesc.", function(player)
+cw.hint:Add("Phys Desc", "#Hints_Phys_Desc", function(player)
 	return cw.command:FindByID("CharPhysDesc") != nil
 end)
 
-cw.hint:Add("Give Name", "Нажмите :gm_showteam:, чтобы разрешить персонажам в определённом радиусе узнавать Вас.", function(player)
+cw.hint:Add("Give Name", "#Hints_Give_Name", function(player)
 	return config.Get("recognise_system"):Get()
 end)
 
-cw.hint:Add("Raise Weapon", "Зажмите :+reload:, чтобы поднять или опустить Ваше оружие.", function(player)
+cw.hint:Add("Raise Weapon", "#Hint_Raise_Weapon", function(player)
 	return config.Get("raised_weapon_system"):Get()
 end)
 
-cw.hint:Add("Target R	cognises", "Имя персонажа будет мигать белым цветом, если он не представился Вам.", function(player)
+cw.hint:Add("Target Recognises", "#Hint_Target_Recognises", function(player)
 	return config.Get("recognise_system"):Get()
 end);

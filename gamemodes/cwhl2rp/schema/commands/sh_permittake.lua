@@ -23,21 +23,21 @@ function COMMAND:OnRun(player, arguments)
 							cw.player:TakeFlags(target, v)
 						end
 
-						cw.player:Notify(player, "You have taken this character's permit(s)!")
+						cw.player:Notify(player, L("Permit_Taken"))
 					else
-						cw.player:Notify(player, "This character is not a citizen!")
+						cw.player:Notify(player, L("Err_CharacterNotCitizen"))
 					end
 				else
-					cw.player:Notify(player, "This character is too far away!")
+					cw.player:Notify(player, L("Err_CharacterTooFar"))
 				end
 			else
-				cw.player:Notify(player, "You must look at a character!")
+				cw.player:Notify(player, L("Err_MustLookAtCharacter"))
 			end
 		else
-			cw.player:Notify(player, "You are not ranked high enough for this!")
+			cw.player:Notify(player, L("CombineRank_TooLowAction"))
 		end
 	else
-		cw.player:Notify(player, "You are not the Combine!")
+		cw.player:Notify(player, L("Err_NotCombine"))
 	end
 end
 

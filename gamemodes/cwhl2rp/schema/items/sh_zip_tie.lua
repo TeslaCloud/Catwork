@@ -18,9 +18,9 @@ langEn["#Zip_Tie_IsTied"] = "This character is already tied!"
 langEn["#Zip_Tie_NotValidChar"] = "That is not a valid character!"
 langEn["Tie"] = "Tie"
 
-langRu["#Zip_Tie_IsTying"] = "Вы уже связали этого персонажа!"
+langRu["#Zip_Tie_IsTying"] = "Вы уже связываете персонажа!"
 langRu["#Zip_Tie_LostContactInformation1"] = "Загружается информация о потерянной связи..."
-langEn["#Zip_Tie_LostContactInformation2"] = "ВНИМАНИЕ! Юнит потерял радиосвязь в #1 ..."
+langRu["#Zip_Tie_LostContactInformation2"] = "ВНИМАНИЕ! Юнит потерял радиосвязь в #1 ..."
 langRu["#Zip_Tie_IsFacting"] = "Вы не можете связать персонажа, который смотрит на вас!"
 langRu["#Zip_Tie_IsFarAway"] = "Этот персонаж слишком далеко!"
 langRu["#Zip_Tie_IsTied"] = "Этот персонаж уже связан"
@@ -42,7 +42,7 @@ ITEM.description = "#ITEM_Zip_Tie_Desc"
 -- Called when a player uses the item.
 function ITEM:OnUse(player, itemEntity)
 	if (player.isTying) then
-		cw.player:Notify(player, "You are already tying a character!")
+		cw.player:Notify(player, L("Zip_Tie_IsTying"))
 
 		return false
 	else
@@ -70,8 +70,8 @@ function ITEM:OnUse(player, itemEntity)
 								if (Schema:PlayerIsCombine(target)) then
 									local location = Schema:PlayerGetLocation(player)
 
-									Schema:AddCombineDisplayLine(cw.lang:TranslateText("#Zip_Tie_LostContactInformation1"), Color(255, 255, 255, 255), nil, player)
-									Schema:AddCombineDisplayLine(cw.lang:TranslateText("#Zip_Tie_LostContactInformation2", location), Color(255, 0, 0, 255), nil, player)
+									Schema:AddCombineDisplayLine(L("Zip_Tie_LostContactInformation1"), Color(255, 255, 255, 255), nil, player)
+									Schema:AddCombineDisplayLine(L("Zip_Tie_LostContactInformation2", location), Color(255, 0, 0, 255), nil, player)
 								end
 
 								player:TakeItem(self)
@@ -114,7 +114,7 @@ end
 -- Called when a player drops the item.
 function ITEM:OnDrop(player, position)
 	if (player.isTying) then
-		cw.player:Notify(player, "You are currently tying a character!")
+		cw.player:Notify(player, L("Zip_Tie_CantDropWhileTying"))
 
 		return false
 	end

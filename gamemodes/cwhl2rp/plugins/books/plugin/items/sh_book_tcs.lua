@@ -9,17 +9,18 @@
 ITEM.baseItem = "book_base"
 ITEM.cost = 8
 ITEM.name = "The Cat Strangler"
+ITEM.PrintName = "#Item_BookTcs_PrintName"
 ITEM.model = "models/props_lab/binderredlabel.mdl"
 ITEM.uniqueID = "book_tcs"
 ITEM.business = true
-ITEM.description = "A book about a man who strangles cats, or something."
+ITEM.description = "#Item_BookTcs_Description"
 ITEM.bookInformation = [[
 <font color='red' size='4'>Written by Richard K. Weems.</font>
 
 <font size = '+2'>I</font>t starts with the usual growls: the feline handled roughly by the
 scruff. The Cat Strangler is at it again.
 
-A slight struggle, a practice squeeze and others methods of
+A slight struggle, a practice squeeze and other methods of
 impersonal handling, and off he goes. The neighborhood collectively
 shrugs its shoulders in hope of shutting out the yeowls and the hisses
 stretched into high pitch by the Cat Strangler's strong, trained hands.
@@ -69,7 +70,7 @@ unceremonious fashion. He takes it to a deep wood, as far as his car
 will allow, and empties the bag onto a pile of expired brethren, cats
 piled upon cats piled upon cats piled upon cats, tongues stuck out in
 strangulation horror. The pile writhes in minute, maggot-infested
-rhythm. When the Cat Stranlger departs, waiting minions of sporting
+rhythm. When the Cat Strangler departs, waiting minions of sporting
 equipment manufacturers raid the pile of former felines for the making of
 tennis rackets. These rackets are placed into the able hands of
 strong-bodied, gleaming white tennis players, who swing into furious

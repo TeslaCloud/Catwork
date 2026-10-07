@@ -7,8 +7,8 @@
 --]]
 
 local COMMAND = cw.command:New("ContFill")
-COMMAND.tip = "Fill a container with random items."
-COMMAND.text = "<number Density: 1-5> [string Category]"
+COMMAND.tip = "#Command_Contfill_Description"
+COMMAND.text = "#Command_Contfill_Syntax"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "s"
 COMMAND.arguments = 1
@@ -51,23 +51,23 @@ function COMMAND:OnRun(player, arguments)
 
 						cwStorage:SaveStorage()
 
-						cw.player:Notify(player, "This container has been filled with random items.")
+						cw.player:Notify(player, L("Container_Filled"))
 						return
 					else
-						cw.player:Notify(player, "That category doesn't exist!")
+						cw.player:Notify(player, L("Container_CategoryNotExist"))
 						return
 					end
 				end
 
-				cw.player:Notify(player, "This is not a valid container!")
+				cw.player:Notify(player, L("Container_NotValid"))
 			else
-				cw.player:Notify(player, "This is not a valid container!")
+				cw.player:Notify(player, L("Container_NotValid"))
 			end
 		else
-			cw.player:Notify(player, "This is not a valid container!")
+			cw.player:Notify(player, L("Container_NotValid"))
 		end
 	else
-		cw.player:Notify(player, "This is not a valid scale!")
+		cw.player:Notify(player, L("Container_NotValidScale"))
 	end
 end
 

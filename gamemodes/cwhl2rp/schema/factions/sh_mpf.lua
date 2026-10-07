@@ -34,7 +34,7 @@ function FACTION:OnTransferred(player, faction, name)
 		if (name) then
 			cw.player:SetName(player, string.gsub(player:QueryCharacter("name"), ".+(%d%d%d%d%d)", " CP.C24.RCT:%1"), true)
 		else
-			return false, "You need to specify a name as the third argument!"
+			return false, L("FactionTransfer_NeedName")
 		end
 	else
 		cw.player:SetName(player, self:GetName(player, player:GetCharacter()))

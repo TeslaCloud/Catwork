@@ -15,7 +15,7 @@ function COMMAND:OnRun(player, arguments)
 	netvars.SetNetVar("PKMode", 0)
 	timer.Remove("pk_mode")
 
-	cw.player:NotifyAll(player:Name().." has turned off perma-kill mode, you are safe now.")
+	cw.player:NotifyAll(L("PKMode_Off", player:Name()))
 end
 
 COMMAND:Register();

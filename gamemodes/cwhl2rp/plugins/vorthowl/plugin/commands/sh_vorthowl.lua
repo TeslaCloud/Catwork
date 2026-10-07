@@ -1,6 +1,6 @@
 COMMAND = cw.command:New("VortHowl")
-COMMAND.tip = "Scream across the city in vortish. Yay."
-COMMAND.text = "<string Text>"
+COMMAND.tip = "#Command_Vorthowl_Description"
+COMMAND.text = "#Command_Vorthowl_Syntax"
 COMMAND.arguments = 1
 COMMAND.alias = {"vhowl"}
 
@@ -29,23 +29,23 @@ function COMMAND:OnRun(player, arguments)
 			end
 		end
 
-		chatbox.AddText(vorts, "\""..table.concat(arguments, " ").."\"", {suffix = " shouts in Vortigeese ", sender = player, isPlayerMessage = true, filter = "ic", radius = 99999, textColor = Color(220, 110, 110, 255)})
-		chatbox.AddText(people, "shouts something in Vortigeese.", {sender = player, isPlayerMessage = true, filter = "ic", radius = 500, textColor = Color(160, 160, 160, 255)})
+		chatbox.AddText(vorts, "\""..table.concat(arguments, " ").."\"", {suffix = " #VortHowl_ShoutsSuffix ", sender = player, isPlayerMessage = true, filter = "ic", radius = 99999, textColor = Color(220, 110, 110, 255)})
+		chatbox.AddText(people, "shouts something in Vortigese.", {sender = player, isPlayerMessage = true, filter = "ic", radius = 500, textColor = Color(160, 160, 160, 255)})
 	else
 		if (!player:IsCombine()) then
 			if (faction != FACTION_CWU) then
 				if (faction == FACTION_ADMIN) then
-					cw.player:Notify(player, "You try to scream on top of your lungs and then you remember that you left the city broadcaster on...")
+					cw.player:Notify(player, L("VortHowl_Admin"))
 
 					Schema:SayBroadcast(player, table.concat(arguments, " "))
 				else
-					cw.player:Notify(player, "You try to scream on top of your lungs. You get awkward stares from people around you.")
+					cw.player:Notify(player, L("VortHowl_Citizen"))
 				end
 			else
-				cw.player:Notify(player, "As you're about to scream on top of your lungs, you remember that you're CWU.")
+				cw.player:Notify(player, L("VortHowl_CWU"))
 			end
 		else
-			cw.player:Notify(player, "You try to scream on top of your lungs. You sound kinda like Darth Vader's 'NOOOOOOOO'.")
+			cw.player:Notify(player, L("VortHowl_Combine"))
 		end
 	end
 end

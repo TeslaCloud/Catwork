@@ -31,22 +31,22 @@ function ITEM:OnUse(player, itemEntity)
 
 					breach:SetBreachEntity(entity, trace)
 				else
-					cw.player:Notify(player, "This entity cannot be breached!")
+					cw.player:Notify(player, L("Item_Breach_CantBreach"))
 
 					return false
 				end
 			else
-				cw.player:Notify(player, "This entity already has a breach!")
+				cw.player:Notify(player, L("Item_Breach_AlreadyBreached"))
 
 				return false
 			end
 		else
-			cw.player:Notify(player, "You are not close enough to the entity!")
+			cw.player:Notify(player, L("Item_Breach_NotCloseEnough"))
 
 			return false
 		end
 	else
-		cw.player:Notify(player, "That is not a valid entity!")
+		cw.player:Notify(player, L("Item_Breach_NotValidEntity"))
 
 		return false
 	end

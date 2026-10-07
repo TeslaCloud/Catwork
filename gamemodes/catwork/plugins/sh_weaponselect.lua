@@ -72,13 +72,13 @@ function PLUGIN:DrawWeaponInformation(itemTable, weapon, x, y, alpha)
 
 	if (!weapon.Primary or !weapon.Primary.ClipSize or weapon.Primary.ClipSize > 0) then
 		if (clipOne >= 0) then
-			primaryAmmo = "Primary: "..clipOne.."/"..clipOneAmount.."."
+			primaryAmmo = L"Primary: "..clipOne.."/"..clipOneAmount.."."
 		end
 	end
 
 	if (!weapon.Secondary or !weapon.Secondary.ClipSize or weapon.Secondary.ClipSize > 0) then
 		if (clipTwo >= 0) then
-			secondaryAmmo = "Secondary: "..clipTwo.."/"..clipTwoAmount.."."
+			secondaryAmmo = L"Secondary: "..clipTwo.."/"..clipTwoAmount.."."
 		end
 	end
 
@@ -244,7 +244,7 @@ function PLUGIN:HUDPaint()
 				textColor = cw.option:GetColor("information")
 			end
 
-			surface.DrawScaledText((IsValid(v.weapon) and v.weapon:GetPrintName():utf8upper()) or "Unknown Weapon", cw.option:GetFont("menu_text_tiny"), v.x, v.y, v.scale, textColor)
+			surface.DrawScaledText((IsValid(v.weapon) and v.weapon:GetPrintName():utf8upper()) or "#WeaponSelect_UnknownWeapon", cw.option:GetFont("menu_text_tiny"), v.x, v.y, v.scale, textColor)
 		end
 
 		render.SetScissorRect(0, 0, 0, 0, false)

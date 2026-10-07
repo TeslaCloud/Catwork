@@ -20,7 +20,7 @@ function COMMAND:OnRun(player, arguments)
 	if (target) then
 		local name = table.concat(arguments, " ", 2)
 
-		cw.player:NotifyAll(player:Name().." set "..target:Name().."'s name to "..name..".")
+		cw.player:NotifyAll(L("Command_Charsetname_Set", player:Name(), target:Name(), name))
 
 		cw.player:SetName(target, name)
 	else

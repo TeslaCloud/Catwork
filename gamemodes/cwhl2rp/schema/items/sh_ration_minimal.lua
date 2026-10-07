@@ -18,7 +18,7 @@ ITEM.description = "#ITEM_Minimal_Tier_Ration_Packet_Desc"
 function ITEM:CanPickup(player, quickUse, itemEntity)
 	if (quickUse) then
 		if (!player:CanHoldWeight(self.weight)) then
-			cw.player:Notify(player, "You do not have enough inventory space!")
+			cw.player:Notify(player, L("NoSpace"))
 
 			return false
 		end
@@ -27,7 +27,7 @@ end
 
 -- Called when a player uses the item.
 function ITEM:OnUse(player, itemEntity)
-	cw.player:GiveCash(player, 20, "рацион")
+	cw.player:GiveCash(player, 20, L("Item_Ration_CashReason"))
 
 	player:GiveItem(item.CreateInstance("citizen_supplements"), true)
 

@@ -104,13 +104,13 @@ function ENT:DrawTranslucent()
 					surface.SetTextColor(100, 100, 255)
 					surface.SetFont("_CMB_FONT_1")
 					surface.SetTextPos(20, 15)
-					surface.DrawText("Информационный стенд")
+					surface.DrawText("#CombineMonitor_Title")
 					surface.SetTextPos(90, 35)
 					surface.DrawText(Schema.City)
 					surface.SetTextColor(100, 100, 255, glow_text)
 					surface.SetFont("_CMB_FONT_1")
 					surface.SetTextPos(16, 256 - 128 - 4)
-					surface.DrawText("Ожидается ввод данных...")
+					surface.DrawText("#CombineMonitor_Waiting")
 				else
 					local data = self:GetNetVar("userData", {})
 
@@ -130,7 +130,7 @@ function ENT:DrawTranslucent()
 						surface.SetFont("_CMB_FONT_1")
 
 						surface.SetTextPos(20, 15)
-						surface.DrawText("Информационный стенд")
+						surface.DrawText("#CombineMonitor_Title")
 
 						surface.SetTextPos(90, 35)
 						surface.DrawText(Schema.City)
@@ -139,35 +139,35 @@ function ENT:DrawTranslucent()
 						surface.SetFont("_CMB_FONT_2")
 
 						surface.SetTextPos(18, 65)
-						surface.DrawText("Имя: "..data.name)
+						surface.DrawText(L("#CombineMonitor_Name")..": "..data.name)
 
 						surface.SetTextPos(18, 85)
-						surface.DrawText("Идентификатор: #"..data.citizenID)
+						surface.DrawText(L("#CombineMonitor_ID")..": #"..data.citizenID)
 
 						surface.SetTextPos(18, 85 + offset)
-						surface.DrawText("Лояльность: "..data.lp)
+						surface.DrawText(L("#CombineMonitor_Loyalty")..": "..data.lp)
 
 						surface.SetTextPos(18, 85 + (offset * 2))
-						surface.DrawText("Нарушения: "..data.cp)
+						surface.DrawText(L("#CombineMonitor_Violations")..": "..data.cp)
 
 						surface.SetTextPos(18, 85 + (offset * 3))
-						surface.DrawText("Труд: "..data.wp.." ("..data.workLevel.." ур.)")
+						surface.DrawText(L("#CombineMonitor_Work:"..data.wp..","..data.workLevel..";"))
 
 						surface.SetTextPos(18, 85 + (offset * 4))
-						surface.DrawText("Статус: "..data.status)
+						surface.DrawText(L("#CombineMonitor_Status")..": "..data.status)
 
 						surface.SetTextPos(18, 85 + (offset * 5))
-						surface.DrawText("Прописка:\n"..string.utf8upper(data.residence))
+						surface.DrawText(L("#CombineMonitor_Residence")..":\n"..string.utf8upper(data.residence))
 
 						surface.SetTextPos(18, 85 + (offset * 6))
-						surface.DrawText("Гражд. фракция: "..string.utf8upper(data.job))
+						surface.DrawText(L("#CombineMonitor_Job")..": "..string.utf8upper(data.job))
 
 						if (data.status == "#Status_Unverified") then
 							surface.SetTextPos(18, 85 + (offset * 7))
-							surface.DrawText("Подтвердите свой статус")
+							surface.DrawText("#CombineMonitor_VerifyStatus")
 
 							surface.SetTextPos(68, 76 + (offset * 8))
-							surface.DrawText("В отделе ГСР")
+							surface.DrawText("#CombineMonitor_AtCWU")
 						end
 
 						surface.SetDrawColor(100, 100, 255)

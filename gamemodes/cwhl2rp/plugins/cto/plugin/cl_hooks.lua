@@ -95,7 +95,7 @@ function cwCTO:HUDPaintForeground()
 					timeSince = timeSince .. string.rep(0, (string.len(math.floor(timeSince)) + 3) - string.len(timeSince))
 
 					if (data.isLost) then
-						local text2 = "<:: Потерян " .. timeSince .. "с ::>"
+						local text2 = "<:: " .. L("#CTO_HUD_Lost:" .. timeSince .. ";") .. " ::>"
 
 						local timeUntil = math.Round((120 - (curTime - data.time)), 2)
 						timeUntil = timeUntil .. string.rep(0, (string.len(math.floor(timeUntil)) + 3) - string.len(timeUntil))
@@ -104,16 +104,16 @@ function cwCTO:HUDPaintForeground()
 						toScreen.y = toScreen.y + fontHeight
 						draw.SimpleText(text2, "BudgetLabel", toScreen.x, toScreen.y, colorRed, 1, 1)
 						toScreen.y = toScreen.y + fontHeight
-						draw.SimpleText("<:: Удаление " .. timeUntil .. "с ::>", "BudgetLabel", toScreen.x, toScreen.y, colorRed, 1, 1)
+						draw.SimpleText("<:: " .. L("#CTO_HUD_Removal:" .. timeUntil .. ";") .. " ::>", "BudgetLabel", toScreen.x, toScreen.y, colorRed, 1, 1)
 					else
-						local text2 = "<:: Получен " .. timeSince .. "с ::>"
+						local text2 = "<:: " .. L("#CTO_HUD_Received:" .. timeSince .. ";") .. " ::>"
 						draw.SimpleText(text, "BudgetLabel", toScreen.x, toScreen.y, color, 1, 1)
 						toScreen.y = toScreen.y + fontHeight
 						draw.SimpleText(showDetail and text2 or lowDetailText, "BudgetLabel", toScreen.x, toScreen.y, colorWhite, 1, 1)
 
 						if (data.isKnockedOut) then
 							toScreen.y = toScreen.y + fontHeight
-							draw.SimpleText("<:: Без сознания ::>", "BudgetLabel", toScreen.x, toScreen.y, colorRed, 1, 1)
+							draw.SimpleText("<:: #CTO_HUD_Unconscious ::>", "BudgetLabel", toScreen.x, toScreen.y, colorRed, 1, 1)
 						end
 					end
 				end
@@ -134,11 +134,11 @@ function cwCTO:HUDPaintForeground()
 					local timeUntil = math.Round((60 - (curTime - data.time)), 2)
 					timeUntil = timeUntil .. string.rep(0, (string.len(math.floor(timeUntil)) + 3) - string.len(timeUntil))
 
-					draw.SimpleText("<:: Запрос помощи ::>", "BudgetLabel", toScreen.x, toScreen.y, requestColor, 1, 1)
+					draw.SimpleText("<:: #CTO_HUD_Request ::>", "BudgetLabel", toScreen.x, toScreen.y, requestColor, 1, 1)
 					toScreen.y = toScreen.y + fontHeight
 					draw.SimpleText(showDetail and text2 or lowDetailText, "BudgetLabel", toScreen.x, toScreen.y, colorWhite, 1, 1)
 					toScreen.y = toScreen.y + fontHeight
-					draw.SimpleText("<:: Удаление " .. timeUntil .. "s ::>", "BudgetLabel", toScreen.x, toScreen.y, colorRed, 1, 1)
+					draw.SimpleText("<:: " .. L("#CTO_HUD_Removal:" .. timeUntil .. ";") .. " ::>", "BudgetLabel", toScreen.x, toScreen.y, colorRed, 1, 1)
 				end
 			end
 		end
@@ -154,7 +154,7 @@ function cwCTO:HUDPaintForeground()
 					draw.SimpleText(showDetail and text1 or lowDetailText, "BudgetLabel", toScreen.x, toScreen.y, colorObject, 1, 1)
 
 					if (type(data) == "table") then
-						local text2 = "<:: " .. table.Count(data) .. " в поле видимости ::>"
+						local text2 = "<:: " .. L("#CTO_HUD_InView:" .. table.Count(data) .. ";") .. " ::>"
 
 						toScreen.y = toScreen.y + fontHeight
 						draw.SimpleText(showDetail and text2 or lowDetailText, "BudgetLabel", toScreen.x, toScreen.y, colorWhite, 1, 1)
@@ -164,20 +164,20 @@ function cwCTO:HUDPaintForeground()
 						for player, vios in pairs(data) do
 							for i, vio in ipairs(vios) do
 								if (vio == self.VIOLATION_RUNNING) then
-									violations[#violations + 1] = "<:: 1 x Бег ::>"
+									violations[#violations + 1] = "<:: 1 x #CTO_HUD_Violation_Running ::>"
 								elseif (vio == self.VIOLATION_JUMPING) then
-									violations[#violations + 1] = "<:: 1 x Прыжок ::>"
+									violations[#violations + 1] = "<:: 1 x #CTO_HUD_Violation_Jumping ::>"
 								elseif (vio == self.VIOLATION_CROUCHING) then
-									violations[#violations + 1] = "<:: 1 x сидя ::>"
+									violations[#violations + 1] = "<:: 1 x #CTO_HUD_Violation_Crouching ::>"
 								elseif (vio == self.VIOLATION_FALLEN_OVER) then
-									violations[#violations + 1] = "<:: 1 x Нахождение лёжа ::>"
+									violations[#violations + 1] = "<:: 1 x #CTO_HUD_Violation_FallenOver ::>"
 								end
 							end
 						end
 
 						if (#violations > 0) then
 							toScreen.y = toScreen.y + fontHeight
-							draw.SimpleText("<:: Нарушения в поле видимости ::>", "BudgetLabel", toScreen.x, toScreen.y, colorRed, 1, 1)
+							draw.SimpleText("<:: #CTO_HUD_ViolationsInView ::>", "BudgetLabel", toScreen.x, toScreen.y, colorRed, 1, 1)
 
 							for i, violation in ipairs(violations) do
 								toScreen.y = toScreen.y + fontHeight
@@ -186,7 +186,7 @@ function cwCTO:HUDPaintForeground()
 						end
 					else
 						toScreen.y = toScreen.y + fontHeight
-						draw.SimpleText("<:: Отключено ::>", "BudgetLabel", toScreen.x, toScreen.y, colorRed, 1, 1)
+						draw.SimpleText("<:: #CTO_HUD_Disabled ::>", "BudgetLabel", toScreen.x, toScreen.y, colorRed, 1, 1)
 					end
 				end
 			end
@@ -223,23 +223,23 @@ function cwCTO:HUDPaintForeground()
 					local violations = {}
 
 					if (v:IsRunning()) then
-						violations[#violations + 1] = "<:: 1 x Бег ::>"
+						violations[#violations + 1] = "<:: 1 x #CTO_HUD_Violation_Running ::>"
 					end
 
 					if (v.m_bJumping) then
-						violations[#violations + 1] = "<:: 1 x Прыжок ::>"
+						violations[#violations + 1] = "<:: 1 x #CTO_HUD_Violation_Jumping ::>"
 					end
 
 					if (v:Crouching()) then
-						violations[#violations + 1] = "<:: 1 x Нахождение сидя ::>"
+						violations[#violations + 1] = "<:: 1 x #CTO_HUD_Violation_Crouching ::>"
 					end
 
 					if (v:GetRagdollState() ~= RAGDOLL_NONE and v:GetRagdollState() ~= RAGDOLL_RESET) then
-						violations[#violations + 1] = "<:: 1 x Нахождение лёжа ::>"
+						violations[#violations + 1] = "<:: 1 x #CTO_HUD_Violation_FallenOver ::>"
 					end
 
 					if (#violations > 0) then
-						draw.SimpleText("<:: Возможное нарушение ::>", "BudgetLabel", toScreen.x, toScreen.y, colorRed, 1, 1)
+						draw.SimpleText("<:: #CTO_HUD_PossibleViolation ::>", "BudgetLabel", toScreen.x, toScreen.y, colorRed, 1, 1)
 
 						for i, violation in ipairs(violations) do
 							toScreen.y = toScreen.y + fontHeight
@@ -326,7 +326,7 @@ function cwCTO:HUDPaintTopScreen()
 
 		socioColor = Color(socioColor.r, socioColor.g, socioColor.b, 255 - blackFadeAlpha)
 
-		draw.SimpleText("<:: Социальный статус: "..self.socioStatus.." ::>", "BudgetLabel", info.x, info.y, socioColor, TEXT_ALIGN_RIGHT)
+		draw.SimpleText("<:: "..L("#CTO_HUD_SocioStatus:"..self.socioStatus..";").." ::>", "BudgetLabel", info.x, info.y, socioColor, TEXT_ALIGN_RIGHT)
 		info.y = info.y + height
 
 		for k, v in ipairs(self.hudObjectives) do

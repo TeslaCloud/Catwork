@@ -7,7 +7,7 @@
 
 ITEM.baseItem = "bodygroup_base"
 ITEM.name = "Loyalist Uniform"
-ITEM.PrintName = "Легкая рубашка лоялиста"
+ITEM.PrintName = "#ITEM_Loyalist_Uniform_1_Name"
 ITEM.cost = 100
 ITEM.model = "models/tnb/items/shirt_citizen2.mdl"
 ITEM.skin = 3
@@ -16,4 +16,4 @@ ITEM.uniqueID = "cw_coat_loyalist2"
 ITEM.business = false
 ITEM.bodyGroup = 1
 ITEM.bodyGroupVal = 7
-ITEM.description = "Чистейшая черная рубашка лоялиста."
+ITEM.description = "#ITEM_Loyalist_Uniform_1_Desc"

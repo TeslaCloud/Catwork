@@ -11,7 +11,7 @@ ITEM.weight = 0.1;
 ITEM.access = "1v";
 ITEM.classes = {CLASS_EMP, CLASS_EOW};
 ITEM.business = true;
-ITEM.description = "A clean notepad, useful to note taking.";
+ITEM.description = "#Item_Notepad_Description";
 
 -- Called when a player uses the item.
 function ITEM:OnUse(player, itemEntity)
@@ -44,7 +44,7 @@ function ITEM:OnUse(player, itemEntity)
 			cw.entity:MakeFlushToGround(entity, trace.HitPos, trace.HitNormal);
 		end;
 	else
-		cw.player:Notify(player, "You cannot drop notepads that far away!");
+		cw.player:Notify(player, L("CantDropFar"));
 
 		return false;
 	end;

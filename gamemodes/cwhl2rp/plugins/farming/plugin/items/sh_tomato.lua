@@ -7,7 +7,7 @@
 --]]
 
 ITEM.name = "Tomato"
-ITEM.PrintName = "Помидор"
+ITEM.PrintName = "#Item_Tomato_PrintName"
 ITEM.cost = 5
 ITEM.model = "models/bioshockinfinite/hext_apple.mdl"
 ITEM.weight = 0.1
@@ -16,7 +16,7 @@ ITEM.access = "v"
 ITEM.useText = "Eat"
 ITEM.category = "Consumables"
 ITEM.business = true
-ITEM.description = "А я томат."
+ITEM.description = "#Item_Tomato_Description"
 ITEM.hunger = 5
 ITEM.thirst = 10
 

@@ -304,16 +304,16 @@ if CLIENT then
 				surface.SetTextColor(255, 255, 255)
 				surface.SetFont("_GR_CMB_FONT_1")
 				surface.SetTextPos(8, 5)
-				surface.DrawText("Garbage Recycler")
+				surface.DrawText("#GarbageRecycler_Title")
 				surface.SetFont("_GR_CMB_FONT_2")
 				surface.SetTextPos(8, 20)
-				surface.DrawText("METAL")
+				surface.DrawText("#GarbageRecycler_Metal")
 
 				local isWorking = self:GetIsWorking()
 				local stopped = self:GetStopWorkTime() > 0
 				local hasMaterial = self:GetGarbageCount() != METAL_GARBAGE_COUNT_START
 
-				local text = isWorking and "RECYCLING..." or (stopped and "STOPPED" or (hasMaterial and "NOT ENOUGH GARBAGE" or "READY"))
+				local text = isWorking and "#GarbageRecycler_Status_Recycling" or (stopped and "#GarbageRecycler_Status_Stopped" or (hasMaterial and "#GarbageRecycler_Status_NotEnough" or "#GarbageRecycler_Status_Ready"))
 				local red = isWorking and 0 or (stopped and 255 or (hasMaterial and 255 or 0))
 				local green = isWorking and 255 or (stopped and 0 or (hasMaterial and 0 or 255))
 				surface.SetTextColor(red, green, 0, math.abs(math.cos(RealTime() * 2) * 255))

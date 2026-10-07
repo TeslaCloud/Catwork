@@ -19,14 +19,14 @@ function COMMAND:OnRun(player, arguments)
 	for k, v in ipairs(_player.GetAll()) do
 		if (v:HasInitialized()) then
 			if (string.lower(v:Name()) == charName) then
-				cw.player:NotifyAll(player:Name().." unbanned the character '"..arguments[1].."'.")
+				cw.player:NotifyAll(L("PermaKill_Undone", player:Name(), arguments[1]))
 				v:SetCharacterData("permakilled", false)
 
 				return
 			else
 				for k2, v2 in pairs(v:GetCharacters()) do
 					if (string.lower(v2.name) == charName) then
-						cw.player:NotifyAll(player:Name().." unbanned the character '"..arguments[1].."'.")
+						cw.player:NotifyAll(L("PermaKill_Undone", player:Name(), arguments[1]))
 
 						v2.data["permakilled"] = false
 
@@ -49,9 +49,9 @@ function COMMAND:OnRun(player, arguments)
 					queryObj:Update("_Data", string.gsub(result[1]._Data or "", "\"permakilled\":true", "\"permakilled\":false"))
 				queryObj:Execute()
 
-				cw.player:NotifyAll(player:Name().." unbanned the character '"..arguments[1].."'.")
+				cw.player:NotifyAll(L("PermaKill_Undone", player:Name(), arguments[1]))
 			else
-				cw.player:Notify(player, "This is not a valid character!")
+				cw.player:Notify(player, L("NotValidCharacter", arguments[1]))
 			end
 		end)
 	queryObj:Execute()

@@ -32,11 +32,11 @@ function ENT:HUDPaintTargetID(x, y, alpha)
 				end
 			end
 
-			y = cw.core:DrawInfo((itemTable.weightText or itemTable.weight.."kg"), x, y, colorWhite, alpha)
+			y = cw.core:DrawInfo((itemTable.weightText or itemTable.weight.."#Unit_Kilograms"), x, y, colorWhite, alpha)
 
 			local spaceUsed = itemTable.space
 			if (cw.inventory:UseSpaceSystem() and spaceUsed > 0) then
-				y = cw.core:DrawInfo((itemTable.spaceText or spaceUsed.."l"), x, y, colorWhite, alpha)
+				y = cw.core:DrawInfo((itemTable.spaceText or spaceUsed.."#Unit_Litres"), x, y, colorWhite, alpha)
 			end
 		end
 	end

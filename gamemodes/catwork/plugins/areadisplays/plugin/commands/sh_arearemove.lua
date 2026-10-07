@@ -7,8 +7,8 @@
 --]]
 
 local COMMAND = cw.command:New("AreaRemove")
-COMMAND.tip = "Remove an area by looking near it."
-COMMAND.text = "<string Name>"
+COMMAND.tip = "#Command_Arearemove_Description"
+COMMAND.text = "#Command_Arearemove_Syntax"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "s"
 COMMAND.arguments = 1
@@ -34,12 +34,12 @@ function COMMAND:OnRun(player, arguments)
 
 	if (removed > 0) then
 		if (removed == 1) then
-			cw.player:Notify(player, "You have removed "..removed.." area display.")
+			cw.player:Notify(player, L("AreaDisplays_RemovedOne", removed))
 		else
-			cw.player:Notify(player, "You have removed "..removed.." area displays.")
+			cw.player:Notify(player, L("AreaDisplays_RemovedMany", removed))
 		end
 	else
-		cw.player:Notify(player, "There were no area displays found with that name.")
+		cw.player:Notify(player, L("AreaDisplays_NoneFound"))
 	end
 
 	cwAreaDisplays:SaveAreaDisplays()

@@ -23,7 +23,7 @@ function COMMAND:OnRun(player, arguments)
 		entity:SetStock(math.random(10, 20), true)
 		entity:SetAngles(Angle(0, player:EyeAngles().yaw + 180, 0))
 
-		cw.player:Notify(player, "You have added a vending machine.")
+		cw.player:Notify(player, L("VendingMachine_Added"))
 	end
 end
 

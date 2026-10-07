@@ -8,9 +8,10 @@
 
 ITEM.baseItem = "book_base"
 ITEM.name = "A Blood Stained Journal"
+ITEM.PrintName = "#Item_BookAbsj_PrintName"
 ITEM.model = "models/props_lab/bindergraylabel01b.mdl"
 ITEM.uniqueID = "book_absj"
-ITEM.description = "A journal with blood all over it. it's nearly illegible."
+ITEM.description = "#Item_BookAbsj_Description"
 ITEM.bookInformation = [[
 <font color='red' size='4'>Written by [A name covered in blood].</font>
 
@@ -30,7 +31,7 @@ For the dead know no sleep in their graves, nor dost thou remember them until th
 And what terrible wonders are these thou hast done among the dead, what shades rise to confess thee...
 And what spectres shall know thee by thy name. Thy rages have come down upon thee, and thy pains have agitated me.
 May their paths become dark and slippery, and may the angel of the Lord afflict them... And may the snare that they do not
-know come to them, and may the net they have hidden for me catch them in my place. My power was lost in places which where not mine.
+know come to them, and may the net they have hidden for me catch them in my place. My power was lost in places which were not mine.
 
 Affliction besought me, and the merciless ones attacked me without cause. From the voice of my groaning bones cleaved to my flesh, for
 my soul is filled with evil, and like this place, must be purged. And all thy cares have come down upon me. And from this bed I cry out

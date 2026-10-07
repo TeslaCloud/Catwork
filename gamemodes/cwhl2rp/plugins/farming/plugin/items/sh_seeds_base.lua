@@ -8,13 +8,13 @@
 
 ITEM.isBaseItem = true
 ITEM.name = "Seeds Base"
-ITEM.useText = "Посадить"
-ITEM.category = "Растения"
+ITEM.useText = "#Farming_UseText_Plant"
+ITEM.category = "#Farming_Category_Plants"
 ITEM.weight = 0.01
 ITEM.model = "models/props_lab/box01a.mdl"
 ITEM.useSound = {"player/footsteps/dirt1.wav", "player/footsteps/dirt2.wav", "player/footsteps/dirt3.wav", "player/footsteps/dirt4.wav"}
 ITEM.PlantModel = "models/props/de_inferno/claypot03_damage_01.mdl"
-ITEM.PlantName = "Растение"
+ITEM.PlantName = "#Farming_Plant_Default"
 ITEM.GrowTime = {1200, 1800}
 ITEM.Harvest = {}
 
@@ -45,17 +45,17 @@ function ITEM:OnUse(player, itemEntity)
 				seed:SetModel(self.PlantModel)
 
 				player:ProgressAttribute(ATB_FARM, 5, true)
-				cw.player:Notify(player, "Вы успешно посадили семена")
+				cw.player:Notify(player, L("Farming_Planted"))
 			else
-				cw.player:Notify(player, "Нельзя сажать растения так близко друг к другу!")
+				cw.player:Notify(player, L("Farming_TooClose"))
 				return false
 			end
 		else				
-			cw.player:Notify(player, "Растения можно сажать только в подходящую почву.")
+			cw.player:Notify(player, L("Farming_BadSoil"))
 			return false
 		end
 	else
-		cw.player:Notify(player, "Вы не можете посадить растение так далеко!")
+		cw.player:Notify(player, L("Farming_TooFar"))
 		return false
 	end
 end

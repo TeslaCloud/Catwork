@@ -23,17 +23,17 @@ function COMMAND:OnRun(player, arguments)
 			local userGroup = target:GetClockworkUserGroup()
 
 			if (userGroup != "user") then
-				cw.player:NotifyAll(player:Name().." has demoted "..target:Name().." from "..userGroup.." to user.")
+				cw.player:NotifyAll(L("Command_Plydemote_Demoted", player:Name(), target:Name(), userGroup))
 					target:SetClockworkUserGroup("user")
 				cw.player:LightSpawn(target, true, true)
 			else
-				cw.player:Notify(player, "This player is only a user and cannot be demoted!")
+				cw.player:Notify(player, L("Command_Plydemote_OnlyUser"))
 			end
 		else
-			cw.player:Notify(player, target:Name().." is protected!")
+			cw.player:Notify(player, L("Command_PlayerProtected", target:Name()))
 		end
 	else
-		cw.player:Notify(player, arguments[1].." is not a valid player!")
+		cw.player:Notify(player, L("NotValidPlayer", arguments[1]))
 	end
 end
 

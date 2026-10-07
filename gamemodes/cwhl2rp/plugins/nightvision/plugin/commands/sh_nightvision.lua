@@ -9,7 +9,7 @@
 local Clockwork = Clockwork
 
 local COMMAND = cw.command:New("Nightvision")
-COMMAND.tip = "Enable/disable nightvision googles."
+COMMAND.tip = "#Command_Nightvision_Description"
 COMMAND.text = ""
 COMMAND.flags = bit.bor(CMD_DEFAULT, CMD_DEATHCODE, CMD_FALLENOVER)
 COMMAND.arguments = 0
@@ -25,7 +25,7 @@ function COMMAND:OnRun(player, arguments)
 			player:SetNWBool("nightvisionfx", true)
 		end
 	else
-		cw.player:Notify(player, "У вас нет очков ночного видения.")
+		cw.player:Notify(player, L("Nightvision_NoGoggles"))
 	end
 end
 

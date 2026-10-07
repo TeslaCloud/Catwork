@@ -23,7 +23,7 @@ function COMMAND:OnRun(player, arguments)
 	if (target) then
 		if (text and text != "") then
 			if (string.utf8len(text) < minimumPhysDesc) then
-				cw.player:Notify(player, "The physical description must be at least "..minimumPhysDesc.." characters long!")
+				cw.player:Notify(player, L("CharCreation_Appearance_ErrorMessage7", minimumPhysDesc))
 				return
 			end
 
@@ -31,9 +31,9 @@ function COMMAND:OnRun(player, arguments)
 
 			target:SetCharacterData("PhysDesc", physDesc)
 
-			cw.player:Notify(player, target:Name().."'s physical description has been changed to \'"..physDesc.."\'")
+			cw.player:Notify(player, L("Command_Charsetdesc_Changed", target:Name()).." '"..physDesc.."'")
 		else
-			cw.dermaRequest:RequestString(player, "Physical Description Change", "What do you want to change the player's physical description to?", target:GetDTString(STRING_PHYSDESC), function(result)
+			cw.dermaRequest:RequestString(player, "#Command_Charphysdesc_RequestTitle", "#Command_Charsetdesc_RequestText", target:GetDTString(STRING_PHYSDESC), function(result)
 				player:RunClockworkCmd(self.name, target:Name(), result)
 			end)
 		end

@@ -448,7 +448,7 @@ function cw.player:GetPhysDesc(player)
 	end
 
 	if (!physDesc or physDesc == "") then
-		physDesc = "Описание соответствует модели."
+		physDesc = L("#PhysDesc_MatchesModel")
 	else
 		physDesc = cw.core:ModifyPhysDesc(physDesc)
 	end

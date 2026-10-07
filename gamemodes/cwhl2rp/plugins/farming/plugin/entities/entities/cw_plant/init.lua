@@ -71,10 +71,10 @@ function ENT:Use(activator)
 				cw.player:SetAction(activator, "farming", false)
 			end)
 		else
-			cw.player:Notify(activator, "Вы должны присесть, чтобы собрать урожай.")
+			cw.player:Notify(activator, L("Farming_MustCrouch"))
 		end
 	else
-		cw.player:Notify(activator, "Растение еще не созрело. Нужно подождать еще немного.")
+		cw.player:Notify(activator, L("Farming_NotRipe"))
 	end
 end
 

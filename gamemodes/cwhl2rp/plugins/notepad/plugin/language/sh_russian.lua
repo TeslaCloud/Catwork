@@ -15,3 +15,6 @@ lang["#Notepad_Read"] = "Читать";
 lang["#Notepad_Write"] = "Написать";
 lang["#Notepad_Edit"] = "Редактировать";
 lang["#Notepad_CannotEdit"] = "Данный блокнот не принадлежит вам!";
+lang["#Notepad_Okay"] = "ОК";
+lang["#Notepad_Error"] = "ОШИБКА!";
+lang["#Item_Notepad_Description"] = "Чистый блокнот, удобный для записей.";

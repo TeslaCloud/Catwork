@@ -21,7 +21,7 @@ function cwStorage:HUDPaintEntityTargetID(entity, info)
 				info.y = cw.core:DrawInfo(self.containerList[model][2], info.x, info.y, colorTargetID, info.alpha)
 			end
 
-			info.y = cw.core:DrawInfo("Вы можете положить сюда что-нибудь.", info.x, info.y, colorWhite, info.alpha)
+			info.y = cw.core:DrawInfo("#Container_TargetID", info.x, info.y, colorWhite, info.alpha)
 		end
 	end
 end
@@ -32,7 +32,7 @@ function cwStorage:GetEntityMenuOptions(entity, options)
 		local model = string.lower(entity:GetModel())
 
 		if (self.containerList[model]) then
-			options["Открыть"] = "cwContainerOpen"
+			options["#EntityMenuOptions_Open"] = "cwContainerOpen"
 		end
 	end
 end
@@ -46,7 +46,7 @@ function cwStorage:PlayerStorageRebuilt(panel, categories)
 			local messageForm = vgui.Create("DForm", panel)
 			local helpText = messageForm:Help(entity.cwMessage)
 				messageForm:SetPadding(5)
-				messageForm:SetName("Сообщение")
+				messageForm:SetName("#Container_Message")
 				helpText:SetFont("Default")
 			panel:AddItem(messageForm)
 		end

@@ -1,14 +1,15 @@
-ITEM.name = "Снотворное (Не по рецепту)"
+ITEM.name = "Sleeping Pills (Non-prescription)"
+ITEM.PrintName = "#Item_Snotbad_PrintName"
 ITEM.uniqueID = "snotbad"
 ITEM.cost = 0
 ITEM.model = "models/props_lab/jar01a.mdl"
 ITEM.weight = 0.2
 ITEM.access = "q"
-ITEM.useText = "Употребить"
-ITEM.category = "Медицина"
+ITEM.useText = "Swallow"
+ITEM.category = "Medical"
 ITEM.business = true
-ITEM.description = "Коробочка, на которой написано 'Снотворное' обычной шариковой ручкой."
-ITEM.customFunctions = {"Дать"}
+ITEM.description = "#Item_Snotbad_Description"
+ITEM.customFunctions = {"Give"}
 
 -- Called when a player uses the item.
 function ITEM:OnUse(player, itemEntity)
@@ -29,7 +30,7 @@ end
 
 if (SERVER) then
 	function ITEM:OnCustomFunction(player, name)
-		if (name == "Дать") then
+		if (name == "Give") then
 			local lookingPly = player:GetEyeTrace().Entity
 
 			if (lookingPly:IsPlayer()) then
@@ -44,12 +45,12 @@ if (SERVER) then
 				end
 
 				lookingPly:SetCharacterData("Fatigue", 100)
-				cw.player:Notify(player, "Вы дали персонажу снотворное.")
+				cw.player:Notify(player, L("Diseases_Gave_SleepingPills"))
 				player:TakeItem(player:FindItemByID("snotbad"))
 
 				hook.Run("PlayerHealed", lookingPly, player, self)
 			else
-				cw.player:Notify(player, "Вы должны смотреть на человека!")
+				cw.player:Notify(player, L("Diseases_MustLookAtPerson"))
 
 				return false
 			end

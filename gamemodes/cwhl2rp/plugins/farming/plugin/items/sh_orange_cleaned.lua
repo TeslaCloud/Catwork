@@ -7,7 +7,7 @@
 --]]
 
 ITEM.name = "Cleaned Orange"
-ITEM.PrintName = "Очищенный апельсин"
+ITEM.PrintName = "#Item_OrangeCleaned_PrintName"
 ITEM.cost = 5
 ITEM.model = "models/props/cs_italy/orange.mdl"
 ITEM.weight = 0.1
@@ -16,7 +16,7 @@ ITEM.uniqueID = "orange_cleaned"
 ITEM.useText = "Eat"
 ITEM.category = "Consumables"
 ITEM.business = true
-ITEM.description = "В этом фрукте содержится вся сила. Очищен и готов к употреблению."
+ITEM.description = "#Item_OrangeCleaned_Description"
 
 -- Called when a player uses the item.
 function ITEM:OnUse(player, itemEntity)

@@ -20,14 +20,14 @@ function COMMAND:OnRun(player, arguments)
 	if (target) then
 		if (string.find(arguments[2], "a") or string.find(arguments[2], "s")
 		or string.find(arguments[2], "o")) then
-			cw.player:Notify(player, "You cannot give 'o', 'a' or 's' flags!")
+			cw.player:Notify(player, L("Command_CannotGiveAdminFlags"))
 
 			return
 		end
 
 		cw.player:GiveFlags(target, arguments[2])
 
-		cw.player:NotifyAll(player:Name().." gave "..target:Name().." '"..arguments[2].."' flags.")
+		cw.player:NotifyAll(L("Command_Chargiveflags_Gave", player:Name(), target:Name(), arguments[2]))
 	else
 		cw.player:Notify(player, L(player, "NotValidCharacter", arguments[1]))
 	end

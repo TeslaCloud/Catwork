@@ -342,8 +342,8 @@ local adminNames = {
 	"John Smith", "John Doe", "Jane Doe",
 	"Ivan", "Admin", "An Admin", "Administrator",
 	"Gabe Newell", "Tim Cook", "Vladimir Putin",
-	"Bill Gates", "Donald Trump", "Barrack Obama",
-	"Russian Hackers", "Ukranians", "Ponis", "A",
+	"Bill Gates", "Donald Trump", "Barack Obama",
+	"Russian Hackers", "Ukrainians", "Ponis", "A",
 	"Wheatley", "GLaDOS", "Chell", "Mel", "Gordon Freeman",
 	"Wallace Breen", "Robots", "Machines", "Heavy", "Scout",
 	"Spy", "Medic", "Pyro", "Soldier", "Eye of Harmony",
@@ -382,7 +382,7 @@ netstream.Hook("ChatboxTextEntered", function(player, msgText)
 	lowerText = lowerText:Replace("/w", "")
 
 	if (slanderPhrases[lowerText]) then
-		cw.player:NotifyAll("Фреймворк Catwork кикнул "..player:Name().." с сервера.")
+		cw.player:NotifyAll(L("Chat_SlanderKick", player:Name()))
 
 		if (lowerText:find("пони для девочек")) then
 			player:Kick("Сам ты для девочек.")
@@ -411,7 +411,7 @@ netstream.Hook("ChatboxTextEntered", function(player, msgText)
 	}
 
 	if (msgText:StartWith("/?") and !player:IsAdmin()) then
-		cw.player:Notify(player, "This is not a valid command or alias!")
+		cw.player:Notify(player, L("Chat_NotValidCommand"))
 
 		return
 	end
@@ -461,7 +461,7 @@ netstream.Hook("ChatboxTextEntered", function(player, msgText)
 
 		return
 	elseif (message.data.anon) then
-		message.playerName = "Кто-то"
+		message.playerName = "#Chat_Someone"
 	end
 
 	local shouldSend = true
@@ -472,7 +472,7 @@ netstream.Hook("ChatboxTextEntered", function(player, msgText)
 				player.cwNextTalkOOC = curTime + config.Get("ooc_interval"):Get()
 			else
 				cw.player:Notify(
-					player, "Вы не сможете говорить в ООС чат еще "..math.ceil(player.cwNextTalkOOC - CurTime()).." секунд!"
+					player, L("Chat_OOCWait", math.ceil(player.cwNextTalkOOC - CurTime()))
 				)
 
 				return
@@ -485,7 +485,7 @@ netstream.Hook("ChatboxTextEntered", function(player, msgText)
 					player.cwNextTalkLOOC = curTime + config.Get("looc_interval"):Get()
 				else
 					cw.player:Notify(
-						player, "Вы не сможете говорить в LООС чат еще "..math.ceil(player.cwNextTalkLOOC - CurTime()).." секунд!"
+						player, L("Chat_LOOCWait", math.ceil(player.cwNextTalkLOOC - CurTime()))
 					)
 
 					return

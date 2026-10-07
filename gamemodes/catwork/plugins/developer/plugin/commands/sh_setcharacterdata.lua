@@ -5,8 +5,8 @@
 --]]
 
 local COMMAND = cw.command:New("SetCharData")
-COMMAND.tip = "Sets player's character data."
-COMMAND.text = "<string Player> <string key> <any value>"
+COMMAND.tip = "#Command_Setchardata_Description"
+COMMAND.text = "#Command_Setchardata_Syntax"
 COMMAND.access = "s"
 COMMAND.arguments = 2
 COMMAND.alias = {"CharSetData", "SetCharacterData"}
@@ -30,29 +30,29 @@ function COMMAND:OnRun(player, arguments)
 					elseif (dataType == "number") then
 						val = tonumber(val)
 					elseif (dataType == "table") then
-						cw.player:Notify(player, "Cannot set table values!")
+						cw.player:Notify(player, L("Developer_CannotSetTable"))
 
 						return
 					elseif (IsValid(existingData)) then
-						cw.player:Notify(player, "Cannot set UserData values!")
+						cw.player:Notify(player, L("Developer_CannotSetUserData"))
 
 						return
 					end
 
-					cw.player:Notify(player, "You have modified a char data key '"..key.."', value: "..tostring(val).." ("..type(val).."). The original data type was: "..dataType)
+					cw.player:Notify(player, L("Developer_ModifiedKey").." '"..key.."', "..L("Developer_Value").." "..tostring(val).." ("..type(val).."). "..L("Developer_OriginalType").." "..dataType)
 				else
-					cw.player:Notify(player, "You have created a new char data key '"..key.."', value: "..tostring(val).." ("..type(val)..")")
+					cw.player:Notify(player, L("Developer_CreatedKey").." '"..key.."', "..L("Developer_Value").." "..tostring(val).." ("..type(val)..")")
 				end
 
 				target:SetCharacterData(key, val)
 			else
-				cw.player:Notify(player, "The key must be a valid string value!")
+				cw.player:Notify(player, L("Developer_KeyMustBeString"))
 			end
 		else
-			cw.player:Notify(player, arguments[1].." is not a valid target!")
+			cw.player:Notify(player, L("NotValidPlayer", arguments[1]))
 		end
 	else
-		cw.player:Notify(player, "You are not authorized to use this command!")
+		cw.player:Notify(player, L("Developer_NotAuthorized"))
 	end
 end
 

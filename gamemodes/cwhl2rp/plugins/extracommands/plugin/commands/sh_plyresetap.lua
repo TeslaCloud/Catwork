@@ -5,8 +5,8 @@
 --]]
 
 local COMMAND = cw.command:New("PlyResetArmor")
-COMMAND.tip = "Resets player's armor to max amount."
-COMMAND.text = "<string Player>"
+COMMAND.tip = "#Command_Plyresetarmor_Description"
+COMMAND.text = "#Command_Plyresetarmor_Syntax"
 COMMAND.access = "a"
 COMMAND.arguments = 1
 COMMAND.alias = {"ResetAP", "ResetArmor", "PlyResetAP"}
@@ -18,9 +18,9 @@ function COMMAND:OnRun(player, arguments)
 	if (IsValid(target)) then
 		target:SetArmor(100)
 
-		cw.player:Notify(player, "You have reset "..target:Name().."'s armor to 100.")
+		cw.player:Notify(player, L("ExtraCommands_ArmorReset", target:Name()))
 	else
-		cw.player:Notify(player, arguments[1].." is not a valid target!")
+		cw.player:Notify(player, L("NotValidPlayer", arguments[1]))
 	end
 end
 

@@ -39,20 +39,20 @@ function COMMAND:OnRun(player, arguments)
 					cw.player:GiveCash(player, -cash)
 					cw.player:GiveCash(target, cash)
 
-					cw.player:Notify(player, "You have given "..cw.core:FormatCash(cash, nil, true).." to "..targetName..".")
-					cw.player:Notify(target, "You were given "..cw.core:FormatCash(cash, nil, true).." by "..playerName..".")
+					cw.player:Notify(player, L("Command_Givecash_Gave", targetName, cw.core:FormatCash(cash, nil, true)))
+					cw.player:Notify(target, L("Command_Givecash_Received", playerName, cw.core:FormatCash(cash, nil, true)))
 				else
 					local amount = cash - player:GetCash()
-					cw.player:Notify(player, "You need another "..cw.core:FormatCash(amount, nil, true).."!")
+					cw.player:Notify(player, L("YouNeedAnother", cw.core:FormatCash(amount, nil, true)))
 				end
 			else
-				cw.player:Notify(player, "This is not a valid amount!")
+				cw.player:Notify(player, L("NotValidAmount"))
 			end
 		else
-			cw.player:Notify(player, "This character is too far away!")
+			cw.player:Notify(player, L("Command_Givecash_TooFar"))
 		end
 	else
-		cw.player:Notify(player, "You must look at a valid character!")
+		cw.player:Notify(player, L("Command_Givecash_MustLook"))
 	end
 end
 

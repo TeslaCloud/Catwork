@@ -35,15 +35,15 @@ function PLUGIN:OnePlayerSecond(player, curTime, infoTable)
 						player:EmitSound(table.Random(coughSounds), 100, 100)
 
 						if (math.random(1, 2) == 1) then
-							chatbox.AddText(nil, "очень сильно кашляет, отхаркивая мокроту из легких.", {isPlayerMessage = true, sender = player, noStyling = true, fakeName = true, position = player:GetPos(), textColor = Color("#89D235"), filter = "player_events", icon = false})
+							chatbox.AddText(nil, L("Diseases_Emote_PneumoniaCough"), {isPlayerMessage = true, sender = player, noStyling = true, fakeName = true, position = player:GetPos(), textColor = Color("#89D235"), filter = "player_events", icon = false})
 						else
-							chatbox.AddText(nil, "начинает задыхаться и жадно глотать воздух.", {isPlayerMessage = true, sender = player, noStyling = true, fakeName = true, position = player:GetPos(), textColor = Color("#89D235"), filter = "player_events", icon = false})
+							chatbox.AddText(nil, L("Diseases_Emote_Gasp"), {isPlayerMessage = true, sender = player, noStyling = true, fakeName = true, position = player:GetPos(), textColor = Color("#89D235"), filter = "player_events", icon = false})
 						end
 
 						player.nextCough = curTime + math.random(15,45)
 					else
 						player:EmitSound(table.Random(coughSounds), 100, 100)
-						chatbox.AddText(nil, "кашляет.", {isPlayerMessage = true, sender = player, noStyling = true, fakeName = true, position = player:GetPos(), textColor = Color("#89D235"), filter = "player_events", icon = false})
+						chatbox.AddText(nil, L("Diseases_Emote_Cough"), {isPlayerMessage = true, sender = player, noStyling = true, fakeName = true, position = player:GetPos(), textColor = Color("#89D235"), filter = "player_events", icon = false})
 						player.nextCough = curTime + math.random(15,45)
 					end
 				end
@@ -51,7 +51,7 @@ function PLUGIN:OnePlayerSecond(player, curTime, infoTable)
 		elseif (player:GetCharacterData("diseases") == "fever") then
 			if (!player.nextFever or curTime > player.nextFever) then
 				if (!player:IsNoClipping()) then
-					chatbox.AddText(nil, "чувствует головокружение и жар.", {isPlayerMessage = true, sender = player, noStyling = true, fakeName = true, position = player:GetPos(), textColor = Color("#89D235"), filter = "player_events", icon = false})
+					chatbox.AddText(nil, L("Diseases_Emote_Fever"), {isPlayerMessage = true, sender = player, noStyling = true, fakeName = true, position = player:GetPos(), textColor = Color("#89D235"), filter = "player_events", icon = false})
 					player.nextFever = curTime + math.random(120,300)
 				end
 			end
@@ -59,7 +59,7 @@ function PLUGIN:OnePlayerSecond(player, curTime, infoTable)
 			if (!player.nextStomach or curTime > player.nextStomach) then
 				if (!player:IsNoClipping()) then
 					player:EmitSound(table.Random(coughSounds), 100, 100)
-					chatbox.AddText(nil, "невольно сгибается из-за боли в животе.", {isPlayerMessage = true, sender = player, noStyling = true, fakeName = true, position = player:GetPos(), textColor = Color("#89D235"), filter = "player_events", icon = false})
+					chatbox.AddText(nil, L("Diseases_Emote_Stomach"), {isPlayerMessage = true, sender = player, noStyling = true, fakeName = true, position = player:GetPos(), textColor = Color("#89D235"), filter = "player_events", icon = false})
 					player.nextStomach = curTime + math.random(60, 90)
 				end
 			end
@@ -99,7 +99,7 @@ function PLUGIN:OnePlayerSecond(player, curTime, infoTable)
 						player:SetHealth(player:Health() - 1)
 					else
 						Schema:PermaKillPlayer(player, player:GetRagdollEntity())
-						cw.player:Notify(player, "Вы были перманентно убиты из-за интоксикации...")
+						cw.player:Notify(player, L("Diseases_PermaKilled"))
 					end
 
 					if (player:GetCharacterData("diseases") == "fast_deathinjection") then
@@ -164,13 +164,13 @@ function PLUGIN:PlayerUseItem(player, itemTable, itemEntity)
 			player:SetCharacterData("diseases", "allergy")
 
 			timer.Simple(math.random(60, 180), function()
-				cw.player:Notify(player, "Вы замечаете сыпь на Ваших руках.")
+				cw.player:Notify(player, L("Diseases_AllergyRash"))
 			end)
 		elseif (math.random(1, 4) == 1 and table.HasValue(lowQualityFood, itemTable.name)) then
 			player:SetCharacterData("diseases", "gastrits")
 
 			timer.Simple(math.random(60, 180), function()
-				cw.player:Notify(player, "Вы чувствуете боль в животе.")
+				cw.player:Notify(player, L("Diseases_StomachPain"))
 			end)
 		elseif (math.random(1, 5) == 1 and itemTable.name == "Coffee") then
 			player:SetCharacterData("diseases", "insomnia")
@@ -179,14 +179,14 @@ function PLUGIN:PlayerUseItem(player, itemTable, itemEntity)
 
 	if (player:GetCharacterData("diseases") == "allergy" and table.HasValue(allergyFood, itemTable.name)) then
 		timer.Simple(math.random(5, 15), function()
-			cw.player:Notify(player, "Вам стало плохо после употребления ".. itemTable.name ..".")
+			cw.player:Notify(player, L("Diseases_AllergyReaction", itemTable.name))
 			player:TakeDamage(math.random(5, 15))
 		end)
 	end
 
 	if (player:GetCharacterData("diseases") == "diarrhea" and (itemTable.hunger or itemTable.thirst or itemTable.fatigue)) then
 		timer.Simple(math.random(5, 15), function()
-			chatbox.AddText(nil, "вырвало.", {isPlayerMessage = true, sender = player, noStyling = true, fakeName = true, position = player:GetPos(), textColor = Color("#89D235"), filter = "player_events", icon = false})
+			chatbox.AddText(nil, L("Diseases_Emote_Vomit"), {isPlayerMessage = true, sender = player, noStyling = true, fakeName = true, position = player:GetPos(), textColor = Color("#89D235"), filter = "player_events", icon = false})
 			player:TakeDamage(math.random(5, 30))
 		end)
 	end	

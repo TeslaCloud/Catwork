@@ -19,17 +19,17 @@ function COMMAND:OnRun(player, arguments)
 			local text = table.concat(arguments, " ")
 
 			if (text == "") then
-				cw.player:Notify(player, "You did not specify enough text!")
+				cw.player:Notify(player, L("NotEnoughText"))
 
 				return
 			end
 
 			Schema:SayDispatch(player, text)
 		else
-			cw.player:Notify(player, "You are not ranked high enough to use this command!")
+			cw.player:Notify(player, L("CombineRank_TooLowCommand"))
 		end
 	else
-		cw.player:Notify(player, "You are not the Combine!")
+		cw.player:Notify(player, L("Err_NotCombine"))
 	end
 end
 

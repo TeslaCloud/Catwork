@@ -26,13 +26,13 @@ lang["Head"] = "Голова"
 lang["#DeathScreen_YouDied"] = "ВЫ МЕРТВЫ"
 lang["#DeathScreen_SpawnPercentage"] = "ВОЗРОЖДЕНИЕ: #1"
 
-lang["#Err_CantUse_Tied"] = "Вы не можете сделать это пока связаны!"
+lang["#Err_CantUse_Tied"] = "Вы не можете сделать это, пока связаны!"
 
 --Random
 lang["#HookErrors"] = "Обнаружены ошибки клиентской части сервера."
 lang["#PlayerDisconnected"] = " отключился от сервера."
 lang["#PlayerConnected"] = " подключился к серверу."
-lang["#CantTakeOthersCharactersItems"] = "Вы не можете поднимать поднимать предметы другого Вашего персонажа."
+lang["#CantTakeOthersCharactersItems"] = "Вы не можете поднимать предметы другого Вашего персонажа."
 lang["#CantDeleteCharacterWithLowMoney"] = "Вы не можете удалить персонажа, кол-во валюты которого менее чем #1."
 lang["#CantSwitchWhenDead"] = "Вы не можете сменить персонажа, будучи мертвым."
 lang["#CantSwitchWhenUnc"] = "Вы не можете сменить персонажа, будучи без сознания."
@@ -108,7 +108,7 @@ lang["Other"] = "Разное"
 -- Items context menu
 lang["#ItemContextMenu_Information"] = "Информация"
 lang["#ItemContextMenu_Category"] = "Категория"
-lang["#ItemContextMenu_Price"] = "Разное"
+lang["#ItemContextMenu_Price"] = "Цена"
 
 -- Config Print
 lang["#ConfigVariablesPrinted"] = "Значения конфигурации были выведены в консоль."
@@ -137,19 +137,19 @@ lang ["#CashSetPlayer"] = "Вы установили #2 #1 на #3."
 
 -- Storage Error Messages
 lang["#StorageNoInstance"] = "Данного предмета нет в этом хранилище!"
-lang["#StorageNotOpen"] = "Вы не можете открыть это хранилище!"
+lang["#StorageNotOpen"] = "У вас нет открытого хранилища!"
 lang["#StorageCannotGive"] = "Вы не можете хранить предметы здесь!"
 lang["#StoragePlayerNoInstance"] = "У вас нет данного предмета!"
 
 -- Class Error Messages
 lang["#ClassNoAccess"] = "Игрок не имеет доступа к этому классу!"
-lang["#ClassTooMany"] = "Слишком много персонажей в этом классом!"
+lang["#ClassTooMany"] = "Слишком много персонажей с этим классом!"
 lang["#ClassNotValid"] = "Такого класса не существует!"
-lang["#ClassSetTarget"] = "#2 Изменил Ваш класс на #1."
+lang["#ClassSetTarget"] = "#2 изменил Ваш класс на #1."
 lang["#ClassSetPlayer"] = "Вы изменили класс #2 на #1."
 
 -- Voicemail Notifies
-lang["#VoicemailRemoved"] = "Вы удалили своб голосовую почту."
+lang["#VoicemailRemoved"] = "Вы удалили свою голосовую почту."
 lang["#VoicemailSet"] = "Вы установили свою голосовую почту на '#1'."
 
 -- Weapon Error Messages
@@ -170,7 +170,7 @@ lang["#AdminESP"] = "ESP Администратора"
 
 -- Settings Info Text
 lang["#SettingsInfoText"] = "Данные настройки позволяют вам персонализировать внешний вид Clockwork'а."
-lang["#NoSettingsInfoText"] = "К-сожалению, у вас нету доступа к каким-либо настройкам!"
+lang["#NoSettingsInfoText"] = "К сожалению, у вас нету доступа к каким-либо настройкам!"
 
 -- Settings Descriptions
 lang["#ThemeDesc"] = "Выбранное оформление для интерфейса пользователя."
@@ -179,7 +179,7 @@ lang["#DrawESPBarsDesc"] = "Отрисовывать полоски прогре
 lang["#ShowSpawnPointsDesc"] = "Показывать точки спавна на радаре (ESP)."
 lang["#ShowItemEntitiesDesc"] = "Показывать предметы на радаре."
 lang["#ShowSalesmenEntitiesDesc"] = "Показывать NPC продавцов на радаре."
-lang["#ShowAreasDesc"] = "Показывать названия территорий в которые вы входите."
+lang["#ShowAreasDesc"] = "Показывать названия территорий, в которые вы входите."
 lang["#ESPIntervalDesc"] = "Интервал между обновлениями радара."
 lang["#TwelveHourClockDesc"] = "Показывать время в 12-часовом формате."
 lang["#ShowBarsDesc"] = "Показывать полоски в верхнем углу экрана."
@@ -191,7 +191,7 @@ lang["#ShowCWMessagesDesc"] = "Показывать сообщения игро�
 lang["#ShowServerMessagesDesc"] = "Показывать сообщения сервера."
 lang["#ShowOOCMessagesDesc"] = "Показывать глобальные (OOC) сообщения."
 lang["#ShowICMessagesDesc"] = "Показывать сообщения персонажей (IC чат)."
-lang["#HeadbobAmountDesc"] = "Множитель качки (пошатанывания) головы."
+lang["#HeadbobAmountDesc"] = "Множитель качки (пошатывания) головы."
 lang["#ChatLinesDesc"] = "Количество строк чата, которые можно увидеть за раз."
 lang["#EnableConsoleLogDesc"] = "Показывать логи администратора."
 lang["#TextColorDesc"] = "Цвет, используемый по большей части для текстов оформления."
@@ -202,7 +202,7 @@ lang["#BackMenuXDesc"] = "Позиция фона по оси X."
 lang["#BackMenuYDesc"] = "Позиция фона по оси Y."
 lang["#BackMenuWDesc"] = "Ширина фона."
 lang["#BackMenuHDesc"] = "Высота фона."
-lang["#FadePanelsDesc"] = "Использовать переливание панелей из одну в другую при смене вкладок TAB-меню."
+lang["#FadePanelsDesc"] = "Использовать переливание панелей из одной в другую при смене вкладок TAB-меню."
 lang["#ShowMaterialDesc"] = "Отрисовывать материал на фоне меню."
 lang["#ShowGradientDesc"] = "Отрисовывать градиент (блюр) на фоне меню."
 lang["#MenuMaterialDesc"] = "Материал, используемый как фон для TAB-меню."
@@ -270,7 +270,7 @@ lang["#BackMenuXDesc"] = "Позиция фона по оси X."
 lang["#BackMenuYDesc"] = "Позиция фона по оси Y."
 lang["#BackMenuWDesc"] = "Ширина фона."
 lang["#BackMenuHDesc"] = "Высота фона."
-lang["#FadePanelsDesc"] = "Использовать переливание панелей из одну в другую при смене вкладок TAB-меню."
+lang["#FadePanelsDesc"] = "Использовать переливание панелей из одной в другую при смене вкладок TAB-меню."
 lang["#ShowMaterialDesc"] = "Отрисовывать материал на фоне меню."
 lang["#ShowGradientDesc"] = "Отрисовывать градиент (блюр) на фоне меню."
 lang["#MenuMaterialDesc"] = "Материал, используемый как фон для TAB-меню."
@@ -315,9 +315,9 @@ lang["#MenuMaterial"] = "Материал:"
 --]]
 
 -- Config Descriptions
-lang["#AttributeProgressionScaleDesc"] = "Множитель прогресса аттрибутов."
+lang["#AttributeProgressionScaleDesc"] = "Множитель прогресса атрибутов."
 lang["#MessagesMustSeePlayerDesc"] = "Должен ли говорящий игрок находиться в поле зрения другого игрока, чтобы быть услышанным."
-lang["#StartingAttributePointsDesc"] = "Количество очков аттрибутов, которые игрок имеет сначала."
+lang["#StartingAttributePointsDesc"] = "Количество очков атрибутов, которые игрок имеет сначала."
 lang["#ClockworkIntroEnabledDesc"] = "Включить заставку при первоначальном заходе на сервер."
 lang["#HealthRegenerationEnabledDesc"] = "Включить постепенную регенерацию здоровья."
 lang["#PropProtectionEnabledDesc"] = "Включить защиту объектов (пропов)."
@@ -325,15 +325,15 @@ lang["#UseLocalMachineDateDesc"] = "Использовать дату серве
 lang["#UseLocalMachineTimeDesc"] = "Использовать время сервера при загрузке карты."
 lang["#UseKeyOpensEntityMenusDesc"] = "Открывает ли клавиша 'использовать' контекстные меню объектов."
 lang["#ShootAfterRaiseDelayDesc"] = "При приведении оружия в боевую готовность, сколько времени должен ждать игрок\nпрежде чем он сможет начать стрельбу.\nЗначение '0' убирает эту задержку."
-lang["#UseClockworkAdminSystemDesc"] = "Используется ли на сервере какая-либо другая админка, чем встроенная в cw."
+lang["#UseClockworkAdminSystemDesc"] = "Используется ли на сервере какая-либо другая админка, чем встроенная в Catwork."
 lang["#SavedRecognisedNamesDesc"] = "Включить сохранение знакомых имён персонажей."
-lang["#SaveAttributeBoostsDesc"] = "Включить сохранение увеличения аттрибутов."
-lang["#RagdollDamageImmunityTimeDesc"] = "Время в секундах пока рэгдолл игрока не получает никакого урона."
+lang["#SaveAttributeBoostsDesc"] = "Включить сохранение увеличения атрибутов."
+lang["#RagdollDamageImmunityTimeDesc"] = "Время в секундах, пока рэгдолл игрока не получает никакого урона."
 lang["#AdditionalCharacterCountDesc"] = "Количество дополнительных персонажей, которое игрок может создать."
 lang["#ClassChangingIntervalDesc"] = "Время, которое игрок должен подождать между сменами классов (в секундах)."
 lang["#SprintingLowersWeaponDesc"] = "Опускается ли оружие при беге."
 lang["#WeaponRaisingSystemDesc"] = "Включить систему опускания оружия."
-lang["#PropKillProtectionDesc"] = "Включить защиту от убийства объектами"
+lang["#PropKillProtectionDesc"] = "Включить защиту от убийства объектами."
 lang["#GeneratorIntervalDesc"] = "Сколько времени требуется генератору, чтобы произвести деньги (в секундах)."
 lang["#GravityGunPuntDesc"] = "Включить возможность гравипушки толкать предметы."
 lang["#DefaultInventoryWeightDesc"] = "Вес, который игрок может переносить в инвентаре (килограммы)."
@@ -342,13 +342,13 @@ lang["#DataSaveIntervalDesc"] = "Интервал сохранения данн�
 lang["#ViewPunchOnDamageDesc"] = "Искажается ли экран при ударе в игрока."
 lang["#UnrecognisedNameDesc"] = "Описание неизвестных личностей."
 lang["#LimbDamageSystemDesc"] = "Включена ли система урона по конечностям."
-lang["#FallDamageScaleDesc"] = "Множитель урона падение."
+lang["#FallDamageScaleDesc"] = "Множитель урона от падения."
 lang["#StartingCurrencyDesc"] = "Сумма по умолчанию, с которой начинает игрок."
 lang["#ArmorAffectsChestDesc"] = "Влияет ли броня только на район груди."
 lang["#MinimumPhysicalDescriptionDesc"] = "Минимальное количество символов в описании."
 lang["#WoodBreaksFallDesc"] = "Ломаются ли деревянные пропы при взаимодействии с игроком."
 lang["#VignetteEnabledDesc"] = "Использовать виньетку."
-lang["#HeartbeatSoundsDesc"] = "Использовать сердцебиение ."
+lang["#HeartbeatSoundsDesc"] = "Использовать сердцебиение."
 lang["#CrosshairEnabledDesc"] = "Использовать прицел."
 lang["#FreeAimingDesc"] = "Использовать свободное прицеливание."
 lang["#RecogniseSystemDesc"] = "Использовать систему знакомств."
@@ -357,24 +357,24 @@ lang["#DefaultPhysicalDescriptionDesc"] = "Физическое описание
 lang["#ChestDamageScaleDesc"] = "Множитель урона в грудь."
 lang["#CorpseDecayTimeDesc"] = "Время, за которое растворяется рэгдолл игрока."
 lang["#BannedDisconnectMessageDesc"] = "Сообщение, показывающееся заблокированным пользователям.\n!t для оставшегося времени, !f для формата времени."
-lang["#WagesIntervalDesc"] = "Промежуток времени между зарплатой. (секунды)."
-lang["#PropCostScaleDesc"] = "Множитель цен на пропы.\0 - бесплатные пропы."
+lang["#WagesIntervalDesc"] = "Промежуток времени между зарплатами (секунды)."
+lang["#PropCostScaleDesc"] = "Множитель цен на пропы.\n0 - бесплатные пропы."
 lang["#FadeNPCCorpsesDesc"] = "Растворять рэгдоллы мертвых НПЦ."
-lang["#CashWeightDesc"] = "Вес валюты(кг)."
-lang["#CashSpaceDesc"] = "Объем валюты(литры))."
+lang["#CashWeightDesc"] = "Вес валюты (кг)."
+lang["#CashSpaceDesc"] = "Объем валюты (литры)."
 lang["#HeadDamageScaleDesc"] = "Множитель урона в голову."
 lang["#BlockInventoryBindsDesc"] = "Заблокировать бинды инвентаря."
 lang["#LimbDamageScaleDesc"] = "Множитель урона в конечности."
-lang["#TargetIDDelayDesc"] = "Задержка перед выводом информации об энтити"
+lang["#TargetIDDelayDesc"] = "Задержка перед выводом информации об энтити."
 lang["#HeadbobEnabledDesc"] = "Использовать качание головы."
-lang["#ChatCommandPrefixDesc"] = "Префикс для чат комманд."
+lang["#ChatCommandPrefixDesc"] = "Префикс для чат-команд."
 lang["#CrouchWalkSpeedDesc"] = "Скорость ползка по умолчанию."
 lang["#MaximumChatLengthDesc"] = "Максимальное количество символов, разрешенное для написания в чат."
 lang["#StartingFlagsDesc"] = "Стартовые флаги по умолчанию."
 lang["#PlayerSprayDesc"] = "Могут ли игроки использовать спрей."
 lang["#HintIntervalDesc"] = "Промежуток времени между подсказками."
 lang["#OOCChatIntervalDesc"] = "Промежуток времени между сообщениями в чат OOC."
-lang["#MinuteTimeDesc"] = "Сколько длится минута на сервера (в секундах)."
+lang["#MinuteTimeDesc"] = "Сколько длится минута на сервере (в секундах)."
 lang["#DoorUnlockIntervalDesc"] = "Сколько секунд открывается дверь."
 lang["#VoiceChatEnabledDesc"] = "Использовать голосовой чат."
 lang["#LocalVoiceChatDesc"] = "Использовать локальный голосовой чат."
@@ -386,15 +386,15 @@ lang["#WagesNameDesc"] = "Название зарплаты по умолчан�
 lang["#JumpPowerDesc"] = "Высота прыжка по умолчанию."
 lang["#RespawnDelayDesc"] = "Длительность воскрешения игрока."
 lang["#MaximumWalkSpeedDesc"] = "Скорость ходьбы по умолчанию."
-lang["#MaximumRunSpeedDesc"] = "Скорость бега по умолчанию.."
+lang["#MaximumRunSpeedDesc"] = "Скорость бега по умолчанию."
 lang["#DoorPriceDesc"] = "Стоимость двери по умолчанию."
 lang["#DoorLockIntervalDesc"] = "Сколько секунд закрывается дверь."
 lang["#MaximumOwnableDoorsDesc"] = "Максимальное количество дверей, которыми может владеть один игрок."
-lang["#EnableSpaceSystemDesc"] = "Использовать ли объемную систему инвентаря?."
+lang["#EnableSpaceSystemDesc"] = "Использовать ли объемную систему инвентаря."
 lang["#DrawIntroBarsDesc"] = "Использовать кинематографичные полоски при заходе в игру."
 lang["#EnableLOOCIconsDesc"] = "Разрешить иконки в LOOC чате."
 lang["#ShowBusinessMenuDesc"] = "Включить бизнес меню."
-lang["#EnableChatMultiplierDesc"] = "Менять ли размер текста взависимости от использованной команды(крик, шепот)."
+lang["#EnableChatMultiplierDesc"] = "Менять ли размер текста в зависимости от использованной команды (крик, шепот)."
 lang["#SteamAPIKeyDesc"] = "Некоторые функции могут требовать Steam API.\nhttp://steamcommunity.com/dev/apikey"
 lang["#MapPropsPhysgrabDesc"] = "Разрешить игрокам манипулировать пропами карты, используя физган."
 lang["#EntityUseCooldownDesc"] = "Промежуток времени между использованием энтити."
@@ -496,7 +496,7 @@ lang["#PlayersChangeThemes"] = "Players Change Themes"
 lang["#DefaultTheme"] = "Default Theme"
 
 -- Days
-lang["#Monday"] = "Поденельник"
+lang["#Monday"] = "Понедельник"
 lang["#Tuesday"] = "Вторник"
 lang["#Wednesday"] = "Среда"
 lang["#Thursday"] = "Четверг"
@@ -510,7 +510,7 @@ lang["#InventoryDesc"] = "Управление предметами в ваше�
 lang["#DirectoryDesc"] = "Документация команд, а также различная информация."
 lang["#SystemDesc"] = "Доступ к различным настройкам сервера."
 lang["#ScoreboardDesc"] = "Список игроков на сервере."
-lang["#AttributesDesc"] = "Статус ваших аттрибутов."
+lang["#AttributesDesc"] = "Статус ваших атрибутов."
 lang["#SettingsDesc"] = "Настройте то, как Catwork работает у вас."
 lang["#ClassesDesc"] = "Выбор класса вашего персонажа."
 lang["#CharactersDesc"] = "Нажмите эту кнопку, чтобы перейти в меню выбора персонажей."
@@ -571,15 +571,15 @@ lang["#CharCreation_ClassesHelp"] = "Выберите эту опцию, что�
 
 lang["#CharCreation_AttributesHelp"] = "Доступное количество очков умений: #1."
 
-lang["#CharCreation_Persuasion_ErrorMessage"] = "Вы не выбрали фракцию или фракция, которую вы выбрали не существует!"
-lang["#CharCreation_Appearance_ErrorMessage1"] = "Вы не выбрали имя или имя, которое вы выбрали не является допустимым!"
+lang["#CharCreation_Persuasion_ErrorMessage"] = "Вы не выбрали фракцию или фракция, которую вы выбрали, не существует!"
+lang["#CharCreation_Appearance_ErrorMessage1"] = "Вы не выбрали имя или имя, которое вы выбрали, не является допустимым!"
 lang["#CharCreation_Appearance_ErrorMessage2"] = "Ваше имя и фамилия не должны содержать знаки пунктуации, пробелы или цифры!"
 lang["#CharCreation_Appearance_ErrorMessage3"] = "Ваше имя и фамилия должны содержать по крайней мере один гласный!"
 lang["#CharCreation_Appearance_ErrorMessage4"] = "Ваше имя и фамилия должны содержать хотя бы 2 символа!"
 lang["#CharCreation_Appearance_ErrorMessage5"] = "Ваше имя и фамилия не должны быть длиннее 16 символов!"
-lang["#CharCreation_Appearance_ErrorMessage6"] = "Вы не выбрали игровую модель или модель, которую вы выбрали не является допустимой!"
-lang["#CharCreation_Appearance_ErrorMessage7"] = "Физическое описание должно быть как минимум #1 смволов длиной!"
-lang["#CharCreation_Classes_ErrorMessage"] = "Вы не выбрали класс или класс, который вы выбрали не является допустимым!"
+lang["#CharCreation_Appearance_ErrorMessage6"] = "Вы не выбрали игровую модель или модель, которую вы выбрали, не является допустимой!"
+lang["#CharCreation_Appearance_ErrorMessage7"] = "Физическое описание должно быть как минимум #1 символов длиной!"
+lang["#CharCreation_Classes_ErrorMessage"] = "Вы не выбрали класс или класс, который вы выбрали, не является допустимым!"
 
 lang["#CharCreation_DidntFill"] = "Вы не заполнили #1."
 lang["#CharCreation_DidntFillWithNumber"] = "Вы не заполнили #1 числовым значением."
@@ -591,7 +591,7 @@ lang["#BusinessMenu_NoAccess"] = "У вас нет доступа к #1 меню
 lang["#BusinessMenu_Free"] = "Бесплатно"
 
 -- Attributes Menu
-lang["#AttributesMenu_NoAccess"] = "У вас нет доступа ни к каким аттрибутам!"; -- i assume #1 here is 'attributes'
+lang["#AttributesMenu_NoAccess"] = "У вас нет доступа ни к каким атрибутам!"; -- i assume #1 here is 'attributes'
 
 -- Classes Menu
 lang["#ClassesMenu_NoStay"] = "Выбранные вами классы не будут прикреплены к вашему персонажу."
@@ -603,7 +603,7 @@ lang["#Scoreboard_Tip"] = "Нажатие на модельку игрока о�
 
 -- Donations Menu
 lang["#DonationsMenu_Title"] = "Пожертвования"
-lang["#DonationsMenu_SomeSubsExpire"] = "Некоторые подписки истекают и их необходимо будет продлить."
+lang["#DonationsMenu_SomeSubsExpire"] = "Некоторые подписки истекают, и их необходимо будет продлить."
 lang["#DonationsMenu_NoActiveSubs"] = "У вас нет ни одной активной подписки!"
 lang["#DonationsMenu_NoExpire"] = "Эта подписка не истекает."
 lang["#DonationsMenu_Expired"] = "Эта подписка истекла!"
@@ -641,18 +641,18 @@ lang["#TD_Performing"] = "Выполняет действие..."
 -- Hints.
 lang["#Hints_OOC"] = "Введите // перед вашим сообщением, чтобы написать в общий чат (ООС)."
 lang["#Hints_LOOC"] = "Введите .// или [[ перед вашим сообщением, чтобы писать в локальный чат (LOOC)."
-lang["#Hints_Ducking"] = "Зажмите #1 и нажмите #2, пока стоите на месте, чтобы пригнуться."
-lang["#Hints_Directory"] = "Нажмите #1 и кликните на кнопку #2 для получения необходимой информации."
-lang["#Hints_F1_Hotkey"] = "Нажмите #1, чтобы посмотреть информацию о вашем персонаже."
-lang["#Hints_F2_Hotkey"] = "Нажмите #1, пока смотрите на дверь, чтобы открыть меню двери."
-lang["#Hints_Tab_Hotkey"] = "Нажмите #1 или зажмите #2, чтобы открыть главное меню."
+lang["#Hints_Ducking"] = "Зажмите :+speed: и нажмите :+walk:, пока стоите на месте, чтобы пригнуться."
+lang["#Hints_Directory"] = "Нажмите :+showscores: и кликните на кнопку «Помощь» для получения необходимой информации."
+lang["#Hints_F1_Hotkey"] = "Нажмите :gm_showhelp:, чтобы посмотреть информацию о вашем персонаже."
+lang["#Hints_F2_Hotkey"] = "Нажмите :gm_showteam:, пока смотрите на дверь, чтобы открыть меню двери."
+lang["#Hints_Tab_Hotkey"] = "Нажмите или зажмите :+showscores:, чтобы открыть главное меню."
 
 lang["#Hints_Context_Menu"] = "Зажмите :+menu_context: и нажмите на предмет правой кнопкой мыши, чтобы открыть меню действий над предметом."
 lang["#Hints_Entity_Menu"] = "Нажмите :+use:, смотря на предмет, чтобы открыть меню действий над предметом."
 lang["#Hints_Phys_Desc"] = "Изменить физическое описание вашего персонажа можно с помощью команды $command_prefix$CharPhysDesc."
 lang["#Hints_Give_Name"] = "Нажмите :gm_showteam:, чтобы разрешить персонажам в определённом радиусе узнавать вас."
-lang["#Hint_Raise_Weapon"] = "Зажмите :+reload:, чтобы  to поднять или опустить ваше оружие."
-lang["#Hint_Target_Recognises"] = "Имя персонажа будет мигать белым цветом, если он не представился вам."
+lang["#Hint_Raise_Weapon"] = "Зажмите :+reload:, чтобы поднять или опустить ваше оружие."
+lang["#Hint_Target_Recognises"] = "Имя персонажа будет мигать белым цветом, если он не узнаёт вас."
 
 -- Misc Terms
 lang["#Destroy"] = "Уничтожить"
@@ -681,7 +681,7 @@ lang["#SWEPS_Hands_Purpose"] = "Нанесение урона другим пе�
 
 lang["#SWEPS_Keys"] = "Ключи"
 lang["#SWEPS_Keys_Instructions"] = "Первичный Огонь: Закрыть.\nВторичный Огонь: Открыть."
-lang["#SWEPS_Keys_Purpose"] = "Открыть или закрыть на ключ предметы к которым вы имеете доступ."
+lang["#SWEPS_Keys_Purpose"] = "Открыть или закрыть на ключ предметы, к которым вы имеете доступ."
 
 -- Other.
 lang["#Console"] = "Консоль"
@@ -690,13 +690,13 @@ lang["#Schema_Credits"] = "Ролевая игра предоставлена #1
 
 lang["#MainMenu_Loading"] = "Загрузка..."
 
-lang["#Commands_cwLua_accessDenied"] = "Вы не имеете доступ к этой команде, #1."
+lang["#Commands_cwLua_accessDenied"] = "Вы не имеете доступа к этой команде, #1."
 
 lang["#Doors_Name"] = "Дверь"
 lang["#Doors_Unownable"] = "Этой дверью нельзя владеть."
-lang["#Doors_CanBePurchased"] = "Эта дверь может быть преобретена."
+lang["#Doors_CanBePurchased"] = "Эта дверь может быть приобретена."
 lang["#Doors_CanBeOwned"]= "Этой дверью можно владеть."
-lang["#Doors_HasBeenPurchased"] = "Эта дверь была преобретена."
+lang["#Doors_HasBeenPurchased"] = "Эта дверь была приобретена."
 lang["#Doors_HasBeenOwned"] = "Этой дверью завладели."
 
 lang["#StatusInfo_lock"] = "[Закрывает]"
@@ -707,7 +707,7 @@ lang["#StatusInfo_Dead"] = "[Мёртв]"
 lang["#StatusInfo_Performing"] = "[Выполняет '#1']"
 lang["#StatusInfo_fallenover"] = "[Упавший]"
 
-lang["#CharacterPanelToolTip_PlayersWithThisFaction"] = "Всего #1/#2 персонажей этой фаркции."
+lang["#CharacterPanelToolTip_PlayersWithThisFaction"] = "Всего #1/#2 персонажей этой фракции."
 
 lang["#AdminESPInfo_Salesman"] = "[Продавец]"
 lang["#AdminESPInfo_Item"] = "[Предмет]"
@@ -760,7 +760,7 @@ lang["#ScoreboardOptions_CharGiveFlags_StringRequest"] = "Какие флаги 
 lang["#ScoreboardOptions_CharTakeFlags"] = "Забрать Флаги"
 lang["#ScoreboardOptions_CharTakeFlags_StringRequest"] = "Какие флаги вы хотите забрать у персонажа?"
 lang["#ScoreboardOptions_CharSetName"] = "Выставить Имя Персонажа"
-lang["#ScoreboardOptions_CharSetName_StringRequest"] = "Какое имя вы хотете выставить для этого персонажа?"
+lang["#ScoreboardOptions_CharSetName_StringRequest"] = "Какое имя вы хотите выставить для этого персонажа?"
 lang["#ScoreboardOptions_CharGiveItem"] = "Дать Предмет"
 lang["#ScoreboardOptions_CharGiveItem_StringRequest"] = "Какой предмет вы хотите выдать этому персонажу?"
 lang["#ScoreboardOptions_PlySetGroup"] = "Назначить Группу"
@@ -792,8 +792,8 @@ lang["#Emotes_animMotion"] = "Оглянуться"
 lang["#Emotes_animMotion_Left"] = "Влево"
 lang["#Emotes_animMotion_Right"] = "Вправо"
 lang["#Emotes_animMotion_Behind"] = "Позади"
-lang["#Emotes_animPant"] = "Отдышка"
-lang["#Emotes_animPantWall"] = "Отдышка у стены"
+lang["#Emotes_animPant"] = "Одышка"
+lang["#Emotes_animPantWall"] = "Одышка у стены"
 lang["#Emotes_animSit"] = "Сесть"
 lang["#Emotes_animSitWall"] = "Сесть у стены"
 lang["#Emotes_animThreat"] = "Угроза"
@@ -807,7 +807,7 @@ lang["#Inventory"] = "Инвентарь"
 lang["#Weight"] = "Вес"
 lang["#Space"] = "Место"
 
-lang["#RecogniseMenu"] = "ВЫБЕРИТЕ КТО СМОЖЕТ УЗНАВАТЬ ВАС";
+lang["#RecogniseMenu"] = "ВЫБЕРИТЕ, КТО СМОЖЕТ УЗНАВАТЬ ВАС";
 
 lang["#Command_A_Description"] = "Отправить приватное сообщение администрации."
 lang["#Command_A_Syntax"] = "<текст>"
@@ -890,7 +890,7 @@ lang["#Command_Plygoto_Description"] = "Телепортироваться к и
 lang["#Command_Plygoto_Syntax"] = "<имя>"
 lang["#Command_Plykick_Description"] = "Отключить игрока от сервера."
 lang["#Command_Plykick_Syntax"] = "<имя> <причина>"
-lang["#Command_Plymute_Description"] = "Заблокировать игроку доступ к LOOC и ООС чатам.."
+lang["#Command_Plymute_Description"] = "Заблокировать игроку доступ к LOOC и ООС чатам."
 lang["#Command_Plymute_Syntax"] = "<имя> <число минут>"
 lang["#Command_Plyrespawnstay_Description"] = "Возродить игрока на месте смерти."
 lang["#Command_Plyrespawnstay_Syntax"] = "<имя>"
@@ -946,3 +946,390 @@ lang["#Command_Su_Description"] = "Отправить приватное соо�
 lang["#Command_Su_Syntax"] = "<текст сообщения>"
 lang["#Command_W_Syntax"] = "<текст>"
 lang["#Command_Y_Syntax"] = "<текст>"
+
+-- Added: missing translations
+lang["CashSetTarget"] = "#3 установил ваши #1 на #2."
+lang["CashSetPlayer"] = "Вы установили #2 #1 на #3."
+lang["#SmoothServerRatesDesc"] = "Использовать плавные серверные рейты Clockwork."
+lang["#MediumServerRatesDesc"] = "Использовать рейты средней производительности Clockwork (полоски будут менее плавными)."
+lang["#LagFreeServerRatesDesc"] = "Использовать рейты максимальной производительности Clockwork (убирает все лаги, ломает полоски)."
+
+-- Added: strings moved out of code
+-- core-client: character creation
+lang["#CharCreation_Attributes"] = "Характеристики"
+
+-- core-client: door menu
+lang["#DoorMenu_ParentInfo"] = "Родительская дверь является главной дверью в блоке помещений."
+lang["#DoorMenu_DoorText"] = "Текст, отображаемый на двери."
+lang["#DoorMenu_ParentAccess"] = "Какие настройки доступа родительской двери использовать."
+lang["#DoorMenu_ShareAccess"] = "Общий доступ со всеми дочерними дверьми."
+lang["#DoorMenu_SeparateAccess"] = "Раздельный доступ для дочерних дверей."
+lang["#DoorMenu_ParentText"] = "Какие настройки текста родительской двери использовать."
+lang["#DoorMenu_ShareText"] = "Общий текст со всеми дочерними дверьми."
+lang["#DoorMenu_SeparateText"] = "Раздельный текст для дочерних дверей."
+lang["#DoorMenu_Sell"] = "Продать"
+lang["#DoorMenu_Unown"] = "Отказаться от двери"
+lang["#DoorMenu_SellQuery"] = "Вы уверены, что хотите продать эту дверь?"
+lang["#DoorMenu_SellTitle"] = "Продать дверь."
+lang["#DoorMenu_UnownQuery"] = "Вы уверены, что хотите отказаться от этой двери?"
+lang["#DoorMenu_UnownTitle"] = "Отказаться от двери."
+lang["#DoorMenu_Players"] = "Игроки"
+lang["#DoorMenu_PlayersTip"] = "Настройте, кто имеет доступ к этой двери."
+lang["#DoorMenu_SettingsTip"] = "Просмотр настроек этой двери."
+lang["#DoorMenu_TakeCompleteAccess"] = "Забрать полный доступ."
+lang["#DoorMenu_TakeBasicAccess"] = "Забрать базовый доступ."
+lang["#DoorMenu_GiveCompleteAccess"] = "Выдать полный доступ."
+lang["#DoorMenu_GiveBasicAccess"] = "Выдать базовый доступ."
+lang["#DoorMenu_CompleteAccessList"] = "Персонажи с полным доступом."
+lang["#DoorMenu_BasicAccessList"] = "Персонажи с базовым доступом."
+lang["#DoorMenu_NoAccessList"] = "Персонажи без доступа."
+lang["#DoorMenu_PurchaseQuery"] = "Вы хотите приобрести эту дверь за #1?"
+lang["#DoorMenu_PurchaseTitle"] = "Приобрести эту дверь."
+lang["#DoorMenu_OwnQuery"] = "Вы хотите завладеть этой дверью?"
+lang["#DoorMenu_OwnTitle"] = "Завладеть этой дверью."
+
+-- core-client: system menu
+lang["#SystemMenu_Navigation"] = "Навигация"
+lang["#SystemMenu_BackToNavigation"] = "Назад к навигации"
+lang["#SystemMenu_Info"] = "Это меню предоставляет вам различные инструменты администрирования Clockwork."
+lang["#SystemMenu_Open"] = "Открыть"
+lang["#SystemMenu_OpenTip"] = "Нажмите здесь, чтобы открыть эту панель."
+lang["#SystemMenu_NoAccessTip"] = "У вас нет доступа к этой панели."
+
+-- core-client: scoreboard
+lang["#Scoreboard_PlayersOnline"] = "Игроков онлайн: #1 / #2"
+lang["#Scoreboard_NoPlayers"] = "Нет игроков для отображения."
+lang["#Scoreboard_SteamNameIs"] = "Имя этого игрока:"
+lang["#Scoreboard_SteamIDIs"] = "Steam ID этого игрока:"
+lang["#Scoreboard_Ping"] = "Пинг этого игрока: #1."
+
+-- core-client: storage and inventory
+lang["#Storage_TransferCash"] = "Переместить"
+lang["#Unit_Kilograms"] = "кг"
+lang["#Unit_Litres"] = "л"
+
+-- core-client: directory
+lang["#DirectoryMenu_SelectCategory"] = "Выберите категорию"
+lang["#DirectoryMenu_SelectCategoryHelp"] = "Некоторые категории могут быть доступны только пользователям с особыми привилегиями."
+
+-- core-client: entity menu, admin ESP, requests
+lang["#EntityMenu_Title"] = "ВЗАИМОДЕЙСТВИЕ"
+lang["#AdminESPInfo_NoWeapon"] = "[Без оружия]"
+lang["#AdminESPInfo_StaticEntLabel"] = "Статичный объект"
+lang["#AdminESPInfo_ItemLabel"] = "Предмет"
+lang["#AdminESPInfo_SalesmanLabel"] = "Продавец"
+lang["#DermaRequest_OK"] = "ОК"
+
+-- Gamemode hooks (hooks/cl_hooks.lua, hooks/sv_hooks.lua, hooks/sv_nethooks.lua)
+lang["#Directory_ClockworkTip"] = "Содержит разделы, посвященные фреймворку Clockwork."
+lang["#Directory_CommandsTip"] = "Содержит список команд и их синтаксис."
+lang["#ProgressBarInfo_Default"] = "Прогресс"
+lang["#CharFault_QuizFailed"] = "Вы допустили ошибки в тесте!"
+lang["#CharFault_QuizNotCompleted"] = "Вы не прошли тестирование!"
+lang["#CharFault_CannotInteract"] = "Вы не можете взаимодействовать с этим персонажем!"
+lang["#Storage_Belongings"] = "Вещи"
+lang["#Storage_Shipment"] = "Груз"
+lang["#PropCost_Name"] = "Объект"
+
+-- core-libs-shcl: commands (libraries/sh_command.lua)
+lang["#Command_Cooldown"] = "Вы не сможете использовать эту команду еще #1 секунд."
+lang["#Command_NotValid"] = "Такой команды или псевдонима не существует!"
+lang["#Command_CannotUseYet"] = "Вы пока не можете использовать команды!"
+lang["#Command_NoSyntax"] = "<нет>"
+
+-- core-libs-shcl: attributes (libraries/sh_attributes.lua)
+lang["#Attribute_NotValid"] = "Такого атрибута не существует!"
+lang["#Attribute_MaximumReached"] = "Вы достигли максимального значения атрибута!"
+
+-- core-libs-shcl: chat box (libraries/cl_chatbox.lua)
+lang["#Chatbox_AdminPrefix"] = "* [Админ-чат]"
+lang["#Chatbox_UnknownPlayer"] = "Неизвестный игрок"
+
+-- core-libs-shcl: settings (libraries/cl_setting.lua)
+lang["#MusicVolume"] = "Громкость музыки"
+lang["#MusicVolumeDesc"] = "Громкость фоновой и боевой музыки."
+lang["#ShowStaticProps"] = "Показывать статичные пропы"
+lang["#ShowStaticPropsDesc"] = "Показывать все статичные пропы на радаре."
+
+-- core-libs-shcl: items (libraries/sh_item.lua)
+lang["#Item_NoDescription"] = "Предмет без описания."
+lang["#Item_UnknownItem"] = "Неизвестный предмет"
+
+-- core-libs-shcl: config system (libraries/sh_config.lua)
+lang["#ConfigNoHelp"] = "Для этого параметра нет описания."
+
+-- core-libs-shcl: selector (libraries/sh_selector.lua)
+lang["#Selector_Back"] = "Назад"
+lang["#Selector_Next"] = "Далее"
+lang["#Selector_Exit"] = "Выход"
+
+-- core-libs-shcl: date and time (libraries/sh_datetime.lua)
+lang["#UnknownDay"] = "Неизвестно"
+
+-- core-libs-shcl: physical description (libraries/cl_player.lua)
+lang["#PhysDesc_MatchesModel"] = "Описание соответствует модели."
+
+-- core-libs-shcl: directory (libraries/cl_directory.lua, libraries/sh_plugin.lua)
+lang["#Directory_Plugins"] = "Плагины"
+lang["#Directory_Flags"] = "Флаги"
+lang["#Directory_VoiceCommands"] = "Голосовые команды"
+lang["#Directory_PluginDevelopedBy"] = "автор:"
+
+-- core-libs-shcl: flags (libraries/sh_flag.lua)
+lang["#Flag_SpawnVehicles_Details"] = "Доступ к спавну транспорта."
+lang["#Flag_SpawnRagdolls_Details"] = "Доступ к спавну рэгдоллов."
+lang["#Flag_SpawnChairs_Details"] = "Доступ к спавну стульев."
+lang["#Flag_SpawnProps_Details"] = "Доступ к спавну пропов."
+lang["#Flag_PhysicsGun_Details"] = "Доступ к физгану."
+lang["#Flag_SpawnNPCs_Details"] = "Доступ к спавну NPC."
+lang["#Flag_ToolGun_Details"] = "Доступ к тулгану."
+lang["#Flag_GiveItem_Details"] = "Доступ к выдаче предметов."
+lang["#Flag_DoorAccess_Details"] = "Доступ к управлению всеми дверьми."
+lang["#Flag_VoiceAccess_Details"] = "Доступ к голосовому чату."
+
+-- Server libraries: character faults (core/libraries/sv_player.lua)
+lang["#CharFault_NoPhysDesc"] = "Вы не ввели текст описания."
+lang["#CharFault_InvalidGender"] = "Вы не выбрали пол или выбранный пол оказался недействительным."
+lang["#CharFault_NotWhitelisted"] = "У Вас нет вайтлиста фракции '#1'."
+lang["#CharFault_FactionCharLimit"] = "Вы не можете создать больше персонажей данной фракции."
+lang["#CharFault_CreationError"] = "Ошибка создания персонажа!"
+lang["#CharFault_NameOwned"] = "У Вас уже имеется персонаж с именем"
+lang["#CharFault_NameTaken"] = "Уже существует персонаж с именем"
+lang["#CharFault_Unknown"] = "Неизвестная ошибка. Свяжитесь с администрацией."
+lang["#CharFault_CannotCreate"] = "Вы не можете создать этого персонажа!"
+lang["#CharFault_CannotDelete"] = "Вы не можете удалить этого персонажа!"
+lang["#CharFault_CannotDeleteActive"] = "Вы не можете удалить персонажа, которого используете."
+lang["#CharFault_InvalidCharacter"] = "Данный персонаж недействителен."
+lang["#CharFault_FactionFull"] = "Фракция '#1' переполнена (#2/#3)!"
+lang["#CharFault_CannotSwitch"] = "Вы не можете выбрать этого персонажа."
+lang["#CharFault_CannotUse"] = "Вы не можете использовать этого персонажа."
+lang["#CharFault_AlreadyUsing"] = "Вы уже используете этого персонажа."
+lang["#CharScreen_Banned"] = "Этот персонаж заблокирован."
+
+-- Server libraries: cash hints (core/libraries/sv_player.lua)
+lang["#CashHint_Gained"] = "Ваш персонаж получил #1"
+lang["#CashHint_Lost"] = "Ваш персонаж потерял #1"
+lang["#CashReason_DoorSale"] = "продажа двери"
+
+-- Server libraries: chat (core/libraries/sv_player.lua, core/libraries/sv_chatbox.lua)
+lang["#Suffix_Radio"] = "говорит по рации:"
+lang["#Chat_Someone"] = "Кто-то"
+lang["#Chat_SlanderKick"] = "Фреймворк Catwork кикнул #1 с сервера."
+lang["#Chat_NotValidCommand"] = "Такой команды или псевдонима не существует!"
+lang["#Chat_OOCWait"] = "Вы не сможете говорить в OOC чат еще #1 секунд!"
+lang["#Chat_LOOCWait"] = "Вы не сможете говорить в LOOC чат еще #1 секунд!"
+
+-- Server libraries: storage (core/libraries/sv_storage.lua)
+lang["#Storage_Default"] = "Хранилище"
+
+-- core-server: commands, shared messages (core/commands)
+lang["#Command_PlayerProtected"] = "#1 находится под защитой!"
+lang["#Command_ThisPlayerProtected"] = "Этот игрок находится под защитой!"
+lang["#Command_CannotGiveAdminFlags"] = "Вы не можете выдавать флаги 'o', 'a' и 's'!"
+lang["#Command_CannotTakeAdminFlags"] = "Вы не можете изымать флаги 'o', 'a' и 's'!"
+lang["#Command_NotValidFaction"] = "Фракции '#1' не существует!"
+lang["#Command_NotValidCommandOrAlias"] = "Команды '#1' не существует!"
+lang["#Command_MustEnterPermission"] = "Вы должны указать название команды!"
+lang["#Command_Whitelist_NoWhitelist"] = "У фракции #1 нет белого списка!"
+
+-- core-server: commands (core/commands)
+lang["#Command_Arequest_From"] = "Запрос от #1:"
+lang["#Command_Charban_Banned"] = "#1 заблокировал персонажа '#2'."
+lang["#Command_Charunban_Unbanned"] = "#1 разблокировал персонажа '#2'."
+lang["#Command_Charcheckatts_Header"] = "Навыки #1:"
+lang["#Command_Charcheckflags_Result"] = "Флаги этого персонажа: #1"
+lang["#Command_Chargiveflags_Gave"] = "#1 выдал флаги '#3' персонажу #2."
+lang["#Command_Charsetflags_Set"] = "#1 установил персонажу #2 флаги '#3'."
+lang["#Command_Chartakeflags_Took"] = "#1 изъял флаги '#3' у персонажа #2."
+lang["#Command_Chargiveitem_Gave"] = "Вы выдали #1 #2."
+lang["#Command_Chargiveitem_GaveAmount"] = "Вы выдали #1 #2 х #3."
+lang["#Command_Chargiveitem_Received"] = "#1 выдал Вам #2."
+lang["#Command_Chargiveitem_ReceivedAmount"] = "#1 выдал Вам #2 х #3."
+lang["#Command_Chargiveitem_AmountRange"] = "Вы должны ввести число в диапазоне 1-10!"
+lang["#Command_Charphysdesc_RequestTitle"] = "Изменение физического описания"
+lang["#Command_Charphysdesc_RequestText"] = "На что Вы хотите изменить свое физическое описание?"
+lang["#Command_Charsetdesc_RequestText"] = "На что Вы хотите изменить физическое описание этого игрока?"
+lang["#Command_Charsetdesc_Changed"] = "Физическое описание персонажа #1 изменено на:"
+lang["#Command_Charsetmodel_Set"] = "#1 установил персонажу #2 модель #3."
+lang["#Command_Charsetname_Set"] = "#1 изменил имя персонажа #2 на #3."
+lang["#Command_Chartie_NotSupported"] = "Эта схема не поддерживает связывание."
+lang["#Command_Chartie_Untied"] = "Вы развязали #1."
+lang["#Command_Chartie_UntiedBy"] = "#1 развязал Вас."
+lang["#Command_Chartie_Tied"] = "Вы связали #1."
+lang["#Command_Chartie_TiedBy"] = "#1 связал Вас."
+lang["#Command_Chartransfer_AlreadyFaction"] = "#1 уже состоит во фракции #2!"
+lang["#Command_Chartransfer_WrongGender"] = "Пол персонажа #1 не подходит для фракции #2!"
+lang["#Command_Chartransfer_CannotTransfer"] = "#1 не может быть перемещен во фракцию #2!"
+lang["#Command_Chartransfer_Transferred"] = "#1 переместил персонажа #2 во фракцию #3."
+lang["#Command_Dropcash_Tip"] = "Выбросить деньги перед собой."
+lang["#Command_Dropcash_Reason"] = "выбрасывание денег"
+lang["#Command_Dropcash_TooFar"] = "Вы не можете выбросить деньги так далеко!"
+lang["#Command_Dropweapon_NotValidWeapon"] = "Это оружие недействительно!"
+lang["#Command_Dropweapon_TooFar"] = "Вы не можете выбросить оружие так далеко!"
+lang["#Command_Givecash_Gave"] = "Вы передали #2 персонажу #1."
+lang["#Command_Givecash_Received"] = "#1 передал Вам #2."
+lang["#Command_Givecash_TooFar"] = "Этот персонаж слишком далеко!"
+lang["#Command_Givecash_MustLook"] = "Вы должны смотреть на персонажа!"
+lang["#Command_Invaction_NoVehicle"] = "Вы не можете использовать этот предмет в транспорте!"
+lang["#Command_Mapchange_Changing"] = "#1 сменит карту на #2 через #3 сек.!"
+lang["#Command_Maprestart_Restarting"] = "#1 перезапустит карту через #2 сек.!"
+lang["#Command_Plyban_Hours"] = "#1 заблокировал '#2' на #3 ч. Причина:"
+lang["#Command_Plyban_Minutes"] = "#1 заблокировал '#2' на #3 мин. Причина:"
+lang["#Command_Plyban_Permanent"] = "#1 заблокировал '#2' навсегда. Причина:"
+lang["#Command_Plyban_InvalidIdentifier"] = "Это недействительный идентификатор!"
+lang["#Command_Plyban_InvalidDuration"] = "Это недействительная длительность!"
+lang["#Command_Plybring_Brought"] = "#1 телепортировал игрока #2 в указанное им место."
+lang["#Command_Plydemote_Demoted"] = "#1 понизил игрока #2 с #3 до user."
+lang["#Command_Plydemote_OnlyUser"] = "Этот игрок - обычный пользователь и не может быть понижен!"
+lang["#Command_Plygiveaccess_Granted"] = "Вы выдали игроку #1 доступ к команде #2."
+lang["#Command_Plygiveaccess_GrantedTarget"] = "#1 выдал Вам доступ к команде #2."
+lang["#Command_Plytakeaccess_Removed"] = "Вы изъяли у игрока #1 доступ к команде #2."
+lang["#Command_Plytakeaccess_RemovedTarget"] = "#1 изъял у Вас доступ к команде #2."
+lang["#Command_Plygiveflags_Gave"] = "#1 выдал флаги '#3' игроку #2."
+lang["#Command_Plysetflags_Set"] = "#1 установил игроку #2 флаги '#3'."
+lang["#Command_Plytakeflags_Took"] = "#1 изъял флаги '#3' у игрока #2."
+lang["#Command_Plygoto_Gone"] = "#1 телепортировался к игроку #2."
+lang["#Command_Plykick_Kicked"] = "#1 отключил игрока '#2' от сервера. Причина:"
+lang["#Command_Plymute_Muted"] = "#1 заблокировал игроку '#2' доступ к OOC чату на #3 мин."
+lang["#Command_Plyrespawnstay_Respawned"] = "#1 возрожден на месте смерти."
+lang["#Command_Plyrespawntp_Respawned"] = "#1 возрожден и телепортирован в указанное Вами место."
+lang["#Command_Plysearch_AlreadySearching"] = "Вы уже осматриваете инвентарь другого персонажа!"
+lang["#Command_Plysearch_BeingSearched"] = "Инвентарь персонажа #1 уже осматривают!"
+lang["#Command_Plysetgroup_InvalidGroup"] = "Группа должна быть superadmin, admin или operator!"
+lang["#Command_Plysetgroup_Set"] = "#1 установил игроку #2 группу #3."
+lang["#Command_Plysethealth_Set"] = "Здоровье игрока #1 установлено на #2."
+lang["#Command_Plysethealth_SetTarget"] = "#2 установил Ваше здоровье на #1."
+lang["#Command_Plyslay_Slain"] = "#1 был убит игроком #2."
+lang["#Command_Plytp_Teleported"] = "#1 телепортировал игрока #2 в указанное им место."
+lang["#Command_Plytpto_Teleported"] = "#1 телепортировал игрока #2 к игроку #3."
+lang["#Command_Plyunban_Unbanned"] = "#1 разблокировал '#2'."
+lang["#Command_Plyunban_NotFound"] = "Нет заблокированных игроков с идентификатором '#1'!"
+lang["#Command_Plyunwhitelist_Removed"] = "#1 удалил игрока #2 из белого списка фракции #3."
+lang["#Command_Plyunwhitelist_NotOnWhitelist"] = "#1 отсутствует в белом списке фракции #2!"
+lang["#Command_Plywhitelist_Added"] = "#1 добавил игрока #2 в белый список фракции #3."
+lang["#Command_Plywhitelist_AlreadyOn"] = "#1 уже находится в белом списке фракции #2!"
+lang["#Command_Plyvoiceban_AlreadyBanned"] = "Голосовой чат игрока #1 уже заблокирован!"
+lang["#Command_Plyvoiceunban_NotBanned"] = "Голосовой чат игрока #1 не заблокирован!"
+lang["#Command_Su_Prefix"] = "* [Суперадминистраторы]"
+lang["#CashSet_Cash"] = "деньги"
+
+-- core-server: config changes (core/commands/sh_cfgsetvar.lua, core/system/sh_manage_config.lua)
+lang["#Config_ValueSet"] = "#1 установил значение конфигурации #2:"
+lang["#Config_ValueSetRestart"] = "#1 установил значение конфигурации #2 (вступит в силу после перезапуска):"
+
+-- core-server: plugin loading (core/commands/sh_pluginload.lua, sh_pluginunload.lua, core/system/sh_manage_plugins.lua)
+lang["#PluginManage_NotValid"] = "Этот плагин недействителен!"
+lang["#PluginManage_Loaded"] = "#1 включил плагин #2 (вступит в силу после перезапуска)."
+lang["#PluginManage_Unloaded"] = "#1 отключил плагин #2 (вступит в силу после перезапуска)."
+lang["#PluginManage_CouldNotLoad"] = "Не удалось включить этот плагин!"
+lang["#PluginManage_CouldNotUnload"] = "Не удалось отключить этот плагин!"
+lang["#PluginManage_Depends"] = "Этот плагин зависит от другого плагина!"
+
+-- core-server: server console commands (core/sv_kernel.lua)
+lang["#Console_SetGroup"] = "Консоль установила игроку #1 группу #2."
+lang["#Console_Demoted"] = "Консоль понизила игрока #1 с #2 до user."
+lang["#Console_SetCash"] = "Консоль установила Ваши деньги на #1."
+lang["#Console_WhitelistAdded"] = "Консоль добавила игрока #1 в белый список фракции #2."
+lang["#Console_WhitelistRemoved"] = "Консоль удалила игрока #1 из белого списка фракции #2."
+lang["#Console_BannedHours"] = "Консоль заблокировала '#1' на #2 ч. Причина:"
+lang["#Console_BannedMinutes"] = "Консоль заблокировала '#1' на #2 мин. Причина:"
+lang["#Console_BannedPermanently"] = "Консоль заблокировала '#1' навсегда. Причина:"
+lang["#Console_Kicked"] = "Консоль отключила игрока '#1' от сервера. Причина:"
+lang["#Console_SetName"] = "Консоль изменила имя персонажа #1 на #2."
+lang["#Console_SetModel"] = "Консоль установила персонажу #1 модель #2."
+lang["#Console_MapRestart"] = "Консоль перезапустит карту через #1 сек.!"
+lang["#Console_GaveFlags"] = "Консоль выдала флаги '#2' персонажу #1."
+lang["#Console_TookFlags"] = "Консоль изъяла флаги '#2' у персонажа #1."
+lang["#Console_NotAllowed"] = "Вам запрещено использовать серверные команды!"
+
+-- core-server: config names and descriptions (core/config/cl_config.lua)
+lang["#LOOCChatInterval"] = "Интервал сообщений в LOOC чате"
+lang["#LOOCChatIntervalDesc"] = "Промежуток времени между сообщениями в чат LOOC."
+lang["#EnableMouthMove"] = "Анимация рта при разговоре"
+lang["#EnableMouthMoveDesc"] = "Включить анимацию рта при разговоре. Включите, если на сервере разрешен голосовой чат, иначе отключите."
+lang["#BlockCashBinds"] = "Блокировка биндов денежных команд"
+lang["#BlockCashBindsDesc"] = "Заблокировать бинды денежных команд."
+lang["#BlockFalloverBinds"] = "Блокировка биндов падения"
+lang["#BlockFalloverBindsDesc"] = "Заблокировать бинды команды CharFallOver."
+
+-- core-server: base items (core/items)
+lang["Accessories"] = "Аксессуары"
+lang["#Item_AccessoryBase_Description"] = "Аксессуар, который можно надеть."
+lang["#Item_ClothesBase_Description"] = "Чемодан, полный одежды."
+lang["#Item_ContainerBase_Description"] = "Простой контейнер для хранения других предметов."
+lang["#Item_WeaponBase_Broken"] = "[Catwork:Error] Это оружие сломано! Свяжитесь с разработчиками."
+
+-- core-server: entities (core/entities)
+lang["#Belongings_TargetHint"] = "Возможно, внутри что-то есть."
+
+-- core-server: system menu, shared (core/system)
+lang["#System_Enabled"] = "Включено"
+lang["#System_Page"] = "Страница #1/#2"
+lang["#System_Next"] = "Далее"
+lang["#System_Back"] = "Назад"
+
+-- core-server: system menu, manage players (core/system/cl_manage_players.lua)
+lang["#System_ManagePlayers_ToolTip"] = "Набор полезных команд для управления игроками."
+lang["#System_ManagePlayers_Info"] = "Нажмите на игрока, чтобы открыть список доступных команд."
+
+-- core-server: system menu, color modify (core/system/sh_color_modify.lua)
+lang["#System_ColorModify_ToolTip"] = "Настройка глобальной цветокоррекции схемы."
+lang["#System_ColorModify_Info"] = "Изменение этих значений повлияет на цвета у всех игроков."
+lang["#System_ColorModify_Warning"] = "Обратите внимание: эти настройки предназначены только для опытных пользователей."
+lang["#System_ColorModify_Brightness"] = "Яркость"
+lang["#System_ColorModify_Contrast"] = "Контрастность"
+lang["#System_ColorModify_Color"] = "Цвет"
+lang["#System_ColorModify_AddRed"] = "Добавить красный"
+lang["#System_ColorModify_AddGreen"] = "Добавить зеленый"
+lang["#System_ColorModify_AddBlue"] = "Добавить синий"
+lang["#System_ColorModify_MulRed"] = "Умножить красный"
+lang["#System_ColorModify_MulGreen"] = "Умножить зеленый"
+lang["#System_ColorModify_MulBlue"] = "Умножить синий"
+
+-- core-server: system menu, manage bans (core/system/sh_manage_bans.lua)
+lang["#System_ManageBans_ToolTip"] = "Графический способ разблокировки игроков."
+lang["#System_ManageBans_Permanent"] = "Этот игрок заблокирован навсегда."
+lang["#System_ManageBans_UnbannedHours"] = "Будет разблокирован через #1 ч."
+lang["#System_ManageBans_UnbannedMinutes"] = "Будет разблокирован через #1 мин."
+lang["#System_ManageBans_UnbannedSeconds"] = "Будет разблокирован через #1 сек."
+lang["#System_ManageBans_Reason"] = "Причина блокировки:"
+lang["#System_ManageBans_UnbanConfirm"] = "Вы уверены, что хотите разблокировать этого игрока?"
+lang["#System_ManageBans_Empty"] = "Нет заблокированных игроков."
+lang["#System_ManageBans_Loading"] = "Подождите, идет получение списка заблокированных игроков..."
+
+-- core-server: system menu, manage config (core/system/sh_manage_config.lua)
+lang["#System_ManageConfig_ToolTip"] = "Удобный способ редактирования конфигурации Clockwork."
+lang["#System_ManageConfig_Info"] = "Нажмите на ключ конфигурации, чтобы начать редактирование его значения."
+lang["#System_ManageConfig_InfoEditing"] = "Теперь Вы можете изменить значение или выбрать другой ключ конфигурации."
+lang["#System_ManageConfig_Config"] = "Конфигурация"
+lang["#System_ManageConfig_Name"] = "Название"
+lang["#System_ManageConfig_Key"] = "Ключ"
+lang["#System_ManageConfig_AddedBy"] = "Добавлено"
+lang["#System_ManageConfig_Map"] = "Карта"
+lang["#System_ManageConfig_Value"] = "Значение"
+lang["#System_ManageConfig_Okay"] = "ОК"
+lang["#System_ManageConfig_On"] = "Вкл."
+
+-- core-server: system menu, manage groups (core/system/sh_manage_groups.lua)
+lang["#System_ManageGroups_ToolTip"] = "Управление всеми административными группами."
+lang["#System_ManageGroups_Info"] = "Выберите группу, чтобы открыть список ее пользователей."
+lang["#System_ManageGroups_UserGroups"] = "Группы пользователей"
+lang["#System_ManageGroups_SuperAdmins"] = "Суперадминистраторы"
+lang["#System_ManageGroups_Administrators"] = "Администраторы"
+lang["#System_ManageGroups_Operators"] = "Операторы"
+lang["#System_ManageGroups_GroupTip"] = "Управление пользователями группы '#1'."
+lang["#System_ManageGroups_Back"] = "Назад к группам пользователей"
+lang["#System_ManageGroups_DemoteConfirm"] = "Вы уверены, что хотите понизить этого игрока?"
+lang["#System_ManageGroups_Empty"] = "В этой группе нет пользователей."
+lang["#System_ManageGroups_Loading"] = "Подождите, идет получение списка пользователей группы..."
+
+-- core-server: system menu, manage plugins (core/system/sh_manage_plugins.lua)
+lang["#System_ManagePlugins_ToolTip"] = "Здесь можно включать и отключать плагины."
+lang["#System_ManagePlugins_Info"] = "Красные плагины отключены, зеленые включены, а оранжевые недоступны."
+lang["#System_ManagePlugins_Empty"] = "На сервере не установлено ни одного плагина."
+
+-- Weapon selector plugin
+lang["#WeaponSelect_UnknownWeapon"] = "Неизвестное оружие"
+
+-- Directory (used by framework code)
+lang["#Directory_Commands"] = "Команды"

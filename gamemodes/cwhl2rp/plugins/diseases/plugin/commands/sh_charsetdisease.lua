@@ -1,6 +1,6 @@
 COMMAND = cw.command:New("CharSetDisease")
-COMMAND.tip = "Set a players disease."
-COMMAND.text = "<string Name> <String Disease>"
+COMMAND.tip = "#Command_Charsetdisease_Description"
+COMMAND.text = "#Command_Charsetdisease_Syntax"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "a"
 COMMAND.arguments = 2
@@ -12,15 +12,15 @@ function COMMAND:OnRun(player, arguments)
 	
 	if (target) then
 		if (player != target)	then
-			cw.player:Notify(target, player:Name().." has set your disease to "..disease..".")
-			cw.player:Notify(player, "You have set "..target:Name().."'s disease to "..disease..".")
+			cw.player:Notify(target, L("Diseases_SetByOther", player:Name(), disease))
+			cw.player:Notify(player, L("Diseases_SetOther", target:Name(), disease))
 		else
-			cw.player:Notify(player, "You have set your own disease to "..disease..".")
+			cw.player:Notify(player, L("Diseases_SetSelf", disease))
 		end
 
 		target:SetCharacterData("diseases", disease)
 	else
-		cw.player:Notify(player, arguments[1].." is not a valid player!")
+		cw.player:Notify(player, L("NotValidPlayer", arguments[1]))
 	end
 end
 

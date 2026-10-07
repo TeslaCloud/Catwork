@@ -4,18 +4,18 @@
 --]]
 
 ITEM.name = "Combine Lock"
-ITEM.PrintName = "Orange Level Combine Lock"
+ITEM.PrintName = "#Item_CombineLock4_PrintName"
 ITEM.uniqueID = "combine_lock_4"
 ITEM.overrideColor = Color(240, 85, 25)
 ITEM.cost = 0
 ITEM.model = "models/props_combine/combine_lock01.mdl"
 ITEM.weight = 4
 ITEM.classes = {CLASS_EMP, CLASS_EOW}
-ITEM.useText = "Place"
+ITEM.useText = "#Item_CombineLock_UseText"
 ITEM.business = true
-ITEM.description = "УРОВЕНЬ ДОСТУПА: ОРАНЖЕВЫЙ\nУстройство Альянса, использующееся для запирания дверей."
+ITEM.description = "#Item_CombineLock4_Description"
 ITEM.accessLevel = 4
-ITEM.category = "Карты и замки"
+ITEM.category = "#Item_Category_CardsAndLocks"
 
 -- Called when a player uses the item.
 function ITEM:OnUse(player, itemEntity)
@@ -43,22 +43,22 @@ function ITEM:OnUse(player, itemEntity)
 						entity.breach:Remove()
 					end
 				else
-					cw.player:Notify(player, L"This door cannot have a Combine lock!")
+					cw.player:Notify(player, L("CombineLock_DoorCannotHave"))
 
 					return false
 				end
 			else
-				cw.player:Notify(player, L"This entity already has a Combine lock!")
+				cw.player:Notify(player, L("CombineLock_AlreadyHas"))
 
 				return false
 			end
 		else
-			cw.player:Notify(player, L"You are not close enough to the entity!")
+			cw.player:Notify(player, L("CombineLock_NotCloseEnough"))
 
 			return false
 		end
 	else
-		cw.player:Notify(player, L"That is not a valid entity!")
+		cw.player:Notify(player, L("CombineLock_NotValidEntity"))
 
 		return false
 	end

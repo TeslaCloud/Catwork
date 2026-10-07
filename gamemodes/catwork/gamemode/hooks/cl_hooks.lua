@@ -399,8 +399,8 @@ function GM:ClockworkInitialized()
 	cw.directory:AddCategoryMatch("Flags", "[icon]", "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAH0SURBVDjLlZPLbxJRGMX5X/xbjBpjjCtXLl2L0YWkaZrhNQwdIA4FZxygC22wltYYSltG1HGGl8nopCMPX9AUKQjacdW4GNPTOywak7ZAF/eRe/M73/nOzXUAcEwaqVTKmUgkGqIoWoIgWP/fTYSTyaSTgAfdbhemaSIej+NcAgRudDod9Pt95PN5RKPR8wnwPG/Z1XVdB8dxin0WDofBsiyCwaA1UYBY/tdqtVAqlRCJRN6FQiE1k8mg2WyCpunxArFY7DKxfFir1VCtVlEoFCBJEhRFQbFYhM/na5wKzq/+4ALprzqxbFUqFWiaBnstl8tQVRWyLMPr9R643W7nCZhZ3uUS+T74jR7Y5c8wDAO5XA4MwxzalklVy+PxNCiKcp4IkbbhzR4K+h9IH02wax3MiAYCgcBfv99/4TS3xxtfepcTCPyKgGl5gCevfyJb/Q3q6Q5uMcb7s3IaTZ6lHY5f70H6YGLp7QDx9T0kSRtr5V9wLbZxw1N/fqbAHIEXsj1saQR+M8BCdg8icbJaHOJBqo3r1KfMuJdyuBZb2NT2R5a5l108JuFl1CHuJ9q4NjceHgncefSN9LoPcYskT9pYIfA9Al+Z3X4xzUdz3H74RbODWlGGeCYPcVf4jksz08HHId6k63USFK7ObuOia3rYHkdyavlR+267GwAAAABJRU5ErkJggg==")
 	cw.directory:AddCategoryMatch("Voice Commands", "[icon]", "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAKVSURBVDjLfVNLSFRRGP7umTs+xubpTJQO4bRxoUGRZS1CCCa0oghatkpo4aZN0LJttIhx1UZs0aZ0UxaKgSFC0KZxhnxRaGqjiU7eUZur93n6z5lR0Kxz+e93H+f/vu//zzkK5xz/G+l0+rlt23csy1IJQSjDNE2BL5V/EWSz2SAl9IRCoduVlT4YlATXhZxNOeFwCMPDQ1APS85kMu0iORqN1tfU1OD7/BKEuutyuNwlIg6HyAzDgDo9PW04jlNBISft2hSoadpBy1hf14jIRfJKh/ymiuR4/AQKhQ2pzsXFhUsuQ7yQJiLhIN4OvEFT8xmpLv5JB4JVJD/sSdM0BYpC99JNooitzU08uXdOKo6nP0G4PX7tZsmBsCpUxcRwpBaMMSgUrBziWRBwx0WD8xGJBEPeaQQv94AJB9QTImDweDz7gpVRjsUBtLREcDLZhWOBLJzVdMmBVV4ehSnwqOqeukRRAuGFQAZR308EG5MoLgwhGCAHc68R2vZCFSyiIaIEoZg46pP1l4aC5Q0bTZFlBE9dh6NPoioax46TQ92lJiQ3xkoErFyniNmvf++LhmgAljZPAnlyVERFIA/s6Ciu7JQIvF4VjztPy+WxLBu6bpArF9VWDuGtQXirXbj2JJhbAJgf3DIx0zeHd7k4VOrk09HRD227G4Uw4vf7E7XWFHyY4HUdtxRuvofibGFiUIfXKMJDJaqtD7CyOIJ9Z6G7u/s+kdw433rxcrzQi/qWNpj5Z1DVICZGdAxOxqCxGO0DG9s2xH6Y2TsLqVQqRkuWam+/iiN+P5heAcWzBE9lDFPDv35/GV/tetQ79uJgf/YIyPo6xef+/ldnRSmNVWto/rGAoqabudm1zru93/oOO3h/ANOqi32og/qlAAAAAElFTkSuQmCC")
 
-	cw.directory:SetCategoryTip("Clockwork", "Contains topics based on the Clockwork framework-.")
-	cw.directory:SetCategoryTip("Chat Commands", "Contains a list of commands and their syntax.")
+	cw.directory:SetCategoryTip("Clockwork", L("#Directory_ClockworkTip"))
+	cw.directory:SetCategoryTip("Chat Commands", L("#Directory_CommandsTip"))
 
 	cw.directory:AddCategory("Plugins", "Clockwork")
 	cw.directory:AddCategory("Flags", "Clockwork")
@@ -808,11 +808,11 @@ function GM:MenuItemsAdd(menuItems)
 
 	--menuItems:Add("#Classes", "cwClasses", "#ClassesDesc", cw.option:GetKey("icon_data_classes"))
 	menuItems:Add("#Settings", "cwSettings", "#SettingsDesc", cw.option:GetKey("icon_data_settings"))
-	menuItems:Add(systemName, "cwSystem", "Управление схемой и фреймворком.", cw.option:GetKey("icon_data_system"))
-	menuItems:Add(scoreboardName, "cwScoreboard", "Список игроков на сервере.", cw.option:GetKey("icon_data_scoreboard"))
-	menuItems:Add(inventoryName, "cwInventory", "Инвентарь Вашего персонажа.", cw.option:GetKey("icon_data_inventory"))
-	menuItems:Add(directoryName, "cwDirectory", "Список команд и необходимая информация.", cw.option:GetKey("icon_data_directory"))
-	menuItems:Add(attributesName, "cwAttributes", "Узнать навыки и характеристики Вашего персонажа.", cw.option:GetKey("icon_data_attributes"))
+	menuItems:Add(systemName, "cwSystem", "#SystemDesc", cw.option:GetKey("icon_data_system"))
+	menuItems:Add(scoreboardName, "cwScoreboard", "#ScoreboardDesc", cw.option:GetKey("icon_data_scoreboard"))
+	menuItems:Add(inventoryName, "cwInventory", "#InventoryDesc", cw.option:GetKey("icon_data_inventory"))
+	menuItems:Add(directoryName, "cwDirectory", "#DirectoryDesc", cw.option:GetKey("icon_data_directory"))
+	menuItems:Add(attributesName, "cwAttributes", "#AttributesDesc", cw.option:GetKey("icon_data_attributes"))
 
 	if (config.Get("show_business"):GetBoolean() == true) then
 		local businessName = cw.option:GetKey("name_business")
@@ -1117,7 +1117,7 @@ function GM:HUDPaintForeground()
 
 		cw.core:DrawBar(
 			x, y, width, height, info.color or cw.option:GetColor("information"),
-			info.text or "Progress Bar", info.percentage or 100, 100, info.flash, {uniqueID = info.uniqueID}
+			info.text or L("#ProgressBarInfo_Default"), info.percentage or 100, 100, info.flash, {uniqueID = info.uniqueID}
 		)
 	else
 		info = hook.Run("GetPostProgressBarInfo")
@@ -1130,7 +1130,7 @@ function GM:HUDPaintForeground()
 
 			cw.core:DrawBar(
 				x, y, width, height, info.color or cw.option:GetColor("information"),
-				info.text or "Progress Bar", info.percentage or 100, 100, info.flash, {uniqueID = info.uniqueID}
+				info.text or L("#ProgressBarInfo_Default"), info.percentage or 100, 100, info.flash, {uniqueID = info.uniqueID}
 			)
 		end
 	end
@@ -1306,7 +1306,7 @@ end
 function GM:AddHint(name, delay)
 	if (IsValid(cw.client) and cw.client:HasInitialized()) then
 		cw.core:AddTopHint(
-			cw.core:ParseData("#Hint_"..name), delay
+			cw.core:ParseData(cw.lang:TranslateText("#Hint_"..name)), delay
 		)
 	end
 end

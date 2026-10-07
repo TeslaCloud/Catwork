@@ -22,7 +22,7 @@ function COMMAND:OnRun(player, arguments)
 	if (IsValid(entity)) then
 		entity:SetAngles(Angle(0, player:EyeAngles().yaw + 180, 0))
 
-		cw.player:Notify(player, "You have added a ration dispenser.")
+		cw.player:Notify(player, L("Dispenser_Added"))
 	end
 end
 

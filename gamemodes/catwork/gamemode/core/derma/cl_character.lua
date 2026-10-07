@@ -1357,7 +1357,7 @@ function PANEL:Init()
 	end
 
 	self.attributesForm = vgui.Create("DForm")
-	self.attributesForm:SetName("Характеристики")
+	self.attributesForm:SetName("#CharCreation_Attributes")
 	self.attributesForm:SetPadding(4)
 
 	self.categoryList = vgui.Create("DCategoryList", self)
@@ -1987,24 +1987,24 @@ function PANEL:OnNext()
 			local value = v[2]:GetValue()
 
 			if (value == "") then
-				cw.character:SetFault(L("#CharCreation_DidntFill", v[1].name))
+				cw.character:SetFault(L("#CharCreation_DidntFill:"..v[1].name..";"))
 				return false
 			elseif (v[1].isNumber) then
 				local max = v[1].max
 				local min = v[1].min
 
 				if (!tonumber(value)) then
-					cw.character:SetFault(L("#CharCreation_DidntFillWithNumber", v[1].name))
+					cw.character:SetFault(L("#CharCreation_DidntFillWithNumber:"..v[1].name..";"))
 					return false
 				end
 
 				if (max and max < tonumber(value)) then
-					cw.character:SetFault(L("#CharCreation_CantGoHigh", tostring(max), v[1].name))
+					cw.character:SetFault(L("#CharCreation_CantGoHigh:"..tostring(max)..","..v[1].name..";"))
 					return false
 				end
 
 				if (min and min > tonumber(value)) then
-					cw.character:SetFault(L("#CharCreation_CantGoLow", tostring(min), v[1].name))
+					cw.character:SetFault(L("#CharCreation_CantGoLow:"..tostring(min)..","..v[1].name..";"))
 					return false
 				end
 			end

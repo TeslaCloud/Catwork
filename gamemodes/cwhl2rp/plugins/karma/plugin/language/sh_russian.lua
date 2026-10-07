@@ -19,3 +19,18 @@ lang["#Karma_Decent"] = "Порядочный"
 lang["#Karma_Kind"] = "Хороший"
 lang["#Karma_GoodSamaritan"] = "Добродушный"
 lang["#Karma_Divine"] = "Божественный"
+lang["#Karma_Error"] = "Ошибка"
+
+-- Notifications.
+lang["#Karma_SetTo"] = "Вы установили карму #1 на #2."
+lang["#Karma_InvalidLevel"] = "Вы указали неверный уровень кармы."
+
+-- Commands.
+lang["#Command_Karmaset_Description"] = "Установить карму игрока."
+lang["#Command_Karmaset_Syntax"] = "<имя> <значение>"
+lang["#Command_Karmaget_Description"] = "Узнать карму игрока."
+lang["#Command_Karmaget_Syntax"] = "<имя>"
+lang["#Command_Karmaadd_Description"] = "Добавить карму игроку."
+lang["#Command_Karmaadd_Syntax"] = "<имя> <значение>"
+lang["#Command_Karmatake_Description"] = "Уменьшить карму игрока."
+lang["#Command_Karmatake_Syntax"] = "<имя> <значение>"

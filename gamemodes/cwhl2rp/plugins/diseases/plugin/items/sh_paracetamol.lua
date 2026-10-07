@@ -1,14 +1,15 @@
-ITEM.name = "Парацетамол"
+ITEM.name = "Paracetamol"
+ITEM.PrintName = "#Item_Paracetamol_PrintName"
 ITEM.uniqueID = "paracetamol"
 ITEM.cost = 25
 ITEM.model = "models/props_junk/garbage_metalcan001a.mdl"
 ITEM.weight = 0.2
 ITEM.access = "q"
-ITEM.useText = "Употребить"
-ITEM.category = "Медицина"
+ITEM.useText = "Swallow"
+ITEM.category = "Medical"
 ITEM.business = true
-ITEM.description = "Баночка с несколькими таблетками для лечения простуды."
-ITEM.customFunctions = {"Дать"}
+ITEM.description = "#Item_Paracetamol_Description"
+ITEM.customFunctions = {"Give"}
 
 -- Called when a player uses the item.
 function ITEM:OnUse(player, itemEntity)
@@ -19,7 +20,7 @@ end
 
 if (SERVER) then
 	function ITEM:OnCustomFunction(player, name)
-		if (name == "Дать") then
+		if (name == "Give") then
 			local lookingPly = player:GetEyeTrace().Entity
 
 			if (lookingPly:IsPlayer()) then
@@ -27,10 +28,10 @@ if (SERVER) then
 					lookingPly:SetCharacterData("diseases", "none")
 				end
 
-				cw.player:Notify(player, "Вы дали персонажу парацетамол.")
+				cw.player:Notify(player, L("Diseases_Gave_Paracetamol"))
 				player:TakeItem(player:FindItemByID("paracetamol"))
 			else
-				cw.player:Notify(player, "Вы должны смотреть на человека!")
+				cw.player:Notify(player, L("Diseases_MustLookAtPerson"))
 
 				return false
 			end

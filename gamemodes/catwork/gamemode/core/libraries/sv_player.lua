@@ -106,7 +106,7 @@ function cw.player:CreateCharacterFromData(player, data)
 
 	if (!factionTable) then
 		return self:SetCreateFault(
-			player, L"#InvalidFaction"
+			player, L"InvalidFaction"
 		)
 	end
 
@@ -137,7 +137,7 @@ function cw.player:CreateCharacterFromData(player, data)
 
 		if (!classTable) then
 			return self:SetCreateFault(
-				player, L"#InvalidClass"
+				player, L"InvalidClass"
 			)
 		else
 			info.data["class"] = classTable.name
@@ -174,12 +174,12 @@ function cw.player:CreateCharacterFromData(player, data)
 
 		if (pointsSpent > maximumPoints) then
 			return self:SetCreateFault(
-				player, L"#TooManyAtts"
+				player, L"TooManyAtts"
 			)
 		end
 	elseif (attributes) then
 		return self:SetCreateFault(
-			player, L"#AttribError"
+			player, L"AttribError"
 		)
 	end
 
@@ -191,35 +191,35 @@ function cw.player:CreateCharacterFromData(player, data)
 
 				if (string.find(data.forename, "[%p%s%d]") or string.find(data.surname, "[%p%s%d]")) then
 					return self:SetCreateFault(
-						player, "Ваши имя и фамилия не должны содержать пробелов, знаков пунктуации или цифр."
+						player, L("CharCreation_Appearance_ErrorMessage2")
 					)
 				end
 
 				if (!string.find(data.forename, "[aeiou]") or !string.find(data.surname, "[aeiou]")) then
 					return self:SetCreateFault(
-						player, "Ваши имя и фамилия должны начинаться с заглавной буквы."
+						player, L("CharCreation_Appearance_ErrorMessage3")
 					)
 				end
 
 				if (string.utf8len(data.forename) < 2 or string.utf8len(data.surname) < 2) then
 					return self:SetCreateFault(
-						player, "Ваши имя и фамилия должны быть длиной более двух символов."
+						player, L("CharCreation_Appearance_ErrorMessage4")
 					)
 				end
 
 				if (string.utf8len(data.forename) > 16 or string.utf8len(data.surname) > 16) then
 					return self:SetCreateFault(
-						player, "Ваши имя и фамилия должны быть длиной менее 16 символов."
+						player, L("CharCreation_Appearance_ErrorMessage5")
 					)
 				end
 			else
 				return self:SetCreateFault(
-					player, "Вы не выбрали имя или выбранное имя недействительно."
+					player, L("CharCreation_Appearance_ErrorMessage1")
 				)
 			end
 		elseif (!data.fullName or data.fullName == "") then
 			return self:SetCreateFault(
-				player, "Вы не выбрали имя или выбранное имя недействительно."
+				player, L("CharCreation_Appearance_ErrorMessage1")
 			)
 		end
 	end
@@ -227,11 +227,11 @@ function cw.player:CreateCharacterFromData(player, data)
 	if (cw.command:FindByID("CharPhysDesc") != nil) then
 		if (type(data.physDesc) != "string") then
 			return self:SetCreateFault(
-				player, "Вы не ввели текст описания."
+				player, L("CharFault_NoPhysDesc")
 			)
 		elseif (string.utf8len(data.physDesc) < minimumPhysDesc) then
 			return self:SetCreateFault(
-				player, "Описание должно быть длиной не менее "..minimumPhysDesc.." символов."
+				player, L("CharCreation_Appearance_ErrorMessage7", minimumPhysDesc)
 			)
 		end
 
@@ -240,19 +240,19 @@ function cw.player:CreateCharacterFromData(player, data)
 
 	if (!factionTable.GetModel and !info.model) then
 		return self:SetCreateFault(
-			player, "Вы не выбрали модель или выбранная модель недействительна."
+			player, L("CharCreation_Appearance_ErrorMessage6")
 		)
 	end
 
 	if (!faction.IsGenderValid(info.faction, info.gender)) then
 		return self:SetCreateFault(
-			player, "Вы не выбрали пол или выбранный пол оказался недействительным."
+			player, L("CharFault_InvalidGender")
 		)
 	end
 
 	if (factionTable.whitelist and !self:IsWhitelisted(player, info.faction)) then
 		return self:SetCreateFault(
-			player, "У Вас нет вайтлиста фракции '"..info.faction.."'."
+			player, L("CharFault_NotWhitelisted", info.faction)
 		)
 	elseif (_faction.IsModelValid(factionTable.name, info.gender, info.model)
 	or (factionTable.GetModel and !info.model)) then
@@ -263,7 +263,7 @@ function cw.player:CreateCharacterFromData(player, data)
 
 		if (_faction.HasReachedMaximum(player, factionTable.name)) then
 			return self:SetCreateFault(
-				player, "Вы не можете создать больше персонажей данной фракции."
+				player, L("CharFault_FactionCharLimit")
 			)
 		end
 
@@ -294,7 +294,7 @@ function cw.player:CreateCharacterFromData(player, data)
 
 				if (fault == false or type(fault) == "string") then
 					return self:SetCreateFault(
-						player, fault or "Ошибка создания персонажа!"
+						player, fault or L("CharFault_CreationError")
 					)
 				end
 			end
@@ -302,7 +302,7 @@ function cw.player:CreateCharacterFromData(player, data)
 			for k, v in pairs(characters) do
 				if (v.name == info.name) then
 					return self:SetCreateFault(
-						player, "У Вас уже имеется персонаж с именем '"..info.name.."'!"
+						player, L("CharFault_NameOwned").." '"..info.name.."'!"
 					)
 				end
 			end
@@ -311,7 +311,7 @@ function cw.player:CreateCharacterFromData(player, data)
 
 			if (fault == false or type(fault) == "string") then
 				return self:SetCreateFault(
-					player, fault or "Ошибка создания персонажа!"
+					player, fault or L("CharFault_CreationError")
 				)
 			end
 
@@ -323,7 +323,7 @@ function cw.player:CreateCharacterFromData(player, data)
 
 					if (cwDatabase:IsResult(result)) then
 						self:SetCreateFault(
-							player, "Персонаж с именем '"..info.name.."' уже существует."
+							player, L("CharFault_NameTaken").." '"..info.name.."'."
 						)
 						player.cwIsCreatingChar = nil
 					else
@@ -357,11 +357,11 @@ function cw.player:CreateCharacterFromData(player, data)
 				end)
 			queryObj:Execute()
 		else
-			return self:SetCreateFault(player, "Вы не можете создать больше персонажей!")
+			return self:SetCreateFault(player, L("CharCreation_CannotCreateMoreChars"))
 		end
 	else
 		return self:SetCreateFault(
-			player, "Вы не выбрали модель или выбранная модель оказалась недействительной."
+			player, L("CharCreation_Appearance_ErrorMessage6")
 		)
 	end
 end
@@ -1470,7 +1470,7 @@ function cw.player:TakeDoor(player, door, bForce, bThisDoorOnly, bChildrenOnly)
 	end
 
 	if (!force and doorCost > 0) then
-		self:GiveCash(player, doorCost / 2, "продажа двери")
+		self:GiveCash(player, doorCost / 2, L("CashReason_DoorSale"))
 	end
 end
 
@@ -1506,10 +1506,10 @@ function cw.player:SayRadio(player, text, check, noEavesdrop)
 	end
 
 	if (canRadio) then
-		info = chatbox.AddText(listeners, "\""..info.text.."\"", {suffix = " говорит по рации: ", sender = player, isPlayerMessage = true, filter = "ic", radius = 0, textColor = Color(10, 200, 10, 255), data = {radio = true}})
+		info = chatbox.AddText(listeners, "\""..info.text.."\"", {suffix = " #Suffix_Radio ", sender = player, isPlayerMessage = true, filter = "ic", radius = 0, textColor = Color(10, 200, 10, 255), data = {radio = true}})
 
 		if (info and IsValid(info.sender)) then
-			chatbox.AddText(eavesdroppers, info.text, {suffix = " говорит по рации: ", sender = player, isPlayerMessage = true, filter = "ic", radius = 0, textColor = Color(255, 255, 200, 255), data = {radio = true}})
+			chatbox.AddText(eavesdroppers, info.text, {suffix = " #Suffix_Radio ", sender = player, isPlayerMessage = true, filter = "ic", radius = 0, textColor = Color(255, 255, 200, 255), data = {radio = true}})
 
 			hook.Run("PlayerRadioUsed", player, info.text, listeners, eavesdroppers)
 		end
@@ -1538,7 +1538,7 @@ function cw.player:GiveDoor(player, door, name, unsellable, override)
 			door.unsellable = unsellable
 			door.accessList = {}
 
-			cw.entity:SetDoorText(door, name or "Арендованная дверь.")
+			cw.entity:SetDoorText(door, name or "")
 			self:GiveProperty(player, door, true)
 
 			hook.Run("PlayerDoorGiven", player, door)
@@ -1605,7 +1605,7 @@ end
 -- A function to send a player a creation fault.
 function cw.player:SetCreateFault(player, fault)
 	if (!fault) then
-		fault = "Неизвестная ошибка. Свяжитесь с администрацией."
+		fault = L("CharFault_Unknown")
 	end
 
 	netstream.Start(player, "CharacterFinish", {bSuccess = false, fault = fault})
@@ -1647,15 +1647,15 @@ function cw.player:DeleteCharacter(player, characterID)
 
 				return true
 			elseif (type(fault) != "string") then
-				return false, "Вы не можете удалить этого персонажа!"
+				return false, L("CharFault_CannotDelete")
 			else
 				return false, fault
 			end
 		else
-			return false, "Вы не можете удалить персонажа, которого используете."
+			return false, L("CharFault_CannotDeleteActive")
 		end
 	else
-		return false, "Персонаж недействителен."
+		return false, L("CharFault_InvalidCharacter")
 	end
 end
 
@@ -1666,7 +1666,7 @@ function cw.player:UseCharacter(player, characterID)
 	local character = player.cwCharacterList[characterID]
 
 	if (!character) then
-		return false, "Данный персонаж недействителен."
+		return false, L("CharFault_InvalidCharacter")
 	end
 
 	if (currentCharacter != character or isCharacterMenuReset) then
@@ -1686,13 +1686,13 @@ function cw.player:UseCharacter(player, characterID)
 			end
 
 			if (limit and players == limit) then
-				return false, "Фракция '"..character.faction.."' переполнена ("..limit.."/"..limit..")!"
+				return false, L("CharFault_FactionFull", character.faction, limit, limit)
 			else
 				if (currentCharacter) then
 					local fault = hook.Run("PlayerCanSwitchCharacter", player, character)
 
 					if (fault != nil and fault != true) then
-						return false, fault or "Вы не можете выбрать этого персонажа."
+						return false, fault or L("CharFault_CannotSwitch")
 					end
 				end
 
@@ -1708,10 +1708,10 @@ function cw.player:UseCharacter(player, characterID)
 				return true
 			end
 		else
-			return false, fault or "Вы не можете использовать этого персонажа."
+			return false, fault or L("CharFault_CannotUse")
 		end
 	else
-		return false, "Вы уже используете этого персонажа."
+		return false, L("CharFault_AlreadyUsing")
 	end
 end
 
@@ -2045,11 +2045,11 @@ function cw.player:GiveCash(player, amount, reason, bNoMsg)
 			if (!bNoMsg) then
 				if (reason) then
 					cwHint:Send(
-						player, "Ваш персонаж потерял "..cw.core:FormatCash(roundedAmount).." ("..reason..").", 4, negativeHintColor
+						player, L("CashHint_Lost", cw.core:FormatCash(roundedAmount).." ").."("..reason..").", 4, negativeHintColor
 					)
 				else
 					cwHint:Send(
-						player, "Ваш персонаж потерял "..cw.core:FormatCash(roundedAmount)..".", 4, negativeHintColor
+						player, L("CashHint_Lost", cw.core:FormatCash(roundedAmount))..".", 4, negativeHintColor
 					)
 				end
 			end
@@ -2057,11 +2057,11 @@ function cw.player:GiveCash(player, amount, reason, bNoMsg)
 			if (!bNoMsg) then
 				if (reason) then
 					cwHint:Send(
-						player, "Ваш персонаж получил "..cw.core:FormatCash(roundedAmount).." ("..reason..").", 4, positiveHintColor
+						player, L("CashHint_Gained", cw.core:FormatCash(roundedAmount).." ").."("..reason..").", 4, positiveHintColor
 					)
 				else
 					cwHint:Send(
-						player, "Ваш персонаж получил "..cw.core:FormatCash(roundedAmount)..".", 4, positiveHintColor
+						player, L("CashHint_Gained", cw.core:FormatCash(roundedAmount))..".", 4, positiveHintColor
 					)
 				end
 			end
@@ -2843,7 +2843,7 @@ function cw.player:CharacterScreenAdd(player, character)
 	end
 
 	if (character.data["CharBanned"]) then
-		info.details = "Этот персонаж заблокирован."
+		info.details = L("CharScreen_Banned")
 	end
 
 	hook.Run("PlayerAdjustCharacterScreenInfo", player, character, info)
@@ -2918,7 +2918,7 @@ function cw.player:LoadCharacter(player, characterID, tMergeCreate, Callback, bF
 					local fault = hook.Run("PlayerCanCreateCharacter", player, character, characterID)
 
 					if (fault == false or type(fault) == "string") then
-						return self:SetCreateFault(player, fault or "You cannot create this character!")
+						return self:SetCreateFault(player, fault or L("CharFault_CannotCreate"))
 					end
 				end
 

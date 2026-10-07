@@ -66,7 +66,7 @@ function PANEL:Rebuild()
 		self.panelList:AddItem(label)
 
 		local playersLabel = vgui.Create("DLabel", self)
-			playersLabel:SetText("Игроков онлайн: "..tostring(#_player.GetAll()).." / "..tostring(game.MaxPlayers()))
+			playersLabel:SetText("#Scoreboard_PlayersOnline:"..tostring(#_player.GetAll())..","..tostring(game.MaxPlayers())..";")
 			playersLabel:SetFont(cw.option:GetFont("scoreboard_desc"))
 			playersLabel:SizeToContents()
 		self.panelList:AddItem(playersLabel)
@@ -114,7 +114,7 @@ function PANEL:Rebuild()
 		end
 	else
 		local label = vgui.Create("cwInfoText", self)
-			label:SetText("There are no players to display.")
+			label:SetText("#Scoreboard_NoPlayers")
 			label:SetInfoColor("orange")
 		self.panelList:AddItem(label)
 	end
@@ -220,7 +220,7 @@ function PANEL:Init()
 	self.avatarButton:SetDrawBackground(false)
 
 	if (info.avatarImage) then
-		self.avatarButton:SetTooltip("This player's name is "..info.steamName..".\nThis player's Steam ID is "..info.player:SteamID()..".")
+		self.avatarButton:SetTooltip(L("#Scoreboard_SteamNameIs").." "..info.steamName..".\n"..L("#Scoreboard_SteamIDIs").." "..info.player:SteamID()..".")
 		self.avatarButton.DoClick = function(button)
 			if (IsValid(info.player)) then
 				info.player:ShowProfile()
@@ -245,7 +245,7 @@ function PANEL:Think()
 		if (self.toolTip) then
 			self.spawnIcon:SetTooltip(self.toolTip)
 		else
-			self.spawnIcon:SetTooltip("This player's ping is "..self.player:Ping()..".")
+			self.spawnIcon:SetTooltip(L("#Scoreboard_Ping:"..self.player:Ping()..";"))
 		end
 	end
 

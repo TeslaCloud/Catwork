@@ -7,8 +7,8 @@
 --]]
 
 local COMMAND = cw.command:New("DoorSetFalse")
-COMMAND.tip = "Set whether a door is false."
-COMMAND.text = "<bool IsFalse>"
+COMMAND.tip = "#Command_Doorsetfalse_Description"
+COMMAND.text = "#Command_Doorsetfalse_Syntax"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "a"
 COMMAND.arguments = 1
@@ -35,17 +35,17 @@ function COMMAND:OnRun(player, arguments)
 
 			cwDoorCmds:SaveDoorData()
 
-			cw.player:Notify(player, "You have made this door false.")
+			cw.player:Notify(player, L("DoorCmds_MadeFalse"))
 		else
 			cw.entity:SetDoorFalse(door, false)
 
 			cwDoorCmds.doorData[door] = nil
 			cwDoorCmds:SaveDoorData()
 
-			cw.player:Notify(player, "You have no longer made this door false.")
+			cw.player:Notify(player, L("DoorCmds_MadeNotFalse"))
 		end
 	else
-		cw.player:Notify(player, "This is not a valid door!")
+		cw.player:Notify(player, L("DoorCmds_NotValidDoor"))
 	end
 end
 

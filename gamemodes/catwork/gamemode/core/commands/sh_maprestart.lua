@@ -21,7 +21,7 @@ function COMMAND:OnRun(player, arguments)
 		delay = arguments[1]
 	end
 
-	cw.player:NotifyAll(player:Name().." is restarting the map in "..delay.." seconds!")
+	cw.player:NotifyAll(L("Command_Maprestart_Restarting", player:Name(), delay))
 
 	timer.Simple(delay, function()
 		hook.Run("PreSaveData")

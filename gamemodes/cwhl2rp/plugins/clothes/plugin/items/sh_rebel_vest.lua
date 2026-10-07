@@ -7,13 +7,13 @@
 
 ITEM.baseItem = "bodygroup_base"
 ITEM.name = "Rebel Vest"
-ITEM.PrintName = "Униформа Сопротивления"
+ITEM.PrintName = "#ITEM_Rebel_Vest_Name"
 ITEM.model = "models/tnb/items/shirt_rebel_molle.mdl"
-ITEM.plural = "Униформы Сопротивления"
+ITEM.plural = "#ITEM_Rebel_Vest_Plural"
 ITEM.weight = 2
 ITEM.uniqueID = "rebel_vest"
 ITEM.business = false
 ITEM.bodyGroup = 1
 ITEM.bodyGroupVal = 8
-ITEM.description = "Униформа сопротивления, немного потрёпанная."
+ITEM.description = "#ITEM_Rebel_Vest_Desc"
 ITEM.protection = 10

@@ -1,32 +1,33 @@
-﻿ITEM.name = "Шприц стрихнина"
+﻿ITEM.name = "Syringe of Strychnine"
+ITEM.PrintName = "#Item_GreenLiquid_PrintName"
 ITEM.uniqueID = "green_liquid"
 ITEM.cost = 50
 ITEM.model = "models/healthvial.mdl"
 ITEM.weight = 0.2
 ITEM.factions = {FACTION_MPF}
-ITEM.useText = "Использовать"
-ITEM.category = "Медицина"
+ITEM.useText = "Use"
+ITEM.category = "Medical"
 ITEM.business = true
-ITEM.description = "Неподписанный шприц с зеленой жидкостью."
-ITEM.customFunctions = {"Ввести"}
+ITEM.description = "#Item_GreenLiquid_Description"
+ITEM.customFunctions = {"Inject"}
 
 -- Called when a player uses the item.
 function ITEM:OnUse(player, itemEntity)
 	player:SetCharacterData("diseases", "slow_deathinjection")
-	cw.player:Notify(player, "Вы ввели зеленую жидкость в свою вену.")
+	cw.player:Notify(player, L("Diseases_Injected_Self"))
 end
 
 if (SERVER) then
 	function ITEM:OnCustomFunction(player, name)
-		if (name == "Ввести") then
+		if (name == "Inject") then
 			local lookingPly = player:GetEyeTrace().Entity
 
 			if (lookingPly:IsPlayer()) then
 				lookingPly:SetCharacterData("diseases", "slow_deathinjection")
-				cw.player:Notify(player, "Вы ввели зеленую жидкость персонажу.")
+				cw.player:Notify(player, L("Diseases_Injected_Other"))
 				player:TakeItem(player:FindItemByID("green_liqud"))
 			else
-				cw.player:Notify(player, "Вы должны смотреть на человека!")
+				cw.player:Notify(player, L("Diseases_MustLookAtPerson"))
 
 				return false
 			end

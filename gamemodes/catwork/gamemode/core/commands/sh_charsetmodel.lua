@@ -23,7 +23,7 @@ function COMMAND:OnRun(player, arguments)
 		target:SetCharacterData("Model", model, true)
 		target:SetModel(model)
 
-		cw.player:NotifyAll(player:Name().." set "..target:Name().."'s model to "..model..".")
+		cw.player:NotifyAll(L("Command_Charsetmodel_Set", player:Name(), target:Name(), model))
 	else
 		cw.player:Notify(player, L(player, "NotValidCharacter", arguments[1]))
 	end

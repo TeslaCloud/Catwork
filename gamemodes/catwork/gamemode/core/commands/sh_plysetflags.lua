@@ -20,13 +20,13 @@ function COMMAND:OnRun(player, arguments)
 	if (target) then
 		if (string.find(arguments[2], "a") or string.find(arguments[2], "s")
 		or string.find(arguments[2], "o")) then
-			cw.player:Notify(player, "You cannot give 'o', 'a' or 's' flags!")
+			cw.player:Notify(player, L("Command_CannotGiveAdminFlags"))
 
 			return
 		end
 
 		cw.player:SetPlayerFlags(target, arguments[2]);		
-		cw.player:NotifyAll(player:Name().." set "..target:SteamName().."'s flags to "..arguments[2]..".")
+		cw.player:NotifyAll(L("Command_Plysetflags_Set", player:Name(), target:SteamName(), arguments[2]))
 	else
 		cw.player:Notify(player, L(player, "NotValidCharacter", arguments[1]))
 	end

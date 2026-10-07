@@ -5,8 +5,8 @@
 --]]
 
 local COMMAND = cw.command:New("CharSetAttribute")
-COMMAND.tip = "Sets attribute's value for a character."
-COMMAND.text = "<string Player> <string Attribute> <number Amount>"
+COMMAND.tip = "#Command_Charsetattribute_Description"
+COMMAND.text = "#Command_Charsetattribute_Syntax"
 COMMAND.access = "s"
 COMMAND.arguments = 3
 COMMAND.alias = {"SetAttribute"}
@@ -22,12 +22,12 @@ function COMMAND:OnRun(player, arguments)
 		if (attribute) then
 			cw.attributes:Update(target, attribute.uniqueID, amt)
 
-			cw.player:Notify(player, "You have set "..target:Name().."'s "..(attribute.name or "Unknown").." ["..attribute.uniqueID.."] attribute to "..tostring(amt)..".")
+			cw.player:Notify(player, L("ExtraCommands_AttributeSet", target:Name(), (attribute.name or "Unknown"), attribute.uniqueID, tostring(amt)))
 		else
-			cw.player:Notify(player, arguments[2].." is not a valid attribute!")
+			cw.player:Notify(player, L("ExtraCommands_NotValidAttribute", arguments[2]))
 		end
 	else
-		cw.player:Notify(player, arguments[1].." is not a valid target!")
+		cw.player:Notify(player, L("NotValidPlayer", arguments[1]))
 	end
 end
 

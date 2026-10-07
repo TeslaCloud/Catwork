@@ -6,4 +6,4 @@
 	with contributions from Cloud Sixteen community.
 --]]
 
-config.AddToSystem("Take Physcannon", "take_physcannon", "Whether or not the player is stripped of the physics cannon.");
+config.AddToSystem("#TakePhyscannon", "take_physcannon", "#TakePhyscannonDesc");

@@ -7,14 +7,14 @@
 
 ITEM.baseItem = "bodygroup_base"
 ITEM.name = "CWU Uniform"
-ITEM.PrintName = "Рубашка ГСР"
+ITEM.PrintName = "#ITEM_CWU_Uniform_Name"
 ITEM.skin = 2
 ITEM.cost = 80
 ITEM.model = "models/tnb/items/shirt_citizen1.mdl"
-ITEM.plural = "Рубашки ГСР"
+ITEM.plural = "#ITEM_CWU_Uniform_Plural"
 ITEM.weight = 0.4
 ITEM.uniqueID = "cit_uniform_cwu"
 ITEM.business = false
 ITEM.bodyGroup = 1
 ITEM.bodyGroupVal = 2
-ITEM.description = "Белая рубашка для работников ГСР."
+ITEM.description = "#ITEM_CWU_Uniform_Desc"

@@ -7,10 +7,10 @@
 
 ITEM.baseItem = "bodygroup_base"
 ITEM.name = "vorotnik";
-ITEM.PrintName = "Защитный воротник";
+ITEM.PrintName = "#ITEM_Cmb_Neck_Name";
 ITEM.cost = 100;
 ITEM.model = "models/half_life2/jnstudio/props/neck.mdl";
-ITEM.plural = "Защитные воротники";
+ITEM.plural = "#ITEM_Cmb_Neck_Plural";
 ITEM.weight = 1;
 ITEM.uniqueID = "cmb_vorotnik";
 ITEM.business = false;

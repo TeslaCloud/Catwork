@@ -8,11 +8,12 @@
 
 ITEM.baseItem = "book_base"
 ITEM.name = "Antlion Anatomy"
+ITEM.PrintName = "#Item_BookAa_PrintName"
 ITEM.cost = 6
 ITEM.model = "models/props_lab/bindergreenlabel.mdl"
 ITEM.uniqueID = "book_aa"
 ITEM.business = true
-ITEM.description = "A book with an antlion on the front."
+ITEM.description = "#Item_BookAa_Description"
 ITEM.bookInformation = [[
 <font color='red' size='4'>Written by Jamie Ruzicano.</font>
 
@@ -42,9 +43,9 @@ other Antlion Guards, and their effect is unknown on Antlion Workers. Like regul
 Antlion workers primarily attack by accurately hurling 'spitballs' of neurotoxin at foes from a distance.
 When killed, Antlion Workers explode in a shower of acid inflicting considerable splash damage on anything within range.
 
-It is theorised that Antlions Workers are a mutation and subgenus of the normal Antlion, but there is no data to support this.
+It is theorised that Antlion Workers are a mutation and subgenus of the normal Antlion, but there is no data to support this.
 Workers are only found in or near Antlion nests in which they perform various tasks including the tending of Antlion Grubs.
-The Antlion Grub is an Antlion larvae, a maggot-like creature that emits a high chirping call and bioluminescence.
+The Antlion Grub is an Antlion larva, a maggot-like creature that emits a high chirping call and bioluminescence.
 They are found only inside Antlion colonies, and can be seen hanging on any available surfaces, often in groups of two or more.
 Grubs are carnivorous and are presumably provided with food by mature Antlions. Every Antlion in the nest will protect grubs fiercely.
 Grubs contain a yellow substance with healing properties. Killing the grub releases this fluid, and can then be consumed.

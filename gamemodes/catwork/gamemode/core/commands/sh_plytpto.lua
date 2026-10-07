@@ -25,13 +25,13 @@ function COMMAND:OnRun(player, arguments)
 			cw.player:SetSafePosition(target, ply:GetPos())
 
 			if (!isSilent) then
-				cw.player:NotifyAll(player:Name().." has teleported "..target:Name().." to "..ply:Name()..".")
+				cw.player:NotifyAll(L("Command_Plytpto_Teleported", player:Name(), target:Name(), ply:Name()))
 			end
 		else
-			cw.player:Notify(player, arguments[2].." is not a valid player!")
+			cw.player:Notify(player, L("NotValidPlayer", arguments[2]))
 		end
 	else
-		cw.player:Notify(player, arguments[1].." is not a valid player!")
+		cw.player:Notify(player, L("NotValidPlayer", arguments[1]))
 	end
 end
 

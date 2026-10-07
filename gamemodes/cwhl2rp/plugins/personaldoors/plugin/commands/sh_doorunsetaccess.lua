@@ -9,8 +9,8 @@
 local PLUGIN = PLUGIN
 
 local COMMAND = cw.command:New("DoorUnsetAccess")
-COMMAND.tip = "Remove the ability for a player to access a door."
-COMMAND.text = "[string Name]"
+COMMAND.tip = "#Command_Doorunsetaccess_Description"
+COMMAND.text = "#Command_Doorunsetaccess_Syntax"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "o"
 COMMAND.optionalArguments = 1
@@ -22,7 +22,7 @@ function COMMAND:OnRun(player, arguments)
 	local door = player:GetEyeTraceNoCursor().Entity
 
 	if (IsValid(door) and cw.entity:IsDoor(door) and PLUGIN.personalDoors[door]) then
-		local msg = "all players"
+		local msg = L("PersonalDoors_AccessRemovedAll")
 
 		if (owningPerson) then
 			door._OwningPersons[string.lower(owningPerson)] = nil
@@ -35,7 +35,7 @@ function COMMAND:OnRun(player, arguments)
 				end
 			end
 
-			msg = "'" .. owningPerson .. "'"
+			msg = L("PersonalDoors_AccessRemoved", owningPerson)
 		else
 			door._OwningPersons = nil
 
@@ -44,9 +44,9 @@ function COMMAND:OnRun(player, arguments)
 
 		PLUGIN:SaveDoorData()
 
-		cw.player:Notify(player, "You have removed the ability of " .. msg .. " to access this door!")
+		cw.player:Notify(player, msg)
 	else
-		cw.player:Notify(player, "This is not a valid door!")
+		cw.player:Notify(player, L("PersonalDoors_NotValidDoor"))
 	end
 end
 

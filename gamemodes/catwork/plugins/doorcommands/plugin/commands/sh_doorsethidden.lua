@@ -7,8 +7,8 @@
 --]]
 
 local COMMAND = cw.command:New("DoorSetHidden")
-COMMAND.tip = "Set whether a door is hidden."
-COMMAND.text = "<bool IsHidden>"
+COMMAND.tip = "#Command_Doorsethidden_Description"
+COMMAND.text = "#Command_Doorsethidden_Syntax"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "a"
 COMMAND.arguments = 1
@@ -35,17 +35,17 @@ function COMMAND:OnRun(player, arguments)
 
 			cwDoorCmds:SaveDoorData()
 
-			cw.player:Notify(player, "You have hidden this door.")
+			cw.player:Notify(player, L("DoorCmds_Hidden"))
 		else
 			cw.entity:SetDoorHidden(door, false)
 
 			cwDoorCmds.doorData[door] = nil
 			cwDoorCmds:SaveDoorData()
 
-			cw.player:Notify(player, "You have unhidden this door.")
+			cw.player:Notify(player, L("DoorCmds_Unhidden"))
 		end
 	else
-		cw.player:Notify(player, "This is not a valid door!")
+		cw.player:Notify(player, L("DoorCmds_NotValidDoor"))
 	end
 end
 

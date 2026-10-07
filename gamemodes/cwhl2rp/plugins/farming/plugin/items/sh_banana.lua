@@ -7,7 +7,7 @@
 --]]
 
 ITEM.name = "Banana"
-ITEM.PrintName = "Банан"
+ITEM.PrintName = "#Item_Banana_PrintName"
 ITEM.cost = 5
 ITEM.model = "models/props/cs_italy/bananna.mdl"
 ITEM.weight = 0.1
@@ -16,7 +16,7 @@ ITEM.uniqueID = "banana"
 ITEM.useText = "Eat"
 ITEM.category = "Consumables"
 ITEM.business = true
-ITEM.description = "Длинный сладкий желтый банан."
+ITEM.description = "#Item_Banana_Description"
 ITEM.hunger = 10
 
 -- Called when a player uses the item.

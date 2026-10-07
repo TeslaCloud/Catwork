@@ -52,7 +52,7 @@ netstream.Hook("SalesmanAdd", function(data)
 		cw.salesman.panel:Remove()
 	end
 
-	Derma_StringRequest("Имя", "Каким будет имя торговца?", "", function(text)
+	Derma_StringRequest("#Salesman_Name", "#Salesman_NameRequest", "", function(text)
 		cw.salesman.name = text
 
 		gui.EnableScreenClicker(true)
@@ -101,7 +101,7 @@ netstream.Hook("SalesmanEdit", function(data)
 		cw.salesman.panel:Remove()
 	end
 
-	Derma_StringRequest("Имя", "Вы хотите изменить имя торговца?", data.name, function(text)
+	Derma_StringRequest("#Salesman_Name", "#Salesman_NameEditRequest", data.name, function(text)
 		cw.salesman.showChatBubble = data.showChatBubble
 		cw.salesman.buyInShipments = data.buyInShipments
 		cw.salesman.priceScale = data.priceScale

@@ -261,7 +261,7 @@ do
 
 	chatbox.AddType("admin", function(messageData)
 		messageData.textColor = messageData.textColor or Color("#F0AAAA")
-		messageData.prefix = messageData.prefix or "* [Admin Chat] "
+		messageData.prefix = messageData.prefix or "#Chatbox_AdminPrefix "
 		messageData.prefixColor = Color(255, 20, 20)
 	end)
 
@@ -640,7 +640,7 @@ function chatbox.ParseText(messageData)
 		end
 
 		if (!isstring(messageData.playerName)) then
-			messageData.playerName = (IsValid(messageData.sender) and messageData.sender:Name()) or "Unknown Player"
+			messageData.playerName = (IsValid(messageData.sender) and messageData.sender:Name()) or L("#Chatbox_UnknownPlayer")
 		end
 
 		if (messageData.filter != "ic" and messageData.playerTeam and !messageData.noStyling) then

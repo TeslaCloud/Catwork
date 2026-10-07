@@ -1,12 +1,13 @@
-ITEM.name = "Медицинский фонарик"
+ITEM.name = "Medical Penlight"
+ITEM.PrintName = "#Item_Eyelight_PrintName"
 ITEM.cost = 50
 ITEM.model = "models/lagmite/lagmite.mdl"
 ITEM.weight = 0.2
 ITEM.access = "q"
-ITEM.useText = "Применить"
-ITEM.category = "Медицина"
+ITEM.useText = "Apply"
+ITEM.category = "Medical"
 ITEM.business = true;
-ITEM.description = "Маленький фонарик для проверки глаз."
+ITEM.description = "#Item_Eyelight_Description"
 
 -- Called when a player uses the item.
 function ITEM:OnUse(player, itemEntity)
@@ -14,16 +15,16 @@ function ITEM:OnUse(player, itemEntity)
 
 	if (lookingPly:IsPlayer()) then
 		if (lookingPly:GetCharacterData("diseases") == "blindness") then
-			cw.player:Notify(player, "Глаза человека едва реагируют на свет.")
+			cw.player:Notify(player, L("Diseases_Eyelight_Blind"))
 		elseif (lookingPly:GetCharacterData("diseases") == "colorblindness") then
-			cw.player:Notify(player, "Глаза гражданина не реагируют на цветной свет.")
+			cw.player:Notify(player, L("Diseases_Eyelight_Colorblind"))
 		else
-			cw.player:Notify(player, "Глаза человека хорошо реагируют на свет.")
+			cw.player:Notify(player, L("Diseases_Eyelight_Normal"))
 		end
 
 		return false
 	else
-		cw.player:Notify(player, "Вы должны смотреть на человека!")
+		cw.player:Notify(player, L("Diseases_MustLookAtPerson"))
 
 		return false
 	end

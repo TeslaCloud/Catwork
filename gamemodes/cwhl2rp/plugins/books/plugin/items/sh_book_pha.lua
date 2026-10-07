@@ -8,11 +8,12 @@
 
 ITEM.baseItem = "book_base"
 ITEM.name = "Poison Headcrab Anatomy"
+ITEM.PrintName = "#Item_BookPha_PrintName"
 ITEM.cost = 6
 ITEM.model = "models/props_lab/bindergraylabel01b.mdl"
 ITEM.uniqueID = "book_pha"
 ITEM.business = true
-ITEM.description = "A book with a black headcrab on the front."
+ITEM.description = "#Item_BookPha_Description"
 ITEM.bookInformation = [[
 <font color='red' size='4'>Written by Jamie Ruzicano.</font>
 
@@ -26,8 +27,8 @@ At walking pace, the poison Headcrab is the slowest of the Headcrabs, but will r
 
 Poison Headcrabs move slowly and cautiously when maneuvering but will leap with incredible speed and height with an angry squeal when it has a clear line of sight to a suitable host.
 The Poison Headcrab delivers its extremely powerful neurotoxin via the four fangs on its 'beak'.
-This poison will paralize any creature it comes into contact with, making them extremely vulnerable to attack.
-Poison Zombie is the result of a human host under the control of a Poison Headcrab.
+This poison will paralyze any creature it comes into contact with, making them extremely vulnerable to attack.
+A Poison Zombie is the result of a human host under the control of a Poison Headcrab.
 
 The mutations that take place produce a bloated, slow-moving zombie that is capable of carrying additional Poison Headcrabs.
 Poison Zombies are bloated, reddish purple, slow-moving menaces. They are almost always seen carrying an additional 2 or 3 Poison Headcrabs on its back.

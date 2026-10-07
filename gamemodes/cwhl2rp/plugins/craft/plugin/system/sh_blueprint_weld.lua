@@ -3,7 +3,7 @@ local BLUEPRINT = cw.blueprints:New()
 BLUEPRINT.name = "#Blueprint_BlueprintWeld_Name"
 BLUEPRINT.uniqueID = "blueprint_weld"
 BLUEPRINT.model = "models/props_vehicles/carparts_muffler01a.mdl"
-BLUEPRINT.category = "Инструменты"
+BLUEPRINT.category = "#Craft_Category_Tools"
 BLUEPRINT.description = "#Blueprint_BlueprintWeld_Description"
 BLUEPRINT.reqatt = {
 	{"rem", 20}

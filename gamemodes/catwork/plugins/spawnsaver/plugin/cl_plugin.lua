@@ -6,4 +6,4 @@
 	with contributions from Cloud Sixteen community.
 --]]
 
-config.AddToSystem("Spawn Where Left", "spawn_where_left", "Whether or not players spawn where they disconnected.");
+config.AddToSystem("#SpawnWhereLeft", "spawn_where_left", "#SpawnWhereLeftDesc");

@@ -8,11 +8,11 @@
 
 ITEM.baseItem = "seeds_base"
 ITEM.name = "Orange Seeds"
-ITEM.PrintName = "Семена апельсина"
-ITEM.description = "Коробочка с семенами апельсина внутри."
+ITEM.PrintName = "#Item_SeedOrange_PrintName"
+ITEM.description = "#Item_SeedOrange_Description"
 ITEM.model = "models/props_lab/box01a.mdl"
 ITEM.uniqueID = "seed_orange"
 ITEM.PlantModel = "models/props/cs_office/plant01_p1.mdl"
-ITEM.PlantName = "Апельсин"
+ITEM.PlantName = "#Farming_Plant_Orange"
 ITEM.GrowTime = {1337, 1488}
 ITEM.Harvest = {"seed_orange", "orange"}

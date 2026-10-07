@@ -12,5 +12,5 @@ local ATTRIBUTE = cw.attribute:New()
 	ATTRIBUTE.uniqueID = "med"
 	ATTRIBUTE.description = "#Attribute_Medical_Desc"
 	ATTRIBUTE.isOnCharScreen = false
-	ATTRIBUTE.category = "Навыки"
+	ATTRIBUTE.category = "#AttributeCategory_Skills"
 ATB_MEDICAL = cw.attribute:Register(ATTRIBUTE);

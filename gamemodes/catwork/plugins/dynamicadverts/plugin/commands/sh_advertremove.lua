@@ -7,7 +7,7 @@
 --]]
 
 local COMMAND = cw.command:New("AdvertRemove")
-COMMAND.tip = "Remove a dynamic advert."
+COMMAND.tip = "#Command_Advertremove_Description"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "a"
 
@@ -26,12 +26,12 @@ function COMMAND:OnRun(player, arguments)
 
 	if (removed > 0) then
 		if (removed == 1) then
-			cw.player:Notify(player, "You have removed "..removed.." dynamic advert.")
+			cw.player:Notify(player, L("DynamicAdverts_RemovedOne", removed))
 		else
-			cw.player:Notify(player, "You have removed "..removed.." dynamic adverts.")
+			cw.player:Notify(player, L("DynamicAdverts_RemovedMany", removed))
 		end
 	else
-		cw.player:Notify(player, "There were no dynamic adverts near this position.")
+		cw.player:Notify(player, L("DynamicAdverts_NoneNear"))
 	end
 
 	cwDynamicAdverts:SaveDynamicAdverts()

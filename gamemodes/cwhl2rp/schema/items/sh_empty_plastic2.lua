@@ -6,7 +6,7 @@ ITEM.cost = 0
 ITEM.model = "models/props_lab/jar01b.mdl"
 ITEM.weight = 0.2
 ITEM.business = false
-ITEM.category = "Мусор"
+ITEM.category = "Junk"
 ITEM.description = "#Item_EmptyPlastic2_Description"
 
 -- Called when a player drops the item.

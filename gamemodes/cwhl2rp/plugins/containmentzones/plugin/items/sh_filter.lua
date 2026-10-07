@@ -1,22 +1,23 @@
 
-ITEM.name = "Фильтр"
+ITEM.name = "Filter"
+ITEM.PrintName = "#Item_Filter_PrintName"
 ITEM.uniqueID = "filter"
 ITEM.cost = 0
 ITEM.model = "models/Items/battery.mdl"
-ITEM.useText = "Сменить фильтр"
+ITEM.useText = "#Containment_UseText_ReplaceFilter"
 ITEM.useSound = false
 ITEM.weight = 0.1
 ITEM.business = true
-ITEM.description = "Фильтр для противогазов типа GP-5 и GCP-1."
+ITEM.description = "#Item_Filter_Description"
 ITEM:AddData("energy", 100, true)
 
 if CLIENT then
 function ITEM:GetClientSideDescription()
-		local desc = self.description
+		local desc = L(self.description)
 		local filter = self:GetData("energy")
 
 		if filter then
-			desc = "Фильтр для противогазов типа GP-5 и GCP-1." .. "\nСостояние фильтра: " .. filter .. "%"
+			desc = L("#Item_Filter_Description") .. "\n" .. L("#Item_Filter_Condition:" .. filter .. ";")
 		end
 
 		return (desc != "" and desc)

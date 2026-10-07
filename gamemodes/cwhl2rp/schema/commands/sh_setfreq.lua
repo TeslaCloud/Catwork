@@ -14,7 +14,7 @@ COMMAND.arguments = 1
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
 	if (player:IsCombine()) then
-		cw.player:Notify(player, "You cannot change your radio frequency!")
+		cw.player:Notify(player, L("Radio_CannotChangeFrequency"))
 
 		return
 	end
@@ -26,7 +26,7 @@ function COMMAND:OnRun(player, arguments)
 		if (trace.HitPos:Distance(player:GetShootPos()) <= 192) then
 			radio = trace.Entity
 		else
-			cw.player:Notify(player, "This stationary radio is too far away!")
+			cw.player:Notify(player, L("Radio_StationaryTooFar"))
 
 			return
 		end
@@ -45,17 +45,17 @@ function COMMAND:OnRun(player, arguments)
 			if (radio) then
 				trace.Entity:SetFrequency(frequency)
 
-				cw.player:Notify(player, "You have set this stationary radio's frequency to "..frequency..".")
+				cw.player:Notify(player, L("Radio_FrequencySetStationary", frequency))
 			else
 				player:SetCharacterData("frequency", frequency)
 
-				cw.player:Notify(player, "You have set your radio frequency to "..frequency..".")
+				cw.player:Notify(player, L("Radio_FrequencySet", frequency))
 			end
 		else
-			cw.player:Notify(player, "The radio frequency must be between 101.1 and 199.9!")
+			cw.player:Notify(player, L("Radio_FrequencyRange"))
 		end
 	else
-		cw.player:Notify(player, "The radio frequency must look like xxx.x!")
+		cw.player:Notify(player, L("Radio_FrequencyFormat"))
 	end
 end
 

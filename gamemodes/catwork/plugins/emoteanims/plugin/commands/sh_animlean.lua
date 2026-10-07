@@ -7,8 +7,8 @@
 --]]
 
 local COMMAND = cw.command:New("AnimLean")
-COMMAND.tip = "Make your character lean back up against a wall."
-COMMAND.text = "[string ArmsBack|ArmsDown]"
+COMMAND.tip = "#Command_Animlean_Description"
+COMMAND.text = "#Command_Animlean_Syntax"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.optionalArguments = 1
 
@@ -31,7 +31,7 @@ function COMMAND:OnRun(player, arguments)
 				cwEmoteAnims:MakePlayerExitStance(player)
 			elseif (!forcedAnimation or !cwEmoteAnimscwEmoteAnims[forcedAnimation.animation]) then
 				if (player:Crouching()) then
-					cw.player:Notify(player, "You cannot do this while you are crouching!")
+					cw.player:Notify(player, L("EmoteAnims_CannotWhileCrouching"))
 				else
 					local animation = "lean_back"
 					local traceLine = util.TraceLine({
@@ -61,15 +61,15 @@ function COMMAND:OnRun(player, arguments)
 						player:SetNetVar("StanceAng", player:GetAngles())
 						player:SetNetVar("StanceIdle", true)
 					else
-						cw.player:Notify(player, "You must be facing away from, and near a wall!")
+						cw.player:Notify(player, L("EmoteAnims_MustFaceAwayFromWall"))
 					end
 				end
 			end
 		else
-			cw.player:Notify(player, "The model that you are using cannot perform this action!")
+			cw.player:Notify(player, L("EmoteAnims_ModelCannotPerform"))
 		end
 	else
-		cw.player:Notify(player, "You cannot do another stance or gesture yet!")
+		cw.player:Notify(player, L("EmoteAnims_CannotDoAnotherYet"))
 	end
 end
 

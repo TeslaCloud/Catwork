@@ -7,10 +7,10 @@
 
 ITEM.baseItem = "bodygroup_base"
 ITEM.name = "gasmask4";
-ITEM.PrintName = "Маска подразделения VICE";
+ITEM.PrintName = "#ITEM_Cmb_Gasmask_4_Name";
 ITEM.cost = 150;
 ITEM.model = "models/half_life2/jnstudio/props/gasmask_4.mdl";
-ITEM.plural = "Маски подразделения VICE";
+ITEM.plural = "#ITEM_Cmb_Gasmask_4_Plural";
 ITEM.weight = 1;
 ITEM.uniqueID = "cmb_gasmask4";
 ITEM.business = false;

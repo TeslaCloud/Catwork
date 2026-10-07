@@ -7,7 +7,7 @@
 --]]
 
 local COMMAND = cw.command:New("Static")
-COMMAND.tip = "Add a static entity at your target position."
+COMMAND.tip = "#Command_Static_Description"
 COMMAND.access = "o"
 COMMAND.alias = {"StaticAdd", "StaticPropAdd"}
 

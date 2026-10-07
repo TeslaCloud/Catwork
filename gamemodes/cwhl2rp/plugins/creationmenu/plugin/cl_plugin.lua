@@ -10,6 +10,6 @@ config.AddToSystem("#CommunityName", "community_name", "#CommunityNameDesc")
 config.AddToSystem("#CommunityLink", "community_link", "#CommunityLinkDesc")
 config.AddToSystem("#CommunityButtonEnable", "community_button_enable", "#CommunityButtonEnableDesc")
 
-config.AddToSystem("#ForumName", "forum_name", "#CommunityNameDesc")
-config.AddToSystem("#ForumLink", "forum_link", "#CommunityLinkDesc")
-config.AddToSystem("#ForumButtonEnable", "forum_button_enable", "#CommunityButtonEnableDesc");
+config.AddToSystem("#ForumName", "forum_name", "#ForumNameDesc")
+config.AddToSystem("#ForumLink", "forum_link", "#ForumLinkDesc")
+config.AddToSystem("#ForumButtonEnable", "forum_button_enable", "#ForumButtonEnableDesc");

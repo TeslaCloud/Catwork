@@ -7,7 +7,7 @@
 --]]
 
 local COMMAND = cw.command:New("AnimDeny")
-COMMAND.tip = "Make your character stick his hand out to deny access."
+COMMAND.tip = "#Command_Animdeny_Description"
 COMMAND.flags = CMD_DEFAULT
 
 -- Called when the command has been run.
@@ -23,7 +23,7 @@ function COMMAND:OnRun(player, arguments)
 			local forcedAnimation = player:GetForcedAnimation()
 
 			if (forcedAnimation and cwEmoteAnimscwEmoteAnims[forcedAnimation.animation]) then
-				cw.player:Notify(player, "You cannot do this action at the moment!")
+				cw.player:Notify(player, L("CannotActionRightNow"))
 			else
 				player:SetForcedAnimation("harassfront2", 1.5)
 				player:SetNetVar("StancePos", player:GetPos())
@@ -31,10 +31,10 @@ function COMMAND:OnRun(player, arguments)
 				player:SetNetVar("StanceIdle", false)
 			end
 		else
-			cw.player:Notify(player, "The model that you are using cannot perform this action!")
+			cw.player:Notify(player, L("EmoteAnims_ModelCannotPerform"))
 		end
 	else
-		cw.player:Notify(player, "You cannot do another stance or gesture yet!")
+		cw.player:Notify(player, L("EmoteAnims_CannotDoAnotherYet"))
 	end
 end
 

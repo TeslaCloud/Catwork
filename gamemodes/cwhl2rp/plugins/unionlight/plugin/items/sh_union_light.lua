@@ -1,13 +1,14 @@
 
 ITEM.name = "Union Light"
+ITEM.PrintName = "#Item_UnionLight_PrintName"
 ITEM.cost = 50
 ITEM.model = "models/props_combine/combine_light001a.mdl"
 ITEM.weight = 4
 ITEM.classes = {CLASS_EMP, CLASS_EOW}
 ITEM.category = "Lights"
-ITEM.useText = "Place"
+ITEM.useText = "#Item_UnionLight_UseText"
 ITEM.business = true
-ITEM.description = "A Union Light capable of illuminating large areas."
+ITEM.description = "#Item_UnionLight_Description"
 
 -- Called when a player uses the item.
 function ITEM:OnUse(player, itemEntity)
@@ -41,7 +42,7 @@ function ITEM:OnUse(player, itemEntity)
 			cw.entity:MakeFlushToGround(entity, trace.HitPos, trace.HitNormal)
 		end
 	else
-		cw.player:Notify(player, "You cannot drop a light that far away!")
+		cw.player:Notify(player, L("CantDropFar"))
 
 		return false
 	end

@@ -8,7 +8,7 @@
 
 if (CLIENT) then
 	local SYSTEM = cw.system:New("Manage Plugins")
-	SYSTEM.toolTip = "You can load and unload plugins from here."
+	SYSTEM.toolTip = "#System_ManagePlugins_ToolTip"
 	SYSTEM.doesCreateForm = false
 
 	-- Called to get whether the local player has access to the system.
@@ -60,7 +60,7 @@ if (CLIENT) then
 
 		if (#mainPlugins > 0) then
 			local label = vgui.Create("cwInfoText", systemPanel)
-				label:SetText("Red plugins are unloaded, green ones are loaded, and orange are disabled.")
+				label:SetText("#System_ManagePlugins_Info")
 				label:SetInfoColor("blue")
 				label:DockMargin(0, 0, 0, 8)
 			systemPanel.panelList:AddItem(label)
@@ -109,7 +109,7 @@ if (CLIENT) then
 			end
 		else
 			local label = vgui.Create("cwInfoText", systemPanel)
-				label:SetText("There are no plugins installed on the server.")
+				label:SetText("#System_ManagePlugins_Empty")
 				label:SetInfoColor("red")
 			systemPanel.panelList:AddItem(label)
 		end
@@ -182,7 +182,7 @@ else
 		local pluginTable = plugin.FindByID(data[1])
 
 		if (!pluginTable) then
-			cw.player:Notify(player, "This plugin is not valid!")
+			cw.player:Notify(player, L("PluginManage_NotValid"))
 			return
 		end
 
@@ -192,9 +192,9 @@ else
 
 			if (bSuccess) then
 				if (data[2]) then
-					cw.player:NotifyAll(player:Name().." has unloaded the "..pluginTable.name.." plugin for the next restart.")
+					cw.player:NotifyAll(L("PluginManage_Unloaded", player:Name(), pluginTable.name))
 				else
-					cw.player:NotifyAll(player:Name().." has loaded the "..pluginTable.name.." plugin for the next restart.")
+					cw.player:NotifyAll(L("PluginManage_Loaded", player:Name(), pluginTable.name))
 				end
 
 				for k, v in ipairs(_player.GetAll()) do
@@ -210,12 +210,12 @@ else
 					netstream.Start(recipients, "SystemPluginSet", { pluginTable.name, data[2] })
 				end
 			elseif (data[2]) then
-				cw.player:Notify(player, "This plugin could not be unloaded!")
+				cw.player:Notify(player, L("PluginManage_CouldNotUnload"))
 			else
-				cw.player:Notify(player, "This plugin could not be loaded!")
+				cw.player:Notify(player, L("PluginManage_CouldNotLoad"))
 			end
 		else
-			cw.player:Notify(player, "This plugin depends on another plugin!")
+			cw.player:Notify(player, L("PluginManage_Depends"))
 		end
 	end)
 end

@@ -28,12 +28,12 @@ function PANEL:Rebuild()
 	if (self.system) then
 		self.navigationForm = vgui.Create("DForm", self)
 			self.navigationForm:SetPadding(4)
-			self.navigationForm:SetName("Navigation")
+			self.navigationForm:SetName("#SystemMenu_Navigation")
 			self.navigationForm:SetTall(100)
 		self.panelList:AddItem(self.navigationForm)
 
 		local backButton = vgui.Create("DButton", self)
-			backButton:SetText("Back to Navigation")
+			backButton:SetText("#SystemMenu_BackToNavigation")
 			backButton:SetWide(self:GetParent():GetWide())
 
 			-- Called when the button is clicked.
@@ -58,7 +58,7 @@ function PANEL:Rebuild()
 		end
 	else
 		local label = vgui.Create("cwInfoText", self)
-			label:SetText("The "..cw.option:GetKey("name_system").." provides you with various Clockwork administrative tools.")
+			label:SetText("#SystemMenu_Info:"..L(cw.option:GetKey("name_system"))..";")
 			label:SetInfoColor("blue")
 		self.panelList:AddItem(label)
 
@@ -77,13 +77,13 @@ function PANEL:Rebuild()
 			tooltip:SetTextColor(cw.option:GetColor("basic_form_color"))
 
 			local systemButton = vgui.Create("cwInfoText", systemPanel)
-				systemButton:SetText("Open")
+				systemButton:SetText("#SystemMenu_Open")
 				systemButton:SetTextToLeft(true)
 
 				if (v:HasAccess()) then
 					systemButton:SetButton(true)
 					systemButton:SetInfoColor("green")
-					systemButton:SetTooltip("Click here to open this System panel.")
+					systemButton:SetTooltip(L("#SystemMenu_OpenTip"))
 
 					-- Called when the button is clicked.
 					function systemButton.DoClick(button)
@@ -92,7 +92,7 @@ function PANEL:Rebuild()
 					end
 				else
 					systemButton:SetInfoColor("red")
-					systemButton:SetTooltip("You do not have access to this System panel.")
+					systemButton:SetTooltip(L("#SystemMenu_NoAccessTip"))
 				end
 
 				systemButton:SetShowIcon(false)

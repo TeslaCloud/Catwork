@@ -22,16 +22,16 @@ function COMMAND:OnRun(player, arguments)
 
 					netstream.Start(player, "ObjectPhysDesc", target)
 				else
-					cw.player:Notify(player, "You are not the owner of this entity!")
+					cw.player:Notify(player, L("Err_NotEntityOwner"))
 				end
 			else
-				cw.player:Notify(player, "This entity is not a physics entity!")
+				cw.player:Notify(player, L("Err_NotPhysicsEntity"))
 			end
 		else
-			cw.player:Notify(player, "This entity is too far away!")
+			cw.player:Notify(player, L("Err_EntityTooFar"))
 		end
 	else
-		cw.player:Notify(player, "You must look at a valid entity!")
+		cw.player:Notify(player, L("Err_MustLookAtEntity"))
 	end
 end
 

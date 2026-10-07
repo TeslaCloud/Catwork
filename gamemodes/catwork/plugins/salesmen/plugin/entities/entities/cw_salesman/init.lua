@@ -36,7 +36,7 @@ function ENT:TalkToPlayer(player, text, default)
 	local sayString = text.text or default
 
 	if (text.bHideName != true) then
-		sayString = self:GetNetworkedString("Name").." говорит \""..sayString.."\""
+		sayString = self:GetNetworkedString("Name").." "..L("Salesman_Says").." \""..sayString.."\""
 	end
 
 	if (!text.text or (text.text and text.text != "")) then

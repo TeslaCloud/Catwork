@@ -1,8 +1,8 @@
 local cwCTO = cwCTO
 
 local COMMAND = cw.command:New("CameraDisable")
-COMMAND.tip = "Remotely disable a Combine camera - IDs are shown on the HUD."
-COMMAND.text = "<number CameraID>"
+COMMAND.tip = "#Command_Cameradisable_Description"
+COMMAND.text = "#Command_Cameradisable_Syntax"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.arguments = 1
 
@@ -13,25 +13,25 @@ function COMMAND:OnRun(player, arguments)
 			local camera = Entity(arguments[1])
 
 			if (!IsEntity(camera) or camera:GetClass() != "npc_combine_camera") then
-				cw.player:Notify(player, "There is no Combine camera with that ID!")
+				cw.player:Notify(player, L("CTO_NoCamera"))
 
 				return
 			end
 
 			if (camera:GetSequenceName(camera:GetSequence()) != "idlealert") then
-				cw.player:Notify(player, "That camera is not currently enabled.")
+				cw.player:Notify(player, L("CTO_CameraNotEnabled"))
 
 				return
 			end
 
-			cw.player:Notify(player, "Disabling C-i" .. camera:EntIndex() .. ".")
+			cw.player:Notify(player, L("CTO_DisablingCamera", camera:EntIndex()))
 
 			camera:Fire("Disable")
 		else
-			cw.player:Notify(player, "You are not ranked high enough to use this command!")
+			cw.player:Notify(player, L("CTO_RankTooLow"))
 		end
 	else
-		cw.player:Notify(player, "You are not the Combine!")
+		cw.player:Notify(player, L("CTO_NotCombine"))
 	end
 end
 

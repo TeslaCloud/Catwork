@@ -9,8 +9,8 @@
 local PLUGIN = PLUGIN
 
 local COMMAND = cw.command:New("DoorSetAccess")
-COMMAND.tip = "Allow a Player to have access to a door."
-COMMAND.text = "<string Name> [bool StartLocked]"
+COMMAND.tip = "#Command_Doorsetaccess_Description"
+COMMAND.text = "#Command_Doorsetaccess_Syntax"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "o"
 COMMAND.arguments = 1
@@ -51,12 +51,12 @@ function COMMAND:OnRun(player, arguments)
 			}
 			PLUGIN:SaveDoorData()
 
-			cw.player:Notify(player, "You have allowed '".. owningPerson .."' access to this door.")
+			cw.player:Notify(player, L("PersonalDoors_AccessGranted", owningPerson))
 		else
-			cw.player:Notify(player, "This Player already has access to this door!")
+			cw.player:Notify(player, L("PersonalDoors_AlreadyHasAccess"))
 		end
 	else
-		cw.player:Notify(player, "This is not a valid door!")
+		cw.player:Notify(player, L("PersonalDoors_NotValidDoor"))
 	end
 end
 

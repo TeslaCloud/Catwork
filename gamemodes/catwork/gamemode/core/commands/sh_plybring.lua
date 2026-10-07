@@ -25,10 +25,10 @@ function COMMAND:OnRun(player, arguments)
 		cw.player:SetSafePosition(target, trace.HitPos)
 
 		if (!isSilent) then
-			cw.player:NotifyAll(player:Name().." has brought "..target:Name().." to their target location.")
+			cw.player:NotifyAll(L("Command_Plybring_Brought", player:Name(), target:Name()))
 		end
 	else
-		cw.player:Notify(player, arguments[1].." is not a valid player!")
+		cw.player:Notify(player, L("NotValidPlayer", arguments[1]))
 	end
 end
 

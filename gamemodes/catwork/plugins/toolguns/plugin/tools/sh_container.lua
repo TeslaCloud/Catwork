@@ -8,10 +8,10 @@
 
 local TOOL = cw.tool:New()
 
-TOOL.Name 			= "Container Tool"
+TOOL.Name 			= "#tool.containertool.name"
 TOOL.UniqueID 		= "containertool"
-TOOL.Desc 			= "Do various things with containers."
-TOOL.HelpText		= "Primary: Do Action"
+TOOL.Desc 			= "#tool.containertool.desc"
+TOOL.HelpText		= "#tool.containertool.0"
 
 TOOL.ClientConVar["mode"]	 			= "1"
 TOOL.ClientConVar["contfillscale"]	= "1"
@@ -58,23 +58,23 @@ function TOOL:AddItems(entity)
 							end
 						end
 
-						cw.player:Notify(player, "This container has been filled with random items.")
+						cw.player:Notify(player, L("Container_Filled"))
 						return
 					else
-						cw.player:Notify(player, "That category doesn't exist!")
+						cw.player:Notify(player, L("Container_CategoryNotExist"))
 						return
 					end
 				end
 
-				cw.player:Notify(player, "This is not a valid container!")
+				cw.player:Notify(player, L("Container_NotValid"))
 			else
-				cw.player:Notify(player, "This is not a valid container!")
+				cw.player:Notify(player, L("Container_NotValid"))
 			end
 		else
-			cw.player:Notify(player, "This is not a valid container!")
+			cw.player:Notify(player, L("Container_NotValid"))
 		end
 	else
-		cw.player:Notify(player, "This is not a valid scale!")
+		cw.player:Notify(player, L("Container_NotValidScale"))
 	end
 end
 
@@ -88,12 +88,12 @@ function TOOL:SetMessage(entity)
 		if (cw.entity:IsPhysicsEntity(trace.Entity)) then
 			trace.Entity.cwMessage = self:GetClientInfo("contmessage")
 
-			cw.player:Notify(player, "You have set this container's message.")
+			cw.player:Notify(player, L("Container_MessageSet"))
 		else
-			cw.player:Notify(player, "This is not a valid container!")
+			cw.player:Notify(player, L("Container_NotValid"))
 		end
 	else
-		cw.player:Notify(player, "This is not a valid container!")
+		cw.player:Notify(player, L("Container_NotValid"))
 	end
 end
 
@@ -117,13 +117,13 @@ function TOOL:SetName(entity)
 
 				trace.Entity:SetNetworkedString("Name", name)
 			else
-				cw.player:Notify(player, "This is not a valid container!")
+				cw.player:Notify(player, L("Container_NotValid"))
 			end
 		else
-			cw.player:Notify(player, "This is not a valid container!")
+			cw.player:Notify(player, L("Container_NotValid"))
 		end
 	else
-		cw.player:Notify(player, "This is not a valid container!")
+		cw.player:Notify(player, L("Container_NotValid"))
 	end
 end
 
@@ -146,15 +146,15 @@ function TOOL:SetPassword(entity)
 
 				trace.Entity.cwPassword = password
 
-				cw.player:Notify(player, "This container's password has been set to '"..trace.Entity.cwPassword.."'.")
+				cw.player:Notify(player, L("Container_PasswordSet").." '"..trace.Entity.cwPassword.."'.")
 			else
-				cw.player:Notify(player, "This is not a valid container!")
+				cw.player:Notify(player, L("Container_NotValid"))
 			end
 		else
-			cw.player:Notify(player, "This is not a valid container!")
+			cw.player:Notify(player, L("Container_NotValid"))
 		end
 	else
-		cw.player:Notify(player, "This is not a valid container!")
+		cw.player:Notify(player, L("Container_NotValid"))
 	end
 end
 
@@ -199,7 +199,7 @@ if CLIENT then
 
 		list:SetSize(30,height)
 		--list:SizeToContents()
-		list:AddColumn("Tool Mode")
+		list:AddColumn(L("#tool.containertool.mode"))
 		list:SetMultiSelect(false)
 		function list:OnRowSelected(LineID, line)
 			if not (mode == LineID) then
@@ -208,24 +208,24 @@ if CLIENT then
 		end
 
 		if (mode == 1) then
-			list:AddLine(" 1 **Container Filler**")
+			list:AddLine(" 1 **"..L("#tool.containertool.mode1").."**")
 		else
-			list:AddLine(" 1   Container Filler")
+			list:AddLine(" 1   "..L("#tool.containertool.mode1"))
 		end
 		if (mode == 2) then
-			list:AddLine(" 2 **Container Set Message**")
+			list:AddLine(" 2 **"..L("#tool.containertool.mode2").."**")
 		else
-			list:AddLine(" 2   Container Set Message")
+			list:AddLine(" 2   "..L("#tool.containertool.mode2"))
 		end
 		if (mode == 3) then
-			list:AddLine(" 3 **Container Set Name**")
+			list:AddLine(" 3 **"..L("#tool.containertool.mode3").."**")
 		else
-			list:AddLine(" 3   Container Set Name  ")
+			list:AddLine(" 3   "..L("#tool.containertool.mode3").."  ")
 		end
 		if (mode == 4) then
-			list:AddLine(" 4 **Container Set Password**")
+			list:AddLine(" 4 **"..L("#tool.containertool.mode4").."**")
 		else
-			list:AddLine(" 4   Container Set Password  ")
+			list:AddLine(" 4   "..L("#tool.containertool.mode4").."  ")
 		end
 
 		list:SortByColumn(1)
@@ -235,33 +235,33 @@ if CLIENT then
 
 		if (mode == 1) then
 			Panel:AddControl("Slider",  {
-					Label	= "Item Fill Scale",
+					Label	= "#tool.containertool.fillscale",
 					Type	= "Interger",
 					Min		= 1,
 					Max		= 5,
 					Command = "containertool_contfillscale",
-					Description = "Scale of Item fill"}	)
+					Description = "#tool.containertool.fillscaledesc"}	)
 
 			Panel:AddControl("TextBox", {
-									 Label = "Category",
+									 Label = "#tool.containertool.category",
 									 MaxLenth = "20",
 									 Command = "containertool_fillcategory" })
 		end
 		if (mode == 2) then
 			Panel:AddControl("TextBox", {
-									 Label = "Message",
+									 Label = "#tool.containertool.message",
 									 MaxLenth = "20",
 									 Command = "containertool_contmessage" })
 		end
 		if (mode == 3) then
 			Panel:AddControl("TextBox", {
-						Label = "Name",
+						Label = "#tool.containertool.contname",
 						MaxLenth = "20",
 						Command = "containertool_contname" })
 		end
 		if (mode == 4) then
 			Panel:AddControl("TextBox", {
-									 Label = "Password",
+									 Label = "#tool.containertool.password",
 									 MaxLenth = "20",
 									 Command = "containertool_contpassword" })
 		end

@@ -7,8 +7,8 @@
 --]]
 
 local COMMAND = cw.command:New("AnimWave")
-COMMAND.tip = "Make your character wave at another character."
-COMMAND.text = "[string Close|Normal]"
+COMMAND.tip = "#Command_Animwave_Description"
+COMMAND.text = "#Command_Animwave_Syntax"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.optionalArguments = 1
 
@@ -26,7 +26,7 @@ function COMMAND:OnRun(player, arguments)
 			local action = string.lower(arguments[1] or "")
 
 			if (forcedAnimation and cwEmoteAnimscwEmoteAnims[forcedAnimation.animation]) then
-				cw.player:Notify(player, "You cannot do this action at the moment!")
+				cw.player:Notify(player, L("CannotActionRightNow"))
 			else
 				if (action == "close") then
 					player:SetForcedAnimation("wave_close", 2)
@@ -39,10 +39,10 @@ function COMMAND:OnRun(player, arguments)
 				player:SetNetVar("StanceIdle", false)
 			end
 		else
-			cw.player:Notify(player, "The model that you are using cannot perform this action!")
+			cw.player:Notify(player, L("EmoteAnims_ModelCannotPerform"))
 		end
 	else
-		cw.player:Notify(player, "You cannot do another stance or gesture yet!")
+		cw.player:Notify(player, L("EmoteAnims_CannotDoAnotherYet"))
 	end
 end
 

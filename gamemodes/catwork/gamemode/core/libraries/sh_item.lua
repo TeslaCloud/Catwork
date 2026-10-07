@@ -53,7 +53,7 @@ CItem.space = 1
 CItem.itemID = 0
 CItem.business = false
 CItem.category = "Other"
-CItem.description = "An item with no description."
+CItem.description = "#Item_NoDescription"
 CItem.proxies = {}
 
 -- Call it in the constructor.
@@ -350,7 +350,7 @@ end
 function item.Register(itemTable)
 	itemTable.uniqueID = string.lower(string.gsub(itemTable.uniqueID or string.gsub(itemTable.name, "%s", "_"), "['%.]", ""))
 	itemTable.index = cw.core:GetShortCRC(itemTable.uniqueID)
-	itemTable.PrintName = itemTable.PrintName or itemTable.name or "Unknown Item"
+	itemTable.PrintName = itemTable.PrintName or itemTable.name or "#Item_UnknownItem"
 
 	stored[itemTable.uniqueID] = itemTable
 	buffer[itemTable.index] = itemTable
@@ -831,8 +831,8 @@ else
 		local informationColor = cw.option:GetColor("information")
 		local description = itemTable.description
 		local toolTip = itemTable.toolTip
-		local weight = tostring(itemTable.weight).."кг"
-		local space = tostring(itemTable.space).."л"
+		local weight = tostring(itemTable.weight)..L("#Unit_Kilograms")
+		local space = tostring(itemTable.space)..L("#Unit_Litres")
 		local name = itemTable.PrintName
 
 		if (CLIENT) then

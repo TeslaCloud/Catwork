@@ -77,7 +77,7 @@ function ENT:Use(activator, caller)
 				cw.player:SetAction(activator, "cleanup", false)
 			end)
 		elseif activator:GetNetVar("tied") == 0 and (!activator:Crouching() or weapon:GetClass() != "cw_pushbroom") then
-			cw.player:Notify(activator, "Вы должны присесть, чтобы начать сбор мусора.")
+			cw.player:Notify(activator, L("Garbage_MustCrouch"))
 		end
 	end
 end

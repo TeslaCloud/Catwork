@@ -92,6 +92,6 @@ config.AddToSystem("#EntityUseCooldown", "entity_handle_time", "#EntityUseCooldo
 config.AddToSystem("#EnableQuickRaise", "quick_raise_enabled", "#EnableQuickRaiseDesc")
 config.AddToSystem("#PlayersChangeThemes", "modify_themes", "#PlayersChangeThemesDesc")
 config.AddToSystem("#DefaultTheme", "default_theme", "#DefaultThemeDesc")
-config.AddToSystem("Enable Mouth Move Animation", "enable_mouth_move", "Whether or not to enable mouth move animation. Set to true if your server allows voice communication, false otherwise.")
-config.AddToSystem("Block Cash Commands Binds", "block_cash_binds", "Whether or not to block any cash command binds.")
-config.AddToSystem("Block Fallover Binds", "block_fallover_binds", "Whether or not to block charfallover binds.");
+config.AddToSystem("#EnableMouthMove", "enable_mouth_move", "#EnableMouthMoveDesc")
+config.AddToSystem("#BlockCashBinds", "block_cash_binds", "#BlockCashBindsDesc")
+config.AddToSystem("#BlockFalloverBinds", "block_fallover_binds", "#BlockFalloverBindsDesc");

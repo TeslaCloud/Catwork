@@ -1,8 +1,8 @@
 local PLUGIN = PLUGIN
 
 local COMMAND = cw.command:New("CharSetFatigue")
-COMMAND.tip = "Set a player's Sleep Level."
-COMMAND.text = "<string Name> <number Amount>"
+COMMAND.tip = "#Command_Charsetfatigue_Description"
+COMMAND.text = "#Command_Charsetfatigue_Syntax"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "a"
 COMMAND.arguments = 2
@@ -21,13 +21,13 @@ function COMMAND:OnRun(player, arguments)
 			target:SetCharacterData("Fatigue", amount)
 
 			if (player != target)	then
-				cw.player:Notify(target, player:Name().." has set your sleep to "..amount..".")
-				cw.player:Notify(player, "You have set "..target:Name().."'s sleep to "..amount..".")
+				cw.player:Notify(target, L("Hunger_SleepSetBy", player:Name(), amount))
+				cw.player:Notify(player, L("Hunger_SleepSet", target:Name(), amount))
 			else
-				cw.player:Notify(player, "You have set your own sleep to "..amount..".")
+				cw.player:Notify(player, L("Hunger_SleepSetOwn", amount))
 			end
 		else
-			cw.player:Notify(player, arguments[1].." is not a valid player!")
+			cw.player:Notify(player, L("NotValidPlayer", arguments[1]))
 		end
 end
 

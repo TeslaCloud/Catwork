@@ -7,10 +7,10 @@
 --]]
 
 local ATTRIBUTE = cw.attribute:New()
-	ATTRIBUTE.name = "Мусорщик"
+	ATTRIBUTE.name = "#Attribute_Scavenger"
 	ATTRIBUTE.maximum = 75
 	ATTRIBUTE.uniqueID = "scv"
-	ATTRIBUTE.description = "Влияет на шанс найти что-то ценное в мусоре."
+	ATTRIBUTE.description = "#Attribute_Scavenger_Desc"
 	ATTRIBUTE.isOnCharScreen = false
-	ATTRIBUTE.category = "Навыки"
+	ATTRIBUTE.category = "#AttributeCategory_Skills"
 ATB_SCAVENGER = cw.attribute:Register(ATTRIBUTE);

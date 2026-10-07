@@ -46,11 +46,11 @@ function COMMAND:OnRun(player, arguments)
 					item.Drop(player, itemTable)
 				end
 			else
-				cw.player:Notify(player, "You cannot drop the item that far away!")
+				cw.player:Notify(player, L("CantDropFar"))
 			end
 		elseif (itemAction == "use") then
 			if (player:InVehicle() and itemTable.useInVehicle == false) then
-				cw.player:Notify(player, "You cannot use this item in a vehicle!")
+				cw.player:Notify(player, L("Command_Invaction_NoVehicle"))
 
 				return
 			end
@@ -64,7 +64,7 @@ function COMMAND:OnRun(player, arguments)
 			hook.Run("PlayerUseUnknownItemFunction", player, itemTable, itemAction)
 		end
 	else
-		cw.player:Notify(player, "You do not own this item!")
+		cw.player:Notify(player, L("StoragePlayerNoInstance"))
 	end
 end
 

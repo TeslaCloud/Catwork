@@ -6,4 +6,4 @@
 	with contributions from Cloud Sixteen community.
 --]]
 
-config.AddToSystem("Remove Map Physics", "remove_map_physics", "Whether or not physics entities should be removed when the map is loaded.");
+config.AddToSystem("#RemoveMapPhysics", "remove_map_physics", "#RemoveMapPhysicsDesc");

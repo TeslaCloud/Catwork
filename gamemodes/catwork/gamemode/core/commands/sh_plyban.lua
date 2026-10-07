@@ -34,28 +34,28 @@ function COMMAND:OnRun(player, arguments)
 							local hours = math.Round(duration / 3600)
 
 							if (hours >= 1) then
-								cw.player:NotifyAll(player:Name().." has banned '"..steamName.."' for "..hours.." hour(s) ("..reason..").")
+								cw.player:NotifyAll(L("Command_Plyban_Hours", player:Name(), steamName, hours).." "..reason)
 							else
-								cw.player:NotifyAll(player:Name().." has banned '"..steamName.."' for "..math.Round(duration / 60).." minute(s) ("..reason..").")
+								cw.player:NotifyAll(L("Command_Plyban_Minutes", player:Name(), steamName, math.Round(duration / 60)).." "..reason)
 							end
 						else
-							cw.player:NotifyAll(player:Name().." has banned '"..steamName.."' permanently ("..reason..").")
+							cw.player:NotifyAll(L("Command_Plyban_Permanent", player:Name(), steamName).." "..reason)
 						end
 					else
-						cw.player:Notify(player, "This is not a valid identifier!")
+						cw.player:Notify(player, L("Command_Plyban_InvalidIdentifier"))
 					end
 				end
 			end)
 		else
-			cw.player:Notify(player, "This is not a valid duration!")
+			cw.player:Notify(player, L("Command_Plyban_InvalidDuration"))
 		end
 	else
 		local target = _player.Find(arguments[1])
 
 		if (target) then
-			cw.player:Notify(player, target:Name().." is protected!")
+			cw.player:Notify(player, L("Command_PlayerProtected", target:Name()))
 		else
-			cw.player:Notify(player, "This player is protected!")
+			cw.player:Notify(player, L("Command_ThisPlayerProtected"))
 		end
 	end
 end

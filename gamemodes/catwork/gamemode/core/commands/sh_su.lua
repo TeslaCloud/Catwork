@@ -22,7 +22,7 @@ function COMMAND:OnRun(player, arguments)
 		end
 	end
 
-	chatbox.AddText(listeners, table.concat(arguments, " "), {filter = "admin", sender = player, prefix = "* [Super Admins] "})
+	chatbox.AddText(listeners, table.concat(arguments, " "), {filter = "admin", sender = player, prefix = "#Command_Su_Prefix "})
 end
 
 COMMAND:Register()

@@ -8,11 +8,12 @@
 
 ITEM.baseItem = "book_base"
 ITEM.name = "Barnacle Anatomy"
+ITEM.PrintName = "#Item_BookBa_PrintName"
 ITEM.cost = 6
 ITEM.model = "models/props_lab/bindergreenlabel.mdl"
 ITEM.uniqueID = "book_ba"
 ITEM.business = true
-ITEM.description = "A book with a barnacle on the front."
+ITEM.description = "#Item_BookBa_Description"
 ITEM.bookInformation = [[
 <font color='red' size='4'>Written by Jamie Ruzicano.</font>
 
@@ -29,7 +30,7 @@ However, it's unknown exactly how barnacles reproduce, or how the offspring spre
 It is known that they are attached very firmly and permanently, as evidenced by their continued attachment after death.
 The Barnacle has a 'second mouth' that it uses to eat and when killed, the mouth hangs out from its actual body that can be seen at all times while the original barnacle has small inner teeth inside its thick 'lips'.
 Barnacles are relatively simple creatures. They do not appear to possess any degree of intelligence - instead of actively hunting prey, they feed by reacting to external stimulus.
-Although the creatures do not demonstrate any intelligence in hunting, they possess an uncanny attribute to attach themselves to ceilings aurawatching thoroughfares frequented by potential prey.
+Although the creatures do not demonstrate any intelligence in hunting, they possess an uncanny ability to attach themselves to ceilings overlooking thoroughfares frequented by potential prey.
 
 When an object, living or otherwise, comes into contact with the tongue, it somehow grabs the object; the exact mechanism behind the tongue's stickiness is unknown.
 The barnacle then retracts its tongue, drawing the object towards its mouth.

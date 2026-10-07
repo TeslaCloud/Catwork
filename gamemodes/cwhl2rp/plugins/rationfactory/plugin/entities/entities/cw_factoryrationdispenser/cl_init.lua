@@ -12,8 +12,8 @@ function ENT:HUDPaintTargetID(x, y, alpha)
 	local colorWhite = cw.option:GetColor("white")
 
 	if (Schema:PlayerIsCombine(cw.client)) then
-		y = cw.core:DrawInfo("Раздатчик рационов", x, y, colorTargetID, alpha)
-		y = cw.core:DrawInfo("Рационы: "..self:GetDTInt(0) , x, y, colorWhite, alpha);	
+		y = cw.core:DrawInfo("#Factory_RationDispenser", x, y, colorTargetID, alpha)
+		y = cw.core:DrawInfo("#Factory_FillState "..self:GetDTInt(0) , x, y, colorWhite, alpha);	
 	end
 end
 

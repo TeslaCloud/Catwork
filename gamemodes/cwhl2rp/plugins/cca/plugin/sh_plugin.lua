@@ -26,7 +26,7 @@ end
 function cca.AppendLog(appender, player, entry, type)
 	if (IsValid(player)) then
 		local logs = player:GetCharacterData("CCA_Logs") or {}
-		local appenderName = (IsValid(appender) and appender:Name()) or "Overwatch"
+		local appenderName = (IsValid(appender) and appender:Name()) or "#PDA_Log_Overwatch"
 
 		table.insert(logs, {entry = entry, type = type, time = os.time(), appender = appenderName})
 

@@ -19,7 +19,7 @@ function COMMAND:OnRun(player, arguments)
 	local text = table.concat(arguments, " ")
 
 	if (text == "") then
-		cw.player:Notify(player, L"You did not specify enough text!")
+		cw.player:Notify(player, L("NotEnoughText"))
 
 		return
 	end
@@ -34,10 +34,10 @@ function COMMAND:OnRun(player, arguments)
 				player.nextRequestTime = curTime + 30
 			end
 		else
-			cw.player:Notify(player, "You cannot send a request for another "..math.ceil(player.nextRequestTime - curTime).." second(s)!")
+			cw.player:Notify(player, L("Request_Cooldown", math.ceil(player.nextRequestTime - curTime)))
 		end
 	else
-		cw.player:Notify(player, "You do not own a request device!")
+		cw.player:Notify(player, L("Request_NoDevice"))
 	end
 end
 

@@ -7,16 +7,16 @@
 --]]
 
 ITEM.name = "Orange Juice"
-ITEM.PrintName = "Апельсиновый сок"
+ITEM.PrintName = "#Item_OrangeJuice_PrintName"
 ITEM.cost = 25
 ITEM.model = "models/props_nunk/popcan01a.mdl"
 ITEM.weight = 0.1
 ITEM.uniqueID = "orange_juice"
 ITEM.access = "v"
-ITEM.useText = "Eat"
+ITEM.useText = "Drink"
 ITEM.category = "Consumables"
 ITEM.business = true
-ITEM.description = "Освежающий апельсиновый сок. Слегка кисловат."
+ITEM.description = "#Item_OrangeJuice_Description"
 ITEM.thirst = 55
 
 -- Called when a player uses the item.

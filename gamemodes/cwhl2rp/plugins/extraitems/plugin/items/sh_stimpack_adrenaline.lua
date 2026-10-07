@@ -40,7 +40,7 @@ local ru = cw.lang:GetTable("ru")
 
 eng["#ITEM_Adrenaline"] = "Adrenaline"
 eng["#ITEM_Adrenaline_Desc"] = "A syringe filled with liquid. It is labeled as 'Adrenaline'."
-eng["#ITEM_Adrenaline_Effect"] = "You feel sudden surge of energy. Your heartbeat skyrockets and you want to RUN."
+eng["#ITEM_Adrenaline_Effect"] = "You feel a sudden surge of energy. Your heartbeat skyrockets and you want to RUN."
 eng["#ITEM_Adrenaline_UseText"] = "Inject"
 eng["#ITEM_Category_Stimpacks"] = "Stimpacks"
 

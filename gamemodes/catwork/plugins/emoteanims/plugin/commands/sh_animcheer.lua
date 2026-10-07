@@ -7,7 +7,7 @@
 --]]
 
 local COMMAND = cw.command:New("AnimCheer")
-COMMAND.tip = "Make your character cheer in happiness."
+COMMAND.tip = "#Command_Animcheer_Description"
 COMMAND.flags = CMD_DEFAULT
 
 -- Called when the command has been run.
@@ -23,7 +23,7 @@ function COMMAND:OnRun(player, arguments)
 			local forcedAnimation = player:GetForcedAnimation()
 
 			if (forcedAnimation and cwEmoteAnimscwEmoteAnims[forcedAnimation.animation]) then
-				cw.player:Notify(player, "You cannot do this action at the moment!")
+				cw.player:Notify(player, L("CannotActionRightNow"))
 			else
 				if (modelClass == "femaleHuman" or math.random(1, 2) == 1) then
 					player:SetForcedAnimation("cheer1", 2)
@@ -36,10 +36,10 @@ function COMMAND:OnRun(player, arguments)
 				player:SetNetVar("StanceIdle", false)
 			end
 		else
-			cw.player:Notify(player, "The model that you are using cannot perform this action!")
+			cw.player:Notify(player, L("EmoteAnims_ModelCannotPerform"))
 		end
 	else
-		cw.player:Notify(player, "You cannot do another stance or gesture yet!")
+		cw.player:Notify(player, L("EmoteAnims_CannotDoAnotherYet"))
 	end
 end
 

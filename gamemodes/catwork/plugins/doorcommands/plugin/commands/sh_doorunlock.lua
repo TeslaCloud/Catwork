@@ -7,7 +7,7 @@
 --]]
 
 local COMMAND = cw.command:New("DoorUnlock")
-COMMAND.tip = "Unlock a door."
+COMMAND.tip = "#Command_Doorunlock_Description"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "o"
 
@@ -19,9 +19,9 @@ function COMMAND:OnRun(player, arguments)
 		door:EmitSound("doors/door_latch3.wav")
 		door:Fire("unlock", "", 0)
 
-		cw.player:Notify(player, "You have unlocked the target door.")
+		cw.player:Notify(player, L("DoorCmds_Unlocked"))
 	else
-		cw.player:Notify(player, "This is not a valid door!")
+		cw.player:Notify(player, L("DoorCmds_NotValidDoor"))
 	end
 end
 

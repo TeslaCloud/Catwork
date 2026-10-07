@@ -20,7 +20,7 @@ ITEM.description = "#ITEM_Boxed_Backpack_Desc"
 -- Called when a player uses the item.
 function ITEM:OnUse(player, itemEntity)
 	if (player:HasItemByID("backpack") and table.Count(player:GetItemsByID("backpack")) >= 1) then
-		cw.player:Notify(player, "You've hit the backpacks limit!")
+		cw.player:Notify(player, L("Item_BoxedBackpack_Limit"))
 
 		return false
 	end

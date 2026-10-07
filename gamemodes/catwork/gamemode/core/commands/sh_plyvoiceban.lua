@@ -22,7 +22,7 @@ function COMMAND:OnRun(player, arguments)
 		if (!target:GetData("VoiceBan")) then
 			target:SetData("VoiceBan", true)
 		else
-			cw.player:Notify(player, target:Name().." is already banned from using voice!")
+			cw.player:Notify(player, L("Command_Plyvoiceban_AlreadyBanned", target:Name()))
 		end
 	end
 end

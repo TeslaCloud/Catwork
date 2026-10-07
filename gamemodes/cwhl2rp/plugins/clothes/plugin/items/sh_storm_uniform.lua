@@ -7,13 +7,13 @@
 
 ITEM.baseItem = "skin_base"
 ITEM.name = "STORM Uniform";
-ITEM.PrintName = "Униформа STORM";
+ITEM.PrintName = "#ITEM_STORM_Uniform_Name";
 ITEM.model = "models/half_life2/jnstudio/props/sheet_3.mdl";
-ITEM.plural = "Униформы STORM";
+ITEM.plural = "#ITEM_STORM_Uniform_Plural";
 ITEM.weight = 2;
 ITEM.uniqueID = "storm_uniform";
 ITEM.business = false;
 ITEM.playerSkin = 3;
-ITEM.description = "Чистая и новая униформа отряда STORM.";
+ITEM.description = "#ITEM_STORM_Uniform_Desc";
 ITEM.protection = 10;
 ITEM.isCombine = true;

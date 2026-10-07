@@ -48,7 +48,7 @@ function PANEL:Rebuild()
 			end
 		else
 			self.nope = vgui.Create("cwInfoText", self.scrollPanel)
-				self.nope:SetText("There are no logs to display!")
+				self.nope:SetText("#PDA_NoLogs")
 				self.nope:SetInfoColor("red")
 				self.nope:SetSize(width, 32)
 				self.nope:SetPos(0, 0)
@@ -71,9 +71,9 @@ function PANEL:Paint(w, h)
 	draw.RoundedBox(0, 0, 0, w, h, Color(255, 0, 255))
 
 	if (istable(self.data)) then
-		local text = self.data.entry or "UNKNOWN ENTRY"
+		local text = self.data.entry or "#PDA_Log_UnknownEntry"
 		local type = self.data.type or "default"
-		local name = self.data.appender or "Overwatch"
+		local name = self.data.appender or "#PDA_Log_Overwatch"
 		local time = os.date("%H:%M, %d.%m.%Y", self.data.time)
 		local data = cca.GetLogType(type)
 		local font = "DermaNarrowBold15"

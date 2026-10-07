@@ -1,5 +1,5 @@
 ITEM.baseItem = "ammo_base"
-ITEM.name = "Ящик патронов: 7.62x51mm Box"
+ITEM.name = "Ammo 762x51"
 ITEM.PrintName = "#Item_Ammo2762x51_PrintName"
 ITEM.cost = 0
 ITEM.classes = {CLASS_EMP, CLASS_EOW}

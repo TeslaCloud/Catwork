@@ -43,14 +43,14 @@ end
 
 -- A function to populate the panel.
 function PANEL:Populate(itemTable)
-	self:SetTitle(itemTable.PrintName)
+	self:SetTitle(cw.lang:TranslateText(itemTable.PrintName))
 
 	self.htmlPanel = vgui.Create("HTML", self)
 	self.htmlPanel:SetHTML(itemTable.bookInformation)
 	self.htmlPanel:SetWrap(true)
 
 	self.button = vgui.Create("DButton", self)
-	self.button:SetText("Take")
+	self.button:SetText("#EntityMenuOptions_Take")
 	self.button:SetWide(504)
 	self.button:SetPos(4, 486)
 

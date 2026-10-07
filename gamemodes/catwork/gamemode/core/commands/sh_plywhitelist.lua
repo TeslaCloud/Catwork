@@ -26,18 +26,18 @@ function COMMAND:OnRun(player, arguments)
 					cw.player:SetWhitelisted(target, factionTable.name, true)
 					cw.player:SaveCharacter(target)
 
-					cw.player:NotifyAll(player:Name().." has added "..target:Name().." to the "..factionTable.name.." whitelist.")
+					cw.player:NotifyAll(L("Command_Plywhitelist_Added", player:Name(), target:Name(), factionTable.name))
 				else
-					cw.player:Notify(player, target:Name().." is already on the "..factionTable.name.." whitelist!")
+					cw.player:Notify(player, L("Command_Plywhitelist_AlreadyOn", target:Name(), factionTable.name))
 				end
 			else
-				cw.player:Notify(player, factionTable.name.." does not have a whitelist!")
+				cw.player:Notify(player, L("Command_Whitelist_NoWhitelist", factionTable.name))
 			end
 		else
-			cw.player:Notify(player, table.concat(arguments, " ", 2).." is not a valid faction!")
+			cw.player:Notify(player, L("Command_NotValidFaction", table.concat(arguments, " ", 2)))
 		end
 	else
-		cw.player:Notify(player, arguments[1].." is not a valid player!")
+		cw.player:Notify(player, L("NotValidPlayer", arguments[1]))
 	end
 end
 

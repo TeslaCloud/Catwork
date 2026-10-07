@@ -11,6 +11,6 @@ local ATTRIBUTE = cw.attribute:New()
 	ATTRIBUTE.uniqueID = "shoot"
 	ATTRIBUTE.description = "Определяет, как хорошо Вы управляетесь с огнестрельным оружием."
 	ATTRIBUTE.isOnCharScreen = false
-	ATTRIBUTE.category = "Навыки"
+	ATTRIBUTE.category = "#AttributeCategory_Skills"
 ATB_SHOOT = cw.attribute:Register(ATTRIBUTE)
 --]]

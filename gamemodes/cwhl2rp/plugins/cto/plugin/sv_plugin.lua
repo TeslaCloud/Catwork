@@ -112,7 +112,7 @@ function cwCTO:DoPostBiosignalLoss(player)
 	local digits = string.match(player:Name(), "%d%d%d%d?%d?") or 0
 
 	-- Alert all other units.
-	Schema:AddCombineDisplayLine("Загрузка потерянного биосигнала...", Color(255, 255, 255, 255))
+	Schema:AddCombineDisplayLine(L("CTO_Display_DownloadingLostBiosignal"), Color(255, 255, 255, 255))
 	--Schema:AddCombineDisplayLine("WARNING! Biosignal lost for protection team unit "..digits.." at "..location.."...", Color(255, 0, 0, 255))
 	for k, v in ipairs( _player.GetAll() ) do
 		if (Schema:PlayerIsCombine(v) and v ~= player and !v:GetSharedVar("IsBiosignalGone")) then
@@ -177,13 +177,13 @@ function cwCTO:SetPlayerBiosignal(player, bEnable)
 					local location = Schema:PlayerGetLocation(player)
 
 					-- Alert this unit.
-					Schema:AddCombineDisplayLine("Соединение восстановлено...", Color(0, 255, 0, 255), player)
+					Schema:AddCombineDisplayLine(L("CTO_Display_ConnectionRestored"), Color(0, 255, 0, 255), player)
 
 					local digits = string.match(player:Name(), "%d%d%d%d?%d?") or 0
 
 					-- Alert all units.
-					Schema:AddCombineDisplayLine("Загрузка обнаруженного биосигнала...", Color(255, 255, 255, 255))
-					Schema:AddCombineDisplayLine("ТРЕВОГА! Обнаружен некомбинированный биосигнал юнита "..digits..". Локация: "..location.."...", Color(0, 255, 0, 255))
+					Schema:AddCombineDisplayLine(L("CTO_Display_DownloadingFoundBiosignal"), Color(255, 255, 255, 255))
+					Schema:AddCombineDisplayLine(L("CTO_Display_BiosignalFound", digits, location), Color(0, 255, 0, 255))
 
 					for k, v in ipairs( _player.GetAll() ) do
 						if (Schema:PlayerIsCombine(v) and !v:GetSharedVar("IsBiosignalGone")) then
@@ -203,7 +203,7 @@ function cwCTO:SetPlayerBiosignal(player, bEnable)
 				end)
 			else
 				-- Alert this unit.
-				Schema:AddCombineDisplayLine("ERROR! Shutting down...", Color(255, 0, 0, 255), player)
+				Schema:AddCombineDisplayLine(L("CTO_Display_ShuttingDown"), Color(255, 0, 0, 255), player)
 
 				self:DoPostBiosignalLoss(player)
 			end
@@ -271,8 +271,8 @@ function cwCTO:PlayerRagdolled(player, state, ragdoll)
 			local location = Schema:PlayerGetLocation(player)
 			local digits = string.match(player:Name(), "%d%d%d%d?%d?") or 0
 
-			Schema:AddCombineDisplayLine("Загрузка данных о травме...", Color(255, 255, 255, 255))
-			Schema:AddCombineDisplayLine("ВНИМАНИЕ! Юнит "..digits.." потерял сознание. Локация: "..location.."...", Color(255, 0, 0, 255))
+			Schema:AddCombineDisplayLine(L("CTO_Display_DownloadingTrauma"), Color(255, 255, 255, 255))
+			Schema:AddCombineDisplayLine(L("CTO_Display_UnitUnconscious", digits, location), Color(255, 0, 0, 255))
 		end
 	end
 end

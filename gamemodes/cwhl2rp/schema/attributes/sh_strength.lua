@@ -12,5 +12,5 @@ local ATTRIBUTE = cw.attribute:New()
 	ATTRIBUTE.uniqueID = "str"
 	ATTRIBUTE.description = "#Attribute_Strength_Desc"
 	ATTRIBUTE.isOnCharScreen = true
-	ATTRIBUTE.category = "Характеристики"
+	ATTRIBUTE.category = "#AttributeCategory_Stats"
 ATB_STRENGTH = cw.attribute:Register(ATTRIBUTE);

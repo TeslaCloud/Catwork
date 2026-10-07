@@ -15,23 +15,23 @@ netstream.Hook("Application::PDA::Controller::CitizenStatus", function(player, t
 	local isCWU = (isCombine or (player:GetFaction() == FACTION_CWU))
 
 	if ((status == "Unverified" or status == "Citizen") and !isCWU) then
-		cw.player:Notify(player, "You are not a Civil Worker's Union worker or the Combine!")
+		cw.player:Notify(player, L("PDA_NotCWUOrCombine"))
 
 		return
 	end
 
 	if ((status == "AntiCitizen" or status == "NoData") and !isCombine) then
-		cw.player:Notify(player, "You are not the Combine!")
+		cw.player:Notify(player, L("PDA_NotCombine"))
 
 		return
 	end
 
 	cw.core:ServerLog(player:Name().." has set "..target:Name().."'s citizen status to "..status..".")
-	cca.AppendLog(player, target, "Citizen status changed: "..status, "citizen_status")
+	cca.AppendLog(player, target, L("PDA_Log_CitizenStatus").." #Status_"..status..":;", "citizen_status")
 
 	Schema:SetCitizenStatus(target, status)
 
-	cw.player:Notify(player, "You have set "..target:Name().."'s citizen status to #Status_"..status..":;.")
+	cw.player:Notify(player, L("PDA_CitizenStatusSet", target:Name()).." #Status_"..status..":;.")
 end)
 
 netstream.Hook("Application::PDA::Controller::Residence", function(player, target, address)
@@ -39,13 +39,13 @@ netstream.Hook("Application::PDA::Controller::Residence", function(player, targe
 
 	if (player:IsCombine() or player:GetFaction() == FACTION_CWU) then
 		cw.core:ServerLog(player:Name().." has set "..target:Name().."'s residence to "..address..".")
-		cca.AppendLog(player, target, "Residence changed: "..address, "residence")
+		cca.AppendLog(player, target, L("PDA_Log_Residence").." "..address, "residence")
 
 		Schema:SetResidence(target, address)
 
-		cw.player:Notify(player, target:Name().."'s residential address was set to "..address)
+		cw.player:Notify(player, L("PDA_ResidenceSet", target:Name()).." "..address)
 	else
-		cw.player:Notify(player, "You are not the Combine!")
+		cw.player:Notify(player, L("PDA_NotCombine"))
 	end
 end)
 
@@ -54,13 +54,13 @@ netstream.Hook("Application::PDA::Controller::Job", function(player, target, job
 
 	if (player:IsCombine() or player:GetFaction() == FACTION_CWU) then
 		cw.core:ServerLog(player:Name().." has set "..target:Name().."'s job to "..job..".")
-		cca.AppendLog(player, target, "Job changed: "..job, "job")
+		cca.AppendLog(player, target, L("PDA_Log_Job").." "..job, "job")
 
 		Schema:SetJob(target, job)
 
-		cw.player:Notify(player, target:Name().."'s job was set to "..job)
+		cw.player:Notify(player, L("PDA_JobSet", target:Name()).." "..job)
 	else
-		cw.player:Notify(player, "You are not the Combine!")
+		cw.player:Notify(player, L("PDA_NotCombine"))
 	end
 end)
 
@@ -78,13 +78,13 @@ netstream.Hook("Application::PDA::Controller::LP", function(player, target, valu
 		cw.core:ServerLog(player:Name().." has "..((!bSubstract and "Issued ") or "Removed ").." "..tostring(math.abs(value)).." LP "..((!bSubstract and "to ") or "from ").." "..target:Name()..".")
 
 		local type = ((!bSubstract and "add") or "remove")
-		cca.AppendLog(player, target, "Loyalty points changed: "..(translation[type] or "")..value, "loyalty_"..type)
+		cca.AppendLog(player, target, L("PDA_Log_LP").." "..(translation[type] or "")..value, "loyalty_"..type)
 
 		Schema:AddLP(target, value)
 
-		cw.player:Notify(player, ((!bSubstract and "Issued ") or "Removed ")..math.abs(value).." loyalty points "..((!bSubstract and "to ") or "from ")..target:Name()..".")
+		cw.player:Notify(player, L((!bSubstract and "PDA_LPIssued") or "PDA_LPRemoved", math.abs(value), target:Name()))
 	else
-		cw.player:Notify(player, "You are not the Combine!")
+		cw.player:Notify(player, L("PDA_NotCombine"))
 	end
 end)
 
@@ -97,13 +97,13 @@ netstream.Hook("Application::PDA::Controller::CP", function(player, target, valu
 		cw.core:ServerLog(player:Name().." has "..((!bSubstract and "Issued ") or "Removed ").." "..tostring(math.abs(value)).." CP "..((!bSubstract and "to ") or "from ").." "..target:Name()..".")
 
 		local type = ((!bSubstract and "add") or "remove")
-		cca.AppendLog(player, target, "Crime points changed: "..(translation[type] or "")..value, "crime_"..type)
+		cca.AppendLog(player, target, L("PDA_Log_CP").." "..(translation[type] or "")..value, "crime_"..type)
 
 		Schema:AddCP(target, value)
 
-		cw.player:Notify(player, ((!bSubstract and "Issued ") or "Removed ")..math.abs(value).." crime points "..((!bSubstract and "to ") or "from ")..target:Name()..".")
+		cw.player:Notify(player, L((!bSubstract and "PDA_CPIssued") or "PDA_CPRemoved", math.abs(value), target:Name()))
 	else
-		cw.player:Notify(player, "You are not the Combine!")
+		cw.player:Notify(player, L("PDA_NotCombine"))
 	end
 end)
 
@@ -116,13 +116,13 @@ netstream.Hook("Application::PDA::Controller::WP", function(player, target, valu
 		cw.core:ServerLog(player:Name().." has "..((!bSubstract and "Issued ") or "Removed ").." "..tostring(math.abs(value)).." WP "..((!bSubstract and "to ") or "from ").." "..target:Name()..".")
 
 		local type = ((!bSubstract and "add") or "remove")
-		cca.AppendLog(player, target, "Work points changed: "..(translation[type] or "")..value, "work_"..type)
+		cca.AppendLog(player, target, L("PDA_Log_WP").." "..(translation[type] or "")..value, "work_"..type)
 
 		Schema:AddWorkPoints(target, value)
 
-		cw.player:Notify(player, "Issued "..value.." work points to "..target:Name()..".")
+		cw.player:Notify(player, L("PDA_WPIssued", value, target:Name()))
 	else
-		cw.player:Notify(player, "You are not the Combine!")
+		cw.player:Notify(player, L("PDA_NotCombine"))
 	end
 end)
 
@@ -132,14 +132,14 @@ netstream.Hook("Application::PDA::Controller::Jail", function(player, target)
 	if (player:IsCombine()) then
 		cw.core:ServerLog(player:Name().." has jailed "..target:Name()..".")
 
-		cca.AppendLog(player, target, "Isolation order issued!", "jail")
+		cca.AppendLog(player, target, L("PDA_Log_Jail"), "jail")
 
 		Schema:SetJailed(target, true)
 
-		cw.player:Notify(player, "Isolation order for "..target:Name().." has been successfully executed!")
-		cw.player:Notify(target, "You are now under isolation!")
+		cw.player:Notify(player, L("PDA_JailDone", target:Name()))
+		cw.player:Notify(target, L("PDA_Jailed"))
 	else
-		cw.player:Notify(player, "You are not the Combine!")
+		cw.player:Notify(player, L("PDA_NotCombine"))
 	end
 end)
 
@@ -148,13 +148,13 @@ netstream.Hook("Application::PDA::Controller::Unjail", function(player, target)
 
 	if (player:IsCombine()) then
 		cw.core:ServerLog(player:Name().." has unjailed "..target:Name()..".")
-		cca.AppendLog(player, target, "Isolation order revoked!", "unjail")
+		cca.AppendLog(player, target, L("PDA_Log_Unjail"), "unjail")
 
 		Schema:SetJailed(target, false)
 
-		cw.player:Notify(player, "Isolation order for "..target:Name().." has been successfully removed!")
-		cw.player:Notify(target, "You are no longer under isolation!")
+		cw.player:Notify(player, L("PDA_UnjailDone", target:Name()))
+		cw.player:Notify(target, L("PDA_Unjailed"))
 	else
-		cw.player:Notify(player, "You are not the Combine!")
+		cw.player:Notify(player, L("PDA_NotCombine"))
 	end
 end)

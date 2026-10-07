@@ -43,13 +43,13 @@ function COMMAND:OnRun(player, arguments)
 
 							if (cw.player:CanAfford(player, cost)) then
 								if (permit == "generalgoods") then
-									cw.player:GiveCash(player, -cost, "buying general goods permit")
+									cw.player:GiveCash(player, -cost, L("CashReason_PermitGeneralGoods"))
 									cw.player:GiveFlags(player, "1")
 								else
 									local permitTable = Schema.customPermits[permit]
 
 									if (permitTable) then
-										cw.player:GiveCash(player, -cost, "buying "..string.lower(permitTable.name).." permit")
+										cw.player:GiveCash(player, -cost, L("CashReason_PermitCustom", string.lower(permitTable.name)))
 										cw.player:GiveFlags(player, permitTable.flag)
 									end
 								end
@@ -61,7 +61,7 @@ function COMMAND:OnRun(player, arguments)
 								end)
 							else
 								local amount = cost - player:QueryCharacter("cash")
-								cw.player:Notify(player, "You need another "..cw.core:FormatCash(amount, nil, true).."!")
+								cw.player:Notify(player, L("YouNeedAnother", cw.core:FormatCash(amount, nil, true)))
 							end
 
 							return
@@ -69,18 +69,18 @@ function COMMAND:OnRun(player, arguments)
 					end
 
 					if (permit == "generalgoods" or Schema.customPermits[permit]) then
-						cw.player:Notify(player, "You already have this permit!")
+						cw.player:Notify(player, L("Permit_AlreadyOwned"))
 					else
-						cw.player:Notify(player, "This is not a valid permit!")
+						cw.player:Notify(player, L("Permit_NotValid"))
 					end
 				else
-					cw.player:Notify(player, "You already have this permit!")
+					cw.player:Notify(player, L("Permit_AlreadyOwned"))
 				end
 			elseif (string.lower(arguments[1]) == "business") then
 				local cost = config.Get("business_cost"):Get()
 
 				if (cw.player:CanAfford(player, cost)) then
-					cw.player:GiveCash(player, -cost, "buying business permit")
+					cw.player:GiveCash(player, -cost, L("CashReason_PermitBusiness"))
 					cw.player:GiveFlags(player, "x")
 
 					timer.Simple(0.25, function()
@@ -90,16 +90,16 @@ function COMMAND:OnRun(player, arguments)
 					end)
 				else
 					local amount = cost - player:QueryCharacter("cash")
-					cw.player:Notify(player, "You need another "..cw.core:FormatCash(amount, nil, true).."!")
+					cw.player:Notify(player, L("YouNeedAnother", cw.core:FormatCash(amount, nil, true)))
 				end
 			else
-				cw.player:Notify(player, "This is not a valid permit!")
+				cw.player:Notify(player, L("Permit_NotValid"))
 			end
 		else
-			cw.player:Notify(player, "You are not a citizen!")
+			cw.player:Notify(player, L("Err_NotCitizen"))
 		end
 	else
-		cw.player:Notify(player, "The permit system has not been enabled!")
+		cw.player:Notify(player, L("Permit_SystemDisabled"))
 	end
 end
 

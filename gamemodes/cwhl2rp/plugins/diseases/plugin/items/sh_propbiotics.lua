@@ -1,14 +1,15 @@
-ITEM.name = "Пачка пробиотиков"
+ITEM.name = "Pack of Probiotics"
+ITEM.PrintName = "#Item_Probiotics_PrintName"
 ITEM.uniqueID = "probiotics"
 ITEM.cost = 25
 ITEM.model = "models/props_pipes/pipe01_connector01.mdl"
 ITEM.weight = 0.2
 ITEM.access = "q"
-ITEM.useText = "Употребить"
-ITEM.category = "Медицина"
+ITEM.useText = "Swallow"
+ITEM.category = "Medical"
 ITEM.business = true
-ITEM.description = "Коробочка с надписью 'Бификол' и припиской 'Пробиотики'."
-ITEM.customFunctions = {"Дать"}
+ITEM.description = "#Item_Probiotics_Description"
+ITEM.customFunctions = {"Give"}
 
 -- Called when a player uses the item.
 function ITEM:OnUse(player, itemEntity)
@@ -21,19 +22,19 @@ end
 
 if (SERVER) then
 	function ITEM:OnCustomFunction(player, name)
-		if (name == "Дать") then
+		if (name == "Give") then
 			local lookingPly = player:GetEyeTrace().Entity
 			if (lookingPly:IsPlayer()) then
 				if (lookingPly:GetCharacterData("diseases") == "diarrhea") then
 					lookingPly:SetCharacterData("diseases", "none")
 				end
 
-				cw.player:Notify(player, "Вы дали персонажу пробиотики.")
+				cw.player:Notify(player, L("Diseases_Gave_Probiotics"))
 				player:TakeItem(player:FindItemByID("probiotics"))
 
 				hook.Run("PlayerHealed", lookingPly, player, self)
 			else
-				cw.player:Notify(player, "Вы должны смотреть на человека!")
+				cw.player:Notify(player, L("Diseases_MustLookAtPerson"))
 
 				return false
 			end

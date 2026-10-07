@@ -7,8 +7,8 @@
 --]]
 
 local COMMAND = cw.command:New("ContSetMessage")
-COMMAND.tip = "Set a container's message."
-COMMAND.text = "<string Message>"
+COMMAND.tip = "#Command_Contsetmessage_Description"
+COMMAND.text = "#Command_Contsetmessage_Syntax"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.arguments = 1
 
@@ -21,12 +21,12 @@ function COMMAND:OnRun(player, arguments)
 			trace.Entity.cwMessage = arguments[1]
 			cwStorage:SaveStorage()
 
-			cw.player:Notify(player, "You have set this container's message.")
+			cw.player:Notify(player, L("Container_MessageSet"))
 		else
-			cw.player:Notify(player, "This is not a valid container!")
+			cw.player:Notify(player, L("Container_NotValid"))
 		end
 	else
-		cw.player:Notify(player, "This is not a valid container!")
+		cw.player:Notify(player, L("Container_NotValid"))
 	end
 end
 

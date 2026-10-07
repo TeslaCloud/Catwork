@@ -1,14 +1,15 @@
-ITEM.name = "Пачка антибиотиков"
+ITEM.name = "Pack of Antibiotics"
+ITEM.PrintName = "#Item_Antibiotics_PrintName"
 ITEM.uniqueID = "antibiotics"
 ITEM.cost = 0
 ITEM.model = "models/props_junk/garbage_bag001a.mdl"
 ITEM.weight = 0.2
 ITEM.access = "q"
-ITEM.useText = "Употребить"
-ITEM.category = "Медицина"
+ITEM.useText = "Swallow"
+ITEM.category = "Medical"
 ITEM.business = true
-ITEM.description = "Коробочка с надписью 'Амоксициллин' и припиской 'Антибиотики'."
-ITEM.customFunctions = {"Дать"}
+ITEM.description = "#Item_Antibiotics_Description"
+ITEM.customFunctions = {"Give"}
 
 -- Called when a player uses the item.
 function ITEM:OnUse(player, itemEntity)
@@ -23,7 +24,7 @@ end
 
 if (SERVER) then
 	function ITEM:OnCustomFunction(player, name)
-		if (name == "Дать") then
+		if (name == "Give") then
 			local lookingPly = player:GetEyeTrace().Entity
 
 			if (lookingPly:IsPlayer()) then
@@ -31,13 +32,13 @@ if (SERVER) then
 					lookingPly:SetCharacterData("diseases", "none")
 				end
 
-				Clockwork.player:Notify(player, "Вы дали персонажу антибиотики.")
+				Clockwork.player:Notify(player, L("Diseases_Gave_Antibiotics"))
 				player:TakeItem(player:FindItemByID("antibiotics"))
 				lookingPly:SetHealth(math.Clamp(player:Health() + Schema:GetHealAmount(player, 1.5), 0, player:GetMaxHealth()))
 
 				hook.Run("PlayerHealed", lookingPly, player, self)
 			else
-				cw.player:Notify(player, "Вы должны смотреть на человека!")
+				cw.player:Notify(player, L("Diseases_MustLookAtPerson"))
 
 				return false
 			end

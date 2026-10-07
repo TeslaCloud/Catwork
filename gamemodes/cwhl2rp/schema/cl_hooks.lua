@@ -46,7 +46,7 @@ function Schema:PlayerBusinessRebuilt(panel, categories)
 			local panelList = vgui.Create("DPanelList", panel)
 
 			panel.permitsForm = vgui.Create("DForm")
-			panel.permitsForm:SetName("Permits")
+			panel.permitsForm:SetName("#Business_Permits")
 			panel.permitsForm:SetPadding(4)
 
 			panelList:SetAutoSize(true)
@@ -58,16 +58,16 @@ function Schema:PlayerBusinessRebuilt(panel, categories)
 					panel.customData = {information = v}
 
 					if (k == "generalGoods") then
-						panel.customData.description = "Приобретите разрешение, чтобы открыть свой бизнес."
+						panel.customData.description = L("#Business_GeneralGoodsDesc")
 						panel.customData.Callback = function()
 							cw.core:RunCommand("PermitBuy", "generalgoods")
 						end
 						panel.customData.model = "models/props_junk/cardboard_box004a.mdl"
-						panel.customData.name = "General Goods"
+						panel.customData.name = "#Business_GeneralGoods"
 					else
 						for k2, v2 in pairs(Schema.customPermits) do
 							if (v2.key == k) then
-								panel.customData.description = "Приобретите разрешение, чтобы получить возможность покупать "..string.lower(v2.name).."."
+								panel.customData.description = L("#Business_CustomPermitDesc:"..string.lower(v2.name)..";")
 								panel.customData.Callback = function()
 									cw.core:RunCommand("PermitBuy", k2)
 								end
@@ -83,13 +83,13 @@ function Schema:PlayerBusinessRebuilt(panel, categories)
 				end
 			else
 				panel.customData = {
-					description = "Создать бизнес, позволяющий приобретать разрешения.",
+					description = L("#Business_CreateDesc"),
 					information = config.Get("business_cost"):Get(),
 					Callback = function()
 						cw.core:RunCommand("PermitBuy", "business")
 					end,
 					model = "models/props_c17/briefcase001a.mdl",
-					name = "Создать бизнес"
+					name = "#Business_Create"
 				}
 
 				panelList:AddItem(vgui.Create("cwBusinessCustom", panel))
@@ -128,14 +128,14 @@ function Schema:GetEntityMenuOptions(entity, options)
 		end
 
 		options[L"Set Frequency"] = function()
-			Derma_StringRequest("Frequency", "What would you like to set the frequency to?", frequency, function(text)
+			Derma_StringRequest("#Radio_Frequency_Title", "#Radio_Frequency_Request", frequency, function(text)
 				if (IsValid(entity)) then
 					cw.entity:ForceMenuOption(entity, "Set Frequency", text)
 				end
 			end)
 		end
 
-		options[L"Take"] = "cw_radioTake"
+		options["#EntityMenuOptions_Take"] = "cw_radioTake"
 	end
 end
 
@@ -256,7 +256,7 @@ end
 -- Called when the cinematic intro info is needed.
 function Schema:GetCinematicIntroInfo()
 	return {
-		credits = "Разработано "..self:GetAuthor()..".",
+		credits = "#HL2RP_Credits:"..self:GetAuthor()..";",
 		title = config.Get("intro_text_big"):Get(),
 		text = config.Get("intro_text_small"):Get()
 	}
@@ -264,7 +264,7 @@ end
 
 -- Called when the scoreboard's class players should be sorted.
 function Schema:ScoreboardSortClassPlayers(class, a, b)
-	if (class == "Civil Protection" or class == "Overwatch Transhuman Arm") then
+	if (class == "#Faction_MPF" or class == "#Faction_OTA") then
 		local rankA = self:GetPlayerCombineRank(a)
 		local rankB = self:GetPlayerCombineRank(b)
 
@@ -311,19 +311,19 @@ function Schema:GetPlayerScoreboardOptions(player, options, menu)
 	if (cw.command:FindByID("PlyAddServerWhitelist")
 	or cw.command:FindByID("PlyRemoveServerWhitelist")) then
 		if (cw.player:HasFlags(cw.client, cw.command:FindByID("PlyAddServerWhitelist").access)) then
-			options["Вайтлист сервера"] = {}
+			options["#ScoreboardOptions_ServerWhitelist"] = {}
 
 			if (cw.command:FindByID("PlyAddServerWhitelist")) then
-				options["Вайтлист сервера"]["Добавить"] = function()
-					Derma_StringRequest(player:Name(), "В вайтлист какого сервера Вы хотите добавить этого игрока?", "", function(text)
+				options["#ScoreboardOptions_ServerWhitelist"]["#ScoreboardOptions_ServerWhitelist_Add"] = function()
+					Derma_StringRequest(player:Name(), "#ScoreboardOptions_ServerWhitelist_Add_StringRequest", "", function(text)
 						cw.core:RunCommand("PlyAddServerWhitelist", player:Name(), text)
 					end)
 				end
 			end
 
 			if (cw.command:FindByID("PlyRemoveServerWhitelist")) then
-				options["Вайтлист сервера"]["Изъять"] = function()
-					Derma_StringRequest(player:Name(), "Из вайтлиста какого сервера Вы хотите удалить этого игрока?", "", function(text)
+				options["#ScoreboardOptions_ServerWhitelist"]["#ScoreboardOptions_ServerWhitelist_Remove"] = function()
+					Derma_StringRequest(player:Name(), "#ScoreboardOptions_ServerWhitelist_Remove_StringRequest", "", function(text)
 						cw.core:RunCommand("PlyRemoveServerWhitelist", player:Name(), text)
 					end)
 				end
@@ -333,15 +333,15 @@ function Schema:GetPlayerScoreboardOptions(player, options, menu)
 
 	if (cw.command:FindByID("CharSetCustomClass")) then
 		if (cw.player:HasFlags(cw.client, cw.command:FindByID("CharSetCustomClass").access)) then
-			options["Польз. класс"] = {}
-			options["Польз. класс"]["Установить"] = function()
-				Derma_StringRequest(player:Name(), "Каким будет пользовательский класс этого игрока?", player:GetNetVar("customClass"), function(text)
+			options["#ScoreboardOptions_CustomClass"] = {}
+			options["#ScoreboardOptions_CustomClass"]["#ScoreboardOptions_CustomClass_Set"] = function()
+				Derma_StringRequest(player:Name(), "#ScoreboardOptions_CustomClass_Set_StringRequest", player:GetNetVar("customClass"), function(text)
 					cw.core:RunCommand("CharSetCustomClass", player:Name(), text)
 				end)
 			end
 
 			if (player:GetNetVar("customClass") != "") then
-				options["Польз. класс"]["Удалить"] = function()
+				options["#ScoreboardOptions_CustomClass"]["#ScoreboardOptions_CustomClass_Take"] = function()
 					cw.core:RunCommand("CharTakeCustomClass", player:Name())
 				end
 			end
@@ -350,7 +350,7 @@ function Schema:GetPlayerScoreboardOptions(player, options, menu)
 
 	if (cw.command:FindByID("CharPermaKill")) then
 		if (cw.player:HasFlags(cw.client, cw.command:FindByID("CharPermaKill").access)) then
-			options["Перм. убийство"] = function()
+			options["#ScoreboardOptions_CharPermaKill"] = function()
 				RunConsoleCommand("aura", "CharPermaKill", player:Name())
 			end
 		end
@@ -444,46 +444,46 @@ end
 -- Called when the target's status should be drawn.
 function Schema:DrawTargetPlayerStatus(target, alpha, x, y)
 	local informationColor = cw.option:GetColor("information")
-	local thirdPerson = "его"
+	local thirdPerson = L("#TargetStatus_Him")
 	local mainStatus
 	local untieText
-	local gender = "Он"
+	local gender = L("#TargetStatus_He")
 	local action = cw.player:GetAction(target)
 
 	if (target:GetGender() == GENDER_FEMALE) then
-		thirdPerson = "ее"
-		gender = "Она"
+		thirdPerson = L("#TargetStatus_Her")
+		gender = L("#TargetStatus_She")
 	end
 
 	if (target:Alive()) then
 		if (action == "die") then
-			mainStatus = gender.." в критическом состоянии."
+			mainStatus = L("#TargetStatus_Critical:"..gender..";")
 		end
 
 		if (target:GetRagdollState() == RAGDOLL_KNOCKEDOUT) then
-			mainStatus = gender.." без сознания."
+			mainStatus = L("#TargetStatus_Unconscious:"..gender..";")
 		end
 
 		if (target:GetNetVar("tied") != 0) then
 			if (cw.player:GetAction(cw.client) == "untie") then
-				mainStatus = gender.. " развязывается."
+				mainStatus = L("#TargetStatus_BeingUntied:"..gender..";")
 			else
 				local untieText
 
 				if (target:GetShootPos():Distance(cw.client:GetShootPos()) <= 192) then
 					if (cw.client:GetNetVar("tied") == 0) then
-						mainStatus = "Нажмите :+use:, чтобы развязать "..thirdPerson.."."
+						mainStatus = L("#TargetStatus_PressToUntie:"..thirdPerson..";")
 
 						untieText = true
 					end
 				end
 
 				if (!untieText) then
-					mainStatus = gender.." связан(а)."
+					mainStatus = L("#TargetStatus_Tied:"..gender..";")
 				end
 			end
 		elseif (cw.player:GetAction(cw.client) == "tie") then
-			mainStatus = gender.." связывается."
+			mainStatus = L("#TargetStatus_BeingTied:"..gender..";")
 		end
 
 		if (mainStatus) then
@@ -539,17 +539,17 @@ function Schema:Tick()
 				if (self.lastHealth) then
 					if (health < self.lastHealth) then
 						if (health == 0) then
-							self:AddCombineDisplayLine("ОШИБКА! Отключение...", Color(255, 0, 0, 255))
+							self:AddCombineDisplayLine("#CombineDisplay_Shutdown", Color(255, 0, 0, 255))
 						else
-							self:AddCombineDisplayLine("ВНИМАНИЕ! Обнаружены телесные травмы...", Color(255, 0, 0, 255))
+							self:AddCombineDisplayLine("#CombineDisplay_BodilyHarm", Color(255, 0, 0, 255))
 						end
 
 						self.nextHealthWarning = curTime + 2
 					elseif (health > self.lastHealth) then
 						if (health == 100) then
-							self:AddCombineDisplayLine("Физические показатели организма восстановлены...", Color(0, 255, 0, 255))
+							self:AddCombineDisplayLine("#CombineDisplay_HealthRestored", Color(0, 255, 0, 255))
 						else
-							self:AddCombineDisplayLine("Восстановление физ. показателей здоровья...", Color(0, 0, 255, 255))
+							self:AddCombineDisplayLine("#CombineDisplay_HealthRegaining", Color(0, 0, 255, 255))
 						end
 
 						self.nextHealthWarning = curTime + 2
@@ -559,17 +559,17 @@ function Schema:Tick()
 				if (self.lastArmor) then
 					if (armor < self.lastArmor) then
 						if (armor == 0) then
-							self:AddCombineDisplayLine("ВНИМАНИЕ! Внешняя защита исчерпана...", Color(255, 0, 0, 255))
+							self:AddCombineDisplayLine("#CombineDisplay_ArmorExhausted", Color(255, 0, 0, 255))
 						else
-							self:AddCombineDisplayLine("ВНИМАНИЕ! Внешняя защита повреждена...", Color(255, 0, 0, 255))
+							self:AddCombineDisplayLine("#CombineDisplay_ArmorDamaged", Color(255, 0, 0, 255))
 						end
 
 						self.nextHealthWarning = curTime + 2
 					elseif (armor > self.lastArmor) then
 						if (armor == 100) then
-							self:AddCombineDisplayLine("Внешняя защита восстановлена...", Color(0, 255, 0, 255))
+							self:AddCombineDisplayLine("#CombineDisplay_ArmorRestored", Color(0, 255, 0, 255))
 						else
-							self:AddCombineDisplayLine("Восстановление внешней защиты...", Color(0, 0, 255, 255))
+							self:AddCombineDisplayLine("#CombineDisplay_ArmorRegaining", Color(0, 0, 255, 255))
 						end
 
 						self.nextHealthWarning = curTime + 2
@@ -649,18 +649,18 @@ function Schema:GetScreenTextInfo()
 	if (cw.client:GetNetVar("permaKilled")) then
 		return {
 			alpha = blackFadeAlpha,
-			title = "ЭТОТ ПЕРСОНАЖ МЕРТВ",
-			text = "Выйдите в меню персонажей и создайте нового."
+			title = "#ScreenTextInfo_PermaKilled_title",
+			text = "#ScreenTextInfo_CharBanned_text"
 		}
 	elseif (cw.client:GetNetVar("beingTied")) then
 		return {
 			alpha = 255 - blackFadeAlpha,
-			title = "ВАС СВЯЗЫВАЮТ"
+			title = "#ScreenTextInfo_BeingTied_title"
 		}
 	elseif (cw.client:GetNetVar("tied") != 0) then
 		return {
 			alpha = 255 - blackFadeAlpha,
-			title = "ВЫ СВЯЗАНЫ"
+			title = "#ScreenTextInfo_Tied_title"
 		}
 	end
 end

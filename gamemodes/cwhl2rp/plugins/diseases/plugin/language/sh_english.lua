@@ -1,0 +1,100 @@
+--[[
+	Catwork © 2016-2017 TeslaCloud Studios
+	Please find license under LICENSE.
+
+	Original code by Alex Grist, 'impulse and Conna Wiles
+	with contributions from Cloud Sixteen community.
+--]]
+
+local lang = cw.lang:GetTable("en")
+
+-- Item menu functions (looked up without the leading # by the item menu)
+lang["Swallow"] = "Swallow"
+lang["Apply"] = "Apply"
+lang["Give"] = "Give"
+lang["Inject"] = "Inject"
+lang["Use on..."] = "Use on..."
+
+-- Commands
+lang["#Command_Chargetdisease_Description"] = "Get a player's disease."
+lang["#Command_Chargetdisease_Syntax"] = "<string Name>"
+lang["#Command_Charsetdisease_Description"] = "Set a player's disease."
+lang["#Command_Charsetdisease_Syntax"] = "<string Name> <string Disease>"
+lang["#Diseases_SetByOther"] = "#1 has set your disease to #2."
+lang["#Diseases_SetOther"] = "You have set #1's disease to #2."
+lang["#Diseases_SetSelf"] = "You have set your own disease to #1."
+
+-- Symptoms
+lang["#Diseases_Emote_PneumoniaCough"] = "coughs violently, hacking up phlegm from the lungs."
+lang["#Diseases_Emote_Gasp"] = "starts choking and gasping for air."
+lang["#Diseases_Emote_Cough"] = "coughs."
+lang["#Diseases_Emote_Fever"] = "feels dizzy and feverish."
+lang["#Diseases_Emote_Stomach"] = "involuntarily doubles over from stomach pain."
+lang["#Diseases_Emote_Vomit"] = "throws up."
+lang["#Diseases_PermaKilled"] = "You have been permanently killed by poisoning..."
+lang["#Diseases_AllergyRash"] = "You notice a rash on your hands."
+lang["#Diseases_StomachPain"] = "You feel a pain in your stomach."
+lang["#Diseases_AllergyReaction"] = "You feel sick after consuming #1."
+
+-- Item notifications
+lang["#Diseases_MustLookAtPerson"] = "You must be looking at a person!"
+lang["#Diseases_MustLookAtPatient"] = "You must be looking at the patient!"
+lang["#Diseases_Gave_ActivatedCoal"] = "You gave the character activated charcoal."
+lang["#Diseases_Gave_AllergyTablet"] = "You gave the character allergy tablets."
+lang["#Diseases_Gave_Antibiotics"] = "You gave the character antibiotics."
+lang["#Diseases_Gave_CoughSyrup"] = "You gave the character cough syrup."
+lang["#Diseases_Gave_Paracetamol"] = "You gave the character paracetamol."
+lang["#Diseases_Gave_Probiotics"] = "You gave the character probiotics."
+lang["#Diseases_Gave_SleepingPills"] = "You gave the character sleeping pills."
+lang["#Diseases_Gave_Sorbent"] = "You gave the character sorbents."
+lang["#Diseases_Fed"] = "You fed the character."
+lang["#Diseases_Used_Inhaler"] = "You used the inhaler on the character."
+lang["#Diseases_Surgery_Blindness"] = "You used the kit to treat blindness."
+lang["#Diseases_Surgery_Colorblindness"] = "You used the kit to treat color blindness."
+lang["#Diseases_Surgery_Wasted"] = "You used the eye treatment kit for nothing."
+lang["#Diseases_Eyelight_Blind"] = "The person's eyes barely react to light."
+lang["#Diseases_Eyelight_Colorblind"] = "The citizen's eyes do not react to colored light."
+lang["#Diseases_Eyelight_Normal"] = "The person's eyes react well to light."
+lang["#Diseases_Injected_Self"] = "You injected the green liquid into your vein."
+lang["#Diseases_Injected_Other"] = "You injected the green liquid into the character."
+lang["#Diseases_Antidote_Self"] = "You injected the antidote into your veins..."
+lang["#Diseases_Antidote_SelfNoEffect"] = "You injected the antidote into your veins, but you do not feel any better..."
+lang["#Diseases_Antidote_Other"] = "You injected the antidote into the person."
+lang["#Diseases_Antidote_OtherNoEffect"] = "You injected the antidote into the character. They do not seem to be getting any better."
+lang["#Diseases_Temperature"] = "Temperature: #1C"
+
+-- Items
+lang["#Item_ActivatedCoal_PrintName"] = "Pack of Activated Charcoal"
+lang["#Item_ActivatedCoal_Description"] = "A box labelled 'Activated Charcoal'."
+lang["#Item_AllergyTablet_PrintName"] = "Pack of Allergy Tablets"
+lang["#Item_AllergyTablet_Description"] = "A small box labelled 'Dimedrol' with a note reading 'Allergy tablets'."
+lang["#Item_Antibiotics_PrintName"] = "Pack of Antibiotics"
+lang["#Item_Antibiotics_Description"] = "A small box labelled 'Amoxicillin' with a note reading 'Antibiotics'."
+lang["#Item_BlindnessSurgerykit_PrintName"] = "Eye Surgery Kit"
+lang["#Item_BlindnessSurgerykit_Description"] = "A kit containing everything needed to perform eye surgery."
+lang["#Item_CoughSyrup_PrintName"] = "Cough Syrup"
+lang["#Item_CoughSyrup_Description"] = "A glass vial with a brown substance inside."
+lang["#Item_Eyelight_PrintName"] = "Medical Penlight"
+lang["#Item_Eyelight_Description"] = "A small flashlight for examining eyes."
+lang["#Item_FastGreenLiquid_PrintName"] = "Potassium Cyanide"
+lang["#Item_FastGreenLiquid_Description"] = "An ampoule of liquid."
+lang["#Item_GreenAntidote_PrintName"] = "Syringe of Alomorphine"
+lang["#Item_GreenAntidote_Description"] = "A syringe of green liquid labelled 'Antidote'."
+lang["#Item_GreenLiquid_PrintName"] = "Syringe of Strychnine"
+lang["#Item_GreenLiquid_Description"] = "An unlabelled syringe of green liquid."
+lang["#Item_Ingall_PrintName"] = "Inhaler"
+lang["#Item_Ingall_Description"] = "A small device that is placed in the mouth."
+lang["#Item_Paracetamol_PrintName"] = "Paracetamol"
+lang["#Item_Paracetamol_Description"] = "A small jar with a few tablets for treating a cold."
+lang["#Item_Probiotics_PrintName"] = "Pack of Probiotics"
+lang["#Item_Probiotics_Description"] = "A small box labelled 'Bificol' with a note reading 'Probiotics'."
+lang["#Item_Snot_PrintName"] = "Sleeping Pills (Prescription)"
+lang["#Item_Snot_Description"] = "A small box labelled 'Melaxen' with a note reading 'Sleeping pills'."
+lang["#Item_Snotbad_PrintName"] = "Sleeping Pills (Non-prescription)"
+lang["#Item_Snotbad_Description"] = "A small box with 'Sleeping pills' written on it with an ordinary ballpoint pen."
+lang["#Item_Sorbent_PrintName"] = "Pack of Sorbents"
+lang["#Item_Sorbent_Description"] = "A small box labelled 'Polyphepan' with a note reading 'Sorbents'."
+lang["#Item_SpecialRation_PrintName"] = "Special Diet Ration"
+lang["#Item_SpecialRation_Description"] = "Food prescribed to gastritis patients."
+lang["#Item_Thermometer_PrintName"] = "Thermometer"
+lang["#Item_Thermometer_Description"] = "A stick that shows its bearer's temperature."

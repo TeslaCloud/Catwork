@@ -3,10 +3,10 @@ PLUGIN:SetGlobalAlias("cwForceField")
 cwForceField.Blocked = {};
 
 cwForceField.modes = {
-	"Do not allow anyone.",
-	"Allow CWU.",
-	"Allow everyone.",
-	"Off."
+	"#ForceField_Mode_NoOne",
+	"#ForceField_Mode_CWU",
+	"#ForceField_Mode_Everyone",
+	"#ForceField_Mode_Off"
 }
 
 local allowedEnts = {

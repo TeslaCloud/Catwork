@@ -7,7 +7,7 @@
 --]]
 
 local COMMAND = cw.command:New("GarbageRemove")
-COMMAND.tip = "Removes garbage spawn point at your view target."
+COMMAND.tip = "#Command_Garbageremove_Description"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "s"
 COMMAND.alias = {"GarbagePointRemove", "GarbageSpawnRemove"}
@@ -25,12 +25,12 @@ function COMMAND:OnRun(player, arguments)
 
 	if (pointsCount > 0) then
 		if (pointsCount == 1) then
-			cw.player:Notify(player, "You have removed "..pointsCount.." garbage spawn.")
+			cw.player:Notify(player, L("Garbage_RemovedSpawn", pointsCount))
 		else
-			cw.player:Notify(player, "You have removed "..pointsCount.." garbage spawns.")
+			cw.player:Notify(player, L("Garbage_RemovedSpawns", pointsCount))
 		end
 	else
-		cw.player:Notify(player, "There were no garbage spawns near this position.")
+		cw.player:Notify(player, L("Garbage_NoSpawnsNear"))
 	end
 
 	cwGarbage:SaveGarbageSpawnPoints()

@@ -7,7 +7,7 @@
 --]]
 
 ITEM.name = "Popcorn"
-ITEM.PrintName = "Попкорн"
+ITEM.PrintName = "#Item_Popcorn_PrintName"
 ITEM.cost = 15
 ITEM.model = "models/bioshockinfinite/topcorn_bag.mdl"
 ITEM.weight = 0.1
@@ -16,7 +16,7 @@ ITEM.uniqueID = "popcorn"
 ITEM.useText = "Eat"
 ITEM.category = "Consumables"
 ITEM.business = true
-ITEM.description = "Рекомендуется к употреблению при захватывающем зрелище."
+ITEM.description = "#Item_Popcorn_Description"
 ITEM.hunger = 25
 
 -- Called when a player uses the item.

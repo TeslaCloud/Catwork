@@ -7,8 +7,8 @@
 --]]
 
 local COMMAND = cw.command:New("TextAdd")
-COMMAND.tip = "Add some text to a surface."
-COMMAND.text = "<string Text> [number Scale] [number Style] [color First Color] [color Second Color]"
+COMMAND.tip = "#Command_Textadd_Description"
+COMMAND.text = "#Command_Textadd_Syntax"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "a"
 COMMAND.arguments = 1
@@ -23,7 +23,7 @@ function COMMAND:OnRun(player, arguments)
 	local extraColor = arguments[5]
 
 	if (!text or text == "") then
-		cw.player:Notify(player, "You did not specify enough text.")
+		cw.player:Notify(player, L("NotEnoughText"))
 
 		return
 	end
@@ -46,7 +46,7 @@ function COMMAND:OnRun(player, arguments)
 
 	cwSurfaceTexts:AddText(data)
 
-	cw.player:Notify(player, "You have added a 3D text.")
+	cw.player:Notify(player, L("SurfaceTexts_Added"))
 end
 
 COMMAND:Register();

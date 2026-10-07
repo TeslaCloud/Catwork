@@ -5,8 +5,8 @@
 --]]
 
 local COMMAND = cw.command:New("PlySetIcon")
-COMMAND.tip = "Sets player's chat icon."
-COMMAND.text = "<string Player> <string path or URL>"
+COMMAND.tip = "#Command_Plyseticon_Description"
+COMMAND.text = "#Command_Plyseticon_Syntax"
 COMMAND.access = "s"
 COMMAND.arguments = 2
 COMMAND.alias = {"SetIcon"}
@@ -30,12 +30,12 @@ function COMMAND:OnRun(player, arguments)
 			target:SetData("CustomIcon", {icon = icon, path = path})
 			Schema:SendIconData(target, true)
 
-			cw.player:Notify(player, "You have set "..target:Name().."'s chat icon to "..icon.." ["..path.."].")
+			cw.player:Notify(player, L("ExtraCommands_IconSet", target:Name()).." "..icon.." ["..path.."].")
 		else
-			cw.player:Notify(player, arguments[2].." is not a .png file!")
+			cw.player:Notify(player, arguments[2].." "..L("ExtraCommands_NotPng"))
 		end
 	else
-		cw.player:Notify(player, arguments[1].." is not a valid target!")
+		cw.player:Notify(player, L("NotValidPlayer", arguments[1]))
 	end
 end
 

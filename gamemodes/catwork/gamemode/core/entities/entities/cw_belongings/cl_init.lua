@@ -13,8 +13,8 @@ function ENT:HUDPaintTargetID(x, y, alpha)
 	local colorTargetID = cw.option:GetColor("target_id")
 	local colorWhite = cw.option:GetColor("white")
 
-	y = cw.core:DrawInfo("Belongings", x, y, colorTargetID, alpha)
-	y = cw.core:DrawInfo("There might be something inside.", x, y, colorWhite, alpha)
+	y = cw.core:DrawInfo("#Storage_Belongings", x, y, colorTargetID, alpha)
+	y = cw.core:DrawInfo("#Belongings_TargetHint", x, y, colorWhite, alpha)
 end
 
 -- Called when the entity should draw.

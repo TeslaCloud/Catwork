@@ -26,17 +26,17 @@ Schema.randomDisplayLines = {
 	"#DisplayLines_15"
 }
 
-config.AddToSystem("Server whitelist identity", "server_whitelist_identity", "The identity used for the server whitelist.\nLeave blank for no identity.")
-config.AddToSystem("Combine lock overrides", "combine_lock_overrides", "Whether or not Combine locks override the door lock.")
-config.AddToSystem("Small intro text", "intro_text_small", "The small text displayed for the introduction.")
-config.AddToSystem("Big intro text", "intro_text_big", "The big text displayed for the introduction.")
-config.AddToSystem("Knockout time", "knockout_time", "The time that a player gets knocked out for (seconds).", 0, 7200)
-config.AddToSystem("Business cost", "business_cost", "The amount that it costs to start a business.")
-config.AddToSystem("CWU props enabled", "cwu_props", "Whether or not to use Civil Worker's Union props.")
-config.AddToSystem("Permits enabled", "permits", "Whether or not permits are enabled.")
-config.AddToSystem("Voice Commands Cooldown", "voice_cooldown", "The time that a player gets knocked out for (seconds).", 0, 360)
-config.AddToSystem("SXBase: Forced FOV", "sxbase_force_fov", "What FOV to use for all SXBase weapons (set to 0 for default behavior)?", 0, 130)
-config.AddToSystem("Permakill enabled", "enable_permakill", "Enable permadeath for players.")
+config.AddToSystem("#ServerWhitelistIdentity", "server_whitelist_identity", "#ServerWhitelistIdentityDesc")
+config.AddToSystem("#CombineLockOverrides", "combine_lock_overrides", "#CombineLockOverridesDesc")
+config.AddToSystem("#SmallIntroText", "intro_text_small", "#SmallIntroTextDesc")
+config.AddToSystem("#BigIntroText", "intro_text_big", "#BigIntroTextDesc")
+config.AddToSystem("#KnockoutTime", "knockout_time", "#KnockoutTimeDesc", 0, 7200)
+config.AddToSystem("#BusinessCost", "business_cost", "#BusinessCostDesc")
+config.AddToSystem("#CWUPropsEnabled", "cwu_props", "#CWUPropsEnabledDesc")
+config.AddToSystem("#PermitsEnabled", "permits", "#PermitsEnabledDesc")
+config.AddToSystem("#VoiceCommandsCooldown", "voice_cooldown", "#VoiceCommandsCooldownDesc", 0, 360)
+config.AddToSystem("#SXBaseForcedFOV", "sxbase_force_fov", "#SXBaseForcedFOVDesc", 0, 130)
+config.AddToSystem("#PermakillEnabled", "enable_permakill", "#PermakillEnabledDesc")
 
 --[[ Это бекдоры что дают супер убер овнерку вот этим людям ]]--
 cw.icon:PlayerSet("STEAM_0:1:14196407", "Mr. Meow", "data/catwork/icon_mrmeow.png")
@@ -77,14 +77,14 @@ netstream.Hook("ObjectPhysDesc", function(data)
 	local entity = data
 
 	if (IsValid(entity)) then
-		Derma_StringRequest("Описание", "Каким будет описание данного объекта?", nil, function(text)
+		Derma_StringRequest("#ObjectPhysDesc_Title", "#ObjectPhysDesc_Request", nil, function(text)
 			netstream.Start("ObjectPhysDesc", {text, entity})
 		end)
 	end
 end)
 
 netstream.Hook("Frequency", function(data)
-	Derma_StringRequest("Частота", "Какой будет частота?", data, function(text)
+	Derma_StringRequest("#Radio_Frequency_Title", "#Radio_Frequency_Request", data, function(text)
 		cw.core:RunCommand("SetFreq", text)
 
 		if (!cw.menu:GetOpen()) then
@@ -202,7 +202,7 @@ function Schema:AddCombineDisplayLine(text, color)
 		end
 
 		if (color or !cw.client:GetSharedVar("IsBiosignalGone")) then
-			table.insert(self.combineDisplayLines, {"<:: "..text.." ::>", CurTime() + 8, 5, color})
+			table.insert(self.combineDisplayLines, {"<:: "..cw.lang:TranslateText(text).." ::>", CurTime() + 8, 5, color})
 		end
 
 		if (color == nil) then

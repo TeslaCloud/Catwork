@@ -7,7 +7,7 @@
 --]]
 
 local COMMAND = cw.command:New("SalesmanRemove")
-COMMAND.tip = "Remove a salesman at your target position."
+COMMAND.tip = "#Command_Salesmanremove_Description"
 COMMAND.access = "s"
 
 -- Called when the command has been run.
@@ -22,16 +22,16 @@ function COMMAND:OnRun(player, arguments)
 					cwSalesmen.salesmen[k] = nil
 					cwSalesmen:SaveSalesmen()
 
-					cw.player:Notify(player, "You have removed a salesman.")
+					cw.player:Notify(player, L("Salesman_Removed"))
 
 					return
 				end
 			end
 		else
-			cw.player:Notify(player, "This entity is not a salesman!")
+			cw.player:Notify(player, L("Salesman_NotSalesman"))
 		end
 	else
-		cw.player:Notify(player, "You must look at a valid entity!")
+		cw.player:Notify(player, L("Salesman_LookAtValidEntity"))
 	end
 end
 

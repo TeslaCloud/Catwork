@@ -61,22 +61,22 @@ function COMMAND:OnRun(player, arguments)
 								end
 							})
 						else
-							cw.player:Notify(player, "You are already searching a character!")
+							cw.player:Notify(player, L("Search_AlreadySearching"))
 						end
 					else
-						cw.player:Notify(player, "You cannot search a moving character!")
+						cw.player:Notify(player, L("Search_Moving"))
 					end
 				else
-					cw.player:Notify(player, "This character is not tied!")
+					cw.player:Notify(player, L("Err_CharacterNotTied"))
 				end
 			else
-				cw.player:Notify(player, "You don't have permission to do this right now!")
+				cw.player:Notify(player, L("Err_NoPermissionRightNow"))
 			end
 		else
-			cw.player:Notify(player, "This character is too far away!")
+			cw.player:Notify(player, L("Err_CharacterTooFar"))
 		end
 	else
-		cw.player:Notify(player, "You must look at a character!")
+		cw.player:Notify(player, L("Err_MustLookAtCharacter"))
 	end
 end
 

@@ -8,15 +8,15 @@
 
 local TOOL = cw.tool:New()
 
-TOOL.Name 		= "Door Tool"
+TOOL.Name 		= "#tool.doortool.name"
 TOOL.UniqueID 	= "doortool"
-TOOL.Desc 		= "Do various things with doors."
-TOOL.HelpText 	= "Primary: Do Action | Secondary: Do Action (If Applicable)"
+TOOL.Desc 		= "#tool.doortool.desc"
+TOOL.HelpText 	= "#tool.doortool.0"
 
 -- Create the convars for the client.
 TOOL.ClientConVar["mode"] 	= "1"
 TOOL.ClientConVar["doorname"]	= "A Door"
-TOOL.ClientConVar["doordesc"]	= "It seem's to have a handle."
+TOOL.ClientConVar["doordesc"]	= "It seems to have a handle."
 
 -- Called when the player clicks the left mouse button while the tool is equipped.
 function TOOL:LeftClick(trace)
@@ -56,7 +56,7 @@ if (CLIENT) then
 		local height = 90
 
 		list:SetSize(30, height)
-		list:AddColumn("Tool Mode")
+		list:AddColumn(L("#tool.doortool.mode"))
 		list:SetMultiSelect(false)
 
 		function list:OnRowSelected(LineID, line)
@@ -66,21 +66,21 @@ if (CLIENT) then
 		end
 
 		if (mode == 1) then
-			list:AddLine(" 1 **Lock/Unlock Door**")
+			list:AddLine(" 1 **"..L("#tool.doortool.mode1").."**")
 		else
-			list:AddLine(" 1   Lock/Unlock Door")
+			list:AddLine(" 1   "..L("#tool.doortool.mode1"))
 		end
 
 		if (mode == 2) then
-			list:AddLine(" 2 **Door Set Ownable**")
+			list:AddLine(" 2 **"..L("#tool.doortool.mode2").."**")
 		else
-			list:AddLine(" 2   Door Set Ownable  ")
+			list:AddLine(" 2   "..L("#tool.doortool.mode2").."  ")
 		end
 
 		if (mode == 3) then
-			list:AddLine(" 3 **Door Set Unownable**")
+			list:AddLine(" 3 **"..L("#tool.doortool.mode3").."**")
 		else
-			list:AddLine(" 3   Door Set Unownable  ")
+			list:AddLine(" 3   "..L("#tool.doortool.mode3").."  ")
 		end
 
 		list:SortByColumn(1)
@@ -88,22 +88,22 @@ if (CLIENT) then
 		panel:AddItem(list)
 
 		if (mode == 1) then
-			panel:AddControl("Header", {Text = "Lock/Unlook Door", Description = "Lock and unlock doors!" })
+			panel:AddControl("Header", {Text = "#tool.doortool.mode1", Description = "#tool.doortool.mode1desc" })
 		elseif (mode == 2) then
 			panel:AddControl("TextBox", {
-				Label = "Door Name",
+				Label = "#tool.doortool.doorname",
 				MaxLenth = "20",
 				Command = "doortool_doorname"
 			})
 		elseif (mode == 3) then
 			panel:AddControl("TextBox", {
-				Label = "Door name",
+				Label = "#tool.doortool.doorname",
 				MaxLenth = "20",
 				Command = "doortool_doorname"
 			})
 
 			panel:AddControl("TextBox", {
-				Label = "Door Description",
+				Label = "#tool.doortool.doordesc",
 				MaxLenth = "20",
 				Command = "doortool_doordesc"
 			})

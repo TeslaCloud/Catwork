@@ -90,19 +90,19 @@ function PANEL:Init()
 
 	self.settingsPanel:AddItem(self.settingsForm)
 
-	self.showChatBubble = self.settingsForm:CheckBox("Отображать символ чата над головой.")
-	self.buyInShipments = self.settingsForm:CheckBox("Покупать / продавать предметы оптом (5 шт.).")
-	self.priceScale = self.settingsForm:TextEntry("Множитель цен.")
-	self.flagsEntry = self.settingsForm:TextEntry("Флаги для доступа (введите '-' перед флагами чтобы проверялись ТОЛЬКО они).")
-	self.physDesc = self.settingsForm:TextEntry("Описание торговца.")
-	self.buyRate = self.settingsForm:NumSlider("Множитель продажи", nil, 1, 100, 0)
-	self.stock = self.settingsForm:NumSlider("Кол-во предметов по умолчанию", nil, -1, 100, 0)
-	self.model = self.settingsForm:TextEntry("Модель торговца.")
-	self.cash = self.settingsForm:NumSlider("Стартовый капитал", nil, -1, 1000000, 0)
+	self.showChatBubble = self.settingsForm:CheckBox(L("#Salesman_ShowChatBubble"))
+	self.buyInShipments = self.settingsForm:CheckBox(L("#Salesman_BuyInShipments"))
+	self.priceScale = self.settingsForm:TextEntry(L("#Salesman_PriceScale"))
+	self.flagsEntry = self.settingsForm:TextEntry(L("#Salesman_Flags"))
+	self.physDesc = self.settingsForm:TextEntry(L("#Salesman_PhysDesc"))
+	self.buyRate = self.settingsForm:NumSlider(L("#Salesman_BuyRate"), nil, 1, 100, 0)
+	self.stock = self.settingsForm:NumSlider(L("#Salesman_Stock"), nil, -1, 100, 0)
+	self.model = self.settingsForm:TextEntry(L("#Salesman_Model"))
+	self.cash = self.settingsForm:NumSlider(L("#Salesman_Cash"), nil, -1, 1000000, 0)
 
-	self.buyRate:SetTooltip("На какое число будут умножаться цены при продаже.")
-	self.stock:SetTooltip("Количество предметов в запасе (-1 - бесконечно).")
-	self.cash:SetTooltip("Количество денег торговца (-1 - бесконечно).")
+	self.buyRate:SetTooltip(L("#Salesman_BuyRateTip"))
+	self.stock:SetTooltip(L("#Salesman_StockTip"))
+	self.cash:SetTooltip(L("#Salesman_CashTip"))
 
 	self.showChatBubble:SetValue(cw.salesman.showChatBubble == true)
 	self.buyInShipments:SetValue(cw.salesman.buyInShipments == true)
@@ -116,76 +116,76 @@ function PANEL:Init()
 
 	self.responsesForm = vgui.Create("cwForm")
 	self.responsesForm:SetPadding(4)
-	self.responsesForm:SetName("Ответы")
+	self.responsesForm:SetName(L("#Salesman_Responses"))
 	self.settingsForm:AddItem(self.responsesForm)
 
-	self.startText = self.responsesForm:TextEntry("При начале торговли.")
-	self.startSound = self.responsesForm:TextEntry("Звук.")
-	self.startHideName = self.responsesForm:CheckBox("Спрятать имя торговца.")
+	self.startText = self.responsesForm:TextEntry(L("#Salesman_Response_Start"))
+	self.startSound = self.responsesForm:TextEntry(L("#Salesman_Response_Sound"))
+	self.startHideName = self.responsesForm:CheckBox(L("#Salesman_Response_HideName"))
 
-	self.noSaleText = self.responsesForm:TextEntry("Если игрок не может торговать с торговцем.")
-	self.noSaleSound = self.responsesForm:TextEntry("Звук.")
-	self.noSaleHideName = self.responsesForm:CheckBox("Спрятать имя торговца.")
+	self.noSaleText = self.responsesForm:TextEntry(L("#Salesman_Response_NoSale"))
+	self.noSaleSound = self.responsesForm:TextEntry(L("#Salesman_Response_Sound"))
+	self.noSaleHideName = self.responsesForm:CheckBox(L("#Salesman_Response_HideName"))
 
-	self.noStockText = self.responsesForm:TextEntry("Если кончились предметы в запасе.")
-	self.noStockSound = self.responsesForm:TextEntry("Звук.")
-	self.noStockHideName = self.responsesForm:CheckBox("Спрятать имя торговца.")
+	self.noStockText = self.responsesForm:TextEntry(L("#Salesman_Response_NoStock"))
+	self.noStockSound = self.responsesForm:TextEntry(L("#Salesman_Response_Sound"))
+	self.noStockHideName = self.responsesForm:CheckBox(L("#Salesman_Response_HideName"))
 
-	self.needMoreText = self.responsesForm:TextEntry("При покупке предмета.")
-	self.needMoreSound = self.responsesForm:TextEntry("Звук.")
-	self.needMoreHideName = self.responsesForm:CheckBox("Спрятать имя торговца.")
+	self.needMoreText = self.responsesForm:TextEntry(L("#Salesman_Response_NeedMore"))
+	self.needMoreSound = self.responsesForm:TextEntry(L("#Salesman_Response_Sound"))
+	self.needMoreHideName = self.responsesForm:CheckBox(L("#Salesman_Response_HideName"))
 
-	self.cannotAffordText = self.responsesForm:TextEntry("Если торговец не может приобрести предмет.")
-	self.cannotAffordSound = self.responsesForm:TextEntry("Звук.")
-	self.cannotAffordHideName = self.responsesForm:CheckBox("Спрятать имя торговца.")
+	self.cannotAffordText = self.responsesForm:TextEntry(L("#Salesman_Response_CannotAfford"))
+	self.cannotAffordSound = self.responsesForm:TextEntry(L("#Salesman_Response_Sound"))
+	self.cannotAffordHideName = self.responsesForm:CheckBox(L("#Salesman_Response_HideName"))
 
-	self.doneBusinessText = self.responsesForm:TextEntry("При успешном обмене.")
-	self.doneBusinessSound = self.responsesForm:TextEntry("Звук.")
-	self.doneBusinessHideName = self.responsesForm:CheckBox("Спрятать имя торговца.")
+	self.doneBusinessText = self.responsesForm:TextEntry(L("#Salesman_Response_DoneBusiness"))
+	self.doneBusinessSound = self.responsesForm:TextEntry(L("#Salesman_Response_Sound"))
+	self.doneBusinessHideName = self.responsesForm:CheckBox(L("#Salesman_Response_HideName"))
 
 	cw.salesman.text.start = cw.salesman.text.start or {}
 
-	self.startText:SetValue(cw.salesman.text.start.text or "Чем могу помочь?")
+	self.startText:SetValue(cw.salesman.text.start.text or L("#Salesman_Default_Start"))
 	self.startSound:SetValue(cw.salesman.text.start.sound or "")
 
 	self.startHideName:SetValue(cw.salesman.text.start.bHideName == true)
 
-	self.noSaleText:SetValue(cw.salesman.text.noSale.text or "Я не могу торговать с тобой!")
+	self.noSaleText:SetValue(cw.salesman.text.noSale.text or L("#Salesman_Default_NoSale"))
 	self.noSaleSound:SetValue(cw.salesman.text.noSale.sound or "")
 
 	self.noSaleHideName:SetValue(cw.salesman.text.noSale.bHideName == true)
 
-	self.noStockText:SetValue(cw.salesman.text.noStock.text or "Нет в наличии!")
+	self.noStockText:SetValue(cw.salesman.text.noStock.text or L("#Salesman_Prefill_NoStock"))
 	self.noStockSound:SetValue(cw.salesman.text.noStock.sound or "")
 
 	self.noStockHideName:SetValue(cw.salesman.text.noStock.bHideName == true)
 
-	self.needMoreText:SetValue(cw.salesman.text.needMore.text or "У тебя не хватает денег!")
+	self.needMoreText:SetValue(cw.salesman.text.needMore.text or L("#Salesman_Prefill_NeedMore"))
 	self.needMoreSound:SetValue(cw.salesman.text.needMore.sound or "")
 
 	self.needMoreHideName:SetValue(cw.salesman.text.needMore.bHideName == true)
 
-	self.cannotAffordText:SetValue(cw.salesman.text.cannotAfford.text or "Я не могу себе это позволить!")
+	self.cannotAffordText:SetValue(cw.salesman.text.cannotAfford.text or L("#Salesman_Prefill_CannotAfford"))
 	self.cannotAffordSound:SetValue(cw.salesman.text.cannotAfford.sound or "")
 
 	self.cannotAffordHideName:SetValue(cw.salesman.text.cannotAfford.bHideName == true)
 
-	self.doneBusinessText:SetValue(cw.salesman.text.doneBusiness.text or "Спасибо за покупку, увидимся!")
+	self.doneBusinessText:SetValue(cw.salesman.text.doneBusiness.text or L("#Salesman_Prefill_DoneBusiness"))
 	self.doneBusinessSound:SetValue(cw.salesman.text.doneBusiness.sound or "")
 
 	self.doneBusinessHideName:SetValue(cw.salesman.text.doneBusiness.bHideName == true)
 
 	self.factionsForm = vgui.Create("DForm")
 	self.factionsForm:SetPadding(4)
-	self.factionsForm:SetName("Фракции")
+	self.factionsForm:SetName(L("#Salesman_Factions"))
 	self.settingsForm:AddItem(self.factionsForm)
-	self.factionsForm:Help("Оставьте пустым, чтобы позволить всем фракциям торговать с этим торговцем.")
+	self.factionsForm:Help(L("#Salesman_FactionsHelp"))
 
 	self.classesForm = vgui.Create("DForm")
 	self.classesForm:SetPadding(4)
-	self.classesForm:SetName("Классы")
+	self.classesForm:SetName(L("#Classes"))
 	self.settingsForm:AddItem(self.classesForm)
-	self.classesForm:Help("Оставьте пустым, чтобы позволить всем классам торговать с этим торговцем.")
+	self.classesForm:Help(L("#Salesman_ClassesHelp"))
 
 	self.classBoxes = {}
 	self.factionBoxes = {}
@@ -222,10 +222,10 @@ function PANEL:Init()
 
 	self.propertySheet = vgui.Create("DPropertySheet", self)
 		self.propertySheet:SetPadding(4)
-		self.propertySheet:AddSheet(L"Sells", self.sellsPanel, "icon16/box.png", nil, nil, "Предметы, которые "..salesmanName.." продает.")
-		self.propertySheet:AddSheet(L"Buys", self.buysPanel, "icon16/add.png", nil, nil, "Предметы, которые "..salesmanName.." покупает.")
-		self.propertySheet:AddSheet(L"Items", self.itemsPanel, "icon16/application_view_tile.png", nil, nil, "Предметы для торговли.")
-		self.propertySheet:AddSheet(L"Settings", self.settingsPanel, "icon16/tick.png", nil, nil, "Настройки торговца.")
+		self.propertySheet:AddSheet(L"Sells", self.sellsPanel, "icon16/box.png", nil, nil, string.Replace(L("#Salesman_SellsTip"), "#1", salesmanName))
+		self.propertySheet:AddSheet(L"Buys", self.buysPanel, "icon16/add.png", nil, nil, string.Replace(L("#Salesman_BuysTip"), "#1", salesmanName))
+		self.propertySheet:AddSheet(L"Items", self.itemsPanel, "icon16/application_view_tile.png", nil, nil, L("#Salesman_ItemsTip"))
+		self.propertySheet:AddSheet(L"Settings", self.settingsPanel, "icon16/tick.png", nil, nil, L("#Salesman_SettingsTip"))
 	cw.core:SetNoticePanel(self)
 end
 
@@ -386,20 +386,20 @@ function PANEL:Init()
 
 				cw.core:AddMenuFromData(nil, {
 					[L"Buys"] = function()
-						Derma_StringRequest(cashName, "За сколько этот предмет будет продаваться торговцем?", "", function(text)
+						Derma_StringRequest(cashName, "#Salesman_BuyPriceRequest", "", function(text)
 							cw.salesman.buys[self.itemTable.uniqueID] = tonumber(text) or true
 							cw.salesman:GetPanel():Rebuild()
 						end)
 					end,
 					[L"Sells"] = function()
-						Derma_StringRequest(cashName, "За сколько этот предмет будет покупаться торговцем?", "", function(text)
+						Derma_StringRequest(cashName, "#Salesman_SellPriceRequest", "", function(text)
 							cw.salesman.sells[self.itemTable.uniqueID] = tonumber(text) or true
 							cw.salesman:GetPanel():Rebuild()
 						end)
 					end,
 					[L"Both"] = function()
-						Derma_StringRequest(cashName, "За сколько этот предмет будет продаваться торговцем?", "", function(sellPrice)
-							Derma_StringRequest(cashName, "За сколько этот предмет будет покупаться торговцем?", "", function(buyPrice)
+						Derma_StringRequest(cashName, "#Salesman_SellPriceRequest", "", function(sellPrice)
+							Derma_StringRequest(cashName, "#Salesman_BuyPriceRequest", "", function(buyPrice)
 								cw.salesman.sells[self.itemTable.uniqueID] = tonumber(sellPrice) or true
 								cw.salesman.buys[self.itemTable.uniqueID] = tonumber(buyPrice) or true
 								cw.salesman:GetPanel():Rebuild()
@@ -409,15 +409,15 @@ function PANEL:Init()
 				})
 			else
 				cw.core:AddMenuFromData(nil, {
-					["Buys"] = function()
+					[L"Buys"] = function()
 						cw.salesman.buys[self.itemTable.uniqueID] = true
 						cw.salesman:GetPanel():Rebuild()
 					end,
-					["Sells"] = function()
+					[L"Sells"] = function()
 						cw.salesman.sells[self.itemTable.uniqueID] = true
 						cw.salesman:GetPanel():Rebuild()
 					end,
-					["Both"] = function()
+					[L"Both"] = function()
 						cw.salesman.sells[self.itemTable.uniqueID] = true
 						cw.salesman.buys[self.itemTable.uniqueID] = true
 						cw.salesman:GetPanel():Rebuild()
@@ -463,7 +463,7 @@ function PANEL:Think()
 					(self.itemTable.cost * priceScale) * math.max(amount, 1)
 				)
 			else
-				displayInfo.weight = "Free"
+				displayInfo.weight = L"Free"
 			end
 
 			local overrideCash = cw.salesman.sells[self.itemTable.uniqueID]

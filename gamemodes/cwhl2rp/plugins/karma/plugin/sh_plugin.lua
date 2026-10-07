@@ -41,7 +41,7 @@ do
 
 		if (player.cachedKarma != karma) then
 			player.cachedKarma = karma
-			player.cachedKarmaString = "Error"
+			player.cachedKarmaString = "#Karma_Error"
 
 			for k, v in ipairs(stored) do
 				if (karma >= v.bottom and karma <= v.ceiling) then

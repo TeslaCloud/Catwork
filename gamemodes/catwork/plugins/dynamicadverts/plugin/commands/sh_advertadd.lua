@@ -8,8 +8,8 @@
 
 -- Called when the command has been run.
 local COMMAND = cw.command:New("AdvertAdd")
-COMMAND.tip = "Add a dynamic advert."
-COMMAND.text = "<string URL> <number Width> < number Height> [number Scale]"
+COMMAND.tip = "#Command_Advertadd_Description"
+COMMAND.text = "#Command_Advertadd_Syntax"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "a"
 COMMAND.arguments = 3
@@ -43,7 +43,7 @@ function COMMAND:OnRun(player, arguments)
 	cwDynamicAdverts.storedList[#cwDynamicAdverts.storedList + 1] = data
 	cwDynamicAdverts:SaveDynamicAdverts()
 
-	cw.player:Notify(player, "You have added a dynamic advert.")
+	cw.player:Notify(player, L("DynamicAdverts_Added"))
 end
 
 COMMAND:Register();

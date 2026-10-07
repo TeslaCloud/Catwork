@@ -49,7 +49,7 @@ function cwSalesmen:PlayerCanUseSalesman(player, entity)
 	end
 
 	if (bDisallowed) then
-		entity:TalkToPlayer(player, entity.cwTextTab.noSale, "Я не могу торговать с тобой!")
+		entity:TalkToPlayer(player, entity.cwTextTab.noSale, L("Salesman_Default_NoSale"))
 		return false
 	end
 end
@@ -72,5 +72,5 @@ function cwSalesmen:PlayerUseSalesman(player, entity)
 		flags = entity.cwFlags
 	})
 
-	entity:TalkToPlayer(player,	entity.cwTextTab.start,	"Чем могу помочь??")
+	entity:TalkToPlayer(player,	entity.cwTextTab.start,	L("Salesman_Default_Start"))
 end

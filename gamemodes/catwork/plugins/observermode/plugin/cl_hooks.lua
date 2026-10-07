@@ -16,7 +16,7 @@ end
 -- Called to get the action text of a player.
 function cwObserverMode:GetStatusInfo(player, text)
 	if (cw.player:IsNoClipping(player)) then
-		table.insert(text, "[Observer]")
+		table.insert(text, "#StatusInfo_Observer")
 	end
 end
 

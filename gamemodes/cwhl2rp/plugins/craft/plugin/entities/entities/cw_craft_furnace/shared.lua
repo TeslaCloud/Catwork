@@ -13,4 +13,4 @@ ENT.PhysgunDisabled = false
 ENT.IsCraft = true
 
 ENT.Model = "models/props_c17/furniturefireplace001a.mdl"
-ENT.Category = "HL2RP: Мастерские"
+ENT.Category = "#Craft_Table_Category"

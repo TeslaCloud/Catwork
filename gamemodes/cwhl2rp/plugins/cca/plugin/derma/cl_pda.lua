@@ -207,7 +207,7 @@ end
 
 function PANEL:PaintOver(width, height)
 	if (!IsValid(self.player)) then
-		draw.SimpleText("ERROR!", "DermaNarrow42", 32, 32, Color(255, 100, 100))
+		draw.SimpleText("#PDA_Error", "DermaNarrow42", 32, 32, Color(255, 100, 100))
 
 		return
 	end

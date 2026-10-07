@@ -5,7 +5,7 @@
 --]]
 
 local COMMAND = cw.command:New("Name")
-COMMAND.tip = "Says your Name."
+COMMAND.tip = "#Command_Name_Description"
 COMMAND.flags = CMD_DEFAULT
 
 -- Called when the command has been run.

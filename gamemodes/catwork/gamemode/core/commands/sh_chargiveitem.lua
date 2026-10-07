@@ -6,8 +6,6 @@
 	with contributions from Cloud Sixteen community.
 --]]
 
-local amountTable = {"one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"}
-
 local COMMAND = cw.command:New("CharGiveItem")
 COMMAND.tip = "#Command_Chargiveitem_Description"
 COMMAND.text = "#Command_Chargiveitem_Syntax"
@@ -39,33 +37,33 @@ function COMMAND:OnRun(player, arguments)
 					end
 
 					if (string.utf8sub(itemTable.name, -1) == "s" and amount == 1) then
-						cw.player:Notify(player, "Вы выдали "..target:Name().." "..itemTable.PrintName..".")
+						cw.player:Notify(player, L("Command_Chargiveitem_Gave", target:Name(), itemTable.PrintName))
 					elseif (amount > 1) then
-						cw.player:Notify(player, "Вы выдали "..target:Name().." "..amountTable[amount].." х "..itemTable.PrintName..".")
+						cw.player:Notify(player, L("Command_Chargiveitem_GaveAmount", target:Name(), amount, itemTable.PrintName))
 					else
-						cw.player:Notify(player, "Вы выдали "..target:Name().." "..itemTable.PrintName..".")
+						cw.player:Notify(player, L("Command_Chargiveitem_Gave", target:Name(), itemTable.PrintName))
 					end
 
 					if (player != target) then
 						if (string.utf8sub(itemTable.name, -1) == "s" and amount == 1) then
-							cw.player:Notify(target, player:Name().." выдал Вам "..itemTable.PrintName..".")
+							cw.player:Notify(target, L("Command_Chargiveitem_Received", player:Name(), itemTable.PrintName))
 						elseif (amount > 1) then
-							cw.player:Notify(target, player:Name().." выдал Вам "..amountTable[amount].." х "..itemTable.PrintName..".")
+							cw.player:Notify(target, L("Command_Chargiveitem_ReceivedAmount", player:Name(), amount, itemTable.PrintName))
 						else
-							cw.player:Notify(target, player:Name().." выдал Вам "..itemTable.PrintName..".")
+							cw.player:Notify(target, L("Command_Chargiveitem_Received", player:Name(), itemTable.PrintName))
 						end
 					end
 				else
-					cw.player:Notify(player, "Предмет недействителен!")
+					cw.player:Notify(player, L("GiveInvalidItem"))
 				end
 			else
-				cw.player:Notify(player, "Вы должны ввести число в диапазоне 1-10!")
+				cw.player:Notify(player, L("Command_Chargiveitem_AmountRange"))
 			end
 		else
 			cw.player:Notify(player, L(player, "NotValidCharacter", arguments[1]))
 		end
 	else
-		cw.player:Notify(player, "У Вас нет доступа к этй команде!")
+		cw.player:Notify(player, L("Commands_cwLua_accessDenied", player:Name()))
 	end
 end
 

@@ -7,8 +7,8 @@
 --]]
 
 local COMMAND = cw.command:New("SalesmanEdit")
-COMMAND.tip = "Edit a salesman at your target position."
-COMMAND.text = "[number Animation]"
+COMMAND.tip = "#Command_Salesmanedit_Description"
+COMMAND.text = "#Command_Salesmanedit_Syntax"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "s"
 COMMAND.optionalArguments = 1
@@ -48,10 +48,10 @@ function COMMAND:OnRun(player, arguments)
 				end
 			end
 		else
-			cw.player:Notify(player, "This entity is not a salesman!")
+			cw.player:Notify(player, L("Salesman_NotSalesman"))
 		end
 	else
-		cw.player:Notify(player, "You must look at a valid entity!")
+		cw.player:Notify(player, L("Salesman_LookAtValidEntity"))
 	end
 end
 

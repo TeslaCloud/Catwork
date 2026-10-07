@@ -7,7 +7,7 @@
 --]]
 
 ITEM.name = "Potato Dish"
-ITEM.PrintName = "Жареный картофель с овощами"
+ITEM.PrintName = "#Item_PotatoDish_PrintName"
 ITEM.cost = 5
 ITEM.model = "models/props_junk/garbage_takeoutcarton001a.mdl"
 ITEM.weight = 0.1
@@ -16,7 +16,7 @@ ITEM.uniqueID = "potato_dish"
 ITEM.useText = "Eat"
 ITEM.category = "Consumables"
 ITEM.business = true
-ITEM.description = "Жареная картошечка со свежей кукурузой и помидорами."
+ITEM.description = "#Item_PotatoDish_Description"
 ITEM.hunger = 65
 
 -- Called when a player uses the item.

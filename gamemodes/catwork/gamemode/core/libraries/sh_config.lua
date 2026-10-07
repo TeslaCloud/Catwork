@@ -601,7 +601,7 @@ else
 			decimals = tonumber(decimals) or 0,
 			maximum = tonumber(maximum) or 100,
 			minimum = tonumber(minimum) or 0,
-			help = help or "No information was provided for this entry.",
+			help = help or "#ConfigNoHelp",
 			category = category or "Clockwork"
 		}
 	end

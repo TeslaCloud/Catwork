@@ -5,8 +5,8 @@
 --]]
 
 local COMMAND = cw.command:New("CharResetCustomSpawn")
-COMMAND.tip = "Removes player's custom spawn point."
-COMMAND.text = "<string Player>"
+COMMAND.tip = "#Command_Charresetcustomspawn_Description"
+COMMAND.text = "#Command_Charresetcustomspawn_Syntax"
 COMMAND.access = "a"
 COMMAND.arguments = 1
 COMMAND.alias = {"ResetCustomSpawn", "RemoveCustomSpawn", "CustomSpawnRemove", "CustomSpawnReset"}
@@ -18,9 +18,9 @@ function COMMAND:OnRun(player, arguments)
 	if (IsValid(target)) then
 		target:SetCharacterData("CustomSpawn", nil)
 
-		cw.player:Notify(player, target:Name().."'s custom spawn point has been removed.")
+		cw.player:Notify(player, L("CustomSpawn_Removed", target:Name()))
 	else
-		cw.player:Notify(player, "'"..tostring(arguments[1]).."' is not a valid player!")
+		cw.player:Notify(player, L("NotValidPlayer", tostring(arguments[1])))
 	end
 end
 

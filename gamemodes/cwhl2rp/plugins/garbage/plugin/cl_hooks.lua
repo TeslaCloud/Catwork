@@ -11,7 +11,7 @@ function cwGarbage:GetProgressBarInfo()
 
 	if (!cw.client:IsRagdolled()) then
 		if (action == "farming") then
-			return {text = "Вы собираете урожай...", percentage = percentage, flash = percentage < 10}
+			return {text = cw.lang:TranslateText("#Garbage_ProgressHarvesting"), percentage = percentage, flash = percentage < 10}
 		end
 	end
 end

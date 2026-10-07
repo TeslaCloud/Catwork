@@ -1,14 +1,15 @@
-ITEM.name = "Ингалятор"
+ITEM.name = "Inhaler"
+ITEM.PrintName = "#Item_Ingall_PrintName"
 ITEM.uniqueID = "ingall"
 ITEM.cost = 0
 ITEM.model = "models/props_combine/breenlight.mdl"
 ITEM.weight = 0.2
 ITEM.access = "q"
-ITEM.useText = "Использовать"
-ITEM.category = "Медицина"
+ITEM.useText = "Use"
+ITEM.category = "Medical"
 ITEM.business = true
-ITEM.description = "Небольшой приборчик, который нужно вставить в рот."
-ITEM.customFunctions = {"Использовать на..."}
+ITEM.description = "#Item_Ingall_Description"
+ITEM.customFunctions = {"Use on..."}
 
 -- Called when a player uses the item.
 function ITEM:OnUse(player, itemEntity)
@@ -23,7 +24,7 @@ end
 
 if (SERVER) then
 	function ITEM:OnCustomFunction(player, name)
-		if (name == "Дать") then
+		if (name == "Give") then
 			local lookingPly = player:GetEyeTrace().Entity
 
 			if (lookingPly:IsPlayer()) then
@@ -34,12 +35,12 @@ if (SERVER) then
 				end
 
 				player:EmitSound("ambient/voices/cough1.wav", 100, 100)
-				cw.player:Notify(player, "Вы применили ингаллятор на персонажа.")
+				cw.player:Notify(player, L("Diseases_Used_Inhaler"))
 				player:TakeItem(player:FindItemByID("ingall"))
 
 				hook.Run("PlayerHealed", lookingPly, player, self)
 			else
-				cw.player:Notify(player, "Вы должны смотреть на человека!")
+				cw.player:Notify(player, L("Diseases_MustLookAtPerson"))
 
 				return false
 			end

@@ -7,7 +7,7 @@
 --]]
 
 local COMMAND = cw.command:New("Observer")
-COMMAND.tip = "Enter or exit observer mode."
+COMMAND.tip = "#Command_Observer_Description"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "o"
 

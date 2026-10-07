@@ -8,9 +8,10 @@
 
 ITEM.baseItem = "book_base"
 ITEM.name = "Nova Prospekt Codes"
+ITEM.PrintName = "#Item_BookNpc_PrintName"
 ITEM.model = "models/props_lab/binderredlabel.mdl"
 ITEM.uniqueID = "book_npc"
-ITEM.description = "A red book with 'The Prison' scribbled on to it."
+ITEM.description = "#Item_BookNpc_Description"
 ITEM.bookInformation = [[
 <font color='red' size='4'>Written by Chris Hawkins.</font>
 

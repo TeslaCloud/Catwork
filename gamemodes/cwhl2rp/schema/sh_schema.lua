@@ -84,33 +84,33 @@ config.ShareKey("permits")
 config.ShareKey("sxbase_force_fov")
 
 cw.quiz:SetEnabled(true)
-cw.quiz:AddQuestion("Что необходимо для RolePlay", 3,
-					"Администрация",
-					"Предметы",
-					"Чат или другой способ коммуникации",--
-					"Команды '/me', '/it', '/roll' и др.",
-					"Персонаж в какой-либо фракции")
+cw.quiz:AddQuestion("#Quiz_RP1_Question", 3,
+					"#Quiz_RP1_Answer1",
+					"#Quiz_RP1_Answer2",
+					"#Quiz_RP1_Answer3",--
+					"#Quiz_RP1_Answer4",
+					"#Quiz_RP1_Answer5")
 
-cw.quiz:AddQuestion("Выберите корректное описание персонажа.", 2,
-					"Мужик высотой 2.5 метра мускулистого телосложения.",
-					"Мужчина|Темные волосы и карие глаза, имеется бородка|Одет в чистую форму гражданина 'City 17'",--
-					"Гражданин, долгое время трудящийся на благо Альянса. По натуре добрый и отзывчивый.",
-					"Мужчина / 23-25 лет / Рост 180-185 см / Вес 80 кг / Арбалет [СПРЯТАН]")
+cw.quiz:AddQuestion("#Quiz_RP2_Question", 2,
+					"#Quiz_RP2_Answer1",
+					"#Quiz_RP2_Answer2",--
+					"#Quiz_RP2_Answer3",
+					"#Quiz_RP2_Answer4")
 
-cw.quiz:AddQuestion("Вы отыгрываете действие против окружения. Как определить, успешно ли действие?", 2,
-					"Кинуть /roll 2 раза, если последний ролл больше - успех.",
-					"Кинуть /roll, если значение больше или равно 50 - успех.",--
-					"Действия против окружения отыгрываются без /roll.")
+cw.quiz:AddQuestion("#Quiz_RP3_Question", 2,
+					"#Quiz_RP3_Answer1",
+					"#Quiz_RP3_Answer2",--
+					"#Quiz_RP3_Answer3")
 
-cw.quiz:AddQuestion("Выберите правильное действие при РП бое.", 3,
-					"/me ударил",
-					"/me пинком в солнечное сплетение вывел из строя противника.",
-					"/me попытался ударить гражданина кулаком в живот.");--
+cw.quiz:AddQuestion("#Quiz_RP4_Question", 3,
+					"#Quiz_RP4_Answer1",
+					"#Quiz_RP4_Answer2",
+					"#Quiz_RP4_Answer3");--
 
 cw.flag:Add("v", "Light Blackmarket", "Access to light blackmarket goods.")
 cw.flag:Add("V", "Heavy Blackmarket", "Access to heavy blackmarket goods.")
 cw.flag:Add("m", "Resistance Manager", "Access to the resistance manager's goods.")
-cw.flag:Add("d", "Perma Death", "Disables permanent kill on character's death.")
+cw.flag:Add("d", "Perma Death", "Disables permanent kill on the character's death.")
 
 function Schema:DefineLoyalistTier(name, description, color, min, max)
 	return table.insert(self.LoyalistTiers, {
@@ -145,12 +145,12 @@ function Schema:PlayerIsLoyalistTier(player, tier)
 	return false
 end
 
-Schema:DefineLoyalistTier("#Loyalist_Grey", "A citizen with no real rights or power", Color(150, 150, 150), 0, 10)
-Schema:DefineLoyalistTier("#Loyalist_White", "An ordinary citizen.", Color(255, 255, 255), 11, 30)
-Schema:DefineLoyalistTier("#Loyalist_Green", "A citizen, distinguished for their service to the Universal Union.", Color(120, 210, 120), 31, 60)
-Schema:DefineLoyalistTier("#Loyalist_Blue", "Lower tier loyalist that has pledged to serve to the Combine.", Color(100, 100, 210), 61, 100)
-Schema:DefineLoyalistTier("#Loyalist_Orange", "Highly reputable higher tier loyalist.", Color(210, 180, 50), 101, 149)
-Schema:DefineLoyalistTier("#Loyalist_Red", "Ultimate tier loyalist with more rights than some CP recruits.", Color(210, 100, 100), 150, -1)
+Schema:DefineLoyalistTier("#Loyalist_Grey", "#Loyalist_Grey_Desc", Color(150, 150, 150), 0, 10)
+Schema:DefineLoyalistTier("#Loyalist_White", "#Loyalist_White_Desc", Color(255, 255, 255), 11, 30)
+Schema:DefineLoyalistTier("#Loyalist_Green", "#Loyalist_Green_Desc", Color(120, 210, 120), 31, 60)
+Schema:DefineLoyalistTier("#Loyalist_Blue", "#Loyalist_Blue_Desc", Color(100, 100, 210), 61, 100)
+Schema:DefineLoyalistTier("#Loyalist_Orange", "#Loyalist_Orange_Desc", Color(210, 180, 50), 101, 149)
+Schema:DefineLoyalistTier("#Loyalist_Red", "#Loyalist_Red_Desc", Color(210, 100, 100), 150, -1)
 
 function Schema:CanUseCP(player)
 	return true

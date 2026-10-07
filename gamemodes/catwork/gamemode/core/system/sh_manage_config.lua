@@ -8,7 +8,7 @@
 
 if (CLIENT) then
 	local SYSTEM = cw.system:New("Manage Config")
-	SYSTEM.toolTip = "An easier way of editing the Clockwork config."
+	SYSTEM.toolTip = "#System_ManageConfig_ToolTip"
 	SYSTEM.doesCreateForm = false
 
 	-- Called to get whether the local player has access to the system.
@@ -27,14 +27,14 @@ if (CLIENT) then
 		self.adminValues = nil
 
 		self.infoText = vgui.Create("cwInfoText", systemPanel)
-			self.infoText:SetText("Click on a config key to begin editing the config value.")
+			self.infoText:SetText("#System_ManageConfig_Info")
 			self.infoText:SetInfoColor("blue")
 			self.infoText:SetTextColor(Color("white"))
 			self.infoText:DockMargin(0, 0, 0, 8)
 		systemPanel.panelList:AddItem(self.infoText)
 
 		self.configForm = vgui.Create("DForm", systemPanel)
-			self.configForm:SetName("Config")
+			self.configForm:SetName("#System_ManageConfig_Config")
 			self.configForm:SetPadding(4)
 		systemPanel.panelList:AddItem(self.configForm)
 
@@ -49,9 +49,9 @@ if (CLIENT) then
 		end
 
 		self.listView = vgui.Create("DListView")
-			self.listView:AddColumn("Name")
-			self.listView:AddColumn("Key")
-			self.listView:AddColumn("Added By")
+			self.listView:AddColumn("#System_ManageConfig_Name")
+			self.listView:AddColumn("#System_ManageConfig_Key")
+			self.listView:AddColumn("#System_ManageConfig_AddedBy")
 			self.listView:SetMultiSelect(false)
 			self.listView:SetTall(256)
 		self:PopulateComboBox()
@@ -69,7 +69,7 @@ if (CLIENT) then
 		if (self.activeKey) then
 			self.adminValues = config.GetFromSystem(self.activeKey.name)
 
-			self.infoText:SetText("Now you can start to edit the config value, or click another config key.")
+			self.infoText:SetText("#System_ManageConfig_InfoEditing")
 		end
 
 		if (self.editForm and !self.editForm:IsVisible()) then
@@ -84,16 +84,16 @@ if (CLIENT) then
 			self.editForm:SetName(self.activeKey.name)
 
 			if (self.activeKey.value != nil) then
-				local mapEntry, mapLabel = self.editForm:TextEntry("Map")
+				local mapEntry, mapLabel = self.editForm:TextEntry("#System_ManageConfig_Map")
 				mapLabel:SetTextColor(Color("white"))
 
 				local valueType = type(self.activeKey.value)
 
 				if (valueType == "string") then
-					local textEntry, textLabel = self.editForm:TextEntry("Value")
+					local textEntry, textLabel = self.editForm:TextEntry("#System_ManageConfig_Value")
 						textLabel:SetTextColor(Color("white"))
 						textEntry:SetValue(self.activeKey.value)
-					local okayButton = self.editForm:Button("Okay")
+					local okayButton = self.editForm:Button("#System_ManageConfig_Okay")
 
 					-- Called when the button is clicked.
 					function okayButton.DoClick(okayButton)
@@ -104,11 +104,11 @@ if (CLIENT) then
 						})
 					end
 				elseif (valueType == "number") then
-					local numSlider = self.editForm:NumSlider("Value", nil, self.adminValues.minimum,
+					local numSlider = self.editForm:NumSlider("#System_ManageConfig_Value", nil, self.adminValues.minimum,
 					self.adminValues.maximum, self.adminValues.decimals)
 						numSlider.Label:SetTextColor(Color("white"))
 						numSlider:SetValue(self.activeKey.value)
-					local okayButton = self.editForm:Button("Okay")
+					local okayButton = self.editForm:Button("#System_ManageConfig_Okay")
 
 					-- Called when the button is clicked.
 					function okayButton.DoClick(okayButton)
@@ -119,10 +119,10 @@ if (CLIENT) then
 						})
 					end
 				elseif (valueType == "boolean") then
-					local checkBox = self.editForm:CheckBox("On")
+					local checkBox = self.editForm:CheckBox("#System_ManageConfig_On")
 						checkBox:SetValue(self.activeKey.value)
 						checkBox:SetTextColor(Color("white"))
-					local okayButton = self.editForm:Button("Okay")
+					local okayButton = self.editForm:Button("#System_ManageConfig_Okay")
 
 					-- Called when the button is clicked.
 					function okayButton.DoClick(okayButton)
@@ -202,10 +202,10 @@ else
 
 				if (useMap) then
 					useMap = string.lower(cw.core:Replace(useMap, ".bsp", ""))
-					keyPrefix = useMap.."'s "
+					keyPrefix = "("..useMap..") "
 
 					if (!file.Exists("maps/"..useMap..".bsp", "GAME")) then
-						cw.player:Notify(player, useMap.." is not a valid map!")
+						cw.player:Notify(player, L("NotValidMap", useMap))
 
 						return
 					end
@@ -219,25 +219,25 @@ else
 
 						if (configObject("isPrivate")) then
 							if (configObject("needsRestart")) then
-								cw.player:NotifyAll(player:Name().." set "..keyPrefix..data.key.." to '"..string.rep("*", string.utf8len(printValue)).."' for the next restart.")
+								cw.player:NotifyAll(L("Config_ValueSetRestart", player:Name(), keyPrefix..data.key).." '"..string.rep("*", string.utf8len(printValue)).."'")
 							else
-								cw.player:NotifyAll(player:Name().." set "..keyPrefix..data.key.." to '"..string.rep("*", string.utf8len(printValue)).."'.")
+								cw.player:NotifyAll(L("Config_ValueSet", player:Name(), keyPrefix..data.key).." '"..string.rep("*", string.utf8len(printValue)).."'")
 							end
 						elseif (configObject("needsRestart")) then
-							cw.player:NotifyAll(player:Name().." set "..keyPrefix..data.key.." to '"..printValue.."' for the next restart.")
+							cw.player:NotifyAll(L("Config_ValueSetRestart", player:Name(), keyPrefix..data.key).." '"..printValue.."'")
 						else
-							cw.player:NotifyAll(player:Name().." set "..keyPrefix..data.key.." to '"..printValue.."'.")
+							cw.player:NotifyAll(L("Config_ValueSet", player:Name(), keyPrefix..data.key).." '"..printValue.."'")
 						end
 
 						netstream.Start(player, "SystemCfgValue", { data.key, configObject:Get() })
 					else
-						cw.player:Notify(player, data.key.." was unable to be set!")
+						cw.player:Notify(player, L("ConfigUnableToSet", data.key))
 					end
 				else
-					cw.player:Notify(player, data.key.." is a static config key!")
+					cw.player:Notify(player, L("ConfigIsStaticKey", data.key))
 				end
 			else
-				cw.player:Notify(player, data.key.." is not a valid config key!")
+				cw.player:Notify(player, L("ConfigKeyNotValid", data.key))
 			end
 		end
 	end)

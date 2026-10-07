@@ -8,8 +8,8 @@
 
 ITEM.baseItem = "weapon_base"
 ITEM.name = "Stunstick"
-ITEM.PrintName = "Парализующая дубинка"
-ITEM.category = "Холодное оружие"
+ITEM.PrintName = "#Item_WeaponStunstick_PrintName"
+ITEM.category = "#Item_Category_MeleeWeapons"
 ITEM.cost = 100
 ITEM.model = "models/weapons/w_stunbaton.mdl"
 ITEM.weight = 1.5
@@ -17,7 +17,7 @@ ITEM.access = "V"
 ITEM.uniqueID = "cw_stunstick"
 ITEM.weaponClass = "cw_stunstick"
 ITEM.business = false
-ITEM.description = "Можно засунуть куда-нибудь. Необязательно себе."
+ITEM.description = "#Item_WeaponStunstick_Description"
 ITEM.isAttachment = true
 ITEM.loweredOrigin = Vector(3, 0, -4)
 ITEM.loweredAngles = Angle(0, 45, 0)

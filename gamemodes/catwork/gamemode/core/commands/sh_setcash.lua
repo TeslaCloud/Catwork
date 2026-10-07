@@ -26,8 +26,8 @@ function COMMAND:OnRun(player, arguments)
 
 			cw.player:GiveCash(target, giveCash)
 
-			cw.player:Notify(player, L("CashSetPlayer", targetName, "деньги", cw.core:FormatCash(cash, nil, true)))
-			cw.player:Notify(target, L("CashSetTarget", "деньги", cw.core:FormatCash(cash, nil, true), playerName))
+			cw.player:Notify(player, L("CashSetPlayer", targetName, "#CashSet_Cash", cw.core:FormatCash(cash, nil, true)))
+			cw.player:Notify(target, L("CashSetTarget", "#CashSet_Cash", cw.core:FormatCash(cash, nil, true), playerName))
 		else
 			cw.player:Notify(player, L("NotValidAmount"))
 		end

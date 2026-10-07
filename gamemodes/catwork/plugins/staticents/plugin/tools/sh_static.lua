@@ -10,7 +10,7 @@ local TOOL = cw.tool:New()
 
 TOOL.Category = "Clockwork"
 TOOL.UniqueID = "static"
-TOOL.Name = "Static Add/Remove"
+TOOL.Name = "#tool.static.name"
 TOOL.Command = nil
 TOOL.ConfigName = ""
 

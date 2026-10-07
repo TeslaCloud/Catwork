@@ -7,10 +7,10 @@
 --]]
 
 local ATTRIBUTE = cw.attribute:New()
-	ATTRIBUTE.name = "Фермерство"
+	ATTRIBUTE.name = "#Attribute_Farm"
 	ATTRIBUTE.maximum = 100
 	ATTRIBUTE.uniqueID = "farm"
-	ATTRIBUTE.description = "Влияет на шанс успешного сбора урожая."
+	ATTRIBUTE.description = "#Attribute_Farm_Desc"
 	ATTRIBUTE.isOnCharScreen = false
-	ATTRIBUTE.category = "Навыки"
+	ATTRIBUTE.category = "#AttributeCategory_Skills"
 ATB_FARM = cw.attribute:Register(ATTRIBUTE);

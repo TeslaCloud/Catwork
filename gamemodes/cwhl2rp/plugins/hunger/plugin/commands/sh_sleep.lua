@@ -1,7 +1,7 @@
 local PLUGIN = PLUGIN
 
 local COMMAND = cw.command:New("Sleep")
-COMMAND.tip = "Спокойной ночи."
+COMMAND.tip = "#Command_Sleep_Description"
 COMMAND.text = "<none>"
 COMMAND.flags = CMD_DEFAULT
 
@@ -11,7 +11,7 @@ function COMMAND:OnRun(player, arguments)
 		cw.player:SetRagdollState(player, RAGDOLL_KNOCKEDOUT, 30)
 		player:SetCharacterData("Fatigue", 0)
 	else
-		cw.player:Notify(player, "Вы слишком бодры, чтобы спать!")
+		cw.player:Notify(player, L("Hunger_TooAwakeToSleep"))
 	end
 end
 

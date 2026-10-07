@@ -8,11 +8,12 @@
 
 ITEM.baseItem = "book_base"
 ITEM.name = "Community"
+ITEM.PrintName = "#Item_BookC_PrintName"
 ITEM.cost = 6
 ITEM.model = "models/props_lab/bindergreenlabel.mdl"
 ITEM.uniqueID = "book_c"
 ITEM.business = true
-ITEM.description = "A green book with a patriarchal cross on the front."
+ITEM.description = "#Item_BookC_Description"
 ITEM.bookInformation = [[
 <font color='red' size='4'>Written by Anglo.</font>
 
@@ -22,7 +23,7 @@ would even care that a "community" exists but it's all too evident that they wou
 remain divided. It doesn't matter how many times they beat you for assault on other "citizens" or any
 other offense; they do that to make it acknowledged that you're supposed to be under them.
 
-The community will be better maintained and networked if a specified location is schemaated for dwelling.
+The community will be better maintained and networked if a specified location is designated for dwelling.
 Places where OP4 patrols are uncommon are the best places to establish these local dwellings and having
 a roommate is key to keeping the area populated.
 
@@ -36,13 +37,13 @@ within the community. This is best done with "whistleblowers" and "watchmen" who
 that'd give them an extra boost sprinting later on. Correspondence should in some way be conducted through a simple code
 for the sake of maintaining secrecy.
 
-In the event of unfortunance of a fellow member of the community his general well being should be taken into account by
+In the event of misfortune of a fellow member of the community his general well being should be taken into account by
 his fellow member of the community. This is to say that if he is dead broke and he doesn't want to continue the lack of
 self-reliance by going to the ration dispenser, you should in kind give him aid by a charitable contribution. Such acts of
 generosity are what keep the community alive internally.
 
 A center of class and administration should be established for the general maintenance of the community. All illicit
-conversations and activities should be kept away and outside of this center for the sake of it's survival. So to say that
+conversations and activities should be kept away and outside of this center for the sake of its survival. So to say that
 if someone was looking to buy bottled water they had a place to go, and if they needed help financially or residentially
 it could be taken up with community officers.
 

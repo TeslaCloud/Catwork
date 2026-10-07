@@ -4,7 +4,7 @@
 --]]
 
 local COMMAND = cw.command:New("NutVendorAdd")
-COMMAND.tip = "Add a vending machine at your target position."
+COMMAND.tip = "#Command_Nutvendoradd_Description"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "a"
 
@@ -21,7 +21,7 @@ function COMMAND:OnRun(player, arguments)
 		--entity:SetStock(math.random(10, 20), true)
 		--entity:SetAngles(Angle(0, player:EyeAngles().yaw + 180, 0))
 
-		cw.player:Notify(player, "You have added a vending machine.")
+		cw.player:Notify(player, L("NutVend_Added"))
 	end
 end
 

@@ -21,12 +21,12 @@ function COMMAND:OnRun(player, arguments)
 		timer.Create("pk_mode", minutes * 60, 1, function()
 			netvars.SetNetVar("PKMode", 0)
 
-			cw.player:NotifyAll("Perma-kill mode has been turned off, you are safe now.")
+			cw.player:NotifyAll(L("PKMode_AutoOff"))
 		end)
 
-		cw.player:NotifyAll(player:Name().." has turned on perma-kill mode for "..minutes.." minute(s), try not to be killed.")
+		cw.player:NotifyAll(L("PKMode_On", player:Name(), minutes))
 	else
-		cw.player:Notify(player, "This is not a valid amount of minutes!")
+		cw.player:Notify(player, L("PKMode_InvalidMinutes"))
 	end
 end
 

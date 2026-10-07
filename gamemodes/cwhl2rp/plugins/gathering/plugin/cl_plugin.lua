@@ -6,4 +6,4 @@
 	with contributions from Cloud Sixteen community.
 --]]
 
-config.AddToSystem("Nodes Respawn Delay", "nodes_respawn_delay", "Rate at which the Gather spawn point respawns (in seconds).", 0, 3600)
+config.AddToSystem("#Gathering_NodesRespawnDelay", "nodes_respawn_delay", "#Gathering_NodesRespawnDelayDesc", 0, 3600)

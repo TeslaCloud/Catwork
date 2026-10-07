@@ -21,7 +21,7 @@ netstream.Hook("ContainerPassword", function(player, data)
 			if (entity.cwPassword == password) then
 				cwStorage:OpenContainer(player, entity, containerWeight)
 			else
-				cw.player:Notify(player, "Вы ввели неверный пароль!")
+				cw.player:Notify(player, L("Container_WrongPassword"))
 			end
 		end
 	end
@@ -94,7 +94,7 @@ function cwStorage:OpenContainer(player, entity, weight)
 	if (self.containerList[model]) then
 		name = self.containerList[model][2]
 	else
-		name = "Контейнер"
+		name = "#Container_Name"
 	end
 
 	inventory = entity.cwInventory

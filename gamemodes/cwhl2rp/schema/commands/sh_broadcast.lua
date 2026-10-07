@@ -18,14 +18,14 @@ function COMMAND:OnRun(player, arguments)
 		local text = table.concat(arguments, " ")
 
 		if (text == "") then
-			cw.player:Notify(player, "You did not specify enough text!")
+			cw.player:Notify(player, L("NotEnoughText"))
 
 			return
 		end
 
 		Schema:SayBroadcast(player, text)
 	else
-		cw.player:Notify(player, "You are not an Administrator!")
+		cw.player:Notify(player, L("Err_NotAdministrator"))
 	end
 end
 

@@ -48,7 +48,7 @@ function PANEL:Init()
 		self.sellsPanel:SizeToContents()
 		self.sellsPanel:EnableVerticalScrollbar()
 
-		self.propertySheet:AddSheet(L"Sells", self.sellsPanel, "icon16/box.png", nil, nil, "View items that "..salesmenuName.." sells.")
+		self.propertySheet:AddSheet(L"Sells", self.sellsPanel, "icon16/box.png", nil, nil, string.Replace(L("#Salesman_SellsTip"), "#1", salesmenuName))
 	end
 
 	if (table.Count(cw.salesmenu:GetBuys()) > 0) then
@@ -58,7 +58,7 @@ function PANEL:Init()
 		self.buysPanel:SizeToContents()
 		self.buysPanel:EnableVerticalScrollbar()
 
-		self.propertySheet:AddSheet(L"Buys", self.buysPanel, "icon16/add.png", nil, nil, "View items that "..salesmenuName.." buys.")
+		self.propertySheet:AddSheet(L"Buys", self.buysPanel, "icon16/add.png", nil, nil, string.Replace(L("#Salesman_BuysTip"), "#1", salesmenuName))
 	end
 
 	cw.core:SetNoticePanel(self)
@@ -79,7 +79,7 @@ function PANEL:RebuildPanel(typeName, panelList, inventory)
 			panelList:AddItem(cashForm)
 
 			cashForm:Help(
-				cw.salesmenu:GetName().." has "..cw.core:FormatCash(totalCash, nil, true).." to their name."
+				string.Replace(string.Replace(L("#Salesman_CashInfo"), "#2", cw.core:FormatCash(totalCash, nil, true)), "#1", cw.salesmenu:GetName())
 			)
 		end
 	end
@@ -268,7 +268,7 @@ function PANEL:Think()
 					(self.itemTable.cost * priceScale) * math.max(amount, 1)
 				)
 			else
-				displayInfo.weight = "Free"
+				displayInfo.weight = L"Free"
 			end
 
 			local overrideCash = cw.salesmenu.sells[self.itemTable.uniqueID]

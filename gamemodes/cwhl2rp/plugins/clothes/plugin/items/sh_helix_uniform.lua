@@ -7,13 +7,13 @@
 
 ITEM.baseItem = "skin_base"
 ITEM.name = "HELIX Uniform";
-ITEM.PrintName = "Униформа HELIX";
+ITEM.PrintName = "#ITEM_HELIX_Uniform_Name";
 ITEM.model = "models/half_life2/jnstudio/props/sheet_2.mdl";
-ITEM.plural = "Униформы HELIX";
+ITEM.plural = "#ITEM_HELIX_Uniform_Plural";
 ITEM.weight = 2;
 ITEM.uniqueID = "helix_uniform";
 ITEM.business = false;
 ITEM.playerSkin = 2;
-ITEM.description = "Чистая и новая униформа отряда HELIX.";
+ITEM.description = "#ITEM_HELIX_Uniform_Desc";
 ITEM.protection = 10;
 ITEM.isCombine = true;

@@ -14,7 +14,7 @@ function COMMAND:OnRun(player, arguments)
 		player.cwRadSystemBoxInfo.startpos = trace.HitPos
 	end
 
-	cw.player:Notify(player, "You have set the start point. Now set the end point.")
+	cw.player:Notify(player, L("Containment_StartPointSet"))
 end
 
 COMMAND:Register()

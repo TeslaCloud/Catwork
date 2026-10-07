@@ -82,46 +82,46 @@ function cw.hint:AddHumanHint(name, text, combine)
 	end)
 end
 
-cw.hint:AddHumanHint("Life", "Вам следует ценить жизнь своего персонажа. Не совершайте необдуманных действий.", false)
-cw.hint:AddHumanHint("Sleep", "Не забывайте, что Ваш персонаж устает. Здоровый сон необходим всем.", false)
-cw.hint:AddHumanHint("Friends", "Заведите друзей. Отыгрывать в компании веселее.", false)
+cw.hint:AddHumanHint("Life", "#Hints_HL2RP_Life", false)
+cw.hint:AddHumanHint("Sleep", "#Hints_HL2RP_Sleep", false)
+cw.hint:AddHumanHint("Friends", "#Hints_HL2RP_Friends", false)
 
-cw.hint:AddHumanHint("Curfew", "Бродите по городу в гордом одиночестве? Познакомьтесь с кем-нибудь.")
-cw.hint:AddHumanHint("Prison", "Не стоит нарушать закон. Оно того не стоит, поверьте.")
-cw.hint:AddHumanHint("Rebels", "Не связывайтесь с Сопротивлением. Альянс жестко расправляется с нарушителями.")
-cw.hint:AddHumanHint("Talking", "Не материтесь. Это некультурно.")
-cw.hint:AddHumanHint("Rations", "Рационы - Ваше всё. В них есть все, что нужно для жизни.")
-cw.hint:AddHumanHint("Combine", "Не недооценивайте Альянс. Они захватили Землю за 7 часов.")
-cw.hint:AddHumanHint("Jumping", "Прыжки и бег не свойственны поведению цивилизованного человека, помните об этом.")
-cw.hint:AddHumanHint("Punching", "Не начинайте драку без веской причины. Это наказуемо.")
-cw.hint:AddHumanHint("Compliance", "Подчиняйтесь Альянсу. Вы будете рады тому, что сделали.")
-cw.hint:AddHumanHint("Combine Raids", "Не мешайте сотрудникам ГО выполнять их работу.")
-cw.hint:AddHumanHint("Request Device", "Необходимо присутсвие ГО? Приобретите устройство запроса.")
-cw.hint:AddHumanHint("Civil Protection", "Гражданская Оборона защищает гражданское общество, не Вас.")
+cw.hint:AddHumanHint("Curfew", "#Hints_HL2RP_Curfew")
+cw.hint:AddHumanHint("Prison", "#Hints_HL2RP_Prison")
+cw.hint:AddHumanHint("Rebels", "#Hints_HL2RP_Rebels")
+cw.hint:AddHumanHint("Talking", "#Hints_HL2RP_Talking")
+cw.hint:AddHumanHint("Rations", "#Hints_HL2RP_Rations")
+cw.hint:AddHumanHint("Combine", "#Hints_HL2RP_Combine")
+cw.hint:AddHumanHint("Jumping", "#Hints_HL2RP_Jumping")
+cw.hint:AddHumanHint("Punching", "#Hints_HL2RP_Punching")
+cw.hint:AddHumanHint("Compliance", "#Hints_HL2RP_Compliance")
+cw.hint:AddHumanHint("Combine Raids", "#Hints_HL2RP_CombineRaids")
+cw.hint:AddHumanHint("Request Device", "#Hints_HL2RP_RequestDevice")
+cw.hint:AddHumanHint("Civil Protection", "#Hints_HL2RP_CivilProtection")
 
-cw.hint:Add("Admins", "Уважайте администрацию, других игроков, себя.")
-cw.hint:Add("Action", "Видите, что ничего не происходит и становится скучно? Устройте какую-нибудь авантюру.")
-cw.hint:Add("Grammar", "Пишите грамотно, будто вы на уроке русского языка.")
-cw.hint:Add("Running", "Не забывайте, что бегать нецивилизованно. Если что, ГО напомнит.")
-cw.hint:Add("Healing", "С помощью медикаментов можно лечить других игроков.")
-cw.hint:Add("F3 Hotkey", "Нажмите F3, глядя на персонажа, чтобы связать его.")
-cw.hint:Add("F4 Hotkey", "Нажмите F3, глядя на связанного персонажа, чтобы обыскать его.")
-cw.hint:Add("Attributes", "Нашли баг, ошибку или недоработку? Сообщите о ней администрации или в грппу STEAM.")
-cw.hint:Add("Firefights", "Не забывайте соблюдать правило 'Shoot-2-miss', стреляйте мимо, это сделает перестрелки интереснее.")
-cw.hint:Add("Metagaming", "Использование неигровой информации при отыгрыше наказуемо.")
-cw.hint:Add("Passive RP", "Устали от множества событий? Попробуйте пассивный RolePlay.")
-cw.hint:Add("Development", "Развивайте Вашего персонажа. Его история намного ценнее, чем игромеханические ценности.")
-cw.hint:Add("Powergaming", "Отыгрывайте не в свою пользу. Это сделает отыгрыш увлекательным как для Вас, так и других.")
-cw.hint:Add("LOOC Spam", "Конфликтная ситуация? Прекратите писать в LOOC и отыгрывайте!")
-cw.hint:Add("Uncommon Situation", "Нестандартная ситуация? Не задавайте вопросов в ООС и отыгрывайте!")
-cw.hint:Add("PainRP", "В полной мере отыгрывайте свои ранения. Раны долго заживают.")
-cw.hint:Add("FearRP", "Страх - защитная реакция организма. Отыгрывайте его.")
-cw.hint:Add("Original", "Оригинальный отыгрыш поощряется.")
+cw.hint:Add("Admins", "#Hints_HL2RP_Admins")
+cw.hint:Add("Action", "#Hints_HL2RP_Action")
+cw.hint:Add("Grammar", "#Hints_HL2RP_Grammar")
+cw.hint:Add("Running", "#Hints_HL2RP_Running")
+cw.hint:Add("Healing", "#Hints_HL2RP_Healing")
+cw.hint:Add("F3 Hotkey", "#Hints_HL2RP_F3_Hotkey")
+cw.hint:Add("F4 Hotkey", "#Hints_HL2RP_F4_Hotkey")
+cw.hint:Add("Attributes", "#Hints_HL2RP_BugReport")
+cw.hint:Add("Firefights", "#Hints_HL2RP_Firefights")
+cw.hint:Add("Metagaming", "#Hints_HL2RP_Metagaming")
+cw.hint:Add("Passive RP", "#Hints_HL2RP_PassiveRP")
+cw.hint:Add("Development", "#Hints_HL2RP_Development")
+cw.hint:Add("Powergaming", "#Hints_HL2RP_Powergaming")
+cw.hint:Add("LOOC Spam", "#Hints_HL2RP_LOOCSpam")
+cw.hint:Add("Uncommon Situation", "#Hints_HL2RP_UncommonSituation")
+cw.hint:Add("PainRP", "#Hints_HL2RP_PainRP")
+cw.hint:Add("FearRP", "#Hints_HL2RP_FearRP")
+cw.hint:Add("Original", "#Hints_HL2RP_Original")
 
 netstream.Hook("EditObjectives", function(player, data)
 	if (player.editObjectivesAuthorised and type(data) == "string") then
 		if (Schema.combineObjectives != data) then
-			Schema:AddCombineDisplayLine("Загрузка списка актуальных задач...", Color(255, 100, 255, 255))
+			Schema:AddCombineDisplayLine(L("CombineDisplay_ObjectivesUpdated"), Color(255, 100, 255, 255))
 			Schema.combineObjectives = string.sub(data, 0, 500)
 
 			cw.core:SaveSchemaData("objectives", {
@@ -598,13 +598,13 @@ function Schema:SayRequest(player, text)
 		cid = ciD
 	end
 
-	self:AddCombineDisplayLine("!ЗПРС: Гражданский: "..player:Name()..", #"..ciD..": "..text, Color(218, 165, 32, 255))
+	self:AddCombineDisplayLine(L("CombineDisplay_Request", player:Name(), ciD).." "..text, Color(218, 165, 32, 255))
 
-	local info = chatbox.AddText(listeners.request, "\""..text.."\"", {suffix = " запрашивает: ", sender = player, isPlayerMessage = true, filter = "ic", radius = 0, textColor = Color(175, 125, 100, 255), data = {request = true}})
+	local info = chatbox.AddText(listeners.request, "\""..text.."\"", {suffix = " #Suffix_Request ", sender = player, isPlayerMessage = true, filter = "ic", radius = 0, textColor = Color(175, 125, 100, 255), data = {request = true}})
 
 	if (info and IsValid(info.sender)) then
-		chatbox.AddText(listeners.eavesdrop, "\""..info.text.."\"", {suffix = " запрашивает: ", sender = info.sender, isPlayerMessage = true, filter = "ic", radius = 0, textColor = Color(255, 255, 150, 255), data = {request = true}})
-		chatbox.AddText(player, info.text.."\"", {suffix = " запрашивает: ", sender = info.sender, isPlayerMessage = true, filter = "ic", radius = 0, textColor = Color(255, 255, 150, 255), data = {request = true}})
+		chatbox.AddText(listeners.eavesdrop, "\""..info.text.."\"", {suffix = " #Suffix_Request ", sender = info.sender, isPlayerMessage = true, filter = "ic", radius = 0, textColor = Color(255, 255, 150, 255), data = {request = true}})
+		chatbox.AddText(player, info.text.."\"", {suffix = " #Suffix_Request ", sender = info.sender, isPlayerMessage = true, filter = "ic", radius = 0, textColor = Color(255, 255, 150, 255), data = {request = true}})
 	end
 end
 
@@ -641,17 +641,17 @@ function Schema:PlayerGetLocation(player)
 		end
 	end
 
-	return "неизвестная локация"
+	return "#Location_Unknown"
 end
 
 -- A function to say a message as a broadcast.
 function Schema:SayBroadcast(player, text)
-	chatbox.AddText(nil, "\""..text.."\"", {suffix = " сообщает: ", sender = player, isPlayerMessage = true, filter = "ic", radius = 0, textColor = Color(150, 125, 175, 255)})
+	chatbox.AddText(nil, "\""..text.."\"", {suffix = " #Suffix_Broadcast ", sender = player, isPlayerMessage = true, filter = "ic", radius = 0, textColor = Color(150, 125, 175, 255)})
 end
 
 -- A function to say a message as a dispatch.
 function Schema:SayDispatch(player, text)
-	chatbox.AddText(nil, "\""..text.."\"", {sender = player, suffix = " сообщает: ", playerName = "Система оповещения", forceName = true, isPlayerMessage = true, filter = "ic", radius = 0, textColor = Color(150, 100, 100, 255), data = {dispatch = true}})
+	chatbox.AddText(nil, "\""..text.."\"", {sender = player, suffix = " #Suffix_Broadcast ", playerName = "#Dispatch_Name", forceName = true, isPlayerMessage = true, filter = "ic", radius = 0, textColor = Color(150, 100, 100, 255), data = {dispatch = true}})
 end
 
 -- A function to check if a player is Combine.

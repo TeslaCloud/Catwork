@@ -437,7 +437,7 @@ function cw.core:HandleEntityMenu(entity)
 		end)
 
 		self:RegisterBackgroundBlur(menuPanel, SysTime())
-		self:SetTitledMenu(menuPanel, "ВЗАИМОДЕЙСТВИЕ")
+		self:SetTitledMenu(menuPanel, "#EntityMenu_Title")
 		menuPanel.entity = entity
 		cw.client.openedEnt = entity
 
@@ -1075,7 +1075,7 @@ do
 					offset = offset + 12
 
 					local activeWeapon = v:GetActiveWeapon()
-					local weaponName = "[No Weapon]"
+					local weaponName = L("#AdminESPInfo_NoWeapon")
 
 					if (IsValid(activeWeapon)) then
 						weaponName = "["..activeWeapon:GetClass().."]"
@@ -1129,7 +1129,7 @@ do
 						local entClass = v:GetClass()
 
 						if (drawProps and v:GetPersistent()) then
-							local entText = "Static Ent ["..tostring(v:GetModel()).."]"
+							local entText = L("#AdminESPInfo_StaticEntLabel").." ["..tostring(v:GetModel()).."]"
 							local position = pos:ToScreen()
 							local ws, hs = util.GetTextSize(font, entText)
 
@@ -1138,7 +1138,7 @@ do
 							local itemTable = cw.entity:FetchItemTable(v)
 
 							if (itemTable) then
-								local entText = "Item ["..itemTable.name.."]"
+								local entText = L("#AdminESPInfo_ItemLabel").." ["..itemTable.name.."]"
 								local position = pos:ToScreen()
 								local ws, hs = util.GetTextSize(smallFont, entText)
 
@@ -1147,7 +1147,7 @@ do
 						elseif (drawSalesmen and entClass == "cw_salesman") then
 							pos = pos + vector_salesman_offset
 
-							local entText = "Saleman ["..v:GetNWString("Name").."]"
+							local entText = L("#AdminESPInfo_SalesmanLabel").." ["..v:GetNWString("Name").."]"
 							local position = pos:ToScreen()
 							local ws, hs = util.GetTextSize(font, entText)
 
@@ -1722,9 +1722,9 @@ function cw.core:HandleItemSpawnIconClick(itemTable, spawnIcon, Callback)
 	hook.Run("PlayerAdjustItemMenu", itemTable, itemMenu, itemFunctions)
 
 	for k, v in pairs(itemFunctions) do
-		local useText = (itemTable.useText or "Use")
-		local dropText = (itemTable.dropText or "Drop")
-		local destroyText = (itemTable.destroyText or "Destroy")
+		local useText = (itemTable.useText or useName)
+		local dropText = (itemTable.dropText or dropName)
+		local destroyText = (itemTable.destroyText or destroyName)
 
 		if ((!useText and v == "Use") or (useText and v == useText)) then
 			itemMenu:AddOption(L(v), function()
@@ -2621,7 +2621,7 @@ function Derma_NumRequest(strTitle, strText, nDefaultValue, min, max, dec, fnEnt
 	ButtonPanel:SetPaintBackground(false)
 
 	local Button = vgui.Create("DButton", ButtonPanel)
-	Button:SetText(strButtonText or "OK")
+	Button:SetText(strButtonText or "#DermaRequest_OK")
 	Button:SizeToContents()
 	Button:SetTall(20)
 	Button:SetWide(Button:GetWide() + 20)
@@ -2629,7 +2629,7 @@ function Derma_NumRequest(strTitle, strText, nDefaultValue, min, max, dec, fnEnt
 	Button.DoClick = function() Window:Close() fnEnter(NumSlider:GetValue()) end
 
 	local ButtonCancel = vgui.Create("DButton", ButtonPanel)
-	ButtonCancel:SetText(strButtonCancelText or "Cancel")
+	ButtonCancel:SetText(strButtonCancelText or "#DermaRequest_confirmQuery_Cancel")
 	ButtonCancel:SizeToContents()
 	ButtonCancel:SetTall(20)
 	ButtonCancel:SetWide(Button:GetWide() + 20)

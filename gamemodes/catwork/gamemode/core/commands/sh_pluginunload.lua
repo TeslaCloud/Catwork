@@ -18,7 +18,7 @@ function COMMAND:OnRun(player, arguments)
 	local plugin = plugin.FindByID(arguments[1])
 
 	if (!plugin) then
-		cw.player:Notify(player, "This plugin is not valid!")
+		cw.player:Notify(player, L("PluginManage_NotValid"))
 		return
 	end
 
@@ -30,7 +30,7 @@ function COMMAND:OnRun(player, arguments)
 		local recipients = {}
 
 		if (bSuccess) then
-			cw.player:NotifyAll(player:Name().." has unloaded the "..plugin.name.." plugin for the next restart.")
+			cw.player:NotifyAll(L("PluginManage_Unloaded", player:Name(), plugin.name))
 
 			for k, v in ipairs(_player.GetAll()) do
 				if (v:HasInitialized()) then
@@ -45,10 +45,10 @@ function COMMAND:OnRun(player, arguments)
 				netstream.Start(recipients, "SystemPluginSet", {plugin.name, true})
 			end
 		else
-			cw.player:Notify(player, "This plugin could not be unloaded!")
+			cw.player:Notify(player, L("PluginManage_CouldNotUnload"))
 		end
 	else
-		cw.player:Notify(player, "This plugin depends on another plugin!")
+		cw.player:Notify(player, L("PluginManage_Depends"))
 	end
 end
 

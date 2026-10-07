@@ -14,7 +14,7 @@ netstream.Hook("ViewNotepad", function(entity, uniqueID, text)
 			if (cwNotepad.notepadIDs[uniqueID]) then
 				text = cwNotepad.notepadIDs[uniqueID];
 			else
-				text = "ERROR!";
+				text = L("#Notepad_Error");
 			end;
 		else
 			cwNotepad.notepadIDs[uniqueID] = text;

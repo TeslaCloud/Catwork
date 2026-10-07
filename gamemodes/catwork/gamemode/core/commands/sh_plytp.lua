@@ -19,9 +19,9 @@ function COMMAND:OnRun(player, arguments)
 
 	if (target) then
 		cw.player:SetSafePosition(target, player:GetEyeTraceNoCursor().HitPos)
-		cw.player:NotifyAll(player:Name().." has teleported "..target:Name().." to their target location.")
+		cw.player:NotifyAll(L("Command_Plytp_Teleported", player:Name(), target:Name()))
 	else
-		cw.player:Notify(player, arguments[1].." is not a valid player!")
+		cw.player:Notify(player, L("NotValidPlayer", arguments[1]))
 	end
 end
 

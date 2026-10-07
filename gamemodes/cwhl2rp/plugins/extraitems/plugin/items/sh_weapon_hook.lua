@@ -4,17 +4,18 @@ without permission of its author (kurozael@gmail.com).
 --]]
 
 ITEM.baseItem = "weapon_base"
-ITEM.name = "Крюк"
+ITEM.name = "Hook"
+ITEM.PrintName = "#Item_WeaponHook_PrintName"
 ITEM.cost = 100
 ITEM.model = "models/weapons/hl2meleepack/w_hook.mdl"
 ITEM.weight = 2
-ITEM.category = "Холодное оружие"
+ITEM.category = "#Item_Category_MeleeWeapons"
 ITEM.uniqueID = "weapon_hl2hook"
 ITEM.weaponClass = "weapon_hl2hook"
 ITEM.business = true
 ITEM.spawnValue = 5
 ITEM.spawnType = "misc"
-ITEM.description = "Огромный мясницкий крюк."
+ITEM.description = "#Item_WeaponHook_Description"
 ITEM.isAttachment = false
 ITEM.hasFlashlight = false
 ITEM.loweredOrigin = Vector(3, 0, -4)

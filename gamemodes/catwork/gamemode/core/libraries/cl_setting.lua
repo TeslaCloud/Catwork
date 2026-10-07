@@ -170,7 +170,7 @@ function cw.setting:AddSettings()
 	local adminESP = "#AdminESP"
 
 	cw.setting:AddNumberSlider(frameworkStr, "#HeadbobAmount", "cwHeadbobScale", 0, 1, 1, "#HeadbobAmountDesc")
-	cw.setting:AddNumberSlider(frameworkStr, "Громкость музыки", "nombat_volume", 0, 100, 1, "Громкость фоновой и боевой музыки.")
+	cw.setting:AddNumberSlider(frameworkStr, "#MusicVolume", "nombat_volume", 0, 100, 1, "#MusicVolumeDesc")
 
 	cw.setting:AddCheckBox(frameworkStr, "#EnableConsoleLog", "cwShowLog", "#EnableConsoleLogDesc", function()
 		return cw.player:IsAdmin(cw.client)
@@ -204,7 +204,7 @@ function cw.setting:AddSettings()
 		return cw.player:IsAdmin(cw.client)
 	end)
 
-	cw.setting:AddCheckBox(adminESP, "Show Static Props", "cwPropESP", "Whether or not to show all static props.", function()
+	cw.setting:AddCheckBox(adminESP, "#ShowStaticProps", "cwPropESP", "#ShowStaticPropsDesc", function()
 		return cw.player:IsAdmin(cw.client)
 	end)
 

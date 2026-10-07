@@ -12,5 +12,5 @@ local ATTRIBUTE = cw.attribute:New()
 	ATTRIBUTE.uniqueID = "rem"
 	ATTRIBUTE.description = "#Attribute_Repair_Desc"
 	ATTRIBUTE.isOnCharScreen = false
-	ATTRIBUTE.category = "Навыки"
+	ATTRIBUTE.category = "#AttributeCategory_Skills"
 ATB_REPAIR = cw.attribute:Register(ATTRIBUTE);

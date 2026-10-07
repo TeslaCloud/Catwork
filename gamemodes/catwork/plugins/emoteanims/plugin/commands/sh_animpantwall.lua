@@ -7,7 +7,7 @@
 --]]
 
 local COMMAND = cw.command:New("AnimPantWall")
-COMMAND.tip = "Make your character pant up against a wall."
+COMMAND.tip = "#Command_Animpantwall_Description"
 COMMAND.flags = CMD_DEFAULT
 
 -- Called when the command has been run.
@@ -28,7 +28,7 @@ function COMMAND:OnRun(player, arguments)
 				cwEmoteAnims:MakePlayerExitStance(player)
 			elseif (!forcedAnimation or !cwEmoteAnimscwEmoteAnims[forcedAnimation]) then
 				if (player:Crouching()) then
-					cw.player:Notify(player, "You cannot do this while you are crouching!")
+					cw.player:Notify(player, L("EmoteAnims_CannotWhileCrouching"))
 				else
 					local traceLine = util.TraceLine({
 						start = eyePos,
@@ -48,15 +48,15 @@ function COMMAND:OnRun(player, arguments)
 						player:SetNetVar("StanceAng", player:GetAngles())
 						player:SetNetVar("StanceIdle", false)
 					else
-						cw.player:Notify(player, "You must be facing, and near a wall!")
+						cw.player:Notify(player, L("EmoteAnims_MustFaceWall"))
 					end
 				end
 			end
 		else
-			cw.player:Notify(player, "The model that you are using cannot perform this action!")
+			cw.player:Notify(player, L("EmoteAnims_ModelCannotPerform"))
 		end
 	else
-		cw.player:Notify(player, "You cannot do another stance or gesture yet!")
+		cw.player:Notify(player, L("EmoteAnims_CannotDoAnotherYet"))
 	end
 end
 

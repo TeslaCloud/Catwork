@@ -3,7 +3,7 @@ local BLUEPRINT = cw.blueprints:New()
 BLUEPRINT.name = "#Blueprint_BlueprintFlashlight_Name"
 BLUEPRINT.uniqueID = "blueprint_flashlight"
 BLUEPRINT.model = "models/lagmite/lagmite.mdl"
-BLUEPRINT.category = "Разное"
+BLUEPRINT.category = "#Craft_Category_Misc"
 BLUEPRINT.description = "#Blueprint_BlueprintFlashlight_Description"
 BLUEPRINT.reqatt = {
 	{"rem", 15}

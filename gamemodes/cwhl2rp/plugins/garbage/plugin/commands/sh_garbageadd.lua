@@ -7,7 +7,7 @@
 --]]
 
 local COMMAND = cw.command:New("GarbageAdd")
-COMMAND.tip = "Spawns garbage entity at your target location."
+COMMAND.tip = "#Command_Garbageadd_Description"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "s"
 COMMAND.alias = {"AddGarbage", "GarbageSpawnAdd"}
@@ -30,7 +30,7 @@ function COMMAND:OnRun(player, arguments)
 			nextSpawn = 0
 		})
 
-		cw.player:Notify(player, "You have added a garbage point.")
+		cw.player:Notify(player, L("Garbage_AddedPoint"))
 
 		cwGarbage:SaveGarbageSpawnPoints()
 	end

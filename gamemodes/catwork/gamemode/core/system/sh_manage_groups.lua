@@ -13,7 +13,7 @@ local GROUP_USER = 4
 
 if (CLIENT) then
 	local SYSTEM = cw.system:New("Manage Groups")
-	SYSTEM.toolTip = "A way to manage all administration groups."
+	SYSTEM.toolTip = "#System_ManageGroups_ToolTip"
 	SYSTEM.groupType = GROUP_USER
 	SYSTEM.groupPage = 1
 	SYSTEM.groupPlayers = nil
@@ -34,21 +34,21 @@ if (CLIENT) then
 	function SYSTEM:OnDisplay(systemPanel, systemForm)
 		if (self.groupType == GROUP_USER) then
 			local label = vgui.Create("cwInfoText", systemPanel)
-				label:SetText("Selecting a user group will bring up a list of users in that group.")
+				label:SetText("#System_ManageGroups_Info")
 				label:SetInfoColor("blue")
 				label:DockMargin(0, 0, 0, 8)
 			systemPanel.panelList:AddItem(label)
 
 			local userGroupsForm = vgui.Create("DForm", systemPanel)
-				userGroupsForm:SetName("User Groups")
+				userGroupsForm:SetName("#System_ManageGroups_UserGroups")
 				userGroupsForm:SetPadding(4)
 			systemPanel.panelList:AddItem(userGroupsForm)
 
-			local userGroups = {"Super Admins", "Administrators", "Operators"}
+			local userGroups = {"#System_ManageGroups_SuperAdmins", "#System_ManageGroups_Administrators", "#System_ManageGroups_Operators"}
 
 			for k, v in pairs(userGroups) do
 				local groupButton = vgui.Create("DButton", systemPanel)
-					groupButton:SetTooltip("Manage users within the "..v.." user group.")
+					groupButton:SetTooltip(L("#System_ManageGroups_GroupTip:"..L(v)..";"))
 					groupButton:SetText(v)
 					groupButton:SetWide(systemPanel:GetParent():GetWide())
 
@@ -62,7 +62,7 @@ if (CLIENT) then
 			end
 		else
 			local backButton = vgui.Create("DButton", systemPanel)
-				backButton:SetText("Back to User Groups")
+				backButton:SetText("#System_ManageGroups_Back")
 				backButton:SetWide(systemPanel:GetParent():GetWide())
 
 				-- Called when the button is clicked.
@@ -84,7 +84,7 @@ if (CLIENT) then
 						local label = vgui.Create("cwInfoText", systemPanel)
 							label:SetText(v.steamName)
 							label:SetButton(true)
-							label:SetTooltip("This player's Steam ID is "..v.steamID..".")
+							label:SetTooltip(L("#Scoreboard_SteamIDIs").." "..v.steamID..".")
 							label:SetInfoColor("blue")
 						systemPanel.panelList:AddItem(label)
 
@@ -93,21 +93,21 @@ if (CLIENT) then
 							local commandTable = cw.command:FindByID("PlyDemote")
 
 							if (commandTable and cw.player:HasFlags(cw.client, commandTable.access)) then
-								Derma_Query("Are you sure that you want to demote "..v.steamName.."?", "Demote "..v.steamName..".", "Yes", function()
+								Derma_Query(L("#System_ManageGroups_DemoteConfirm"), v.steamName, L("Yes"), function()
 									netstream.Start("SystemGroupDemote", {v.steamID, v.steamName, self.groupType})
-								end, "No", function() end)
+								end, L("No"), function() end)
 							end
 						end
 					end
 
 					if (self.pageCount > 1) then
 						local pageForm = vgui.Create("DForm", systemPanel)
-							pageForm:SetName("Page "..self.groupPage.."/"..self.pageCount)
+							pageForm:SetName(L("#System_Page:"..self.groupPage..","..self.pageCount..";"))
 							pageForm:SetPadding(4)
 						systemPanel.panelList:AddItem(pageForm)
 
 						if (self.isNext) then
-							local nextButton = pageForm:Button("Next")
+							local nextButton = pageForm:Button("#System_Next")
 
 							-- Called when the button is clicked.
 							function nextButton.DoClick(button)
@@ -116,7 +116,7 @@ if (CLIENT) then
 						end
 
 						if (self.isBack) then
-							local backButton = pageForm:Button("Back")
+							local backButton = pageForm:Button("#System_Back")
 
 							-- Called when the button is clicked.
 							function backButton.DoClick(button)
@@ -126,13 +126,13 @@ if (CLIENT) then
 					end
 				else
 					local label = vgui.Create("cwInfoText", systemPanel)
-						label:SetText("There are no users to display in this group.")
+						label:SetText("#System_ManageGroups_Empty")
 						label:SetInfoColor("orange")
 					systemPanel.panelList:AddItem(label)
 				end
 			else
 				local label = vgui.Create("cwInfoText", systemPanel)
-					label:SetText("Hold on while the group users are retrieved...")
+					label:SetText("#System_ManageGroups_Loading")
 					label:SetInfoColor("blue")
 				systemPanel.panelList:AddItem(label)
 			end
@@ -214,7 +214,7 @@ else
 					end)
 				queryObj:Execute()
 
-				cw.player:NotifyAll(player:Name().." has demoted "..data[2].." from "..cwUserGroup.." to user.")
+				cw.player:NotifyAll(L("Command_Plydemote_Demoted", player:Name(), data[2], cwUserGroup))
 			end
 		end
 	end)

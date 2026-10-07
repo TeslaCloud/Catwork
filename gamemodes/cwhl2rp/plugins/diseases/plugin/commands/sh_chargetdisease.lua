@@ -1,6 +1,6 @@
 COMMAND = cw.command:New("CharGetDisease")
-COMMAND.tip = "Get a players disease."
-COMMAND.text = "<string Name>"
+COMMAND.tip = "#Command_Chargetdisease_Description"
+COMMAND.text = "#Command_Chargetdisease_Syntax"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "a"
 COMMAND.arguments = 1
@@ -12,7 +12,7 @@ function COMMAND:OnRun(player, arguments)
 	if (target) then
 		cw.player:Notify(player, target:GetCharacterData("diseases"))
 	else
-		cw.player:Notify(player, arguments[1].." is not a valid player!")
+		cw.player:Notify(player, L("NotValidPlayer", arguments[1]))
 	end
 end
 

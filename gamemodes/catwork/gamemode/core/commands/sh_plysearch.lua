@@ -63,13 +63,13 @@ function COMMAND:OnRun(player, arguments)
 					end
 				})
 			else
-				cw.player:Notify(player, "You are already searching a character!")
+				cw.player:Notify(player, L("Command_Plysearch_AlreadySearching"))
 			end
 		else
-			cw.player:Notify(player, target:Name().." is already being searched!")
+			cw.player:Notify(player, L("Command_Plysearch_BeingSearched", target:Name()))
 		end
 	else
-		cw.player:Notify(player, arguments[1].." is not a valid player!")
+		cw.player:Notify(player, L("NotValidPlayer", arguments[1]))
 	end
 end
 

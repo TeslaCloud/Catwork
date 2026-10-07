@@ -47,7 +47,7 @@ function FACTION:OnTransferred(player, faction, name)
 				cw.player:SetName(player, name, true)
 			end
 		else
-			return false, "You need to specify a name as the third argument!"
+			return false, L("FactionTransfer_NeedName")
 		end
 	end
 end

@@ -64,13 +64,13 @@ function PANEL:Rebuild()
 	end
 
 	table.sort(categories, function(a, b)
-		return a.category < b.category
+		return L(a.category) < L(b.category)
 	end)
 
 
 	for k, v in pairs(categories) do
 		local categoryForm = vgui.Create("DCollapsibleCategory", self.panelList)
-		categoryForm:SetLabel(v.category, nil, "basic_form_highlight")
+		categoryForm:SetLabel(L(v.category), nil, "basic_form_highlight")
 
 		local categoryList = vgui.Create("DPanelList", categoryForm)
 			categoryList:EnableHorizontal(true)

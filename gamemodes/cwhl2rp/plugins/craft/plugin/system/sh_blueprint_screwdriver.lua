@@ -3,7 +3,7 @@ local BLUEPRINT = cw.blueprints:New()
 BLUEPRINT.name = "#Blueprint_BlueprintScrewdriver_Name"
 BLUEPRINT.uniqueID = "blueprint_screwdriver"
 BLUEPRINT.model = "models/props_c17/TrapPropeller_Lever.mdl"
-BLUEPRINT.category = "Инструменты"
+BLUEPRINT.category = "#Craft_Category_Tools"
 BLUEPRINT.description = "#Blueprint_BlueprintScrewdriver_Description"
 BLUEPRINT.reqatt = {
 	{"rem", 10}

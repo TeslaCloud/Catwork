@@ -12,5 +12,5 @@ local ATTRIBUTE = cw.attribute:New()
 	ATTRIBUTE.uniqueID = "agt"
 	ATTRIBUTE.description = "#Attribute_Agility_Desc"
 	ATTRIBUTE.isOnCharScreen = true
-	ATTRIBUTE.category = "Характеристики"
+	ATTRIBUTE.category = "#AttributeCategory_Stats"
 ATB_AGILITY = cw.attribute:Register(ATTRIBUTE);

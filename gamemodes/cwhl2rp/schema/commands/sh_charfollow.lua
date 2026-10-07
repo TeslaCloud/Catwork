@@ -34,13 +34,13 @@ function COMMAND:OnRun(player, arguments)
 
 				scanner:Input("SetFollowTarget", closest[1], closest[1], "!activator")
 
-				cw.player:Notify(player, "You are now following "..closest[1]:Name().."!")
+				cw.player:Notify(player, L("Scanner_NowFollowing", closest[1]:Name()))
 			else
-				cw.player:Notify(player, "There are no characters near you!")
+				cw.player:Notify(player, L("Scanner_NoCharactersNear"))
 			end
 		end
 	else
-		cw.player:Notify(player, "You are not a scanner!")
+		cw.player:Notify(player, L("Scanner_NotScanner"))
 	end
 end
 

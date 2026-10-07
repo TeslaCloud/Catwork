@@ -20,7 +20,7 @@ function COMMAND:OnRun(player, arguments)
 
 	if (target) then
 		if (target:GetData("serverwhitelist")[identity]) then
-			cw.player:Notify(player, target:Name().." is already on the '"..identity.."' server whitelist!")
+			cw.player:Notify(player, L("ServerWhitelist_AlreadyOn", target:Name(), identity))
 
 			return
 		else
@@ -29,9 +29,9 @@ function COMMAND:OnRun(player, arguments)
 
 		cw.player:SaveCharacter(target)
 
-		cw.player:NotifyAll(player:Name().." has added "..target:Name().." to the '"..identity.."' server whitelist.")
+		cw.player:NotifyAll(L("ServerWhitelist_Added", player:Name(), target:Name(), identity))
 	else
-		cw.player:Notify(player, arguments[1].." is not a valid character!")
+		cw.player:Notify(player, L("NotValidCharacter", arguments[1]))
 	end
 end
 

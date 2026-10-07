@@ -7,8 +7,8 @@
 --]]
 
 local COMMAND = cw.command:New("DoorSetOwnable")
-COMMAND.tip = "Set an ownable door."
-COMMAND.text = "<string Name>"
+COMMAND.tip = "#Command_Doorsetownable_Description"
+COMMAND.text = "#Command_Doorsetownable_Syntax"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "a"
 COMMAND.arguments = 1
@@ -32,9 +32,9 @@ function COMMAND:OnRun(player, arguments)
 		cwDoorCmds.doorData[data.entity] = data
 		cwDoorCmds:SaveDoorData()
 
-		cw.player:Notify(player, "You have set an ownable door.")
+		cw.player:Notify(player, L("DoorCmds_SetOwnable"))
 	else
-		cw.player:Notify(player, "This is not a valid door!")
+		cw.player:Notify(player, L("DoorCmds_NotValidDoor"))
 	end
 end
 

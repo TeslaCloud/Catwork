@@ -19,7 +19,7 @@ function COMMAND:OnRun(player, arguments)
 	local sNewMap = string.lower(arguments[1])
 
 	if (file.Exists("maps/"..sNewMap..".bsp", "GAME")) then
-		cw.player:NotifyAll(player:Name().." is changing the map to "..sNewMap.." in five seconds!")
+		cw.player:NotifyAll(L("Command_Mapchange_Changing", player:Name(), sNewMap, tonumber(arguments[2]) or 5))
 
 		timer.Simple(tonumber(arguments[2]) or 5, function()
 			hook.Run("PreSaveData")
@@ -31,7 +31,7 @@ function COMMAND:OnRun(player, arguments)
 			RunConsoleCommand("changelevel", sNewMap)
 		end)
 	else
-		cw.player:Notify(player, sNewMap.." is not a valid map!")
+		cw.player:Notify(player, L("NotValidMap", sNewMap))
 	end
 end
 

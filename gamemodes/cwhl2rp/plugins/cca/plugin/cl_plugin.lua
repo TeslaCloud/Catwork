@@ -77,39 +77,39 @@ function PLUGIN:AddCombinePDAButons(pda)
 	end)
 
 	pda:AddButton("jobpoints", "#PDA_CWUPoints", false, function()
-		Derma_NumRequest("#PDA_CWUPoints", "How many points do you want to issue?", 0, 0, 20, 0, 
+		Derma_NumRequest("#PDA_CWUPoints", "#PDA_IssuePointsDesc", 0, 0, 20, 0, 
 		function(value) plugin.Call("HandleJobPointsIssue", pda, value) end, nil, "#OK", "#Cancel")
 	end)
 
 	pda:AddButton("loyalty", "#PDA_LP", true, function()
-		Derma_NumRequest("#PDA_LP", "How many points do you want to issue?", 0, 0, 10, 0,
+		Derma_NumRequest("#PDA_LP", "#PDA_IssuePointsDesc", 0, 0, 10, 0,
 		function(value) plugin.Call("HandleLoyaltyPointsIssue", pda, value) end, nil, "#OK", "#Cancel")
 	end)
 
 	pda:AddButton("crime", "#PDA_CP", true, function()
-		Derma_NumRequest("#PDA_CP", "How many points do you want to issue?", 0, 0, 20, 0,
+		Derma_NumRequest("#PDA_CP", "#PDA_IssuePointsDesc", 0, 0, 20, 0,
 		function(value) plugin.Call("HandleCrimePointsIssue", pda, value) end, nil, "#OK", "#Cancel")
 	end)
 
-	pda:AddButton("sub_loyalty", "Забрать Очки Лояльности", true, function()
-		Derma_NumRequest("#PDA_LP", "How many points do you want to remove?", 0, 0, 10, 0, 
+	pda:AddButton("sub_loyalty", "#PDA_SubLP", true, function()
+		Derma_NumRequest("#PDA_SubLP", "#PDA_RemovePointsDesc", 0, 0, 10, 0, 
 		function(value) plugin.Call("HandleLoyaltyPointsSubstract", pda, -value) end, nil, "#OK", "#Cancel")
 	end)
 
-	pda:AddButton("sub_crime", "Забрать Очки Нарушений", true, function()
-		Derma_NumRequest("#PDA_CP", "How many points do you want to remove?", 0, 0, 20, 0, 
+	pda:AddButton("sub_crime", "#PDA_SubCP", true, function()
+		Derma_NumRequest("#PDA_SubCP", "#PDA_RemovePointsDesc", 0, 0, 20, 0, 
 		function(value) plugin.Call("HandleCrimePointsSubstract", pda, -value) end, nil, "#OK", "#Cancel")
 	end)
 
 	pda:AddButton("jail", "#PDA_Jail", true, function()
-		Derma_Query("Are you sure you want to isolate this citizen?", "#PDA_Jail",
+		Derma_Query("#PDA_JailConfirm", "#PDA_Jail",
 			"#OK", function() plugin.Call("HandleJailButton", pda) end,
 			"#Cancel", function() end
 		)
 	end)
 
 	pda:AddButton("unjail", "#PDA_Unjail", true, function()
-		Derma_Query("Are you sure you want to remove the isolation from this citizen?", "#PDA_Unjail",
+		Derma_Query("#PDA_UnjailConfirm", "#PDA_Unjail",
 			"#OK", function() plugin.Call("HandleUnjailButton", pda) end,
 			"#Cancel", 	function() end
 		)

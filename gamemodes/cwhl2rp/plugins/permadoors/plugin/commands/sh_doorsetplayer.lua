@@ -5,8 +5,8 @@
 --]]
 
 local COMMAND = cw.command:New("DoorSetPlayer")
-COMMAND.tip = "Assigns the door to a certain player."
-COMMAND.text = "<string Player> <string Door Title>"
+COMMAND.tip = "#Command_Doorsetplayer_Description"
+COMMAND.text = "#Command_Doorsetplayer_Syntax"
 COMMAND.access = "D"
 COMMAND.arguments = 2
 
@@ -20,12 +20,12 @@ function COMMAND:OnRun(player, arguments)
 		if (IsValid(target)) then
 			cwPermaDoors:SetPermaDoor(target, door, doorName)
 
-			cw.player:Notify(player, "This door was successfully assigned to "..target:Name()..".")
+			cw.player:Notify(player, L("PermaDoors_Assigned", target:Name()))
 		else
-			cw.player:Notify(player, "'"..tostring(arguments[1]).."' is not a valid player!")
+			cw.player:Notify(player, L("NotValidPlayer", tostring(arguments[1])))
 		end
 	else
-		cw.player:Notify(player, "This is not a valid door!")
+		cw.player:Notify(player, L("PermaDoors_NotValidDoor"))
 	end
 end
 

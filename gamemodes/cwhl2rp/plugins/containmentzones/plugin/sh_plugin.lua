@@ -231,7 +231,7 @@ if (SERVER) then
 			ply:BoostAttribute("Radiation", ATB_AGILITY, -60)
 			ply:BoostAttribute("Radiation", ATB_DEXTERITY, -60)
 			ply:BoostAttribute("Radiation", ATB_STAMINA, -60)
-			self:RadMessage(ply, "У Вас внутреннее кровотечение. Кроме того, у Вас вздутие живота и жуткая агония.")
+			self:RadMessage(ply, L("Containment_RadSickness_Stage5"))
 		elseif newrad > 599 then
 			ply:BoostAttribute("Radiation", ATB_ACROBATICS, -15)
 			ply:BoostAttribute("Radiation", ATB_ENDURANCE, -30)
@@ -239,7 +239,7 @@ if (SERVER) then
 			ply:BoostAttribute("Radiation", ATB_AGILITY, -30)
 			ply:BoostAttribute("Radiation", ATB_DEXTERITY, -30)
 			ply:BoostAttribute("Radiation", ATB_STAMINA, -30)
-			self:RadMessage(ply, "У Вас сильное и продолжительное кровотечение. Вас рвет кровью.")
+			self:RadMessage(ply, L("Containment_RadSickness_Stage4"))
 		elseif newrad > 449 then
 			ply:BoostAttribute("Radiation", ATB_ACROBATICS, -10)
 			ply:BoostAttribute("Radiation", ATB_ENDURANCE, -30)
@@ -247,7 +247,7 @@ if (SERVER) then
 			ply:BoostAttribute("Radiation", ATB_AGILITY, -15)
 			ply:BoostAttribute("Radiation", ATB_DEXTERITY, -15)
 			ply:BoostAttribute("Radiation", ATB_STAMINA, -20)
-			self:RadMessage(ply, "У Вас очень сильное кровотечение. Вам ужасно плохо, и у Вас выпадают волосы.")
+			self:RadMessage(ply, L("Containment_RadSickness_Stage3"))
 		elseif newrad > 299 then
 			ply:BoostAttribute("Radiation", ATB_ACROBATICS, -2)
 			ply:BoostAttribute("Radiation", ATB_ENDURANCE, -3)
@@ -255,7 +255,7 @@ if (SERVER) then
 			ply:BoostAttribute("Radiation", ATB_AGILITY, -10)
 			ply:BoostAttribute("Radiation", ATB_DEXTERITY, -10)
 			ply:BoostAttribute("Radiation", ATB_STAMINA, -10)
-			self:RadMessage(ply, "Вы чувствуете сильную усталость, рвота не прекращается, и время вашего выздоровления увеличивается.")
+			self:RadMessage(ply, L("Containment_RadSickness_Stage2"))
 		elseif newrad > 149 then
 			ply:BoostAttribute("Radiation", ATB_ACROBATICS, -1)
 			ply:BoostAttribute("Radiation", ATB_ENDURANCE, -2)
@@ -263,7 +263,7 @@ if (SERVER) then
 			ply:BoostAttribute("Radiation", ATB_AGILITY, -5)
 			ply:BoostAttribute("Radiation", ATB_DEXTERITY, -2)
 			ply:BoostAttribute("Radiation", ATB_STAMINA, -2)
-			self:RadMessage(ply, "Вас сильно тошнит. После того, как Вас вырвало, Вы чувствуете легкую усталость.")
+			self:RadMessage(ply, L("Containment_RadSickness_Stage1"))
 		else
 			ply:BoostAttribute("Radiation", ATB_ACROBATICS, false)
 			ply:BoostAttribute("Radiation", ATB_ENDURANCE, false)
@@ -277,7 +277,7 @@ if (SERVER) then
 		if !self:PlayerHasRadImmune(player) then
 			local rad = player:GetCharacterData("radlevel", 0)
 			if rad > 199 then
-				return falseн
+				return false
 			end
 		end
 	end
@@ -461,7 +461,7 @@ else
 				surface.SetFont("hl2_CinematicText")
 				surface.SetTextColor(255, 0, 0, 255)
 				surface.SetTextPos(64, ScrH() / 3)
-				surface.DrawText(radzonelevel..resist.." рад/с")
+				surface.DrawText(radzonelevel..resist.." "..L("#Containment_RadPerSecond"))
 			end
 		end
 	end

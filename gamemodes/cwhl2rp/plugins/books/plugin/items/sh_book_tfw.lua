@@ -9,10 +9,11 @@
 ITEM.baseItem = "book_base"
 ITEM.cost = 3
 ITEM.name = "The F. Word"
+ITEM.PrintName = "#Item_BookTfw_PrintName"
 ITEM.model = "models/props_lab/bindergraylabel01b.mdl"
 ITEM.uniqueID = "book_tfw"
 ITEM.business = true
-ITEM.description = "A book about fuck all."
+ITEM.description = "#Item_BookTfw_Description"
 ITEM.bookInformation = [[
 <font color='red' size='4'>Written by M. Stanley Bubien.</font>
 

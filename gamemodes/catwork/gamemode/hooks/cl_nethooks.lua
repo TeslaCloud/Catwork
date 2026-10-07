@@ -270,11 +270,11 @@ netstream.Hook("Hint", function(data)
 	if (istable(data)) then
 		if (data.center) then
 			cw.core:AddCenterHint(
-				cw.core:ParseData(data.text), data.delay, data.color, data.noSound, data.showDuplicates
+				cw.core:ParseData(cw.lang:TranslateText(data.text)), data.delay, data.color, data.noSound, data.showDuplicates
 			)
 		else
 			cw.core:AddTopHint(
-				cw.core:ParseData(data.text), data.delay, data.color, data.noSound, data.showDuplicates
+				cw.core:ParseData(cw.lang:TranslateText(data.text)), data.delay, data.color, data.noSound, data.showDuplicates
 			)
 		end
 	end

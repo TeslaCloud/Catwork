@@ -64,7 +64,7 @@ function PANEL:Rebuild()
 			categoryForm:SetPadding(8)
 			categoryForm:SetSpacing(8)
 			categoryForm:SetAutoSize(true)
-			categoryForm:SetText(v.category, nil, "basic_form_highlight")
+			categoryForm:SetText(L(v.category), nil, "basic_form_highlight")
 
 			local categoryList = vgui.Create("DPanelList", categoryForm)
 				categoryList:EnableHorizontal(true)

@@ -23,9 +23,9 @@ function COMMAND:OnRun(player, arguments)
 	if (target) then
 		cw.player:LightSpawn(target, true, true, true)
 		cw.player:SetSafePosition(target, trace.HitPos)
-		cw.player:Notify(player, target:GetName().." was respawned and teleported to your target position.")
+		cw.player:Notify(player, L("Command_Plyrespawntp_Respawned", target:GetName()))
 	else
-		cw.player:Notify(player, arguments[2].." is not a valid target!")
+		cw.player:Notify(player, L("NotValidPlayer", arguments[1]))
 	end
 end
 

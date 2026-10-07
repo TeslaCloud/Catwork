@@ -7,8 +7,8 @@
 --]]
 
 local COMMAND = cw.command:New("SpawnPointRemove")
-COMMAND.tip = "Remove spawn points at your target position."
-COMMAND.text = "<string Class|Faction|Default>"
+COMMAND.tip = "#Command_Spawnpointremove_Description"
+COMMAND.text = "#Command_Spawnpointremove_Syntax"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "a"
 COMMAND.arguments = 1
@@ -40,15 +40,15 @@ function COMMAND:OnRun(player, arguments)
 
 			if (removed > 0) then
 				if (removed == 1) then
-					cw.player:Notify(player, "You have removed "..removed.." "..name.." spawn point.")
+					cw.player:Notify(player, L("SpawnPoints_RemovedOne", removed, name))
 				else
-					cw.player:Notify(player, "You have removed "..removed.." "..name.." spawn points.")
+					cw.player:Notify(player, L("SpawnPoints_RemovedMany", removed, name))
 				end
 			else
-				cw.player:Notify(player, "There were no "..name.." spawn points near this position.")
+				cw.player:Notify(player, L("SpawnPoints_NoneNear", name))
 			end
 		else
-			cw.player:Notify(player, "There are no "..name.." spawn points.")
+			cw.player:Notify(player, L("SpawnPoints_None", name))
 		end
 
 		cwSpawnPoints:SaveSpawnPoints()
@@ -67,20 +67,20 @@ function COMMAND:OnRun(player, arguments)
 
 			if (removed > 0) then
 				if (removed == 1) then
-					cw.player:Notify(player, "You have removed "..removed.." default spawn point.")
+					cw.player:Notify(player, L("SpawnPoints_RemovedDefaultOne", removed))
 				else
-					cw.player:Notify(player, "You have removed "..removed.." default spawn points.")
+					cw.player:Notify(player, L("SpawnPoints_RemovedDefaultMany", removed))
 				end
 			else
-				cw.player:Notify(player, "There were no default spawn points near this position.")
+				cw.player:Notify(player, L("SpawnPoints_NoneNearDefault"))
 			end
 		else
-			cw.player:Notify(player, "There are no default spawn points.")
+			cw.player:Notify(player, L("SpawnPoints_NoneDefault"))
 		end
 
 		cwSpawnPoints:SaveSpawnPoints()
 	else
-		cw.player:Notify(player, "This is not a valid class or faction!")
+		cw.player:Notify(player, L("SpawnPoints_NotValidClassOrFaction"))
 	end
 end
 

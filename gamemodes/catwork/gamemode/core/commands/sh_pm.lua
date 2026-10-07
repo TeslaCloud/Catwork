@@ -26,7 +26,7 @@ function COMMAND:OnRun(player, arguments)
 			chatbox.AddText({target, player}, table.concat(arguments, " ", 2), {sender = player, isPlayerMessage = true, filter = "pm", type = "pm", textColor = Color("#65DBAC"), icon = false})
 		end
 	else
-		cw.player:Notify(player, arguments[1].." is not a valid player!")
+		cw.player:Notify(player, L("NotValidPlayer", arguments[1]))
 	end
 end
 

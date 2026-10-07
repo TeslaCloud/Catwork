@@ -217,7 +217,7 @@ function ENT:Use(activator, caller)
 	end
 
 	if (!Schema:PlayerIsCombine(activator)) then
-		cw.player:Notify(activator, "The gun doesn't appear to move.")
+		cw.player:Notify(activator, L("Emplacement_WontMove"))
 		return
 	end
 

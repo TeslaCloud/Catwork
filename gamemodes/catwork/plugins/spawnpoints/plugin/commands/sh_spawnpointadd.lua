@@ -7,8 +7,8 @@
 --]]
 
 local COMMAND = cw.command:New("SpawnPointAdd")
-COMMAND.tip = "Add a spawn point at your target position."
-COMMAND.text = "<string Class|Faction|Default> [number Rotate]"
+COMMAND.tip = "#Command_Spawnpointadd_Description"
+COMMAND.text = "#Command_Spawnpointadd_Syntax"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "a"
 COMMAND.arguments = 1
@@ -32,15 +32,15 @@ function COMMAND:OnRun(player, arguments)
 		cwSpawnPoints.spawnPoints[name][#cwSpawnPoints.spawnPoints[name] + 1] = {position = player:GetEyeTraceNoCursor().HitPos, rotate = rotate}
 		cwSpawnPoints:SaveSpawnPoints()
 
-		cw.player:Notify(player, "You have added a spawn point for "..name..".")
+		cw.player:Notify(player, L("SpawnPoints_Added", name))
 	elseif (string.lower(arguments[1]) == "default") then
 		cwSpawnPoints.spawnPoints["default"] = cwSpawnPoints.spawnPoints["default"] or {}
 		cwSpawnPoints.spawnPoints["default"][#cwSpawnPoints.spawnPoints["default"] + 1] = {position = player:GetEyeTraceNoCursor().HitPos, rotate = rotate}
 		cwSpawnPoints:SaveSpawnPoints()
 
-		cw.player:Notify(player, "You have added a default spawn point.")
+		cw.player:Notify(player, L("SpawnPoints_AddedDefault"))
 	else
-		cw.player:Notify(player, "This is not a valid class or faction!")
+		cw.player:Notify(player, L("SpawnPoints_NotValidClassOrFaction"))
 	end
 end
 

@@ -20,8 +20,8 @@ function COMMAND:OnRun(player, arguments)
 
 	if (isnumber(health)) then
 		target:SetHealth(health)
-		cw.player:Notify(player, target:GetName().."'s health set to "..health..".")
-		cw.player:Notify(target, "Your health was set to "..health.." by "..player:GetName()..".")
+		cw.player:Notify(player, L("Command_Plysethealth_Set", target:GetName(), health))
+		cw.player:Notify(target, L("Command_Plysethealth_SetTarget", health, player:GetName()))
 	end
 end
 

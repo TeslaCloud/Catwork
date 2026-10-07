@@ -29,7 +29,7 @@ if (SERVER) then
 			if (attributes[attribute]) then
 				if (attributes[attribute].amount == attributeTable.maximum) then
 					if (amount > 0) then
-						return false, "Вы достигли максимального значения атрибута!"
+						return false, L("Attribute_MaximumReached")
 					end
 				end
 			else
@@ -71,7 +71,7 @@ if (SERVER) then
 				end
 			end
 		else
-			return false, "That is not a valid attribute!"
+			return false, L("Attribute_NotValid")
 		end
 	end
 
@@ -87,7 +87,7 @@ if (SERVER) then
 				attributes[attribute] = {amount = 0, progress = 0}
 			elseif (attributes[attribute].amount == attributeTable.maximum) then
 				if (amount and amount > 0) then
-					return false, "Вы достигли максимального значения атрибута!"
+					return false, L("Attribute_MaximumReached")
 				end
 			end
 
@@ -115,7 +115,7 @@ if (SERVER) then
 
 			return true
 		else
-			return false, "That is not a valid attribute!"
+			return false, L("Attribute_NotValid")
 		end
 	end
 

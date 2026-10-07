@@ -9,8 +9,8 @@
 local NAME_CASH = cw.option:GetKey("name_cash")
 
 local COMMAND = cw.command:New("DropCash")
-COMMAND.tip = "#Command_Dropcash_Description"..string.lower(NAME_CASH).." at your target position."
-COMMAND.text = "#Command_Dropcash_Syntax"..string.gsub(NAME_CASH, "%s", "")..">"
+COMMAND.tip = "#Command_Dropcash_Tip"
+COMMAND.text = "#Command_Givecash_Syntax"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.arguments = 1
 COMMAND.alias = {"DropCash", "DropTokens"}
@@ -26,7 +26,7 @@ function COMMAND:OnRun(player, arguments)
 
 		if (player:GetShootPos():Distance(trace.HitPos) <= 192) then
 			if (cw.player:CanAfford(player, cash)) then
-				cw.player:GiveCash(player, -cash, "Dropping "..cw.option:GetKey("name_cash"))
+				cw.player:GiveCash(player, -cash, L("Command_Dropcash_Reason"))
 
 				local entity = cw.entity:CreateCash(player, cash, trace.HitPos)
 
@@ -35,13 +35,13 @@ function COMMAND:OnRun(player, arguments)
 				end
 			else
 				local amount = cash - player:GetCash()
-				cw.player:Notify(player, "You need another "..cw.core:FormatCash(amount, nil, true).."!")
+				cw.player:Notify(player, L("YouNeedAnother", cw.core:FormatCash(amount, nil, true)))
 			end
 		else
-			cw.player:Notify(player, "You cannot drop "..string.lower(NAME_CASH).." that far away!")
+			cw.player:Notify(player, L("Command_Dropcash_TooFar"))
 		end
 	else
-		cw.player:Notify(player, "This is not a valid amount!")
+		cw.player:Notify(player, L("NotValidAmount"))
 	end
 end
 

@@ -96,7 +96,7 @@ function cw.command:Register(data, name)
 
 	stored[uniqueID] = data
 	stored[uniqueID].name = realName
-	stored[uniqueID].text = data.text or "<none>"
+	stored[uniqueID].text = data.text or "#Command_NoSyntax"
 	stored[uniqueID].flags = data.flags or 0
 	stored[uniqueID].access = data.access or "b"
 	stored[uniqueID].arguments = data.arguments or 0
@@ -154,7 +154,7 @@ if (SERVER) then
 
 						if (cmdCD) then
 							if (cmdCD > curTime) then
-								cw.player:Notify(player, "Вы не сможете использовать эту команду еще "..math.Round(cmdCD - curTime).." секунд.")
+								cw.player:Notify(player, L("Command_Cooldown", math.Round(cmdCD - curTime)))
 
 								return false
 							end
@@ -184,23 +184,23 @@ if (SERVER) then
 
 								if (bit.band(flags, CMD_DEAD) > 0 and !player:Alive()) then
 									if (!player.cwDeathCodeAuth) then
-										cw.player:Notify(player, "You cannot do this action at the moment!")
+										cw.player:Notify(player, L("CannotActionRightNow"))
 									end return
 								elseif (bit.band(flags, CMD_VEHICLE) > 0 and player:InVehicle()) then
 									if (!player.cwDeathCodeAuth) then
-										cw.player:Notify(player, "You cannot do this action at the moment!")
+										cw.player:Notify(player, L("CannotActionRightNow"))
 									end return
 								elseif (bit.band(flags, CMD_RAGDOLLED) > 0 and player:IsRagdolled()) then
 									if (!player.cwDeathCodeAuth) then
-										cw.player:Notify(player, "You cannot do this action at the moment!")
+										cw.player:Notify(player, L("CannotActionRightNow"))
 									end return
 								elseif (bit.band(flags, CMD_FALLENOVER) > 0 and player:GetRagdollState() == RAGDOLL_FALLENOVER) then
 									if (!player.cwDeathCodeAuth) then
-										cw.player:Notify(player, "You cannot do this action at the moment!")
+										cw.player:Notify(player, L("CannotActionRightNow"))
 									end return
 								elseif (bit.band(flags, CMD_KNOCKEDOUT) > 0 and player:GetRagdollState() == RAGDOLL_KNOCKEDOUT) then
 									if (!player.cwDeathCodeAuth) then
-										cw.player:Notify(player, "You cannot do this action at the moment!")
+										cw.player:Notify(player, L("CannotActionRightNow"))
 									end return
 								end
 
@@ -226,24 +226,24 @@ if (SERVER) then
 									hook.Run("PostCommandUsed", player, commandTable, arguments)
 								end
 							else
-								cw.player:Notify(player, "You do not have access to this command, "..player:Name()..".")
+								cw.player:Notify(player, L("Commands_cwLua_accessDenied", player:Name()))
 							end
 						else
 							cw.player:Notify(player, commandTable.name.." "..commandTable.text.."!")
 						end
 					end
 				elseif (!cw.player:GetDeathCode(player, true)) then
-					cw.player:Notify(player, "This is not a valid command or alias!")
+					cw.player:Notify(player, L("Command_NotValid"))
 				end
 			elseif (!cw.player:GetDeathCode(player, true)) then
-				cw.player:Notify(player, "This is not a valid command or alias!")
+				cw.player:Notify(player, L("Command_NotValid"))
 			end
 
 			if (cw.player:GetDeathCode(player)) then
 				cw.player:TakeDeathCode(player)
 			end
 		else
-			cw.player:Notify(player, "You cannot use commands yet!")
+			cw.player:Notify(player, L("Command_CannotUseYet"))
 		end
 	end
 
@@ -264,8 +264,6 @@ else
 	function cw.command:AddHelp(commandTable)
 		if (_G["ClockworkClientsideBooted"]) then return end
 
-		local text = string.gsub(string.gsub(commandTable.text, ">", "&gt;"), "<", "&lt;")
-
 		if (!commandTable.helpID) then
 			commandTable.helpID = cw.directory:AddCode("Commands", [[
 				<div class="cwTitleSeperator">
@@ -273,12 +271,19 @@ else
 				</div>
 				<div class="cwContentText">
 					<div class="cwCodeText">
-						<i>]]..text..[[</i>
+						<i>[syntax]</i>
 					</div>
-					]]..commandTable.tip..[[
+					[tip]
 				</div>
 				<br>
-			]], true, commandTable.name)
+			]], true, commandTable.name, function(htmlCode)
+				-- The syntax and the tip are language phrases, so they are translated when the page is shown.
+				local text = string.gsub(string.gsub(cw.lang:TranslateText(commandTable.text), ">", "&gt;"), "<", "&lt;")
+
+				htmlCode = string.Replace(htmlCode, "[syntax]", text)
+
+				return string.Replace(htmlCode, "[tip]", cw.lang:TranslateText(commandTable.tip or ""))
+			end)
 		end
 	end
 

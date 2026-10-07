@@ -4,7 +4,7 @@
 --]]
 
 local COMMAND = cw.command:New("FactoryRationDispenserAdd")
-COMMAND.tip = "Add ration dispenser at your target position."
+COMMAND.tip = "#Command_Factoryrationdispenseradd_Description"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "s"
 
@@ -19,7 +19,7 @@ function COMMAND:OnRun(player, arguments)
 	if (IsValid(entity)) then
 		entity:SetAngles(Angle(0, player:EyeAngles().yaw + 180,0))
 
-		cw.player:Notify(player, "You have added a ration dispenser.")
+		cw.player:Notify(player, L("Factory_RationDispenserAdded"))
 	end
 end
 

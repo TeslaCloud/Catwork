@@ -21,21 +21,21 @@ function COMMAND:OnRun(player, arguments)
 
 	if (userGroup != "superadmin" and userGroup != "admin"
 	and userGroup != "operator") then
-		cw.player:Notify(player, "The user group must be superadmin, admin or operator!")
+		cw.player:Notify(player, L("Command_Plysetgroup_InvalidGroup"))
 
 		return
 	end
 
 	if (target) then
 		if (!cw.player:IsProtected(target)) then
-			cw.player:NotifyAll(player:Name().." has set "..target:Name().."'s user group to "..userGroup..".")
+			cw.player:NotifyAll(L("Command_Plysetgroup_Set", player:Name(), target:Name(), userGroup))
 				target:SetClockworkUserGroup(userGroup)
 			cw.player:LightSpawn(target, true, true)
 		else
-			cw.player:Notify(player, target:Name().." is protected!")
+			cw.player:Notify(player, L("Command_PlayerProtected", target:Name()))
 		end
 	else
-		cw.player:Notify(player, arguments[1].." is not a valid player!")
+		cw.player:Notify(player, L("NotValidPlayer", arguments[1]))
 	end
 end
 

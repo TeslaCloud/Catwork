@@ -4,11 +4,11 @@
 --]]
 
 local COMMAND = cw.command:New("FactoryBigDispenserAdd")
-COMMAND.tip = "Add a big factory dispenser at your target position."
+COMMAND.tip = "#Command_Factorybigdispenseradd_Description"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "s"
 COMMAND.arguments = 1
-COMMAND.text = "<1 = Empty Ration, 2 = Empty Crate>"
+COMMAND.text = "#Command_Factorybigdispenseradd_Syntax"
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
@@ -22,7 +22,7 @@ function COMMAND:OnRun(player, arguments)
 		entity:SetAngles(Angle(90, player:EyeAngles().yaw + 180,0))
 		entity:SetSpawnType(arguments[1] - 1)
 
-		cw.player:Notify(player, "You have added a big factory dispenser. Type: "..arguments[1]..".")
+		cw.player:Notify(player, L("Factory_BigDispenserAdded", arguments[1]))
 	end
 end
 

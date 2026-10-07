@@ -18,7 +18,7 @@ function COMMAND:OnRun(player, arguments)
 	local pluginTable = plugin.FindByID(arguments[1])
 
 	if (!plugin) then
-		cw.player:Notify(player, "This plugin is not valid!")
+		cw.player:Notify(player, L("PluginManage_NotValid"))
 		return
 	end
 
@@ -29,7 +29,7 @@ function COMMAND:OnRun(player, arguments)
 		local recipients = {}
 
 		if (bSuccess) then
-			cw.player:NotifyAll(player:Name().." has loaded the "..pluginTable.name.." plugin for the next restart.")
+			cw.player:NotifyAll(L("PluginManage_Loaded", player:Name(), pluginTable.name))
 
 			for k, v in ipairs(_player.GetAll()) do
 				if (v:HasInitialized()) then
@@ -43,10 +43,10 @@ function COMMAND:OnRun(player, arguments)
 				netstream.Start(recipients, "SystemPluginSet", {pluginTable.name, false})
 			end
 		else
-			cw.player:Notify(player, "This plugin could not be loaded!")
+			cw.player:Notify(player, L("PluginManage_CouldNotLoad"))
 		end
 	else
-		cw.player:Notify(player, "This plugin depends on another plugin!")
+		cw.player:Notify(player, L("PluginManage_Depends"))
 	end
 end
 

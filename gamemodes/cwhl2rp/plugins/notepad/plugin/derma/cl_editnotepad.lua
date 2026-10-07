@@ -57,7 +57,7 @@ function PANEL:Populate(notepad)
 	textEntry:SetHeight(ScrH() * 0.6 - 64);
 	textEntry:SetText(notepad);
 
-	button:SetText("Okay");
+	button:SetText("#Notepad_Okay");
 
 	-- A function to set the text entry's real value.
 	function textEntry:SetRealValue(text)

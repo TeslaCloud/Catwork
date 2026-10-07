@@ -7,10 +7,10 @@
 
 ITEM.baseItem = "bodygroup_base"
 ITEM.name = "razgruz";
-ITEM.PrintName = "Разгрузочный жилет";
+ITEM.PrintName = "#ITEM_Cmb_Razgruz_Name";
 ITEM.cost = 100;
 ITEM.model = "models/half_life2/jnstudio/props/gear.mdl";
-ITEM.plural = "Разгрузочные жилеты";
+ITEM.plural = "#ITEM_Cmb_Razgruz_Plural";
 ITEM.weight = 3;
 ITEM.uniqueID = "cmb_razgruz";
 ITEM.business = false;

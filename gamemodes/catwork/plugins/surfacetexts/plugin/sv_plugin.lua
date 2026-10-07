@@ -40,6 +40,6 @@ netstream.Hook("cw3DText_Remove", function(player, idx)
 
 		netstream.Start(nil, "cw3DText_Remove", idx)
 
-		cw.player:Notify(player, "You have removed a 3D text.")
+		cw.player:Notify(player, L("SurfaceTexts_Removed"))
 	end
 end)

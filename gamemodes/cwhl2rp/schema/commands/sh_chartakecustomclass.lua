@@ -19,9 +19,9 @@ function COMMAND:OnRun(player, arguments)
 	if (target) then
 		target:SetCharacterData("customclass", nil)
 
-		cw.player:NotifyAll(player:Name().." took "..target:Name().."'s custom class.")
+		cw.player:NotifyAll(L("CustomClass_Taken", player:Name(), target:Name()))
 	else
-		cw.player:Notify(player, arguments[1].." is not a valid character!")
+		cw.player:Notify(player, L("NotValidCharacter", arguments[1]))
 	end
 end
 

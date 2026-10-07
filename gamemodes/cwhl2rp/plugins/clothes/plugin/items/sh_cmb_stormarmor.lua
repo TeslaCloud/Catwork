@@ -7,9 +7,9 @@
 
 ITEM.baseItem = "bodygroup_base"
 ITEM.name = "stormarmor";
-ITEM.PrintName = "Усиленный бронежилет";
+ITEM.PrintName = "#ITEM_Cmb_Stormarmor_Name";
 ITEM.model = "models/half_life2/jnstudio/props/armor.mdl";
-ITEM.plural = "Усиленные бронежилеты";
+ITEM.plural = "#ITEM_Cmb_Stormarmor_Plural";
 ITEM.weight = 5;
 ITEM.uniqueID = "cmb_stormarmor";
 ITEM.business = false;

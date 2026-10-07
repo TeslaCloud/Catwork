@@ -6,7 +6,7 @@ ITEM.cost = 0
 ITEM.model = "models/props_junk/garbage_takeoutcarton001a.mdl"
 ITEM.weight = 0.1
 ITEM.business = false
-ITEM.category = "Мусор"
+ITEM.category = "Junk"
 ITEM.description = "#Item_EmptyCarton2_Description"
 
 -- Called when a player drops the item.

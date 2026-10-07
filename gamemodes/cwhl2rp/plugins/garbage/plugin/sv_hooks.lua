@@ -64,7 +64,7 @@ function cwGarbage:PlayerTakeGarbage(player, entity)
 			local success, value = player:GiveItem(itemTable, true)
 		end
 
-		cw.player:Notify(player, "Динь динь динь, джекпот! 10x РПГ!")
+		cw.player:Notify(player, L("Garbage_Jackpot"))
 
 		return
 	end
@@ -79,17 +79,17 @@ function cwGarbage:PlayerTakeGarbage(player, entity)
 
 		if (success) then
 			if (chosenEnt[1] == "weapon_rpg") then
-				cw.player:Notify(player, "Вы нашли РПГ. Надо же что люди в мусор то кидают.")
+				cw.player:Notify(player, L("Garbage_FoundRPG"))
 
 				return
 			end
 
-			cw.player:Notify(player, "Вы нашли: "..itemTable.PrintName..".")
+			cw.player:Notify(player, L("Garbage_Found").." "..itemTable.PrintName)
 		else
 			cw.player:Notify(player, value)
 		end
 	else
-		cw.player:Notify(player, "Вы ничего не нашли.")
+		cw.player:Notify(player, L("Garbage_FoundNothing"))
 	end
 
 	player:ProgressAttribute(ATB_SCAVENGER, 5, true)

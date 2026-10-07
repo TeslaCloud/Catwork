@@ -126,9 +126,9 @@ if SERVER then
 else
 	function cwFactories:GetEntityMenuOptions(entity, options)
 		if entity.IsFactory then
-			options["Запустить"] = "cwFactoriesStart"
-			options["Остановить"] = "cwFactoriesStop"
-			options["Выброс мусора"] = "cwFactoriesEject"
+			options["#Factories_Start"] = "cwFactoriesStart"
+			options["#Factories_Stop"] = "cwFactoriesStop"
+			options["#Factories_Eject"] = "cwFactoriesEject"
 		end
 	end
 end

@@ -35,9 +35,9 @@ function PLUGIN:PlayerHarvest(player, uniqueID)
 				player:FastGiveItem(harvest)
 			end
 		end
-		cw.player:Notify(player, "Вы успешно собрали урожай.")
+		cw.player:Notify(player, L("Farming_HarvestSuccess"))
 	else
-		cw.player:Notify(player, "Вам не удалось собрать урожай.")
+		cw.player:Notify(player, L("Farming_HarvestFail"))
 	end
 
 	player:ProgressAttribute(ATB_FARM, 10, true)

@@ -47,7 +47,7 @@ end
 -- Called when a player drops the item.
 function ITEM:OnDrop(player, position)
 	if (player:GetInventoryWeight() > (player:GetMaxWeight() - self.addInvSpace)) then
-		cw.player:Notify(player, "You cannot drop this while you are carrying items in it!")
+		cw.player:Notify(player, L("Item_Bag_CantDropWithItems"))
 
 		return false
 	end

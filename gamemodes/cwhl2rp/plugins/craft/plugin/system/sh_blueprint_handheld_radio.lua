@@ -3,7 +3,7 @@ local BLUEPRINT = cw.blueprints:New()
 BLUEPRINT.name = "#Blueprint_BlueprintHandheldRadio_Name"
 BLUEPRINT.uniqueID = "blueprint_handheld_radio"
 BLUEPRINT.model = "models/deadbodies/dead_male_civilian_radio.mdl"
-BLUEPRINT.category = "Разное"
+BLUEPRINT.category = "#Craft_Category_Misc"
 BLUEPRINT.description = "#Blueprint_BlueprintHandheldRadio_Description"
 BLUEPRINT.reqatt = {
 	{"rem", 45}

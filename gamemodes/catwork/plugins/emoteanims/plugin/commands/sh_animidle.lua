@@ -7,8 +7,8 @@
 --]]
 
 local COMMAND = cw.command:New("AnimIdle")
-COMMAND.tip = "Put your character into an idle stance."
-COMMAND.text = "[bool ArmsCrossed]"
+COMMAND.tip = "#Command_Animidle_Description"
+COMMAND.text = "#Command_Animidle_Syntax"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.optionalArguments = 1
 
@@ -27,7 +27,7 @@ function COMMAND:OnRun(player, arguments)
 				cwEmoteAnims:MakePlayerExitStance(player)
 			elseif (!forcedAnimation or !cwEmoteAnimscwEmoteAnims[forcedAnimation.animation]) then
 				if (player:Crouching()) then
-					cw.player:Notify(player, "You cannot do this while you are crouching!")
+					cw.player:Notify(player, L("EmoteAnims_CannotWhileCrouching"))
 				else
 					local animation = nil
 
@@ -53,15 +53,15 @@ function COMMAND:OnRun(player, arguments)
 							cwEmoteAnims:MakePlayerExitStance(player)
 						end)
 					else
-						cw.player:Notify(player, "You must be standing on the ground!")
+						cw.player:Notify(player, L("EmoteAnims_MustStandOnGround"))
 					end
 				end
 			end
 		else
-			cw.player:Notify(player, "The model that you are using cannot perform this action!")
+			cw.player:Notify(player, L("EmoteAnims_ModelCannotPerform"))
 		end
 	else
-		cw.player:Notify(player, "You cannot do another stance or gesture yet!")
+		cw.player:Notify(player, L("EmoteAnims_CannotDoAnotherYet"))
 	end
 end
 

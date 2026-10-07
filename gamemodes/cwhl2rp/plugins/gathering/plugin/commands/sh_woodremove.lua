@@ -7,7 +7,7 @@
 --]]
 
 local COMMAND = cw.command:New("WoodRemove")
-COMMAND.tip = "Удалить точку появления деревянной мебели."
+COMMAND.tip = "#Command_Woodremove_Description"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "s"
 
@@ -24,12 +24,12 @@ function COMMAND:OnRun(player, arguments)
 
 	if (pointsCount > 0) then
 		if (pointsCount == 1) then
-			cw.player:Notify(player, "Вы удалили "..pointsCount.." точку появления мебели.")
+			cw.player:Notify(player, L("Gathering_RemovedPoint", pointsCount))
 		else
-			cw.player:Notify(player,"Вы удалили "..pointsCount.." точек появления мебели.")
+			cw.player:Notify(player, L("Gathering_RemovedPoints", pointsCount))
 		end
 	else
-		cw.player:Notify(player, "Точки появления не найдены.")
+		cw.player:Notify(player, L("Gathering_NoPointsFound"))
 	end
 
 	cwGather:SaveNodesSpawnPoints()

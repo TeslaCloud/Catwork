@@ -10,14 +10,14 @@ function COMMAND:OnRun(player, arguments)
 
 	if !player.cwRadSystemBoxInfo then player.cwRadSystemBoxInfo = {} end
 	if !player.cwRadSystemBoxInfo.startpos then
-		cw.player:Notify(player, "No start point found.")
+		cw.player:Notify(player, L("Containment_NoStartPoint"))
 		return
 	end
 	if player.cwRadSystemBoxInfo then
 		player.cwRadSystemBoxInfo.endpos = trace.HitPos
 	end
 
-	cw.player:Notify(player, "You have set the end point.")
+	cw.player:Notify(player, L("Containment_EndPointSet"))
 end
 
 COMMAND:Register()

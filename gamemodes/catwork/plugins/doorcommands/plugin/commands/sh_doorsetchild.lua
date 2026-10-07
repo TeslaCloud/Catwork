@@ -7,7 +7,7 @@
 --]]
 
 local COMMAND = cw.command:New("DoorSetChild")
-COMMAND.tip = "Add a child to the active parent door."
+COMMAND.tip = "#Command_Doorsetchild_Description"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "a"
 
@@ -23,23 +23,23 @@ function COMMAND:OnRun(player, arguments)
 					cwDoorCmds:SaveParentData();		
 
 					cw.entity:SetDoorParent(door, player.cwParentDoor)
-					cw.player:Notify(player, "You have added this as a child to the active parent door.")
+					cw.player:Notify(player, L("DoorCmds_ChildAdded"))
 
 					cwDoorCmds.infoTable = cwDoorCmds.infoTable or {}
 					table.insert(cwDoorCmds.infoTable, door)
 
 					netstream.Start(player, "doorParentESP", cwDoorCmds.infoTable)
 				else
-					cw.player:Notify(player, "You cannot parent the active parent door to itself!")
+					cw.player:Notify(player, L("DoorCmds_CannotParentToItself"))
 				end
 			else
-				cw.player:Notify(player, "This door is already a child to the active parent door!")
+				cw.player:Notify(player, L("DoorCmds_AlreadyChild"))
 			end
 		else
-			cw.player:Notify(player, "You have not selected a valid parent door!")
+			cw.player:Notify(player, L("DoorCmds_NoValidParent"))
 		end
 	else
-		cw.player:Notify(player, "This is not a valid door!")
+		cw.player:Notify(player, L("DoorCmds_NotValidDoor"))
 	end
 end
 

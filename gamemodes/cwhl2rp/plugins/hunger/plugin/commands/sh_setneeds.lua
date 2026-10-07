@@ -1,8 +1,8 @@
 local PLUGIN = PLUGIN
 
 local COMMAND = cw.command:New("CharResetNeeds")
-COMMAND.tip = "Set a player's Needs level to 100."
-COMMAND.text = "<string Name>"
+COMMAND.tip = "#Command_Charresetneeds_Description"
+COMMAND.text = "#Command_Charresetneeds_Syntax"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "a"
 COMMAND.arguments = 1
@@ -20,16 +20,16 @@ function COMMAND:OnRun(player, arguments)
 			target:SetCharacterData("Stamina", 100)
 			
 			if (player != target)	then
-				cw.player:Notify(target, player:Name().." has set your needs to full.")
-				cw.player:Notify(player, "You have set "..target:Name().."'s needs to full.")
+				cw.player:Notify(target, L("Hunger_NeedsSetBy", player:Name()))
+				cw.player:Notify(player, L("Hunger_NeedsSet", target:Name()))
 			else
-				cw.player:Notify(player, "You have set your own needs to full.")
+				cw.player:Notify(player, L("Hunger_NeedsSetOwn"))
 			end
 		else
-			cw.player:Notify(player, "Player a combine!")
+			cw.player:Notify(player, L("Hunger_PlayerIsCombine"))
 		end
 	else
-		cw.player:Notify(player, arguments[1].." is not a valid player!")
+		cw.player:Notify(player, L("NotValidPlayer", arguments[1]))
 	end
 end
 

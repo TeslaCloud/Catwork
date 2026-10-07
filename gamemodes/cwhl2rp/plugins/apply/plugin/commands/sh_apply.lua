@@ -5,7 +5,7 @@
 --]]
 
 local COMMAND = cw.command:New("Apply")
-COMMAND.tip = "Says your Name and CID."
+COMMAND.tip = "#Command_Apply_Description"
 COMMAND.flags = CMD_DEFAULT
 
 -- Called when the command has been run.
@@ -17,7 +17,7 @@ function COMMAND:OnRun(player)
 	if (!player:IsCombine()) then
 		chatbox.AddText(nil, '"'..name..', #'..citizenID..'."', {sender = player, isPlayerMessage = true, filter = "ic", radius = radius, textColor = Color(255, 255, 200, 255)})
 	else
-		cw.player:Notify(player, "You do not appear to have a CID. Use /Name instead!")
+		cw.player:Notify(player, L("Apply_NoCID"))
 	end
 
 	for k, v in ipairs(_player.GetAll()) do

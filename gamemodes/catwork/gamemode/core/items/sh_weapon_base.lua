@@ -199,7 +199,7 @@ function ITEM:OnUse(player, itemEntity)
 	end
 
 	if (!isstring(weaponClass)) then
-		cw.player:Notify(player, "[Catwork:Error] This weapon is broken! Contact the developers. (type = "..type(weaponClass).." :: "..tostring(self)..")")
+		cw.player:Notify(player, L("Item_WeaponBase_Broken").." (type = "..type(weaponClass).." :: "..tostring(self)..")")
 
 		return false
 	end

@@ -3,13 +3,13 @@
 	without permission of its author (kurozael@gmail.com).
 --]]
 
-ITEM.name = "Хлеб"
+ITEM.name = "Bread"
 ITEM.PrintName = "#Item_Bread_PrintName"
 ITEM.cost = 25
 ITEM.model = "models/bioshockinfinite/dread_loaf.mdl"
 ITEM.weight = 0.4
 ITEM.access = "v"
-ITEM.useText = "Съесть"
+ITEM.useText = "Eat"
 ITEM.business = false
 ITEM.category = "Consumables"
 ITEM.description = "#Item_Bread_Description"

@@ -5,8 +5,8 @@
 --]]
 
 local COMMAND = cw.command:New("CharSetSkin")
-COMMAND.tip = "Sets player's skin."
-COMMAND.text = "<string Player> <number Skin Index>"
+COMMAND.tip = "#Command_Charsetskin_Description"
+COMMAND.text = "#Command_Charsetskin_Syntax"
 COMMAND.access = "a"
 COMMAND.arguments = 2
 COMMAND.alias = {"SetSkin", "CharSkin"}

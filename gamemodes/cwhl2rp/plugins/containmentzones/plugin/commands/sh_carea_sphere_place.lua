@@ -1,6 +1,6 @@
 local COMMAND = cw.command:New("ContainmentSpherePlace")
 COMMAND.tip = ""
-COMMAND.text = "<number Radius> <number Rad/second>"
+COMMAND.text = "#Command_Containmentsphereplace_Syntax"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "s"
 COMMAND.arguments = 2
@@ -14,7 +14,7 @@ function COMMAND:OnRun(player, arguments)
 		rad = tonumber(arguments[2]),
 	}
 
-	cw.player:Notify(player, "You have added the containment area with specified parameters: radius: "..arguments[1].."; rad: "..arguments[2]..".")
+	cw.player:Notify(player, L("Containment_SphereAdded", arguments[1], arguments[2]))
 end
 
 COMMAND:Register()

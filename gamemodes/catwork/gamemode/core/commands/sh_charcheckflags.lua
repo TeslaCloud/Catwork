@@ -18,7 +18,7 @@ function COMMAND:OnRun(player, arguments)
 	local target = _player.Find(arguments[1])
 
 	if (target) then
-		cw.player:Notify(player, "This player has "..target:GetFlags().." flags.")
+		cw.player:Notify(player, L("Command_Charcheckflags_Result", target:GetFlags()))
 	else
 		cw.player:Notify(player, L(player, "NotValidCharacter", arguments[1]))
 	end

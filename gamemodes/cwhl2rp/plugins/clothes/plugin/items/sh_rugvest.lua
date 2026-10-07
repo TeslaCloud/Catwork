@@ -7,13 +7,13 @@
 
 ITEM.baseItem = "bodygroup_base"
 ITEM.name = "Rebel Kevlar"
-ITEM.PrintName = "Униформа Повстанца (Рюкзак)"
+ITEM.PrintName = "#ITEM_Rugvest_Name"
 ITEM.model = "models/tnb/items/shirt_rebelbag.mdl"
-ITEM.plural = "Униформs Сопротивления (Рюкзак)"
+ITEM.plural = "#ITEM_Rugvest_Plural"
 ITEM.weight = 3
 ITEM.uniqueID = "rebel_kevlar"
 ITEM.business = false
 ITEM.bodyGroup = 1
 ITEM.bodyGroupVal = 12
-ITEM.description = "Форма сопротивления с рюкзаком."
+ITEM.description = "#ITEM_Rugvest_Desc"
 ITEM.protection = 20

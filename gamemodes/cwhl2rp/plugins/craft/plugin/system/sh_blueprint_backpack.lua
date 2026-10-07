@@ -3,7 +3,7 @@ local BLUEPRINT = cw.blueprints:New()
 BLUEPRINT.name = "#Blueprint_BlueprintBackpack_Name"
 BLUEPRINT.uniqueID = "blueprint_backpack"
 BLUEPRINT.model = "models/props_junk/cardboard_box004a.mdl"
-BLUEPRINT.category = "Хранилища"
+BLUEPRINT.category = "#Craft_Category_Storage"
 BLUEPRINT.description = "#Blueprint_BlueprintBackpack_Description"
 BLUEPRINT.reqatt = {
 	{"cloth", 30}

@@ -144,7 +144,7 @@ function PANEL:RebuildPanel(storagePanel, storageType, usedWeight, weight, usedS
 		cashForm = vgui.Create("DForm", storagePanel)
 		button = vgui.Create("DButton", storagePanel)
 
-		button:SetText("Переместить")
+		button:SetText("#Storage_TransferCash")
 		button.Stretch = true
 
 		-- Called when the button is clicked.
@@ -184,7 +184,7 @@ function PANEL:RebuildPanel(storagePanel, storageType, usedWeight, weight, usedS
 	if (cw.inventory:UseSpaceSystem() and storagePanel.usedSpace > 0) then
 		local informationForm = vgui.Create("DForm", storagePanel)
 			informationForm:SetPadding(5)
-			informationForm:SetName(L"Space")
+			informationForm:SetName(L"#Space")
 
 			local storageSpace = vgui.Create("cwStorageSpace", storagePanel)
 			storageSpace:SetSpace(space)
@@ -381,7 +381,7 @@ end
 -- Called each frame.
 function PANEL:Think()
 	self.spaceUsed:SetSize(self:GetWide() - 2, self:GetTall() - 2)
-	self.weightLabel:SetText(math.floor(self:GetUsedWeight()).."/"..math.floor(self:GetWeight()).."кг")
+	self.weightLabel:SetText(math.floor(self:GetUsedWeight()).."/"..math.floor(self:GetWeight())..L("#Unit_Kilograms"))
 	self.weightLabel:SetPos(self:GetWide() / 2 - self.weightLabel:GetWide() / 2, self:GetTall() / 2 - self.weightLabel:GetTall() / 2)
 	self.weightLabel:SizeToContents()
 end
@@ -443,7 +443,7 @@ end
 -- Called each frame.
 function PANEL:Think()
 	self.spaceUsed:SetSize(self:GetWide() - 2, self:GetTall() - 2)
-	self.space:SetText(math.floor(self:GetUsedSpace()).."/"..math.floor(self:GetSpace()).."l")
+	self.space:SetText(math.floor(self:GetUsedSpace()).."/"..math.floor(self:GetSpace())..L("#Unit_Litres"))
 	self.space:SetPos(self:GetWide() / 2 - self.space:GetWide() / 2, self:GetTall() / 2 - self.space:GetTall() / 2)
 	self.space:SizeToContents()
 end

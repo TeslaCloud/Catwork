@@ -7,8 +7,8 @@
 --]]
 
 local COMMAND = cw.command:New("MapSceneAdd")
-COMMAND.tip = "Add a map scene at your current position."
-COMMAND.text = "<bool ShouldSpin>"
+COMMAND.tip = "#Command_Mapsceneadd_Description"
+COMMAND.text = "#Command_Mapsceneadd_Syntax"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "a"
 COMMAND.optionalArguments = 1
@@ -24,7 +24,7 @@ function COMMAND:OnRun(player, arguments)
 	cwMapScene.storedList[#cwMapScene.storedList + 1] = data
 	cwMapScene:SaveMapScenes()
 
-	cw.player:Notify(player, "You have added a map scene.")
+	cw.player:Notify(player, L("MapScene_Added"))
 end
 
 COMMAND:Register();

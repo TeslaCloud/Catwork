@@ -137,7 +137,7 @@ function cw.storage:Open(player, data)
 	data.weight = data.weight or config.Get("default_inv_weight"):Get()
 	data.space = data.space or config.Get("default_inv_space"):Get()
 	data.cash = data.cash or 0
-	data.name = data.name or "Storage"
+	data.name = data.name or "#Storage_Default"
 
 	player.cwStorageTab = data
 

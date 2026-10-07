@@ -7,7 +7,7 @@
 --]]
 
 local COMMAND = cw.command:New("AnimSitWall")
-COMMAND.tip = "Make your character sit back up against a wall."
+COMMAND.tip = "#Command_Animsitwall_Description"
 COMMAND.flags = CMD_DEFAULT
 
 -- Called when the command has been run.
@@ -28,7 +28,7 @@ function COMMAND:OnRun(player, arguments)
 				cwEmoteAnims:MakePlayerExitStance(player)
 			elseif (!forcedAnimation or !cwEmoteAnimscwEmoteAnims[forcedAnimation.animation]) then
 				if (player:Crouching()) then
-					cw.player:Notify(player, "You cannot do this while you are crouching!")
+					cw.player:Notify(player, L("EmoteAnims_CannotWhileCrouching"))
 				else
 					local traceLine = util.TraceLine({
 						start = position,
@@ -49,15 +49,15 @@ function COMMAND:OnRun(player, arguments)
 						player:SetNetVar("StanceAng", player:GetAngles())
 						player:SetNetVar("StanceIdle", true)
 					else
-						cw.player:Notify(player, "You must be facing away from, and near a wall!")
+						cw.player:Notify(player, L("EmoteAnims_MustFaceAwayFromWall"))
 					end
 				end
 			end
 		else
-			cw.player:Notify(player, "The model that you are using cannot perform this action!")
+			cw.player:Notify(player, L("EmoteAnims_ModelCannotPerform"))
 		end
 	else
-		cw.player:Notify(player, "You cannot do another stance or gesture yet!")
+		cw.player:Notify(player, L("EmoteAnims_CannotDoAnotherYet"))
 	end
 end
 

@@ -8,11 +8,11 @@
 
 local TOOL = cw.tool:New()
 
-TOOL.Name 			= "Door Parenting Manager"
+TOOL.Name 			= "#tool.doorparent.name"
 TOOL.UniqueID 		= "doorparent"
 TOOL.Category		= "Clockwork"
-TOOL.Desc 			= "Manage parent doors."
-TOOL.HelpText		= "Primary: Set Parent/Child | Reload: Clear Active Parent | Secondary: Remove Door Parent"
+TOOL.Desc 			= "#tool.doorparent.desc"
+TOOL.HelpText		= "#tool.doorparent.0"
 TOOL.rightClickCMD	= "DoorUnparent"
 TOOL.reloadCMD		= "DoorResetParent"
 TOOL.reloadFire		= false
@@ -32,16 +32,16 @@ function TOOL:LeftClick(tr)
 			player:RunClockworkCmd("DoorSetParent")
 		end		
 	else
-		cw.player:Notify(player, "This is not a valid door!")
+		cw.player:Notify(player, L("DoorCmds_NotValidDoor"))
 	end
 end
 
 function TOOL.BuildCPanel(CPanel)
 	-- HEADER
-	CPanel:AddControl("Header", {Text = "Door Parenting", Description	= "Manage Parent Doors" })
+	CPanel:AddControl("Header", {Text = "#tool.doorparent.header", Description	= "#tool.doorparent.desc" })
 	CPanel:AddControl("Header", {
-		Text = "Help",
-		Description	= "Door parenting lets you create a parent door, and once the player purchases that door, they will have access to the door's 'children'. Thus eliminating the need to setownable doors. How To use Door Parenting\n\n1. First Choose a parent door using Left Click. This is usually the 'front' door.\n\n2. Now Left Click any doors within the property.\n\n3. Now You may make the front door 'ownable'. You can also do unownable to set text on the other doors.\n\n*Make sure you unset the parent door once you are done."
+		Text = "#tool.doorparent.helpTitle",
+		Description	= "#tool.doorparent.help"
 	})
 end
 

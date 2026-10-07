@@ -23,7 +23,7 @@ function cwStaticEnts:PlayerMakeStatic(player, bIsStatic)
 	if (!IsValid(player)) then return end
 
 	if ((bIsStatic and !player:IsAdmin()) or (!bIsStatic and !player:IsAdmin())) then
-		cw.player:Notify(player, "You do not have access to this command, "..player:Name())
+		cw.player:Notify(player, L("Commands_cwLua_accessDenied", player:Name()))
 
 		return
 	end

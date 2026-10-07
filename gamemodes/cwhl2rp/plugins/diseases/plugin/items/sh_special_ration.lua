@@ -1,15 +1,16 @@
-ITEM.name = "Рацион специальной диеты"
+ITEM.name = "Special Diet Ration"
+ITEM.PrintName = "#Item_SpecialRation_PrintName"
 ITEM.uniqueID = "special_ration"
 ITEM.cost = 0
 ITEM.model = "models/gibs/shield_scanner_gib2.mdl"
 ITEM.weight = 0.2
 ITEM.access = "q"
-ITEM.useText = "Употребить"
-ITEM.category = "Медицина"
+ITEM.useText = "Swallow"
+ITEM.category = "Medical"
 ITEM.business = true
-ITEM.description = "Пища, которую прописывают больным гастритом."
+ITEM.description = "#Item_SpecialRation_Description"
 ITEM.hunger = 40
-ITEM.customFunctions = {"Дать"}
+ITEM.customFunctions = {"Give"}
 
 -- Called when a player uses the item.
 function ITEM:OnUse(player, itemEntity)
@@ -24,7 +25,7 @@ end;
 
 if (SERVER) then
 	function ITEM:OnCustomFunction(player, name)
-		if (name == "Дать") then
+		if (name == "Give") then
 			local lookingPly = player:GetEyeTrace().Entity
 
 			if (lookingPly:IsPlayer()) then
@@ -32,13 +33,13 @@ if (SERVER) then
 					lookingPly:SetCharacterData("diseases", "none")
 				end
 
-				cw.player:Notify(player, "Вы покормили персонажа.")
+				cw.player:Notify(player, L("Diseases_Fed"))
 				player:TakeItem(player:FindItemByID("special_ration"))
 				lookingPly:SetHealth(math.Clamp(player:Health() + Schema:GetHealAmount(player, 1.5), 0, player:GetMaxHealth()))
 
 				hook.Run("PlayerHealed", lookingPly, player, self)
 			else
-				cw.player:Notify(player, "Вы должны смотреть на человека!")
+				cw.player:Notify(player, L("Diseases_MustLookAtPerson"))
 
 				return false
 			end

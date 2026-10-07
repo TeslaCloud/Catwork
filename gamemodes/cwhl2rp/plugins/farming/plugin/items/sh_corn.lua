@@ -7,7 +7,7 @@
 --]]
 
 ITEM.name = "Corn"
-ITEM.PrintName = "Кукуруза"
+ITEM.PrintName = "#Item_Corn_PrintName"
 ITEM.cost = 5
 ITEM.model = "models/bioshockinfinite/porn_on_cob.mdl"
 ITEM.weight = 0.1
@@ -16,7 +16,7 @@ ITEM.uniqueID = "corn"
 ITEM.useText = "Eat"
 ITEM.category = "Consumables"
 ITEM.business = true
-ITEM.description = "Свежая кукуруза."
+ITEM.description = "#Item_Corn_Description"
 ITEM.hunger = 5
 
 -- Called when a player uses the item.

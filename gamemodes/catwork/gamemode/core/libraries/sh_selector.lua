@@ -225,7 +225,7 @@ else
 				self.pages[self.page][#self.pages[self.page] + 1] = {
 					class = "option",
 					key = 7,
-					text = "Back"
+					text = "#Selector_Back"
 				}
 			end
 
@@ -233,7 +233,7 @@ else
 				self.pages[self.page][#self.pages[self.page] + 1] = {
 					class = "option",
 					key = 8,
-					text = "Next"
+					text = "#Selector_Next"
 				}
 			end
 
@@ -241,7 +241,7 @@ else
 				self.pages[self.page][#self.pages[self.page] + 1] = {
 					class = "option",
 					key = 9,
-					text = "Exit"
+					text = "#Selector_Exit"
 				}
 			end
 

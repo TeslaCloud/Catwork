@@ -49,7 +49,7 @@ function PANEL:Populate(player, data)
 	textEntry:SetHeight(256)
 	textEntry:SetText(data)
 
-	button:SetText("Okay")
+	button:SetText("#Button_Okay")
 
 	-- A function to set the text entry's real value.
 	function textEntry:SetRealValue(text)

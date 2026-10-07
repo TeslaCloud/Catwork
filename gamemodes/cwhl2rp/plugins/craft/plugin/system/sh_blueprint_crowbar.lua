@@ -3,7 +3,7 @@ local BLUEPRINT = cw.blueprints:New()
 BLUEPRINT.name = "#Blueprint_BlueprintCrowbar_Name"
 BLUEPRINT.uniqueID = "blueprint_crowbar"
 BLUEPRINT.model = "models/weapons/w_crowbar.mdl"
-BLUEPRINT.category = "Чертежи оружия"
+BLUEPRINT.category = "#Craft_Category_Weapons"
 BLUEPRINT.description = "#Blueprint_BlueprintCrowbar_Description"
 BLUEPRINT.reqatt = {
 	{"rem", 20}

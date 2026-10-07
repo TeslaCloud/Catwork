@@ -7,7 +7,7 @@
 --]]
 
 local COMMAND = cw.command:New("DoorSetParent")
-COMMAND.tip = "Set the active parent door to your target."
+COMMAND.tip = "#Command_Doorsetparent_Description"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "a"
 
@@ -27,13 +27,13 @@ function COMMAND:OnRun(player, arguments)
 			end
 		end
 
-		cw.player:Notify(player, "You have set the active parent door to this. The parent has been highlighted orange, and its children blue.")
+		cw.player:Notify(player, L("DoorCmds_ParentSet"))
 
 		if (cwDoorCmds.infoTable != {}) then
 			netstream.Start(player, "doorParentESP", cwDoorCmds.infoTable)
 		end
 	else
-		cw.player:Notify(player, "This is not a valid door!")
+		cw.player:Notify(player, L("DoorCmds_NotValidDoor"))
 	end
 end
 

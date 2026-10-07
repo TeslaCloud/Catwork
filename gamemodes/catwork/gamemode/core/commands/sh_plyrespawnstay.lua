@@ -22,9 +22,9 @@ function COMMAND:OnRun(player, arguments)
 		local pos = target:GetPos()
 		target:Spawn()
 		target:SetPos(pos)
-		cw.player:Notify(player, target:GetName().." was respawned at their position of death.")
+		cw.player:Notify(player, L("Command_Plyrespawnstay_Respawned", target:GetName()))
 	else
-		cw.player:Notify(player, arguments[1].." is not a valid target!")
+		cw.player:Notify(player, L("NotValidPlayer", arguments[1]))
 	end
 end
 

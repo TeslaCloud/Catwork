@@ -50,7 +50,7 @@ function ITEM:OnUse(player, itemEntity)
 			cw.entity:MakeFlushToGround(entity, trace.HitPos, trace.HitNormal)
 		end
 	else
-		cw.player:Notify(player, "You cannot drop a radio that far away!")
+		cw.player:Notify(player, L("CantDropFar"))
 
 		return false
 	end

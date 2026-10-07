@@ -25,13 +25,13 @@ function COMMAND:OnRun(player, arguments)
 			if (commandTable) then
 				target:GivePermission(commandTable.uniqueID)
 
-				cw.player:Notify(player, "You have granted "..target:Name().." access to "..commandTable.name..".")
-				cw.player:Notify(target, player:Name().." has granted you access to "..commandTable.name..".")
+				cw.player:Notify(player, L("Command_Plygiveaccess_Granted", target:Name(), commandTable.name))
+				cw.player:Notify(target, L("Command_Plygiveaccess_GrantedTarget", player:Name(), commandTable.name))
 			else
-				cw.player:Notify(player, arguments[2].." is not a valid command or alias!")
+				cw.player:Notify(player, L("Command_NotValidCommandOrAlias", arguments[2]))
 			end
 		else
-			cw.player:Notify(player, "You must enter permission's name!")
+			cw.player:Notify(player, L("Command_MustEnterPermission"))
 		end
 	else
 		cw.player:Notify(player, L(player, "NotValidCharacter", arguments[1]))

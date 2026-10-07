@@ -8,11 +8,12 @@
 
 ITEM.baseItem = "book_base"
 ITEM.name = "Fast Headcrab Anatomy"
+ITEM.PrintName = "#Item_BookFha_PrintName"
 ITEM.cost = 6
 ITEM.model = "models/props_lab/binderredlabel.mdl"
 ITEM.uniqueID = "book_fha"
 ITEM.business = true
-ITEM.description = "A book with a fast headcrab on the front."
+ITEM.description = "#Item_BookFha_Description"
 ITEM.bookInformation = [[
 <font color='red' size='4'>Written by Jamie Ruzicano.</font>
 
@@ -40,7 +41,7 @@ the nervous system through the spine rather than directly manipulating the motor
 Fast Zombies are much leaner than other zombie variants, stripped of their outer skin, some body tissue, and most or all organs (revealing large parts of its skeleton).
 It is unclear how or why this decomposition takes place so consistently. Fast Zombies also have longer claws than other zombies.
 
-What distinguishes the Fast Zombie from other zombies is its attribute to climb and move quickly, thus being able to confuse and surprise its prey.
+What distinguishes the Fast Zombie from other zombies is its ability to climb and move quickly, thus being able to confuse and surprise its prey.
 Fast Zombies also make loud wails while attacking and can be heard babbling while idle.
 Fast Zombies stand on two legs while slashing with its claws or standing up, but move on all four legs while running or climbing.
 Fast Zombies, if needed, will lunge at its target to close any distance quickly, and will slash the target upon coming into contact.

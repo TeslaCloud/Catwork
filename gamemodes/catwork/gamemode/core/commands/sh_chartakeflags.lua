@@ -19,14 +19,14 @@ function COMMAND:OnRun(player, arguments)
 	if (target) then
 		if (string.find(arguments[2], "a") or string.find(arguments[2], "s")
 		or string.find(arguments[2], "o")) then
-			cw.player:Notify(player, "You cannot take 'o', 'a' or 's' flags!")
+			cw.player:Notify(player, L("Command_CannotTakeAdminFlags"))
 
 			return
 		end
 
 		cw.player:TakeFlags(target, arguments[2])
 
-		cw.player:NotifyAll(player:Name().." took '"..arguments[2].."' flags from "..target:Name()..".")
+		cw.player:NotifyAll(L("Command_Chartakeflags_Took", player:Name(), target:Name(), arguments[2]))
 	else
 		cw.player:Notify(player, L(player, "NotValidCharacter", arguments[1]))
 	end

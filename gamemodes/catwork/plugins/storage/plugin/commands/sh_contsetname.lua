@@ -7,8 +7,8 @@
 --]]
 
 local COMMAND = cw.command:New("ContSetName")
-COMMAND.tip = "Set a container's name."
-COMMAND.text = "[string Name]"
+COMMAND.tip = "#Command_Contsetname_Description"
+COMMAND.text = "#Command_Contsetname_Syntax"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "a"
 COMMAND.arguments = 1
@@ -32,13 +32,13 @@ function COMMAND:OnRun(player, arguments)
 				trace.Entity:SetNetworkedString("Name", name)
 				cwStorage:SaveStorage()
 			else
-				cw.player:Notify(player, "This is not a valid container!")
+				cw.player:Notify(player, L("Container_NotValid"))
 			end
 		else
-			cw.player:Notify(player, "This is not a valid container!")
+			cw.player:Notify(player, L("Container_NotValid"))
 		end
 	else
-		cw.player:Notify(player, "This is not a valid container!")
+		cw.player:Notify(player, L("Container_NotValid"))
 	end
 end
 

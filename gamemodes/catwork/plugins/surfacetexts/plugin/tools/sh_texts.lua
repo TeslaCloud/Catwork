@@ -7,7 +7,7 @@
 local TOOL = cw.tool:New()
 
 TOOL.Category = "Clockwork"
-TOOL.Name = "Text Tool"
+TOOL.Name = "#tool.texts.name"
 TOOL.UniqueID = "texts"
 TOOL.Command = nil
 TOOL.ConfigName = ""
@@ -53,7 +53,7 @@ function TOOL:LeftClick(trace)
 
 	cwSurfaceTexts:AddText(data)
 
-	cw.player:Notify(player, "You have added a 3D text.")
+	cw.player:Notify(player, L("SurfaceTexts_Added"))
 
  	return true
 end
@@ -86,7 +86,7 @@ function TOOL.BuildCPanel(CPanel)
 
 	local controlPresets = CPanel:AddControl("ComboBox", { MenuButton = 1, Folder = "textstyle", Options = options, CVars = {"texts_style"} })
 	controlPresets.Button:SetVisible(false)
-	controlPresets.DropDown:SetValue("Please Choose")
+	controlPresets.DropDown:SetValue("#tool.texts.choose")
 
 	CPanel:AddControl("TextBox", { Label = "#tool.texts.text", Command = "texts_text", MaxLenth = "128" })
 	CPanel:AddControl("TextBox", { Label = "#tool.texts.color", Command = "texts_color", MaxLenth = "16" })

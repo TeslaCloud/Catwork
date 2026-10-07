@@ -8,11 +8,12 @@
 
 ITEM.baseItem = "book_base"
 ITEM.name = "Vortigaunt Anatomy"
+ITEM.PrintName = "#Item_BookVa_PrintName"
 ITEM.cost = 10
 ITEM.model = "models/props_lab/bindergreenlabel.mdl"
 ITEM.uniqueID = "book_va"
 ITEM.business = true
-ITEM.description = "A green book with a Vortigaunt on the front."
+ITEM.description = "#Item_BookVa_Description"
 ITEM.bookInformation = [[
 <font color='red' size='4'>Written by Jamie Ruzicano.</font>
 
@@ -20,10 +21,10 @@ Vortigaunts, affectionately known as Vorts by their allies, are sapient
 aliens. Their native home is the Xenian border world, from where they were
 enslaved and forced to lead an invasion of Earth following the Black Mesa
 Incident. Following the death of the latter, they have as a species chosen
-to ally themselves with the remaining humans on earth.
+to ally themselves with the remaining humans on Earth.
 
 In appearance, a Vortigaunt is roughly humanoid with two legs and two
-arms, but has an additional arm protruding from it's chest. This extra
+arms, but has an additional arm protruding from its chest. This extra
 limb is a feature also found in the other bipedal, sapient species from
 Xen. This similarity, along with other shared features such as red eyes
 and back-jointed legs, is strongly suggestive of a common ancestry with
@@ -65,7 +66,7 @@ generations, and enforced servitude appears to have formed the bedrock of
 Vortigaunt history and culture. Vortigaunts have many traditions,
 including an apparent oral tradition of passing down poetry and songs from
 generation to generation. They believe in a binding life-force which they
-call the "Vortessence", which could be consitered a religion or a popular
+call the "Vortessence", which could be considered a religion or a popular
 belief. Due to their use of this force, which remains untapped by the
 human species, the Vortigaunt species is capable of a form of telepathy,
 at least amongst their own kind. One particular comment made by a

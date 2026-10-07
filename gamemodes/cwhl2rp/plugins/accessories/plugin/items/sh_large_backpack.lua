@@ -5,8 +5,9 @@
 
 ITEM.baseItem = "accessory_base"
 ITEM.name = "Backpack";
+ITEM.PrintName = "#Item_BackpackLarge_PrintName";
 ITEM.batch = 1;
-ITEM.useText = "Pickup";
+ITEM.useText = "#Item_BackpackLarge_UseText";
 ITEM.cost = 40;
 ITEM.model = "models/props_c17/oildrum001.mdl";
 ITEM.weight = 2;
@@ -14,7 +15,7 @@ ITEM.access = "V";
 ITEM.category = "Other";
 ITEM.business = true;
 ITEM.uniqueID = "backpack_large";
-ITEM.description = "A green army backpack that's heavily worn.";
+ITEM.description = "#Item_BackpackLarge_Description";
 ITEM.isAttachment = true;
 ITEM.attachmentBone = "ValveBiped.Bip01_Spine4";
 ITEM.attachmentOffsetAngles = Angle(90, -22.209, 180);

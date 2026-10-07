@@ -5,8 +5,8 @@
 --]]
 
 local COMMAND = cw.command:New("DoorResetPlayer")
-COMMAND.tip = "Removes currently assigned player from the door."
-COMMAND.text = "<string Door Title>"
+COMMAND.tip = "#Command_Doorresetplayer_Description"
+COMMAND.text = "#Command_Doorresetplayer_Syntax"
 COMMAND.access = "D"
 COMMAND.arguments = 1
 COMMAND.alias = {"DoorRemovePlayer"}
@@ -19,9 +19,9 @@ function COMMAND:OnRun(player, arguments)
 	if (IsValid(door) and cw.entity:IsDoor(door)) then
 		cwPermaDoors:ResetPermaDoor(door, doorName)
 
-		cw.player:Notify(player, "This door's owner has been removed.")
+		cw.player:Notify(player, L("PermaDoors_OwnerRemoved"))
 	else
-		cw.player:Notify(player, "This is not a valid door!")
+		cw.player:Notify(player, L("PermaDoors_NotValidDoor"))
 	end
 end
 

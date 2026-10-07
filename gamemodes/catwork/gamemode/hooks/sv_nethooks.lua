@@ -98,7 +98,7 @@ netstream.Hook("InteractCharacter", function(player, data)
 			local fault = hook.Run("PlayerCanInteractCharacter", player, action, character)
 
 			if (fault == false or type(fault) == "string") then
-				return cw.player:SetCreateFault(fault or "You cannot interact with this character!")
+				return cw.player:SetCreateFault(fault or L"CharFault_CannotInteract")
 			elseif (action == "delete") then
 				local bSuccess, fault = cw.player:DeleteCharacter(player, characterID)
 
@@ -145,7 +145,7 @@ netstream.Hook("DoorManagement", function(player, data)
 								local doorName = cw.entity:GetDoorName(data[1])
 
 								if (doorName == "false" or doorName == "hidden" or doorName == "") then
-									doorName = "Door"
+									doorName = L"Doors_Name"
 								end
 
 								if (doorCost > 0) then

@@ -20,14 +20,14 @@ function COMMAND:OnRun(player, arguments)
 		if (!target:GetCharacterData("permakilled")) then
 			Schema:PermaKillPlayer(target, target:GetRagdollEntity())
 		else
-			cw.player:Notify(player, "This character is already permanently killed!")
+			cw.player:Notify(player, L("PermaKill_Already"))
 
 			return
 		end
 
-		cw.player:NotifyAll(player:Name().." permanently killed the character '"..target:Name().."'.")
+		cw.player:NotifyAll(L("PermaKill_Killed", player:Name(), target:Name()))
 	else
-		cw.player:Notify(player, arguments[1].." is not a valid character!")
+		cw.player:Notify(player, L("NotValidCharacter", arguments[1]))
 	end
 end
 

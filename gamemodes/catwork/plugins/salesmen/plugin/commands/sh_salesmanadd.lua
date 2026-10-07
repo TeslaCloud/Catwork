@@ -7,8 +7,8 @@
 --]]
 
 local COMMAND = cw.command:New("SalesmanAdd")
-COMMAND.tip = "Add a salesman at your target position."
-COMMAND.text = "[number Animation]"
+COMMAND.tip = "#Command_Salesmanadd_Description"
+COMMAND.text = "#Command_Salesmanadd_Syntax"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "s"
 COMMAND.optionalArguments = 1

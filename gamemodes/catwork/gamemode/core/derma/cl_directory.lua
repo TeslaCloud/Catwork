@@ -36,10 +36,10 @@ function PANEL:ShowCategory(category)
 		local finalCode = [[
 			<div class="cwContentBox">
 				<div class="cwContentTitle">
-					<img src="]]..PAGE_ICON..[["/>Select a Category
+					<img src="]]..PAGE_ICON..[["/>]]..L("#DirectoryMenu_SelectCategory")..[[
 				</div>
 				<div class="cwContentText">
-					Some categories may only be available to users with special priviledges.
+					]]..L("#DirectoryMenu_SelectCategoryHelp")..[[
 				</div>
 			</div>
 		]]

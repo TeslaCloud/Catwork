@@ -7,7 +7,7 @@
 --]]
 
 local COMMAND = cw.command:New("AnimPant")
-COMMAND.tip = "Put your character into a panting stance."
+COMMAND.tip = "#Command_Animpant_Description"
 COMMAND.flags = CMD_DEFAULT
 
 -- Called when the command has been run.
@@ -27,7 +27,7 @@ function COMMAND:OnRun(player, arguments)
 				cwEmoteAnims:MakePlayerExitStance(player)
 			elseif (!forcedAnimation or !cwEmoteAnimscwEmoteAnims[forcedAnimation.animation]) then
 				if (player:Crouching()) then
-					cw.player:Notify(player, "You cannot do this while you are crouching!")
+					cw.player:Notify(player, L("EmoteAnims_CannotWhileCrouching"))
 				elseif (player:IsOnGround() or IsValid(player:GetGroundEntity())) then
 					player:SetNetVar("StancePos", player:GetPos())
 					player:SetNetVar("StanceAng", player:GetAngles())
@@ -38,14 +38,14 @@ function COMMAND:OnRun(player, arguments)
 						end)
 					end)
 				else
-					cw.player:Notify(player, "You must be standing on the ground!")
+					cw.player:Notify(player, L("EmoteAnims_MustStandOnGround"))
 				end
 			end
 		else
-			cw.player:Notify(player, "The model that you are using cannot perform this action!")
+			cw.player:Notify(player, L("EmoteAnims_ModelCannotPerform"))
 		end
 	else
-		cw.player:Notify(player, "You cannot do another stance or gesture yet!")
+		cw.player:Notify(player, L("EmoteAnims_CannotDoAnotherYet"))
 	end
 end
 

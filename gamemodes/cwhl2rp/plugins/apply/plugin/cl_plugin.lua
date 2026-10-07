@@ -6,4 +6,4 @@
 
 PLUGIN = PLUGIN
 
-config.AddToSystem("Enable Apply Recognise", "apply_recognise_enable", "Whether or not should players recognise other characters if they use /Apply?");
+config.AddToSystem("#Apply_RecogniseEnable", "apply_recognise_enable", "#Apply_RecogniseEnableDesc");

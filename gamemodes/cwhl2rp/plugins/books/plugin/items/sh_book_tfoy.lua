@@ -9,10 +9,11 @@
 ITEM.baseItem = "book_base"
 ITEM.cost = 6
 ITEM.name = "The Fountain of Youth"
+ITEM.PrintName = "#Item_BookTfoy_PrintName"
 ITEM.model = "models/props_lab/bindergreenlabel.mdl"
 ITEM.uniqueID = "book_tfw"
 ITEM.business = true
-ITEM.description = "It's about a fountain... of young people and shit."
+ITEM.description = "#Item_BookTfoy_Description"
 ITEM.bookInformation = [[
 <font color='red' size='4'>Written by M. Stanley Bubien.</font>
 

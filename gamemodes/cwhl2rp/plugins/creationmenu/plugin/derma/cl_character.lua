@@ -65,7 +65,7 @@ function PANEL:Init()
 
 		self.communityButton = vgui.Create("cwLabelButton", self)
 		self.communityButton:SetFont(smallTextFont)
-		self.communityButton:SetText("ФОРУМ")
+		self.communityButton:SetText(cw.lang:TranslateText("#MainMenu_Forum"):utf8upper())
 		self.communityButton:SetContentAlignment(4)
 		self.communityButton:FadeIn(0.5)
 		self.communityButton:SetCallback(function(panel)

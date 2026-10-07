@@ -32,7 +32,7 @@ function COMMAND:OnRun(player, arguments)
 
 							healed = true
 						else
-							cw.player:Notify(player, "You do not own a health vial!")
+							cw.player:Notify(player, L("Heal_NoHealthVial"))
 						end
 					elseif (itemTable and arguments[1] == "health_kit") then
 						if (player:HasItemByID("health_kit")) then
@@ -43,7 +43,7 @@ function COMMAND:OnRun(player, arguments)
 
 							healed = true
 						else
-							cw.player:Notify(player, "You do not own a health kit!")
+							cw.player:Notify(player, L("Heal_NoHealthKit"))
 						end
 					elseif (itemTable and arguments[1] == "bandage") then
 						if (player:HasItemByID("bandage")) then
@@ -54,10 +54,10 @@ function COMMAND:OnRun(player, arguments)
 
 							healed = true
 						else
-							cw.player:Notify(player, "You do not own a bandage!")
+							cw.player:Notify(player, L("Heal_NoBandage"))
 						end
 					else
-						cw.player:Notify(player, "This is not a valid item!")
+						cw.player:Notify(player, L("Heal_InvalidItem"))
 					end
 
 					if (healed) then
@@ -74,19 +74,19 @@ function COMMAND:OnRun(player, arguments)
 
 						Schema:MakePlayerScanner(target, true)
 					else
-						cw.player:Notify(player, "You do not own a bandage!")
+						cw.player:Notify(player, L("Heal_NoPowerNode"))
 					end
 				else
-					cw.player:Notify(player, "This is not a valid item!")
+					cw.player:Notify(player, L("Heal_InvalidItem"))
 				end
 			else
-				cw.player:Notify(player, "This character is too far away!")
+				cw.player:Notify(player, L("Err_CharacterTooFar"))
 			end
 		else
-			cw.player:Notify(player, "You must look at a character!")
+			cw.player:Notify(player, L("Err_MustLookAtCharacter"))
 		end
 	else
-		cw.player:Notify(player, "You don't have permission to do this right now!")
+		cw.player:Notify(player, L("Err_NoPermissionRightNow"))
 	end
 end
 

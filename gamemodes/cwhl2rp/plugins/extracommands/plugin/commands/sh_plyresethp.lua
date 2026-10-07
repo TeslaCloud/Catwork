@@ -5,8 +5,8 @@
 --]]
 
 local COMMAND = cw.command:New("PlyResetHealth")
-COMMAND.tip = "Resets player's health to max amount."
-COMMAND.text = "<string Player>"
+COMMAND.tip = "#Command_Plyresethealth_Description"
+COMMAND.text = "#Command_Plyresethealth_Syntax"
 COMMAND.access = "a"
 COMMAND.arguments = 1
 COMMAND.alias = {"ResetHP", "ResetHealth", "PlyResetHP"}
@@ -18,9 +18,9 @@ function COMMAND:OnRun(player, arguments)
 	if (IsValid(target)) then
 		target:SetHealth(target:GetMaxHealth())
 
-		cw.player:Notify(player, "You have reset "..target:Name().."'s health to "..target:GetMaxHealth()..".")
+		cw.player:Notify(player, L("ExtraCommands_HealthReset", target:Name(), target:GetMaxHealth()))
 	else
-		cw.player:Notify(player, arguments[1].." is not a valid target!")
+		cw.player:Notify(player, L("NotValidPlayer", arguments[1]))
 	end
 end
 

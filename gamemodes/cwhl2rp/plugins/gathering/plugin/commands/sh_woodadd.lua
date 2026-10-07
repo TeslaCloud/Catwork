@@ -7,7 +7,7 @@
 --]]
 
 local COMMAND = cw.command:New("WoodAdd")
-COMMAND.tip = "Установить точку появления деревянной мебели для добычи."
+COMMAND.tip = "#Command_Woodadd_Description"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "s"
 
@@ -39,7 +39,7 @@ function COMMAND:OnRun(player, arguments)
 			data = "wood"
 		})
 
-		cw.player:Notify(player, "Вы добавили точку появления деревянной мебели.")
+		cw.player:Notify(player, L("Gathering_AddedWoodPoint"))
 
 		cwGather:SaveNodesSpawnPoints()
 	end

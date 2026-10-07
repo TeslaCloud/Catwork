@@ -38,7 +38,7 @@ end
 
 -- A function to populate the panel.
 function PANEL:Populate(objectives)
-	self:SetTitle("Objectives")
+	self:SetTitle("#Objectives_Title")
 
 	self.panelList:Clear()
 
@@ -49,7 +49,7 @@ function PANEL:Populate(objectives)
 	textEntry:SetHeight(256)
 	textEntry:SetText(objectives)
 
-	button:SetText("Okay")
+	button:SetText("#Button_Okay")
 
 	-- A function to set the text entry's real value.
 	function textEntry:SetRealValue(text)

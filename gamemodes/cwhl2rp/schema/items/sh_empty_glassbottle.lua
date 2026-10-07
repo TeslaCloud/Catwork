@@ -6,7 +6,7 @@ ITEM.cost = 0
 ITEM.model = "models/props_junk/garbage_glassbottle003a.mdl"
 ITEM.weight = 0.3
 ITEM.business = false
-ITEM.category = "Мусор"
+ITEM.category = "Junk"
 ITEM.description = "#Item_EmptyGlassbottle_Description"
 
 -- Called when a player drops the item.

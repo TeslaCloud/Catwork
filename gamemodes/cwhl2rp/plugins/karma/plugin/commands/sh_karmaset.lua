@@ -1,6 +1,6 @@
 COMMAND = cw.command:New("KarmaSet")
-COMMAND.tip = "Set players karma."
-COMMAND.text = "<string Name> <number Value>"
+COMMAND.tip = "#Command_Karmaset_Description"
+COMMAND.text = "#Command_Karmaset_Syntax"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "o"
 COMMAND.arguments = 2
@@ -14,12 +14,12 @@ function COMMAND:OnRun(player, arguments)
 	if (target) then
 		if (karma and karma <= 100 and karma >= -100) then
 			target:SetKarma(karma)
-			cw.player:Notify(player, "Вы установили карму "..target:Name().." на "..karma..".")
+			cw.player:Notify(player, L("Karma_SetTo", target:Name(), karma))
 		else
-			cw.player:Notify(player, "Вы указали неверный уровень кармы.")
+			cw.player:Notify(player, L("Karma_InvalidLevel"))
 		end
 	else
-		cw.player:Notify(player, arguments[1].." is not a valid player!")
+		cw.player:Notify(player, L("NotValidPlayer", arguments[1]))
 	end
 end
 

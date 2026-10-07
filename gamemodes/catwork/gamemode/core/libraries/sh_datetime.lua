@@ -41,7 +41,7 @@ function cw.time:GetDayName()
 	local defaultDays = cw.option:GetKey("default_days")
 
 	if (defaultDays) then
-		return defaultDays[self:GetDay()] or "Unknown"
+		return defaultDays[self:GetDay()] or "#UnknownDay"
 	end
 end
 

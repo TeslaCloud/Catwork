@@ -20,11 +20,11 @@ function COMMAND:OnRun(player, arguments)
 	if (target) then
 		if (!cw.player:IsProtected(target)) then
 			cw.player:SetBanned(target, true)
-			cw.player:NotifyAll(player:Name().." banned the character '"..target:Name().."'.")
+			cw.player:NotifyAll(L("Command_Charban_Banned", player:Name(), target:Name()))
 
 			target:KillSilent()
 		else
-			cw.player:Notify(player, target:Name().." is protected!")
+			cw.player:Notify(player, L("Command_PlayerProtected", target:Name()))
 		end
 	else
 		cw.player:Notify(player, L(player, "NotValidCharacter", arguments[1]))

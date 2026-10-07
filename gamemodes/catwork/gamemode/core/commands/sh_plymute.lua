@@ -27,12 +27,12 @@ function COMMAND:OnRun(player, arguments)
 			target.cwNextTalkOOC = curTime + seconds
 			target.cwNextTalkLOOC = curTime + seconds
 
-			cw.player:NotifyAll(player:Name().." has disabled '"..target:Name().."' OOC chat for "..duration.." minutes.")
+			cw.player:NotifyAll(L("Command_Plymute_Muted", player:Name(), target:Name(), duration))
 		else
-			cw.player:Notify(player, target:Name().." is protected!")
+			cw.player:Notify(player, L("Command_PlayerProtected", target:Name()))
 		end
 	else
-		cw.player:Notify(player, arguments[1].." is not a valid player!")
+		cw.player:Notify(player, L("NotValidPlayer", arguments[1]))
 	end
 end
 

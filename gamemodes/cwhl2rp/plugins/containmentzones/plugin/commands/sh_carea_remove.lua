@@ -1,6 +1,6 @@
 local COMMAND = cw.command:New("ContainmentRemove")
 COMMAND.tip = ""
-COMMAND.text = "[number Search Radius]"
+COMMAND.text = "#Command_Containmentremove_Syntax"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "s"
 
@@ -29,9 +29,9 @@ function COMMAND:OnRun(player, arguments)
 	end
 
 	if removed > 0 then
-		cw.player:Notify(player, "You have removed "..removed.." contamination areas.")
+		cw.player:Notify(player, L("Containment_Removed", removed))
 	else
-		cw.player:Notify(player, "There were no contaminated areas near this position.")
+		cw.player:Notify(player, L("Containment_NoneFound"))
 	end
 end
 

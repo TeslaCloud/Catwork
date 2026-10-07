@@ -17,7 +17,7 @@ function COMMAND:OnRun(player, arguments)
 
 		player.editObjectivesAuthorised = true
 	else
-		cw.player:Notify(player, "You are not the Combine!")
+		cw.player:Notify(player, L("Err_NotCombine"))
 	end
 end
 

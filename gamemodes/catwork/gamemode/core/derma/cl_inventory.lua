@@ -278,7 +278,7 @@ function PANEL:Init()
 
 	if (customData.information) then
 		if (isnumber(customData.information)) then
-			customData.information = customData.information.."кг"
+			customData.information = customData.information..L("#Unit_Kilograms")
 		end
 	end
 
@@ -411,7 +411,7 @@ function PANEL:Think()
 	)
 
 	self.spaceUsed:SetSize(self:GetWide() - 2, self:GetTall() - 2)
-	self.weight:SetText(self.invWeight.."/"..cw.player:GetMaxWeight().."кг")
+	self.weight:SetText(self.invWeight.."/"..cw.player:GetMaxWeight()..L("#Unit_Kilograms"))
 	self.weight:SetPos(self:GetWide() / 2 - self.weight:GetWide() / 2, self:GetTall() / 2 - self.weight:GetTall() / 2)
 	self.weight:SizeToContents()
 end
@@ -473,7 +473,7 @@ function PANEL:Think()
 	)
 
 	self.spaceUsed:SetSize(self:GetWide() - 2, self:GetTall() - 2)
-	self.space:SetText(inventorySpace.."/"..cw.player:GetMaxSpace().."l")
+	self.space:SetText(inventorySpace.."/"..cw.player:GetMaxSpace()..L("#Unit_Litres"))
 	self.space:SetPos(self:GetWide() / 2 - self.space:GetWide() / 2, self:GetTall() / 2 - self.space:GetTall() / 2)
 	self.space:SizeToContents()
 end

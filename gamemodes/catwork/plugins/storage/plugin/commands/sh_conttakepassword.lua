@@ -7,7 +7,7 @@
 --]]
 
 local COMMAND = cw.command:New("ContTakePassword")
-COMMAND.tip = "Take a container's password."
+COMMAND.tip = "#Command_Conttakepassword_Description"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "a"
 
@@ -28,15 +28,15 @@ function COMMAND:OnRun(player, arguments)
 				end
 
 				trace.Entity.cwPassword = nil
-				cw.player:Notify(player, "This container's password has been removed.")
+				cw.player:Notify(player, L("Container_PasswordRemoved"))
 			else
-				cw.player:Notify(player, "This is not a valid container!")
+				cw.player:Notify(player, L("Container_NotValid"))
 			end
 		else
-			cw.player:Notify(player, "This is not a valid container!")
+			cw.player:Notify(player, L("Container_NotValid"))
 		end
 	else
-		cw.player:Notify(player, "This is not a valid container!")
+		cw.player:Notify(player, L("Container_NotValid"))
 	end
 end
 

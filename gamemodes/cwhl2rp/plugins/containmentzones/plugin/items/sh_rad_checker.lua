@@ -1,13 +1,14 @@
 
-ITEM.name = "ПДБ-6"
+ITEM.name = "PDB-6"
+ITEM.PrintName = "#Item_RadChecker_PrintName"
 ITEM.uniqueID = "rad_checker"
 ITEM.cost = 0
 ITEM.model = "models/Items/car_battery01.mdl"
-ITEM.useText = "Проверить"
+ITEM.useText = "#Containment_UseText_Check"
 ITEM.useSound = false
 ITEM.weight = 2.5
 ITEM.business = true
-ITEM.description = "Прибор для определения дозы радиации организма."
+ITEM.description = "#Item_RadChecker_Description"
 
 function ITEM:OnUse(player, itemEntity)
 	local medical = cw.attributes:Fraction(player, ATB_MEDICAL, 100)
@@ -15,18 +16,18 @@ function ITEM:OnUse(player, itemEntity)
 		local traceent = player:GetEyeTrace().Entity
 
 		if IsValid(traceent) then
-			local rad = "неизвестно."
+			local rad = L("Containment_RadDose_Unknown")
 			if traceent:IsPlayer() or traceent:IsNPC() or traceent:IsBot() then
 				if traceent:Distance(player:GetPos()) < 55 then
 					if traceent.GetCharacterData then
-						rad = math.Round(traceent:GetCharacterData("radlevel", 0), 2) .. " рад."
+						rad = L("Containment_RadDose_Value", math.Round(traceent:GetCharacterData("radlevel", 0), 2))
 					end
-					cw.player:Notify(player, "Доза радиации объекта: "..rad)
+					cw.player:Notify(player, L("Containment_RadDose").." "..rad)
 				end
 			end
 		end
 	else
-		cw.player:Notify(player, "Ваших медицинских навыков недостаточно чтобы использовать этот прибор.")
+		cw.player:Notify(player, L("Containment_RadChecker_NoSkill"))
 	end
 
 	return false

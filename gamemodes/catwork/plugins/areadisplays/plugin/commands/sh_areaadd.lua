@@ -7,8 +7,8 @@
 --]]
 
 local COMMAND = cw.command:New("AreaAdd")
-COMMAND.tip = "Add an area. Classes are 3D, Scrolling or Cinematic. Use %t in the name to show time."
-COMMAND.text = "<string Name> [number Scale] [bool Expires] [string Class]"
+COMMAND.tip = "#Command_Areaadd_Description"
+COMMAND.text = "#Command_Areaadd_Syntax"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "s"
 COMMAND.arguments = 1
@@ -32,13 +32,13 @@ function COMMAND:OnRun(player, arguments)
 			player.cwAreaData.doesExpire = true
 		end
 
-		cw.player:Notify(player, "You have added the minimum point. Now add the maximum point.")
+		cw.player:Notify(player, L("AreaDisplays_MinimumAdded"))
 		return
 	elseif (!areaPointData.maximum) then
 		areaPointData.maximum = trace.HitPos
 
 		if (areaPointData.class == "3D") then
-			cw.player:Notify(player, "You have added the minimum point. Now point at where the text will show.")
+			cw.player:Notify(player, L("AreaDisplays_MaximumAdded"))
 			return
 		end
 	end
@@ -59,7 +59,7 @@ function COMMAND:OnRun(player, arguments)
 	netstream.Start(nil, "AreaAdd", data)
 		cwAreaDisplays.storedList[#cwAreaDisplays.storedList + 1] = data
 		cwAreaDisplays:SaveAreaDisplays()
-	cw.player:Notify(player, "You have added the '"..data.name.."' area display.")
+	cw.player:Notify(player, L("AreaDisplays_Added").." '"..data.name.."'.")
 
 	player.cwAreaData = nil
 end

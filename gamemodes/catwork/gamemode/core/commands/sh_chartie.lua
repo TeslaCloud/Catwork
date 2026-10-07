@@ -19,22 +19,22 @@ function COMMAND:OnRun(player, arguments)
 	local target = _player.Find(arguments[1])
 
 	if (!cw.command:FindByID("InvZipTie")) then
-		player:Notify("This schema doesn't support tying.")
+		player:Notify(L("Command_Chartie_NotSupported"))
 		return
 	end
 
 	if (target) then
 		if (target:GetNetVar("tied") != 0) then
 			Schema:TiePlayer(target, false)
-			player:Notify("You untied "..target:GetName()..".")
-			target:Notify("You were untied by "..player:GetName()..".")
+			player:Notify(L("Command_Chartie_Untied", target:GetName()))
+			target:Notify(L("Command_Chartie_UntiedBy", player:GetName()))
 		else
 			Schema:TiePlayer(target, true)
-			player:Notify("You tied "..target:GetName()..".")
-			target:Notify("You were tied by "..player:GetName()..".")
+			player:Notify(L("Command_Chartie_Tied", target:GetName()))
+			target:Notify(L("Command_Chartie_TiedBy", player:GetName()))
 		end
 	else
-		player:Notify(arguments[2].." is not a valid player!")
+		player:Notify(L("NotValidPlayer", arguments[1]))
 	end
 end
 

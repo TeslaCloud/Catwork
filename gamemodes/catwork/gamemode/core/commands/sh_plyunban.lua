@@ -21,10 +21,10 @@ function COMMAND:OnRun(player, arguments)
 	local identifier = string.upper(arguments[1])
 
 	if (cw.bans.stored[identifier]) then
-		cw.player:NotifyAll(player:Name().." has unbanned '"..cw.bans.stored[identifier].steamName.."'.")
+		cw.player:NotifyAll(L("Command_Plyunban_Unbanned", player:Name(), cw.bans.stored[identifier].steamName))
 		cw.bans:Remove(identifier)
 	else
-		cw.player:Notify(player, "There are no banned players with the '"..identifier.."' identifier!")
+		cw.player:Notify(player, L("Command_Plyunban_NotFound", identifier))
 	end
 end
 

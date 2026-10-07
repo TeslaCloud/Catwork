@@ -11,6 +11,6 @@ local ATTRIBUTE = cw.attribute:New()
 	ATTRIBUTE.uniqueID = "melee"
 	ATTRIBUTE.description = "Определяет, как хорошо Вы владеете холодным оружием и рукопашным боем."
 	ATTRIBUTE.isOnCharScreen = false
-	ATTRIBUTE.category = "Навыки"
+	ATTRIBUTE.category = "#AttributeCategory_Skills"
 ATB_MELEE = cw.attribute:Register(ATTRIBUTE)
 --]]

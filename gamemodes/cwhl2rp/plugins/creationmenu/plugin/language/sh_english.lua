@@ -13,15 +13,15 @@ lang["#MainMenu_Forum"] = "Forum"
 
 -- Config.
 lang["#CommunityName"] = "Your community name"
-lang["#CommunityNameDesc"] = "Name of your community which will written in characters menu. If press on this button then your in-game browser will open link of your community."
-lang["#CommunityLink"] = "Link on your community"
-lang["#CommunityLinkDesc"] = "If press on button with name of your community your in-game browser will open link of your community."
+lang["#CommunityNameDesc"] = "The name of your community, which will be shown in the character menu. Pressing this button will open the link to your community in the in-game browser."
+lang["#CommunityLink"] = "Link to your community"
+lang["#CommunityLinkDesc"] = "Pressing the button with the name of your community will open this link in the in-game browser."
 lang["#CommunityButtonEnable"] = "Enable community button"
-lang["#CommunityButtonEnableDesc"] = "Whether or not the button of community is enabled."
+lang["#CommunityButtonEnableDesc"] = "Whether or not the community button is enabled."
 
 lang["#ForumName"] = "Your forum name"
-lang["#ForumNameDesc"] = "Name of your forum which will written in characters menu. If press on this button then your in-game browser will open link of your forum."
-lang["#ForumLink"] = "Link on your forum"
-lang["#ForumLinkDesc"] = "If press on button with name of your forum your in-game browser will open link of your forum."
+lang["#ForumNameDesc"] = "The name of your forum, which will be shown in the character menu. Pressing this button will open the link to your forum in the in-game browser."
+lang["#ForumLink"] = "Link to your forum"
+lang["#ForumLinkDesc"] = "Pressing the button with the name of your forum will open this link in the in-game browser."
 lang["#ForumButtonEnable"] = "Enable forum button"
-lang["#ForumButtonEnableDesc"] = "Whether or not the button of forum is enabled.";
+lang["#ForumButtonEnableDesc"] = "Whether or not the forum button is enabled.";

@@ -7,16 +7,16 @@
 --]]
 
 ITEM.name = "Tomato Juice"
-ITEM.PrintName = "Томатный сок"
+ITEM.PrintName = "#Item_TomatoJuice_PrintName"
 ITEM.cost = 25
 ITEM.model = "models/props_nunk/popcan01a.mdl"
 ITEM.weight = 0.1
 ITEM.uniqueID = "tomato_juice"
 ITEM.access = "v"
-ITEM.useText = "Eat"
+ITEM.useText = "Drink"
 ITEM.category = "Consumables"
 ITEM.business = true
-ITEM.description = "Красный, словно кровь."
+ITEM.description = "#Item_TomatoJuice_Description"
 ITEM.thirst = 50
 
 -- Called when a player uses the item.

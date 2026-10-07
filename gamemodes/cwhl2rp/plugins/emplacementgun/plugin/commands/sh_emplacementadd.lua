@@ -4,7 +4,7 @@
 --]]
 
 local COMMAND = cw.command:New("EmplacementAdd")
-COMMAND.tip = "Add an emplacement gun at your target position."
+COMMAND.tip = "#Command_Emplacementadd_Description"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "s"
 
@@ -20,7 +20,7 @@ function COMMAND:OnRun(player, arguments)
 	emplacementGun:Remove()
 
 	if (IsValid(entity)) then
-		cw.player:Notify(player, "You have added an emplacement gun.")
+		cw.player:Notify(player, L("Emplacement_Added"))
 	end
 end
 

@@ -7,8 +7,8 @@
 --]]
 
 local COMMAND = cw.command:New("DoorSetAllOwnable")
-COMMAND.tip = "Set all doors ownable."
-COMMAND.text = "<string Name>"
+COMMAND.tip = "#Command_Doorsetallownable_Description"
+COMMAND.text = "#Command_Doorsetallownable_Syntax"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "a"
 COMMAND.arguments = 1
@@ -34,8 +34,8 @@ function COMMAND:OnRun(player, arguments)
 		end
 	end
 
-	cw.player:Notify(player, good_doors.." doors have been set ownable.")
-	cw.player:Notify(player, "Remember: This is ALL Doors!")
+	cw.player:Notify(player, L("DoorCmds_AllSetOwnable", good_doors))
+	cw.player:Notify(player, L("DoorCmds_AllDoorsReminder"))
 end
 
 COMMAND:Register();

@@ -7,7 +7,7 @@
 --]]
 
 local COMMAND = cw.command:New("TextRemove")
-COMMAND.tip = "Remove some text from a surface."
+COMMAND.tip = "#Command_Textremove_Description"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "a"
 

@@ -8,7 +8,7 @@
 
 netstream.Hook("SalesmanDone", function(player, data)
 	if (IsValid(data) and data:GetClass() == "cw_salesman") then
-		data:TalkToPlayer(player, data.cwTextTab.doneBusiness, "Приходи еще.")
+		data:TalkToPlayer(player, data.cwTextTab.doneBusiness, L("Salesman_Default_DoneBusiness"))
 	end
 end)
 
@@ -20,7 +20,7 @@ netstream.Hook("Salesmenu", function(player, data)
 
 			if (data.tradeType == "Sells" and !itemTable.isBaseItem and data.entity.cwSellTab[data.uniqueID]) then
 				if (data.entity.cwStock[itemUniqueID] == 0) then
-					data.entity:TalkToPlayer(player, data.entity.cwTextTab.noStock, "Весь товар продан!")
+					data.entity:TalkToPlayer(player, data.entity.cwTextTab.noStock, L("Salesman_Default_NoStock"))
 
 					return
 				end
@@ -41,7 +41,7 @@ netstream.Hook("Salesmenu", function(player, data)
 				end
 
 				if (!player:CanHoldWeight(itemTable.weight * amount)) then
-					cw.player:Notify(player, "Ты это не унесешь.")
+					cw.player:Notify(player, L("Salesman_CannotCarry"))
 
 					return
 				end
@@ -58,10 +58,10 @@ netstream.Hook("Salesmenu", function(player, data)
 
 						if (amount > 1) then
 							cw.player:GiveCash(player, -(cost * amount), amount.." "..itemTable.PrintName)
-							cw.player:Notify(player, "Вы получили "..amount.." "..itemTable.PrintName.." от "..data.entity:GetNetworkedString("Name")..".")
+							cw.player:Notify(player, L("Salesman_YouReceived", amount).." "..itemTable.PrintName.." "..L("Salesman_From").." "..data.entity:GetNetworkedString("Name")..".")
 						else
 							cw.player:GiveCash(player, -(cost * amount), amount.." "..itemTable.PrintName)
-							cw.player:Notify(player, "Вы получили "..amount.." "..itemTable.PrintName.." от "..data.entity:GetNetworkedString("Name")..".")
+							cw.player:Notify(player, L("Salesman_YouReceived", amount).." "..itemTable.PrintName.." "..L("Salesman_From").." "..data.entity:GetNetworkedString("Name")..".")
 						end
 
 						data.entity.cwCash = data.entity.cwCash + cost
@@ -78,7 +78,7 @@ netstream.Hook("Salesmenu", function(player, data)
 					data.entity:TalkToPlayer(
 						player,
 						data.entity.cwTextTab.needMore,
-						"Вам нужно больше "..cw.core:FormatCash(cashRequired, nil, true).."!"
+						L("YouNeedAnother", cw.core:FormatCash(cashRequired, nil, true))
 					)
 				end
 			elseif (data.tradeType == "Buys" and !itemTable.isBaseItem and data.entity.cwBuyTab[itemUniqueID]) then
@@ -102,10 +102,10 @@ netstream.Hook("Salesmenu", function(player, data)
 							end
 
 							cw.player:GiveCash(player, cost, "1 "..itemTable.PrintName)
-							cw.player:Notify(player, "Вы продали 1 х "..itemTable.PrintName.." "..data.entity:GetNetworkedString("Name")..".")
+							cw.player:Notify(player, L("Salesman_YouSold").." "..itemTable.PrintName.." "..L("Salesman_To").." "..data.entity:GetNetworkedString("Name")..".")
 						end
 					else
-						data.entity:TalkToPlayer(player, data.entity.cwTextTab.cannotAfford, "Я не могу купить это!")
+						data.entity:TalkToPlayer(player, data.entity.cwTextTab.cannotAfford, L("Salesman_Default_CannotAfford"))
 					end
 
 					netstream.Start(player, "SalesmenuRebuild", data.entity.cwCash)

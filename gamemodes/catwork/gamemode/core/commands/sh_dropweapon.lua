@@ -21,7 +21,7 @@ function COMMAND:OnRun(player, arguments)
 		local itemTable = item.GetByWeapon(weapon)
 
 		if (!itemTable) then
-			cw.player:Notify(player, "This is not a valid weapon!")
+			cw.player:Notify(player, L("Command_Dropweapon_NotValidWeapon"))
 			return
 		end
 
@@ -39,11 +39,11 @@ function COMMAND:OnRun(player, arguments)
 					hook.Run("PlayerDropWeapon", player, itemTable, entity, weapon)
 				end
 			else
-				cw.player:Notify(player, "You cannot drop your weapon that far away!")
+				cw.player:Notify(player, L("Command_Dropweapon_TooFar"))
 			end
 		end
 	else
-		cw.player:Notify(player, "This is not a valid weapon!")
+		cw.player:Notify(player, L("Command_Dropweapon_NotValidWeapon"))
 	end
 end
 

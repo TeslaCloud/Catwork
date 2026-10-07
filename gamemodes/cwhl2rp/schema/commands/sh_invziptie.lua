@@ -15,7 +15,7 @@ function COMMAND:OnRun(player, arguments)
 	local itemTable = player:FindItemByID("zip_tie")
 
 	if (!itemTable) then
-		cw.player:Notify(player, "You do not own a zip tie!")
+		cw.player:Notify(player, L("ZipTie_NotOwned"))
 
 		return
 	end

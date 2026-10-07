@@ -7,8 +7,8 @@
 --]]
 
 local COMMAND = cw.command:New("ContSetPassword")
-COMMAND.tip = "Set a container's password."
-COMMAND.text = "<string Pass>"
+COMMAND.tip = "#Command_Contsetpassword_Description"
+COMMAND.text = "#Command_Contsetpassword_Syntax"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "a"
 COMMAND.arguments = 1
@@ -30,15 +30,15 @@ function COMMAND:OnRun(player, arguments)
 				trace.Entity.cwPassword = table.concat(arguments, " ")
 				cwStorage:SaveStorage()
 
-				cw.player:Notify(player, "This container's password has been set to '"..trace.Entity.cwPassword.."'.")
+				cw.player:Notify(player, L("Container_PasswordSet").." '"..trace.Entity.cwPassword.."'.")
 			else
-				cw.player:Notify(player, "This is not a valid container!")
+				cw.player:Notify(player, L("Container_NotValid"))
 			end
 		else
-			cw.player:Notify(player, "This is not a valid container!")
+			cw.player:Notify(player, L("Container_NotValid"))
 		end
 	else
-		cw.player:Notify(player, "This is not a valid container!")
+		cw.player:Notify(player, L("Container_NotValid"))
 	end
 end
 

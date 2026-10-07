@@ -1,8 +1,8 @@
 local PLUGIN = PLUGIN
 
 local COMMAND = cw.command:New("CharSetHunger")
-COMMAND.tip = "Set a player's Hunger Level."
-COMMAND.text = "<string Name> <number Amount>"
+COMMAND.tip = "#Command_Charsethunger_Description"
+COMMAND.text = "#Command_Charsethunger_Syntax"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "a"
 COMMAND.arguments = 2
@@ -20,13 +20,13 @@ function COMMAND:OnRun(player, arguments)
 		if (target) then
 			target:SetCharacterData("Hunger", amount)
 			if (player != target)	then
-				cw.player:Notify(target, player:Name().." has set your hunger to "..amount..".")
-				cw.player:Notify(player, "You have set "..target:Name().."'s hunger to "..amount..".")
+				cw.player:Notify(target, L("Hunger_HungerSetBy", player:Name(), amount))
+				cw.player:Notify(player, L("Hunger_HungerSet", target:Name(), amount))
 			else
-				cw.player:Notify(player, "You have set your own Hunger to "..amount..".")
+				cw.player:Notify(player, L("Hunger_HungerSetOwn", amount))
 			end
 		else
-			cw.player:Notify(player, arguments[1].." is not a valid player!")
+			cw.player:Notify(player, L("NotValidPlayer", arguments[1]))
 		end
 end
 

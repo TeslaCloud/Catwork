@@ -25,10 +25,10 @@ function COMMAND:OnRun(player, arguments)
 		target:Kill()
 
 		if (!isSilent) then
-			cw.player:Notify(target:Name().." was slain by "..player:Name()..".")
+			cw.player:Notify(L("Command_Plyslay_Slain", target:Name(), player:Name()))
 		end
 	else
-		cw.player:Notify(player, arguments[1].." is not a valid target!")
+		cw.player:Notify(player, L("NotValidPlayer", arguments[1]))
 	end
 end
 

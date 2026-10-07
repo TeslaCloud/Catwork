@@ -13,4 +13,4 @@ ENT.PhysgunDisabled = false
 ENT.IsCraft = true
 
 ENT.Model = "models/mosi/fallout4/furniture/workstations/chemistrystation01.mdl"
-ENT.Category = "HL2RP: Мастерские"
+ENT.Category = "#Craft_Table_Category"

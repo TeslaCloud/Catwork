@@ -23,7 +23,7 @@ function COMMAND:OnRun(player, arguments)
 		local name = target:Name()
 
 		if (!_faction.GetStored()[faction]) then
-			cw.player:Notify(player, faction.." is not a valid faction!")
+			cw.player:Notify(player, L("Command_NotValidFaction", faction))
 
 			return
 		end
@@ -32,18 +32,18 @@ function COMMAND:OnRun(player, arguments)
 			local targetFaction = target:GetFaction()
 
 			if (targetFaction == faction) then
-				cw.player:Notify(player, target:Name().." is already the "..faction.." faction!")
+				cw.player:Notify(player, L("Command_Chartransfer_AlreadyFaction", target:Name(), faction))
 				return
 			end
 
 			if (!_faction.IsGenderValid(faction, target:GetGender())) then
-				cw.player:Notify(player, target:Name().." is not the correct gender for the "..faction.." faction!")
+				cw.player:Notify(player, L("Command_Chartransfer_WrongGender", target:Name(), faction))
 
 				return
 			end
 
 			if (!_faction.GetStored()[faction].OnTransferred) then
-				cw.player:Notify(player, target:Name().." cannot be transferred to the "..faction.." faction!")
+				cw.player:Notify(player, L("Command_Chartransfer_CannotTransfer", target:Name(), faction))
 
 				return
 			end
@@ -54,15 +54,15 @@ function COMMAND:OnRun(player, arguments)
 				target:SetCharacterData("Faction", faction, true)
 
 				cw.player:LoadCharacter(target, cw.player:GetCharacterID(target))
-				cw.player:NotifyAll(player:Name().." has transferred "..name.." to the "..faction.." faction.")
+				cw.player:NotifyAll(L("Command_Chartransfer_Transferred", player:Name(), name, faction))
 			else
-				cw.player:Notify(player, fault or target:Name().." could not be transferred to the "..faction.." faction!")
+				cw.player:Notify(player, fault or L("Command_Chartransfer_CannotTransfer", target:Name(), faction))
 			end
 		--else
 			--cw.player:Notify(player, target:Name().." is not on the "..faction.." whitelist!")
 		--end
 	else
-		cw.player:Notify(player, arguments[1].." is not a valid player!")
+		cw.player:Notify(player, L("NotValidPlayer", arguments[1]))
 	end
 end
 

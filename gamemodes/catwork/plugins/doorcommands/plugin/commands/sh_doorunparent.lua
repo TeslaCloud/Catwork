@@ -7,7 +7,7 @@
 --]]
 
 local COMMAND = cw.command:New("DoorUnparent")
-COMMAND.tip = "Unparent the target door."
+COMMAND.tip = "#Command_Doorunparent_Description"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "a"
 
@@ -33,9 +33,9 @@ function COMMAND:OnRun(player, arguments)
 
 		cw.entity:SetDoorParent(door, false)
 
-		cw.player:Notify(player, "You have unparented this door.")
+		cw.player:Notify(player, L("DoorCmds_Unparented"))
 	else
-		cw.player:Notify(player, "This is not a valid door!")
+		cw.player:Notify(player, L("DoorCmds_NotValidDoor"))
 	end
 end
 

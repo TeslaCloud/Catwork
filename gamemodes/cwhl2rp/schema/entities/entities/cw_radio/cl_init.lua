@@ -16,10 +16,10 @@ function ENT:HUDPaintTargetID(x, y, alpha)
 	local colorWhite = cw.option:GetColor("white")
 	local frequency = self:GetFrequency()
 
-	y = cw.core:DrawInfo("Radio", x, y, colorTargetID, alpha)
+	y = cw.core:DrawInfo("#Radio_TargetID_Name", x, y, colorTargetID, alpha)
 
 	if (frequency == 0) then
-		y = cw.core:DrawInfo("This radio has no frequency.", x, y, colorWhite, alpha)
+		y = cw.core:DrawInfo("#Radio_TargetID_NoFrequency", x, y, colorWhite, alpha)
 	else
 		y = cw.core:DrawInfo(frequency, x, y, colorWhite, alpha)
 	end

@@ -6,6 +6,6 @@
 	with contributions from Cloud Sixteen community.
 --]]
 
-config.AddToSystem("Garbage Respawn Delay", "garbage_respawn_delay", "Rate at which the garbage spawn point respawns (in seconds).", 0, 3600)
-config.AddToSystem("Garbage Pickup Time", "garbage_pickup_time", "Time that it takes to clean up one garbage entity (in seconds).", 0, 120)
-config.AddToSystem("Garbage Item Percentage", "garbage_item_percentage", "Chance of player finding something in the garbage pile (in percent).", 0, 100);
+config.AddToSystem("#Garbage_RespawnDelay", "garbage_respawn_delay", "#Garbage_RespawnDelayDesc", 0, 3600)
+config.AddToSystem("#Garbage_PickupTime", "garbage_pickup_time", "#Garbage_PickupTimeDesc", 0, 120)
+config.AddToSystem("#Garbage_ItemPercentage", "garbage_item_percentage", "#Garbage_ItemPercentageDesc", 0, 100);

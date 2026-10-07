@@ -8,7 +8,7 @@ COMMAND.arguments = 0
 function COMMAND:OnRun(player, arguments)
 	cwRadSystem:SaveAreas()
 
-	cw.player:Notify(player, "You have saved containment areas.")
+	cw.player:Notify(player, L("Containment_Saved"))
 end
 
 COMMAND:Register()

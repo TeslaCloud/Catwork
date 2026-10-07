@@ -124,7 +124,7 @@ if (SERVER) then
 			if (activator:KeyDown(IN_SPEED) and button and self:GetDTFloat(button)) then
 				if (self:GetDTFloat(button) > 0) then
 					--return activator:SendOverlayText("NO REFILL IS REQUIRED FOR THIS MACHINE.")
-					cw.player:Notify(activator, "Этот раздатчик полон.")
+					cw.player:Notify(activator, L("NutVend_Full"))
 					return
 				end
 
@@ -132,10 +132,10 @@ if (SERVER) then
 
 				if (!cw.player:CanAfford(activator, 25)) then
 					--return activator:SendOverlayText("INSUFFICIENT FUNDS (25 TOKENS) TO REFILL MACHINE.")
-					return cw.player:Notify(activator, "Вам нужно 25 токенов, чтобы заполнить раздатчик.")
+					return cw.player:Notify(activator, L("NutVend_NeedTokensToRefill", 25))
 				else
 					--activator:SendOverlayText("25 TOKENS HAVE BEEN TAKEN TO REFILL MACHINE.")
-					cw.player:GiveCash(activator, -25, "заполнение раздатчика")
+					cw.player:GiveCash(activator, -25, L("NutVend_CashReason_Refill"))
 				end
 
 				timer.Simple(1, function()
@@ -176,7 +176,7 @@ if (SERVER) then
 
 			if (!cw.player:CanAfford(activator, price)) then
 				self:EmitSound("buttons/button2.wav")
-				return cw.player:Notify(activator, "Вам нужно "..tostring(price).." токенов для покупки этого предмета.")
+				return cw.player:Notify(activator, L("NutVend_NeedTokensToBuy", tostring(price)))
 			end
 
 			local position = self:GetPos()
@@ -194,7 +194,7 @@ if (SERVER) then
 
 				self:EmitSound("buttons/button4.wav", Angle(0, 0, 90))
 
-				cw.player:GiveCash(activator, -price, "раздатчик")
+				cw.player:GiveCash(activator, -price, L("NutVend_CashReason_Purchase"))
 			end
 		end
 	end
@@ -229,10 +229,10 @@ else
 		local f, r, u = self:GetForward(), self:GetRight(), self:GetUp()
 
 		cam.Start3D2D(position + f*17.33 + r*-19.5 + u*5.75, angles, 0.06)
-			draw_SimpleText("Обычная", "hl2_MainText", 0, 0, color_white, 0, 0)
-			draw_SimpleText("Газ.", "hl2_MainText", 0, 36, color_white, 0, 0)
-			draw_SimpleText("Лимонад", "hl2_MainText", 0, 72, color_white, 0, 0)
-			draw_SimpleText("Добавки", "hl2_MainText", 0, 108, color_white, 0, 0)
+			draw_SimpleText("#NutVend_Label_Regular", "hl2_MainText", 0, 0, color_white, 0, 0)
+			draw_SimpleText("#NutVend_Label_Sparkling", "hl2_MainText", 0, 36, color_white, 0, 0)
+			draw_SimpleText("#NutVend_Label_Lemonade", "hl2_MainText", 0, 72, color_white, 0, 0)
+			draw_SimpleText("#NutVend_Label_Supplements", "hl2_MainText", 0, 108, color_white, 0, 0)
 		cam.End3D2D()
 
 		render.SetMaterial(glowMaterial)

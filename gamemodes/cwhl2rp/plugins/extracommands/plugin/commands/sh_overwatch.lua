@@ -5,8 +5,8 @@
 --]]
 
 local COMMAND = cw.command:New("Overwatch")
-COMMAND.tip = "Sends a message to all civil protection units."
-COMMAND.text = "<string Message>"
+COMMAND.tip = "#Command_Overwatch_Description"
+COMMAND.text = "#Command_Overwatch_Syntax"
 COMMAND.access = "s"
 COMMAND.arguments = 1
 
@@ -24,8 +24,8 @@ function COMMAND:OnRun(player, arguments)
 		end
 
 		chatbox.AddText(listeners, message, {
-			suffix = " сообщает: ",
-			playerName = "Надзор",
+			suffix = "#ExtraCommands_OverwatchSays: ",
+			playerName = "",
 			sender = player,
 			isPlayerMessage = true,
 			filter = "ic",
@@ -35,7 +35,7 @@ function COMMAND:OnRun(player, arguments)
 			data = {overwatch = true}
 		})
 	else
-		cw.player:Notify(player, "Your message must be 6 or more letters long!")
+		cw.player:Notify(player, L("ExtraCommands_MessageTooShort"))
 	end
 end
 

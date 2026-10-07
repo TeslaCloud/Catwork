@@ -2191,7 +2191,7 @@ concommand.Add("cwc", function(player, command, arguments)
 			if (target) then
 				if (!cw.player:IsProtected(target)) then
 					print("Console has set "..target:Name().."'s user group to "..userGroup..".")
-					cw.player:NotifyAll("Console has set "..target:Name().."'s user group to "..userGroup..".")
+					cw.player:NotifyAll(L("Console_SetGroup", target:Name(), userGroup))
 						target:SetClockworkUserGroup(userGroup)
 					cw.player:LightSpawn(target, true, true)
 				else
@@ -2212,7 +2212,7 @@ concommand.Add("cwc", function(player, command, arguments)
 
 					if (userGroup != "user") then
 						print("Console has demoted "..target:Name().." from "..userGroup.." to user.")
-						cw.player:NotifyAll("Console has demoted "..target:Name().." from "..userGroup.." to user.")
+						cw.player:NotifyAll(L("Console_Demoted", target:Name(), userGroup))
 							target:SetClockworkUserGroup("user")
 						cw.player:LightSpawn(target, true, true)
 					else
@@ -2240,7 +2240,7 @@ concommand.Add("cwc", function(player, command, arguments)
 					cw.player:GiveCash(target, giveCash)
 
 					print("Console has set "..targetName.."'s cash to "..cw.core:FormatCash(cash, nil, true)..".")
-					cw.player:Notify(target, "Your cash was set to "..cw.core:FormatCash(cash, nil, true).." by "..playerName..".")
+					cw.player:Notify(target, L("Console_SetCash", cw.core:FormatCash(cash, nil, true)))
 				else
 					MsgC(Color(255, 100, 0, 255), "This is not a valid amount!\n")
 				end
@@ -2263,7 +2263,7 @@ concommand.Add("cwc", function(player, command, arguments)
 							cw.player:SaveCharacter(target)
 
 							print("Console has added "..target:Name().." to the "..factionTable.name.." whitelist.")
-							cw.player:NotifyAll("Console has added "..target:Name().." to the "..factionTable.name.." whitelist.")
+							cw.player:NotifyAll(L("Console_WhitelistAdded", target:Name(), factionTable.name))
 						else
 							MsgC(Color(255, 100, 0, 255), target:Name().." is already on the "..factionTable.name.." whitelist!\n")
 						end
@@ -2292,7 +2292,7 @@ concommand.Add("cwc", function(player, command, arguments)
 							cw.player:SaveCharacter(target)
 
 							print("Console has removed "..target:Name().." from the "..factionTable.name.." whitelist.")
-							cw.player:NotifyAll("Console has removed "..target:Name().." from the "..factionTable.name.." whitelist.")
+							cw.player:NotifyAll(L("Console_WhitelistRemoved", target:Name(), factionTable.name))
 						else
 							MsgC(Color(255, 100, 0, 255), target:Name().." is not on the "..factionTable.name.." whitelist!\n")
 						end
@@ -2327,14 +2327,14 @@ concommand.Add("cwc", function(player, command, arguments)
 
 									if (hours >= 1) then
 										print("Console has banned '"..steamName.."' for "..hours.." hour(s) ("..reason..").")
-										cw.player:NotifyAll("Console has banned '"..steamName.."' for "..hours.." hour(s) ("..reason..").")
+										cw.player:NotifyAll(L("Console_BannedHours", steamName, hours).." "..reason)
 									else
 										print("Console has banned '"..steamName.."' for "..math.Round(duration / 60).." minute(s) ("..reason..").")
-										cw.player:NotifyAll("Console has banned '"..steamName.."' for "..math.Round(duration / 60).." minute(s) ("..reason..").")
+										cw.player:NotifyAll(L("Console_BannedMinutes", steamName, math.Round(duration / 60)).." "..reason)
 									end
 								else
 									print("Console has banned '"..steamName.."' permanently ("..reason..").")
-									cw.player:NotifyAll("Console has banned '"..steamName.."' permanently ("..reason..").")
+									cw.player:NotifyAll(L("Console_BannedPermanently", steamName).." "..reason)
 								end
 							else
 								MsgC(Color(255, 100, 0, 255), "This is not a valid identifier!\n")
@@ -2367,7 +2367,7 @@ concommand.Add("cwc", function(player, command, arguments)
 			if (target) then
 				if (!cw.player:IsProtected(arguments[2])) then
 					print("Console has kicked '"..target:Name().."' ("..reason..").")
-					cw.player:NotifyAll("Console has kicked '"..target:Name().."' ("..reason..").")
+					cw.player:NotifyAll(L("Console_Kicked", target:Name()).." "..reason)
 						target:Kick(reason)
 					target.kicked = true
 				else
@@ -2391,7 +2391,7 @@ concommand.Add("cwc", function(player, command, arguments)
 					local name = table.concat(arguments, " ", 3)
 
 					print("Console has set "..target:Name().."'s name to "..name..".")
-					cw.player:NotifyAll("Console has set "..target:Name().."'s name to "..name..".")
+					cw.player:NotifyAll(L("Console_SetName", target:Name(), name))
 
 					cw.player:SetName(target, name)
 				end
@@ -2411,7 +2411,7 @@ concommand.Add("cwc", function(player, command, arguments)
 				target:SetModel(model)
 
 				print("Console has set "..target:Name().."'s model to "..model..".")
-				cw.player:NotifyAll("Console has set "..target:Name().."'s model to "..model..".")
+				cw.player:NotifyAll(L("Console_SetModel", target:Name(), model))
 			else
 				MsgC(Color(255, 100, 0, 255), arguments[2].." is not a valid character!\n")
 			end
@@ -2426,7 +2426,7 @@ concommand.Add("cwc", function(player, command, arguments)
 			end
 
 			print("Console is restarting the map in "..delay.." seconds!")
-			cw.player:NotifyAll("Console is restarting the map in "..delay.." seconds!")
+			cw.player:NotifyAll(L("Console_MapRestart", delay))
 
 			timer.Simple(delay, function()
 				RunConsoleCommand("changelevel", game.GetMap())
@@ -2449,7 +2449,7 @@ concommand.Add("cwc", function(player, command, arguments)
 				cw.player:GiveFlags(target, arguments[3])
 
 				print("Console gave "..target:Name().." '"..arguments[3].."' flags.")
-				cw.player:NotifyAll("Console gave "..target:Name().." '"..arguments[3].."' flags.")
+				cw.player:NotifyAll(L("Console_GaveFlags", target:Name(), arguments[3]))
 			else
 				MsgC(Color(255, 100, 0, 255), arguments[2].." is not a valid character!\n")
 			end
@@ -2461,7 +2461,7 @@ concommand.Add("cwc", function(player, command, arguments)
 
 			if (target) then
 				if (string.find(arguments[3], "a") or string.find(arguments[3], "s") or string.find(arguments[3], "o")) then
-					cw.player:Notify(player, "You cannot take 'o', 'a' or 's' flags!")
+					cw.player:Notify(player, L("Command_CannotTakeAdminFlags"))
 
 					return
 				end
@@ -2471,7 +2471,7 @@ concommand.Add("cwc", function(player, command, arguments)
 				cw.player:TakeFlags(target, arguments[3])
 
 				print("Console took '"..arguments[3].."' flags from "..target:Name()..".")
-				cw.player:NotifyAll("Console took '"..arguments[3].."' flags from "..target:Name()..".")
+				cw.player:NotifyAll(L("Console_TookFlags", target:Name(), arguments[3]))
 			else
 				MsgC(Color(255, 100, 0, 255), arguments[2].." is not a valid character!\n")
 			end
@@ -2483,7 +2483,7 @@ concommand.Add("cwc", function(player, command, arguments)
 		end
 	-- if not too bad, players are not allowed to use this swag
 	else
-		cw.player.Notify(player, "You are not allowed to use server-side commands!")
+		cw.player.Notify(player, L("Console_NotAllowed"))
 	end
 end)
 

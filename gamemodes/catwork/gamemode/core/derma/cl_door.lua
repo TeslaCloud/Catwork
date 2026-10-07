@@ -35,17 +35,17 @@ function PANEL:Init()
 
 	self.settingsForm = vgui.Create("DForm")
 	self.settingsForm:SetPadding(4)
-	self.settingsForm:SetName("Settings")
+	self.settingsForm:SetName("#Settings")
 
 	if (cw.door:IsParent()) then
 		local label = vgui.Create("cwInfoText", self)
-			label:SetText("A parent is the main door in a property block.")
+			label:SetText("#DoorMenu_ParentInfo")
 			label:SetInfoColor("blue")
 		self.settingsPanel:AddItem(label)
 	end
 
 	self.settingsPanel:AddItem(self.settingsForm)
-	self.textEntry = self.settingsForm:TextEntry("Text to show on the door.")
+	self.textEntry = self.settingsForm:TextEntry("#DoorMenu_DoorText")
 	self.textEntry:SetAllowNonAsciiCharacters(true)
 
 	-- Called when enter has been pressed.
@@ -59,38 +59,38 @@ function PANEL:Init()
 
 	if (cw.door:GetOwner() == cw.client) then
 		if (cw.door:IsParent()) then
-			self.comboBox = self.settingsForm:ComboBox("What parent access options to use.")
-			self.comboBox:AddChoice("Share access to all children.")
-			self.comboBox:AddChoice("Seperate access between children.")
+			self.comboBox = self.settingsForm:ComboBox("#DoorMenu_ParentAccess")
+			self.comboBox:AddChoice(L("#DoorMenu_ShareAccess"))
+			self.comboBox:AddChoice(L("#DoorMenu_SeparateAccess"))
 
 			if (cw.door:HasSharedAccess()) then
-				self.comboBox:SetText("Share access to all children.")
+				self.comboBox:SetText(L("#DoorMenu_ShareAccess"))
 			else
-				self.comboBox:SetText("Seperate access between children.")
+				self.comboBox:SetText(L("#DoorMenu_SeparateAccess"))
 			end
 
 			-- Called when an option is selected.
 			self.comboBox.OnSelect = function(multiChoice, index, value, data)
-				if (value == "Share access to all children.") then
+				if (value == L("#DoorMenu_ShareAccess")) then
 					netstream.Start("DoorManagement", {cw.door:GetEntity(), "Share"})
 				else
 					netstream.Start("DoorManagement", {cw.door:GetEntity(), "Unshare"})
 				end
 			end
 
-			self.parentText = self.settingsForm:ComboBox("What parent text options to use.")
-			self.parentText:AddChoice("Share text to all children.")
-			self.parentText:AddChoice("Seperate text between children.")
+			self.parentText = self.settingsForm:ComboBox("#DoorMenu_ParentText")
+			self.parentText:AddChoice(L("#DoorMenu_ShareText"))
+			self.parentText:AddChoice(L("#DoorMenu_SeparateText"))
 
 			if (cw.door:HasSharedText()) then
-				self.parentText:SetText("Share text to all children.")
+				self.parentText:SetText(L("#DoorMenu_ShareText"))
 			else
-				self.parentText:SetText("Seperate text between children.")
+				self.parentText:SetText(L("#DoorMenu_SeparateText"))
 			end
 
 			-- Called when an option is selected.
 			self.parentText.OnSelect = function(multiChoice, index, value, data)
-				if (value == "Share text to all children.") then
+				if (value == L("#DoorMenu_ShareText")) then
 					netstream.Start("DoorManagement", {cw.door:GetEntity(), "Share", "Text"})
 				else
 					netstream.Start("DoorManagement", {cw.door:GetEntity(), "Unshare", "Text"})
@@ -104,29 +104,29 @@ function PANEL:Init()
 			local button = nil
 
 			if (doorCost > 0) then
-				button = self.settingsForm:Button("Sell")
+				button = self.settingsForm:Button("#DoorMenu_Sell")
 			else
-				button = self.settingsForm:Button("Unown")
+				button = self.settingsForm:Button("#DoorMenu_Unown")
 			end
 
 			-- Called when the button is clicked.
 			function button.DoClick(button)
 				if (doorCost > 0) then
-					Derma_Query("Are you sure that you want to sell this door?", "Sell the door.", "Yes", function()
+					Derma_Query(L("#DoorMenu_SellQuery"), L("#DoorMenu_SellTitle"), L("Yes"), function()
 						netstream.Start("DoorManagement", {cw.door:GetEntity(), "Sell"})
 
 						gui.EnableScreenClicker(false)
 						self:Close(); self:Remove()
-					end, "No", function()
+					end, L("No"), function()
 						gui.EnableScreenClicker(false)
 					end)
 				else
-					Derma_Query("Are you sure that you want to unown this door?", "Unown the door.", "Yes", function()
+					Derma_Query(L("#DoorMenu_UnownQuery"), L("#DoorMenu_UnownTitle"), L("Yes"), function()
 						netstream.Start("DoorManagement", {cw.door:GetEntity(), "Sell"})
 
 						gui.EnableScreenClicker(false)
 						self:Close(); self:Remove()
-					end, "No", function()
+					end, L("No"), function()
 						gui.EnableScreenClicker(false)
 					end)
 				end
@@ -138,8 +138,8 @@ function PANEL:Init()
 
 	self.propertySheet = vgui.Create("DPropertySheet", self)
 	self.propertySheet:SetPadding(4)
-	self.propertySheet:AddSheet("Players", self.playersPanel, "icon16/user.png", nil, nil, "Set up who has access to this door.")
-	self.propertySheet:AddSheet("Settings", self.settingsPanel, "icon16/wrench.png", nil, nil, "View the settings for this door.")
+	self.propertySheet:AddSheet(L("#DoorMenu_Players"), self.playersPanel, "icon16/user.png", nil, nil, L("#DoorMenu_PlayersTip"))
+	self.propertySheet:AddSheet(L("#Settings"), self.settingsPanel, "icon16/wrench.png", nil, nil, L("#DoorMenu_SettingsTip"))
 
 	cw.core:SetNoticePanel(self)
 end
@@ -208,25 +208,25 @@ function PANEL:Rebuild()
 
 					if (access == DOOR_ACCESS_COMPLETE) then
 						options = {
-							["Take complete access."] = function()
+							[L("#DoorMenu_TakeCompleteAccess")] = function()
 								netstream.Start("DoorManagement", {door, "Access", player, access})
 							end
 						}
 					elseif (access == DOOR_ACCESS_BASIC) then
 						options = {
-							["Take basic access."] = function()
+							[L("#DoorMenu_TakeBasicAccess")] = function()
 								netstream.Start("DoorManagement", {door, "Access", player, access})
 							end,
-							["Give complete access."] = function()
+							[L("#DoorMenu_GiveCompleteAccess")] = function()
 								netstream.Start("DoorManagement", {door, "Access", player, DOOR_ACCESS_COMPLETE})
 							end
 						}
 					else
 						options = {
-							["Give basic access."] = function()
+							[L("#DoorMenu_GiveBasicAccess")] = function()
 								netstream.Start("DoorManagement", {door, "Access", player, DOOR_ACCESS_BASIC})
 							end,
-							["Give complete access."] = function()
+							[L("#DoorMenu_GiveCompleteAccess")] = function()
 								netstream.Start("DoorManagement", {door, "Access", player, DOOR_ACCESS_COMPLETE})
 							end
 						}
@@ -250,13 +250,13 @@ function PANEL:Rebuild()
 			collapsibleCategory:SetContents(panelList)
 
 			if (k == 1) then
-				collapsibleCategory:SetLabel("Characters with complete access.")
+				collapsibleCategory:SetLabel(L("#DoorMenu_CompleteAccessList"))
 				collapsibleCategory:SetCookieName("cwDoorComplete")
 			elseif (k == 2) then
-				collapsibleCategory:SetLabel("Characters with basic access.")
+				collapsibleCategory:SetLabel(L("#DoorMenu_BasicAccessList"))
 				collapsibleCategory:SetCookieName("cwDoorBasic")
 			else
-				collapsibleCategory:SetLabel("Characters with no access.")
+				collapsibleCategory:SetLabel(L("#DoorMenu_NoAccessList"))
 				collapsibleCategory:SetCookieName("cwDoorZero")
 			end
 		end
@@ -291,19 +291,19 @@ netstream.Hook("PurchaseDoor", function(data)
 	local doorCost = config.GetVal("door_cost")
 
 	if (doorCost > 0) then
-		Derma_Query("Do you want to purchase this door for "..cw.core:FormatCash(config.GetVal("door_cost"), nil, true).."?", "Purchase this door.", "Yes", function()
+		Derma_Query(L("#DoorMenu_PurchaseQuery:"..cw.core:FormatCash(config.GetVal("door_cost"), nil, true)..";"), L("#DoorMenu_PurchaseTitle"), L("Yes"), function()
 			netstream.Start("DoorManagement", {data, "Purchase"})
 
 			gui.EnableScreenClicker(false)
-		end, "No", function()
+		end, L("No"), function()
 			gui.EnableScreenClicker(false)
 		end)
 	else
-		Derma_Query("Do you want to own this door?", "Own this door.", "Yes", function()
+		Derma_Query(L("#DoorMenu_OwnQuery"), L("#DoorMenu_OwnTitle"), L("Yes"), function()
 			netstream.Start("DoorManagement", {data, "Purchase"})
 
 			gui.EnableScreenClicker(false)
-		end, "No", function()
+		end, L("No"), function()
 			gui.EnableScreenClicker(false)
 		end)
 	end
@@ -360,7 +360,7 @@ netstream.Hook("DoorManagement", function(data)
 	cw.door.name = cw.entity:GetDoorName(data.entity)
 
 	if (cw.door.name == "") then
-		cw.door.name = "A door."
+		cw.door.name = L("#Doors_Name")
 	end
 
 	cw.door.panel = vgui.Create("cwDoor")

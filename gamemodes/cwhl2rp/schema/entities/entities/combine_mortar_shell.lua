@@ -1,6 +1,6 @@
 if SERVER then AddCSLuaFile() end
 
-ENT.PrintName = "Mortal Shell"
+ENT.PrintName = "Mortar Shell"
 ENT.Type = "anim"
 ENT.Spawnable = false
 ENT.AdminSpawnable = false

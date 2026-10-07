@@ -25,14 +25,14 @@ function COMMAND:OnRun(player, arguments)
 
 	if (target) then
 		if (!cw.player:IsProtected(arguments[1])) then
-			cw.player:NotifyAll(player:Name().." has kicked '"..target:Name().."' ("..reason..").")
+			cw.player:NotifyAll(L("Command_Plykick_Kicked", player:Name(), target:Name()).." "..reason)
 				target:Kick(reason)
 			target.kicked = true
 		else
-			cw.player:Notify(player, target:Name().." is protected!")
+			cw.player:Notify(player, L("Command_PlayerProtected", target:Name()))
 		end
 	else
-		cw.player:Notify(player, arguments[1].." is not a valid player!")
+		cw.player:Notify(player, L("NotValidPlayer", arguments[1]))
 	end
 end
 

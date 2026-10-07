@@ -7,7 +7,7 @@
 --]]
 
 local COMMAND = cw.command:New("DoorResetParent")
-COMMAND.tip = "Reset the player's active parent door."
+COMMAND.tip = "#Command_Doorresetparent_Description"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = "a"
 
@@ -19,10 +19,10 @@ function COMMAND:OnRun(player, arguments)
 		player.cwParentDoor = nil
 		cwDoorCmds.infoTable = {}
 
-		cw.player:Notify(player, "You have cleared your active parent door.")
+		cw.player:Notify(player, L("DoorCmds_ParentCleared"))
 		netstream.Start(player, "doorParentESP", cwDoorCmds.infoTable)
 	else
-		cw.player:Notify(player, "You do not have an active parent door.")
+		cw.player:Notify(player, L("DoorCmds_NoActiveParent"))
 	end
 end
 

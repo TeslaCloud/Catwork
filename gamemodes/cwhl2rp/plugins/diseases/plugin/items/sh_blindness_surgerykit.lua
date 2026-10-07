@@ -1,12 +1,13 @@
-ITEM.name = "Глазной хирургический набор"
+ITEM.name = "Eye Surgery Kit"
+ITEM.PrintName = "#Item_BlindnessSurgerykit_PrintName"
 ITEM.cost = 150
 ITEM.model = "models/Items/BoxMRounds.mdl"
 ITEM.weight = 0.2
 ITEM.access = "Q"
-ITEM.useText = "Применить"
-ITEM.category = "Медицина"
+ITEM.useText = "Apply"
+ITEM.category = "Medical"
 ITEM.business = true
-ITEM.description = "Набор, в который входит все необходимое для проведения операции на глазу."
+ITEM.description = "#Item_BlindnessSurgerykit_Description"
 
 -- Called when a player uses the item.
 function ITEM:OnUse(player, itemEntity)
@@ -14,16 +15,16 @@ function ITEM:OnUse(player, itemEntity)
 
 	if (lookingPly:IsPlayer()) then
 		if (lookingPly:GetCharacterData("diseases") == "blindness") then
-			cw.player:Notify(player, "Вы использовали комплект для лечения слепоты.")
+			cw.player:Notify(player, L("Diseases_Surgery_Blindness"))
 			lookingPly:SetCharacterData("diseases", "none")
 		elseif (lookingPly:GetCharacterData("diseases") == "colorblindness") then
-			cw.player:Notify(player, "Вы использовали комплект для лечения дальтонизма.")
+			cw.player:Notify(player, L("Diseases_Surgery_Colorblindness"))
 			lookingPly:SetCharacterData("diseases", "none")
 		else
-			cw.player:Notify(player, "Вы просто так использовали комплект для лечения проблем со зрением.")
+			cw.player:Notify(player, L("Diseases_Surgery_Wasted"))
 		end
 	else
-		cw.player:Notify(player, "Вы должны смотреть на пациента!")
+		cw.player:Notify(player, L("Diseases_MustLookAtPatient"))
 
 		return false
 	end

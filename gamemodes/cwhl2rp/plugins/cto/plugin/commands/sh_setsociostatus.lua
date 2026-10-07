@@ -1,8 +1,8 @@
 local cwCTO = cwCTO
 
 local COMMAND = cw.command:New("SetSocioStatus")
-COMMAND.tip = "Update the sociostability status of the city."
-COMMAND.text = "<string green|blue|yellow|red|black>"
+COMMAND.tip = "#Command_Setsociostatus_Description"
+COMMAND.text = "#Command_Setsociostatus_Syntax"
 COMMAND.flags = CMD_DEFAULT
 COMMAND.arguments = 1
 COMMAND.alias = {"VisorStatus"}
@@ -14,7 +14,7 @@ function COMMAND:OnRun(player, arguments)
 			local tryingFor = string.upper(arguments[1])
 
 			if (!cwCTO.sociostatusColors[tryingFor]) then
-				cw.player:Notify(player, "That is not a valid sociostatus!")
+				cw.player:Notify(player, L("CTO_InvalidSocioStatus"))
 			else
 				local players = {}
 
@@ -41,15 +41,15 @@ function COMMAND:OnRun(player, arguments)
 
 				cwCTO.socioStatus = tryingFor
 
-				Schema:AddCombineDisplayLine("ALERT! Sociostatus updated to " .. tryingFor .. "!", cwCTO.sociostatusColors[tryingFor])
+				Schema:AddCombineDisplayLine(L("CTO_Display_SocioStatusUpdated", tryingFor), cwCTO.sociostatusColors[tryingFor])
 
 				netstream.Start(players, "RecalculateHUDObjectives", {cwCTO.socioStatus, Schema.combineObjectives})
 			end
 		else
-			cw.player:Notify(player, "You are not ranked high enough to use this command!")
+			cw.player:Notify(player, L("CTO_RankTooLow"))
 		end
 	else
-		cw.player:Notify(player, "You are not the Combine!")
+		cw.player:Notify(player, L("CTO_NotCombine"))
 	end
 end
 

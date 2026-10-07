@@ -16,3 +16,6 @@ lang["#Err_AlreadyStatic"] = "Этот энтити уже сохранен!"
 lang["#Err_NotStatic"] = "Этот энтити не сохранен!"
 lang["#Static_Added"] = "Вы сохранили этот энтити."
 lang["#Static_Removed"] = "Вы убрали этот энтити из сохранения."
+
+lang["#Command_Static_Description"] = "Сохранить энтити, на который вы смотрите."
+lang["#Command_Unstatic_Description"] = "Убрать из сохранения энтити, на который вы смотрите."

@@ -1,6 +1,6 @@
 local COMMAND = cw.command:New("SetCombineLockRank")
-COMMAND.tip = "Restricts combine lock access for specified ranks."
-COMMAND.text = "<string Rank>"
+COMMAND.tip = "#Command_Setcombinelockrank_Description"
+COMMAND.text = "#Command_Setcombinelockrank_Syntax"
 COMMAND.flags = bit.bor(CMD_DEFAULT, CMD_DEATHCODE)
 COMMAND.arguments = 1
 
@@ -17,9 +17,9 @@ function COMMAND:OnRun(combine, arguments)
 					rank = sep
 				end
 				combinelock:SetCPRank(rank)
-				cw.player:Notify(combine, "Combine Lock restricted for: ".. table.ToString(rank) .. " ranks.")
+				cw.player:Notify(combine, L("CombineLock_RestrictedFor").." "..table.ToString(rank))
 			else
-				cw.player:Notify(combine, "You must looking at combine lock.")
+				cw.player:Notify(combine, L("CombineLock_MustLookAt"))
 			end
 		end
 	end

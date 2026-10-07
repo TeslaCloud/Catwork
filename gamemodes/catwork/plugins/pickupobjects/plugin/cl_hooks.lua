@@ -13,7 +13,7 @@ function cwPickupObjects:GetScreenTextInfo()
 	if (cw.client:IsRagdolled() and cw.client:GetNetVar("IsDragged")) then
 		return {
 			alpha = 255 - blackFadeAlpha,
-			title = "ВАС ТАЩАТ"
+			title = "#PickupObjects_BeingDragged"
 		}
 	end
 end
@@ -31,7 +31,7 @@ timer.Simple(1, function()
 	local SWEP = weapons.GetStored("cw_hands")
 
 	if (SWEP) then
-		SWEP.Instructions = "Reload: Drop\n"..SWEP.Instructions
+		SWEP.Instructions = L("#PickupObjects_HandsReload").."\n"..SWEP.Instructions
 
 		SWEP.Instructions = cw.core:Replace(SWEP.Instructions, "Knock.", "Knock/Pickup.")
 		SWEP.Instructions = cw.core:Replace(SWEP.Instructions, "Punch.", "Punch/Throw.")
