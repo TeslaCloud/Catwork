@@ -49,22 +49,29 @@ SWEP.Secondary.Delay = 1
 SWEP.Secondary.Ammo = ''
 
 function SWEP:Initialize()
-  self:SetWeaponHoldType(self.HoldType)
+  self:SetHoldType(self.HoldType)
 end
 
 function SWEP:Deploy()
+  -- ents.Create only exists serverside.
   if SERVER then
     self.Owner:DrawViewModel(false) -- Workaround for viewmodel error spam
+
+    if IsValid(self.Owner.broomProp) then
+      self.Owner.broomProp:Remove()
+    end
+
+    self.Owner.broomProp = ents.Create('prop_dynamic')
+    self.Owner.broomProp:SetModel('models/props_c17/pushbroom.mdl')
+    self.Owner.broomProp:DrawShadow(true)
+    self.Owner.broomProp:SetMoveType(MOVETYPE_NONE)
+    self.Owner.broomProp:SetParent(self.Owner)
+    self.Owner.broomProp:SetSolid(SOLID_NONE)
+    self.Owner.broomProp:Spawn()
+    self.Owner.broomProp:Fire('setparentattachment', 'cleaver_attachment', 0.01)
   end
 
-  self.Owner.broomProp = ents.Create('prop_dynamic')
-  self.Owner.broomProp:SetModel('models/props_c17/pushbroom.mdl')
-  self.Owner.broomProp:DrawShadow(true)
-  self.Owner.broomProp:SetMoveType(MOVETYPE_NONE)
-  self.Owner.broomProp:SetParent(self.Owner)
-  self.Owner.broomProp:SetSolid(SOLID_NONE)
-  self.Owner.broomProp:Spawn()
-  self.Owner.broomProp:Fire('setparentattachment', 'cleaver_attachment', 0.01)
+  return true
 end
 
 function SWEP:Holster()
@@ -129,6 +136,9 @@ function SWEP:Think()
 end
 
 function SWEP:OnRemove()
+  -- The owner is already gone when the weapon is removed along with a disconnecting player.
+  if !IsValid(self.Owner) then return end
+
   if SERVER then
     self.Owner:DrawViewModel(true) -- Workaround for viewmodel error spam
   end

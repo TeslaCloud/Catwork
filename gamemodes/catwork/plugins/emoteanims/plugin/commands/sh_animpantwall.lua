@@ -28,7 +28,7 @@ function COMMAND:OnRun(player, arguments)
       and (forcedAnimation.animation == 'd2_coast03_postbattle_idle01'
       or forcedAnimation.animation == 'd2_coast03_postbattle_idle01_entry') then
         cwEmoteAnims:MakePlayerExitStance(player)
-      elseif !forcedAnimation or !cwEmoteAnimscwEmoteAnims[forcedAnimation] then
+      elseif !forcedAnimation or !cwEmoteAnims.stanceList[forcedAnimation] then
         if player:Crouching() then
           cw.player:Notify(player, L('EmoteAnims_CannotWhileCrouching'))
         else

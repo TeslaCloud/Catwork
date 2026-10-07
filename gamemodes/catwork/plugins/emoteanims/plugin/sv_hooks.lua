@@ -34,7 +34,7 @@ end
 function cwEmoteAnims:PlayerThink(player, curTime, infoTable)
   local forcedAnimation = player:GetForcedAnimation()
   local isMoving = false
-  local uniqueID = player:UniqueID()
+  local uniqueID = player:SteamID64()
 
   if player:KeyDown(IN_FORWARD) or player:KeyDown(IN_BACK) or player:KeyDown(IN_MOVELEFT)
   or player:KeyDown(IN_MOVERIGHT) then

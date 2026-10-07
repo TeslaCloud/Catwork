@@ -22,7 +22,7 @@ TOOL.ClientConVar['contpassword'] = 'password'
 
 function TOOL:AddItems(entity)
   local trace = entity
-  local scale = self:GetClientInfo('contfillscale')
+  local scale = self:GetClientNumber('contfillscale', 1)
   local category = self:GetClientInfo('fillcategory')
   local player = self:GetOwner()
 
@@ -36,14 +36,14 @@ function TOOL:AddItems(entity)
         local model = string.lower(trace.Entity:GetModel())
 
         if cwStorage.containerList[model] then
-          if !trace.Entity.inventory then
+          if !trace.Entity.cwInventory then
             cwStorage.storage[trace.Entity] = trace.Entity
 
-            trace.Entity.inventory = {}
+            trace.Entity.cwInventory = {}
           end
 
           local containerWeight = cwStorage.containerList[model][1] / (6 - scale)
-          local weight = cw.inventory:CalculateWeight(trace.Entity.inventory)
+          local weight = cw.inventory:CalculateWeight(trace.Entity.cwInventory)
 
           if !category or cwStorage:CategoryExists(category) then
             while weight < containerWeight do
@@ -51,7 +51,7 @@ function TOOL:AddItems(entity)
 
               if randomItem then
                 cw.inventory:AddInstance(
-                  trace.Entity.inventory, item.CreateInstance(randomItem[1])
+                  trace.Entity.cwInventory, item.CreateInstance(randomItem[1])
                 )
 
                 weight = weight + randomItem[2]
@@ -109,13 +109,13 @@ function TOOL:SetName(entity)
       local model = string.lower(trace.Entity:GetModel())
 
       if cwStorage.containerList[model] then
-        if !trace.Entity.inventory then
+        if !trace.Entity.cwInventory then
           cwStorage.storage[trace.Entity] = trace.Entity
 
-          trace.Entity.inventory = {}
+          trace.Entity.cwInventory = {}
         end
 
-        trace.Entity:SetNetworkedString('Name', name)
+        trace.Entity:SetNWString('Name', name)
       else
         cw.player:Notify(player, L('Container_NotValid'))
       end
@@ -139,9 +139,9 @@ function TOOL:SetPassword(entity)
       local model = string.lower(trace.Entity:GetModel())
 
       if cwStorage.containerList[model] then
-        if !trace.Entity.inventory then
+        if !trace.Entity.cwInventory then
           cwStorage.storage[trace.Entity] = trace.Entity
-          trace.Entity.inventory = {}
+          trace.Entity.cwInventory = {}
         end
 
         trace.Entity.cwPassword = password

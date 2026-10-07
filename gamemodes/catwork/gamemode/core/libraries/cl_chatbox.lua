@@ -371,7 +371,7 @@ function chatbox.ParseBBCodes(line, rich)
 
               chatbox.LastBBCode = result
 
-              if !whole:StartWith('[') then
+              if !whole:StartsWith('[') then
                 table.insert(line, nextInsert, whole:utf8sub(1, wS - 1))
                 nextInsert = nextInsert + 1
               end
@@ -574,48 +574,7 @@ function chatbox.ParseText(messageData)
   end
 
   if messageData.drawAvatar and IsValid(messageData.sender) then
-    local steamID64 = messageData.sender:SteamID64()
-
-    if !cw.AvatarsData then
-      cw.AvatarsData = {}
-    end
-
-    if !cw.AvatarsData[steamID64] or cw.AvatarsData[steamID64] <= os.time() then
-      if file.Exists('cwavatars/'..steamID64..'.jpg', 'DATA') then
-        file.Delete('cwavatars/'..steamID64..'.jpg')
-      end
-    end
-
-    if !file.Exists('cwavatars/'..steamID64..'.jpg', 'DATA') then
-      if !file.Exists('cwavatars', 'DATA') then
-        file.CreateDir('cwavatars')
-      end
-
-      cw.AvatarsData[steamID64] = os.time() + 86400
-
-      http.Fetch(
-        'http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=76415A95E2F81DDA1D7CD2378D16C11D&steamids='..steamID64,
-        function(body)
-          local response = util.JSONToTable(body)
-
-          if istable(response) then
-            local avatarURL = response['response']['players'][1].avatar
-
-            http.Fetch(avatarURL, function(avatarImage)
-              if isstring(avatarImage) and IsValid(messageData.sender) then
-                file.Write('cwavatars/'..steamID64..'.jpg', avatarImage)
-                file.Write('cwavatars.txt', pon.encode(cw.AvatarsData or {}))
-
-                if cw.core.CachedMaterial[steamID64..'.jpg'] then
-                  cw.core.CachedMaterial[steamID64..'.jpg'] = nil
-                end
-              end
-            end)
-          end
-        end
-      )
-    end
-
+    -- The avatar itself is an engine AvatarImage painted by the chat box panel (see GetAvatarPanel).
     table.insert(parsed[1], '[SenderAvatar]')
     msgWidth = msgWidth + 20
   end
@@ -762,7 +721,7 @@ function PANEL:SetChatOpen(bIsOpen)
 end
 
 local function IsIcon(text)
-  return (text:StartWith('[icon:') and text:EndsWith('.png]'))
+  return (text:StartsWith('[icon:') and text:EndsWith('.png]'))
 end
 
 local function IsAvatar(text)
@@ -770,7 +729,7 @@ local function IsAvatar(text)
 end
 
 local function IsTime(text)
-  return (text:StartWith('[SendTime:'))
+  return (text:StartsWith('[SendTime:'))
 end
 
 local function SendTime(text)
@@ -782,6 +741,36 @@ end
 local function ToIcon(text)
   if IsIcon(text) then
     return text:utf8sub(7, text:find(']') - 1)
+  end
+end
+
+-- Sender avatars are engine AvatarImage panels, one per player, painted manually from PANEL:Paint.
+local avatarPanels = {}
+
+local function GetAvatarPanel(parent, player)
+  local avatar = avatarPanels[player]
+
+  if !IsValid(avatar) then
+    avatar = vgui.Create('AvatarImage', parent)
+    avatar:SetSize(16, 16)
+    avatar:SetPlayer(player, 32)
+    avatar:SetMouseInputEnabled(false)
+    avatar:SetPaintedManually(true)
+
+    avatarPanels[player] = avatar
+  end
+
+  return avatar
+end
+
+-- A function to remove the avatar panels of players who have left.
+local function CleanAvatarPanels()
+  for k, v in pairs(avatarPanels) do
+    if !IsValid(k) or !IsValid(v) then
+      if IsValid(v) then v:Remove() end
+
+      avatarPanels[k] = nil
+    end
   end
 end
 
@@ -856,12 +845,11 @@ function PANEL:Paint(w, h)
             offX = offX + 18
           elseif IsAvatar(v2) then
             if IsValid(curSender) then
-              local matPath = ToIcon(v2)
-              local material = Material('data/cwavatars/'..curSender:SteamID64()..'.jpg')
+              local avatar = GetAvatarPanel(self, curSender)
 
-              surface.SetDrawColor(255, 255, 255, chatbox.curAlpha)
-              surface.SetMaterial(material)
-              surface.DrawTexturedRect(offX, offY, 16, 16)
+              avatar:SetPos(offX, offY)
+              avatar:SetAlpha(chatbox.curAlpha or 255)
+              avatar:PaintManual()
 
               offX = offX + 18
             end
@@ -897,7 +885,7 @@ function PANEL:Paint(w, h)
 
   if chatbox.IsTypingCommand() then
     local curText = chatbox.GetCurrentText()
-    local isSilentCmd = curText:StartWith('/?')
+    local isSilentCmd = curText:StartsWith('/?')
 
     if isSilentCmd and !cw.client:IsAdmin() then
       return
@@ -1149,7 +1137,7 @@ end
 function chatbox.IsTypingOOC()
   local text = chatbox.GetCurrentText()
 
-  return (text:StartWith('//') or text:StartWith('.//') or text:StartWith('[['))
+  return (text:StartsWith('//') or text:StartsWith('.//') or text:StartsWith('[['))
 end
 
 -- A function to get whether the player is typing a command.
@@ -1158,7 +1146,7 @@ function chatbox.IsTypingCommand()
   local prefix = { '/', '/?' }
 
   for k, v in pairs(prefix) do
-    if text:StartWith(v) and !chatbox.IsTypingOOC() then
+    if text:StartsWith(v) and !chatbox.IsTypingOOC() then
       return true
     end
   end
@@ -1207,6 +1195,8 @@ function chatbox.Hide()
 
   hook.Run('ChatBoxClosed', chatbox.GetCurrentText())
 
+  local wasOpen = chatbox.IsOpen()
+
   chatbox.textEntry:AlphaTo(0, fadeDuration)
   chatbox.panel.scrollBar:AlphaTo(0, fadeDuration)
 
@@ -1215,7 +1205,18 @@ function chatbox.Hide()
   chatbox.panel:SetKeyboardInputEnabled(false)
 
   hook.Run('FinishChat')
-  timer.Simple(FrameTime() * 0.5, function() RunConsoleCommand('cancelselect') end)
+
+  -- 'cancelselect' is blocked for RunConsoleCommand nowadays. When ESC closed the chat box, keep the
+  -- pause menu from opening (OnPauseMenuShow below) or close it again if it already has.
+  if wasOpen and input.IsKeyDown(KEY_ESCAPE) and !input.IsShiftDown() then
+    chatbox.escapeFrame = FrameNumber()
+
+    timer.Simple(FrameTime() * 0.5, function()
+      if gui.IsGameUIVisible() then
+        gui.HideGameUI()
+      end
+    end)
+  end
 end
 
 function chatbox.RecreatePanel()
@@ -1236,6 +1237,8 @@ function chatbox.UpdateDisplay()
   if !chatbox.panel then
     chatbox.CreateDerma()
   end
+
+  CleanAvatarPanels()
 
   local i = 1
   local maxMessages = 20
@@ -1325,6 +1328,17 @@ hook.Add('PlayerBindPress', 'chatbox.PlayerBindPress', function(player, bind, bP
     end
 
     return true
+  end
+end)
+
+-- Called when the pause menu is about to open. ESC closes the chat box first.
+hook.Add('OnPauseMenuShow', 'chatbox.OnPauseMenuShow', function()
+  if chatbox.IsOpen() then
+    chatbox.Hide()
+
+    return false
+  elseif chatbox.escapeFrame == FrameNumber() then
+    return false
   end
 end)
 

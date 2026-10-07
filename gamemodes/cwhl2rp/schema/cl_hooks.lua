@@ -363,7 +363,7 @@ function Schema:GetPlayerScoreboardOptions(player, options, menu)
   if cw.command:FindByID('CharPermaKill') then
     if cw.player:HasFlags(cw.client, cw.command:FindByID('CharPermaKill').access) then
       options['#ScoreboardOptions_CharPermaKill'] = function()
-        RunConsoleCommand('aura', 'CharPermaKill', player:Name())
+        cw.core:RunCommand('CharPermaKill', player:Name())
       end
     end
   end

@@ -61,14 +61,14 @@ netstream.Hook('Salesmenu', function(player, data)
               cw.player:Notify(
                 player,
                 L('Salesman_YouReceived', amount)..' '..itemTable.PrintName..' '..L('Salesman_From')..' '..
-                  data.entity:GetNetworkedString('Name')..'.'
+                  data.entity:GetNWString('Name')..'.'
               )
             else
               cw.player:GiveCash(player, -(cost * amount), amount..' '..itemTable.PrintName)
               cw.player:Notify(
                 player,
                 L('Salesman_YouReceived', amount)..' '..itemTable.PrintName..' '..L('Salesman_From')..' '..
-                  data.entity:GetNetworkedString('Name')..'.'
+                  data.entity:GetNWString('Name')..'.'
               )
             end
 
@@ -113,7 +113,7 @@ netstream.Hook('Salesmenu', function(player, data)
               cw.player:Notify(
                 player,
                 L('Salesman_YouSold')..' '..itemTable.PrintName..' '..L('Salesman_To')..' '..
-                  data.entity:GetNetworkedString('Name')..'.'
+                  data.entity:GetNWString('Name')..'.'
               )
             end
           else
@@ -259,7 +259,7 @@ end
 -- A function to get a salesman table from an entity.
 function cwSalesmen:GetTableFromEntity(entity)
   return {
-    name = entity:GetNetworkedString('Name'),
+    name = entity:GetNWString('Name'),
     cash = entity.cwCash,
     stock = entity.cwStock,
     model = entity:GetModel(),
@@ -271,7 +271,7 @@ function cwSalesmen:GetTableFromEntity(entity)
     textTab = entity.cwTextTab,
     classes = entity.cwClasses,
     position = entity:GetPos(),
-    physDesc = entity:GetNetworkedString('PhysDesc'),
+    physDesc = entity:GetNWString('PhysDesc'),
     animation = entity.cwAnimation,
     priceScale = entity.cwPriceScale,
     buyInShipments = entity.cwBuyInShipments,

@@ -509,6 +509,7 @@ THEME.skin.tex.CategoryList = {}
 THEME.skin.tex.CategoryList.Outer		= GWEN.CreateTextureBorder(256, 384, 63, 63, 8, 8, 8, 8)
 THEME.skin.tex.CategoryList.Inner		= GWEN.CreateTextureBorder(320, 384, 63, 63, 8, 21, 8, 8)
 THEME.skin.tex.CategoryList.Header	= GWEN.CreateTextureBorder(320, 352, 63, 31, 8, 8, 8, 8)
+THEME.skin.tex.CategoryList.InnerH = GWEN.CreateTextureBorder(320, 384, 63, 20, 8, 8, 8, 8)
 
 THEME.skin.tex.Tooltip = GWEN.CreateTextureBorder(384, 64, 31, 31, 8, 8, 8, 8)
 
@@ -557,10 +558,12 @@ THEME.skin.Colours.Properties.Title = GWEN.TextureColor(4 + 8 * 13, 500)
 THEME.skin.Colours.Properties.Column_Normal = GWEN.TextureColor(4 + 8 * 14, 508)
 THEME.skin.Colours.Properties.Column_Selected = GWEN.TextureColor(4 + 8 * 15, 508)
 THEME.skin.Colours.Properties.Column_Hover = GWEN.TextureColor(4 + 8 * 14, 500)
+THEME.skin.Colours.Properties.Column_Disabled = Color(240, 240, 240)
 THEME.skin.Colours.Properties.Border = GWEN.TextureColor(4 + 8 * 15, 500)
 THEME.skin.Colours.Properties.Label_Normal = GWEN.TextureColor(4 + 8 * 16, 508)
 THEME.skin.Colours.Properties.Label_Selected = GWEN.TextureColor(4 + 8 * 17, 508)
 THEME.skin.Colours.Properties.Label_Hover = GWEN.TextureColor(4 + 8 * 16, 500)
+THEME.skin.Colours.Properties.Label_Disabled = GWEN.TextureColor(4 + 8 * 16, 508)
 
 THEME.skin.Colours.Category = {}
 THEME.skin.Colours.Category.Header = GWEN.TextureColor(4 + 8 * 18, 500)
@@ -569,16 +572,20 @@ THEME.skin.Colours.Category.Line = {}
 THEME.skin.Colours.Category.Line.Text = GWEN.TextureColor(4 + 8 * 20, 508)
 THEME.skin.Colours.Category.Line.Text_Hover = GWEN.TextureColor(4 + 8 * 21, 508)
 THEME.skin.Colours.Category.Line.Text_Selected = GWEN.TextureColor(4 + 8 * 20, 500)
+THEME.skin.Colours.Category.Line.Text_Disabled = GWEN.TextureColor(4 + 8 * 16, 508)
 THEME.skin.Colours.Category.Line.Button = GWEN.TextureColor(4 + 8 * 21, 500)
 THEME.skin.Colours.Category.Line.Button_Hover = GWEN.TextureColor(4 + 8 * 22, 508)
 THEME.skin.Colours.Category.Line.Button_Selected = GWEN.TextureColor(4 + 8 * 23, 508)
+THEME.skin.Colours.Category.Line.Button_Disabled = Color(210, 210, 210)
 THEME.skin.Colours.Category.LineAlt = {}
 THEME.skin.Colours.Category.LineAlt.Text = GWEN.TextureColor(4 + 8 * 22, 500)
 THEME.skin.Colours.Category.LineAlt.Text_Hover = GWEN.TextureColor(4 + 8 * 23, 500)
 THEME.skin.Colours.Category.LineAlt.Text_Selected = GWEN.TextureColor(4 + 8 * 24, 508)
+THEME.skin.Colours.Category.LineAlt.Text_Disabled = GWEN.TextureColor(4 + 8 * 16, 508)
 THEME.skin.Colours.Category.LineAlt.Button = GWEN.TextureColor(4 + 8 * 25, 508)
 THEME.skin.Colours.Category.LineAlt.Button_Hover = GWEN.TextureColor(4 + 8 * 24, 500)
 THEME.skin.Colours.Category.LineAlt.Button_Selected = GWEN.TextureColor(4 + 8 * 25, 500)
+THEME.skin.Colours.Category.LineAlt.Button_Disabled = Color(200, 200, 200)
 
 THEME.skin.Colours.TooltipText = GWEN.TextureColor(4 + 8 * 26, 500)
 

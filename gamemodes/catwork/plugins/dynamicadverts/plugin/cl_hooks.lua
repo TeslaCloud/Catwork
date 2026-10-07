@@ -7,8 +7,8 @@
 --]]
 
 -- Called just after the translucent renderables have been drawn.
-function cwDynamicAdverts:PostDrawTranslucentRenderables(bDrawingDepth, bDrawingSkybox)
-  if bDrawingSkybox or bDrawingDepth then return end
+function cwDynamicAdverts:PostDrawTranslucentRenderables(bDrawingDepth, bDrawingSkybox, bDrawing3DSkybox)
+  if bDrawing3DSkybox or bDrawingDepth then return end
 
   local eyePos = EyePos()
   local eyeAngles = EyeAngles()

@@ -10,7 +10,7 @@ function cwPermaDoors:SetPermaDoor(player, door, title)
   local secretKey = player:GetCharacterData('PermaDoorSecret')
 
   if !secretKey then
-    secretKey = 'doorkey_'..math.random(0, 999999)..'_'player:SteamID64()
+    secretKey = 'doorkey_'..math.random(0, 999999)..'_'..player:SteamID64()
     player:SetCharacterData('PermaDoorSecret', secretKey)
   end
 

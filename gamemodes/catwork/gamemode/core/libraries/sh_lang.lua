@@ -88,10 +88,29 @@ function cw.lang:GetString(language, identifier, arguments)
 end
 
 if CLIENT then
+  -- gmod_language is blocked from Lua, so the settings menu writes this instead. Empty means "follow the game".
+  local cwLanguage = CreateClientConVar('cwLanguage', '', true, false, 'Interface language, empty to follow the game.')
+
+  --[[
+    @codebase Client
+    @details Get the language the interface should be shown in.
+    @returns String The language code.
+  --]]
+
+  function cw.lang:GetLanguage()
+    local lang = cwLanguage:GetString()
+
+    if lang == '' then
+      lang = GetConVar('gmod_language'):GetString()
+    end
+
+    return lang
+  end
+
   function L(identifier)
     if !identifier then return '' end
 
-    local lang = GetConVar('gmod_language'):GetString()
+    local lang = cw.lang:GetLanguage()
     local args = {}
 
     -- Get all the arguments.

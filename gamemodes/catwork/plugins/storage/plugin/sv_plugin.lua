@@ -104,8 +104,8 @@ function cwStorage:OpenContainer(player, entity, weight)
     weight = 8
   end
 
-  if entity:GetNetworkedString('Name') != '' then
-    name = entity:GetNetworkedString('Name')
+  if entity:GetNWString('Name') != '' then
+    name = entity:GetNWString('Name')
   end
 
   if entity.cwMessage then

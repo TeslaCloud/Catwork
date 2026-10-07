@@ -8,7 +8,9 @@
 
 function Schema:PlayerInitialSpawn(player, bOneWay)
   timer.Simple(2, function()
-    self:SendIconData(player)
+    if IsValid(player) then
+      self:SendIconData(player)
+    end
   end)
 end
 
@@ -578,8 +580,8 @@ function Schema:KeyPress(player, key)
         for k, v in ipairs(ents.FindInSphere(position, 384)) do
           if v:IsPlayer() and v:HasInitialized() and !self:PlayerIsCombine(v) then
             local playerPosition = v:GetPos()
-            local scannerDot = scanner:GetAimVector():Dot((playerPosition - position):GetNormal())
-            local playerDot = v:GetAimVector():Dot((position - playerPosition):GetNormal())
+            local scannerDot = scanner:GetAimVector():Dot((playerPosition - position):GetNormalized())
+            local playerDot = v:GetAimVector():Dot((position - playerPosition):GetNormalized())
             local threshold = 0.2 + math.Clamp((0.6 / 384) * playerPosition:Distance(position), 0, 0.6)
 
             if cw.player:CanSeeEntity(v, scanner, 0.9, { marker }) and playerDot >= threshold
@@ -634,7 +636,7 @@ function Schema:Tick()
         if IsValid(scanner.followTarget) then
           scanner:Input('SetFollowTarget', scanner.followTarget, scanner.followTarget, '!activator')
         else
-          scanner:Fire('SetFollowTarget', 'marker_'..k:UniqueID(), 0)
+          scanner:Fire('SetFollowTarget', 'marker_'..k:SteamID64(), 0)
         end
 
         if scannerClass == 'npc_cscanner' and self:IsPlayerCombineRank(k, 'SYNTH') then
@@ -805,7 +807,7 @@ end
 function Schema:CanTool(player, trace, tool)
   if !cw.player:HasFlags(player, 'w') then
     if string.sub(tool, 1, 5) == 'wire_' or string.sub(tool, 1, 6) == 'wire2_' then
-      player:RunCommand('gmod_toolmode ""')
+      player:RunCommand('gmod_toolmode', '')
 
       return false
     end
@@ -869,9 +871,11 @@ end
 
 -- Called when an entity is removed.
 function Schema:EntityRemoved(entity)
+  if cw.core:IsShuttingDown() then return end
+
   if IsValid(entity) and entity:GetClass() == 'prop_ragdoll' then
     if entity.areBelongings and entity.cwInventory and entity.cash then
-      if table.Count(entity.inventory) > 0 or entity.cash > 0 then
+      if table.Count(entity.cwInventory) > 0 or entity.cash > 0 then
         local belongings = ents.Create('cw_belongings')
 
         belongings:SetAngles(Angle(0, 0, -90))
@@ -1346,6 +1350,8 @@ end
 
 -- Called when a player destroys generator.
 function Schema:PlayerDestroyGenerator(player, entity, generator)
+  local cash = math.Round(generator.cash / 4)
+
   if self:PlayerIsCombine(player) then
     local players = {}
 
@@ -1358,10 +1364,10 @@ function Schema:PlayerDestroyGenerator(player, entity, generator)
     end
 
     for k, v in pairs(players) do
-      cw.player:GiveCash(v, generator.cash / 4, L('CashReason_DestroyGenerator', string.lower(generator.name)))
+      cw.player:GiveCash(v, cash, L('CashReason_DestroyGenerator', string.lower(generator.name)))
     end
   else
-    cw.player:GiveCash(v, generator.cash / 4, L('CashReason_DestroyGenerator', string.lower(generator.name)))
+    cw.player:GiveCash(player, cash, L('CashReason_DestroyGenerator', string.lower(generator.name)))
   end
 end
 
@@ -1544,7 +1550,7 @@ function Schema:EntityBreached(entity, activator)
       end
     elseif IsValid(activator) and activator:IsPlayer() and self:PlayerIsCombine(activator) then
       if string.lower(entity:GetClass()) == 'prop_door_rotating' then
-        entity.combineLock:ActivateSmokeCharge((entity:GetPos() - activator:GetPos()):GetNormal() * 10000)
+        entity.combineLock:ActivateSmokeCharge((entity:GetPos() - activator:GetPos()):GetNormalized() * 10000)
       else
         entity.combineLock:SetFlashDuration(2)
       end

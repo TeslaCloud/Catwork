@@ -670,11 +670,11 @@ function cw.FontIcons:GetIcon(id)
 end
 
 function cw.FontIcons:Draw(id, x, y, size, color)
-  if id:StartWith('fa ') then
+  if id:StartsWith('fa ') then
     id = id:sub(4, id:len())
   end
 
-  if !id:StartWith('fa-') then
+  if !id:StartsWith('fa-') then
     id = 'fa-'..id
   end
 

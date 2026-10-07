@@ -192,7 +192,7 @@ if SERVER then
           self:EmitSound('buttons/button6.wav')
         end
 
-        self:EmitSound('buttons/button4.wav', Angle(0, 0, 90))
+        self:EmitSound('buttons/button4.wav')
 
         cw.player:GiveCash(activator, -price, L('NutVend_CashReason_Purchase'))
       end

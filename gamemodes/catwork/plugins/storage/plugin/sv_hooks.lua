@@ -15,7 +15,7 @@ end
 
 -- Called when an entity attempts to be auto-removed.
 function cwStorage:EntityCanAutoRemove(entity)
-  if self.storage[entity] or entity:GetNetworkedString('Name') != '' then
+  if self.storage[entity] or entity:GetNWString('Name') != '' then
     return false
   end
 end

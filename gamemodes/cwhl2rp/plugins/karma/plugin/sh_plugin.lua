@@ -39,20 +39,20 @@ do
   function playerMeta:GetKarmaLevel()
     local karma = self:GetKarma()
 
-    if player.cachedKarma != karma then
-      player.cachedKarma = karma
-      player.cachedKarmaString = '#Karma_Error'
+    if self.cachedKarma != karma then
+      self.cachedKarma = karma
+      self.cachedKarmaString = '#Karma_Error'
 
       for k, v in ipairs(stored) do
         if karma >= v.bottom and karma <= v.ceiling then
-          player.cachedKarmaString = v.phrase
+          self.cachedKarmaString = v.phrase
 
           break
         end
       end
-    else
-      return player.cachedKarmaString
     end
+
+    return self.cachedKarmaString
   end
 
   function playerMeta:SetKarma(karma)

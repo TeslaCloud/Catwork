@@ -125,11 +125,11 @@ do
   chatbox.AddPrefix('//', function(msgData)
     local text = msgData.text
 
-    if text:StartWith('//') then
+    if text:StartsWith('//') then
       msgData.filter = 'ooc'
       msgData.radius = 0
 
-      while text:StartWith('// ') do
+      while text:StartsWith('// ') do
         text = '//'..text:utf8sub(4, text:utf8len())
       end
 
@@ -142,11 +142,11 @@ do
   chatbox.AddPrefix('.//', function(msgData)
     local text = msgData.text
 
-    if text:StartWith('.//') then
+    if text:StartsWith('.//') then
       msgData.filter = 'looc'
       msgData.radius = config.GetVal('talk_radius') -- todo
 
-      while text:StartWith('.// ') do
+      while text:StartsWith('.// ') do
         text = './/'..text:utf8sub(5, text:utf8len())
       end
 
@@ -160,11 +160,11 @@ do
   chatbox.AddPrefix('[[', function(msgData)
     local text = msgData.text
 
-    if text:StartWith('[[') then
+    if text:StartsWith('[[') then
       msgData.filter = 'looc'
       msgData.radius = config.GetVal('talk_radius') -- todo
 
-      while text:StartWith('[[ ') do
+      while text:StartsWith('[[ ') do
         text = '[['..text:utf8sub(4, text:utf8len())
       end
 
@@ -177,7 +177,7 @@ do
   chatbox.AddPrefix('/', function(msgData)
     local text = msgData.text
 
-    if text:StartWith('/') and !text:StartWith('//') and !text:StartWith('/?') then
+    if text:StartsWith('/') and !text:StartsWith('//') and !text:StartsWith('/?') then
       msgData.filter = 'command'
       msgData.isCommand = true
       msgData.radius = -1
@@ -189,7 +189,7 @@ do
   chatbox.AddPrefix('/?', function(msgData)
     local text = msgData.text
 
-    if IsValid(msgData.sender) and msgData.sender:IsAdmin() and text:StartWith('/?') then
+    if IsValid(msgData.sender) and msgData.sender:IsAdmin() and text:StartsWith('/?') then
       msgData.filter = 'command_no_announcement'
       msgData.isCommand = true
       msgData.isCommandSilent = true
@@ -202,7 +202,7 @@ do
   chatbox.AddPrefix('@', function(msgData)
     local text = msgData.text
 
-    if text:StartWith('@') then
+    if text:StartsWith('@') then
       msgData.filter = 'admin'
       msgData.radius = 0
 
@@ -213,7 +213,7 @@ do
   chatbox.AddPrefix('<sys>', function(msgData)
     local text = msgData.text
 
-    if text:StartWith('<sys>') then
+    if text:StartsWith('<sys>') then
       msgData.filter = 'player_as_system'
       msgData.radius = 0
 
@@ -419,19 +419,19 @@ netstream.Hook('ChatboxTextEntered', function(player, msgText)
     data = {}
   }
 
-  if msgText:StartWith('/?') and !player:IsAdmin() then
+  if msgText:StartsWith('/?') and !player:IsAdmin() then
     cw.player:Notify(player, L('Chat_NotValidCommand'))
 
     return
   end
 
-  if msgText:StartWith('//') then
+  if msgText:StartsWith('//') then
     chatbox.GetPrefix('//').Callback(message)
   else
     for k, v in pairs(chatbox.prefixes) do
       if k == '//' then continue end
 
-      if msgText:StartWith(k) then
+      if msgText:StartsWith(k) then
         if v.Callback(message) then
           break
         end

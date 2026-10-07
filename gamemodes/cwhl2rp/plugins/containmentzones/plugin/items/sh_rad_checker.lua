@@ -19,8 +19,8 @@ function ITEM:OnUse(player, itemEntity)
     if IsValid(traceent) then
       local rad = L('Containment_RadDose_Unknown')
 
-      if traceent:IsPlayer() or traceent:IsNPC() or traceent:IsBot() then
-        if traceent:Distance(player:GetPos()) < 55 then
+      if traceent:IsPlayer() or traceent:IsNPC() then
+        if traceent:GetPos():Distance(player:GetPos()) < 55 then
           if traceent.GetCharacterData then
             rad = L('Containment_RadDose_Value', math.Round(traceent:GetCharacterData('radlevel', 0), 2))
           end

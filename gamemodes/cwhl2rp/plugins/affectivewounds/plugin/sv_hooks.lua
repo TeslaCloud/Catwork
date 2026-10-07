@@ -60,12 +60,12 @@ function PLUGIN:PlayerTraceAttack(ply, dmginfo, dir, trace)
           end
 
           local activeWep = ply:GetActiveWeapon()
-          local wepClass = activeWep:GetClass()
+          local wepClass = IsValid(activeWep) and activeWep:GetClass()
 
-          if !NoStripWeps[wepClass] then
+          if wepClass and !NoStripWeps[wepClass] then
             if IsValid(activeWep) then
               local dropPos = ply:GetPos() + Vector(0, 0, 35) + ply:GetAngles():Forward() * 4
-              local itemTable = cw.item:GetByWeapon(activeWep)
+              local itemTable = item.GetByWeapon(activeWep)
               local entity = cw.entity:CreateItem(ply, itemTable, dropPos)
 
               if IsValid(entity) then

@@ -58,7 +58,7 @@ local badKeywords = {
 }
 
 function PLUGIN:FluxPluginsLoaded()
-  local contents = fileio.Read('data/flux_blacklist.txt')
+  local contents = File.read('data/flux_blacklist.txt')
 
   if isstring(contents) then
     blacklist = pon.decode(contents) or {}
@@ -82,7 +82,7 @@ function PLUGIN:CheckPassword(steamID64, ip, password, clPassword, name)
       if string.find(name, v, 1, true) then
         blacklist[steamid] = defaultReason
 
-        fileio.Write('data/flux_blacklist.txt', pon.encode(blacklist))
+        File.write('data/flux_blacklist.txt', pon.encode(blacklist))
 
         print('Dropping '..name.." for having bad keyword '"..v.."' in their name!")
 

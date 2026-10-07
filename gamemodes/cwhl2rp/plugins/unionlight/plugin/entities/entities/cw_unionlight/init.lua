@@ -25,8 +25,6 @@ function ENT:SpawnFunction(ply, tr)
   return ent
 end
 
-ents.Create('prop_physics')
-
 function ENT:OnRemove()
 end
 

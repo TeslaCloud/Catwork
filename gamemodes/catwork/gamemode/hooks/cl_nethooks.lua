@@ -7,6 +7,9 @@
 --]]
 
 netstream.Hook('RunCommand', function(data)
+  -- Never let network data reach the cwLua (RunString) developer command.
+  if !istable(data) or string.lower(tostring(data[1])) == 'cwlua' then return end
+
   RunConsoleCommand(unpack(data))
 end)
 

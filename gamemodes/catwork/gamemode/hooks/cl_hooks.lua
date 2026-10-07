@@ -184,10 +184,10 @@ function GM:ClockworkConVarChanged(name, previousValue, newValue)
     cw.option:SetColor(
       'information',
       Color(
-        GetConVarNumber('cwTextColorR'),
-        GetConVarNumber('cwTextColorG'),
-        GetConVarNumber('cwTextColorB'),
-        GetConVarNumber('cwTextColorA')
+        cvars.Number('cwTextColorR', 255),
+        cvars.Number('cwTextColorG', 255),
+        cvars.Number('cwTextColorB', 255),
+        cvars.Number('cwTextColorA', 255)
       )
     )
   elseif name == 'cwActiveTheme' then
@@ -360,12 +360,6 @@ function GM:Initialize()
     chatbox.Hide()
   end
 
-  if file.Exists('cwavatars.txt', 'DATA') then
-    cw.AvatarsData = pon.decode(file.Read('cwavatars.txt', 'DATA')) or {}
-  else
-    cw.AvatarsData = {}
-  end
-
   item.Initialize()
 
   if !cw.option:GetKey('top_bars') then
@@ -493,7 +487,8 @@ end
 function GM:PlayerCanSeeBusinessItem(itemTable) return true end
 
 function GM:PlayerBindPress(player, bind, bPress, break_cycle)
-  if break_cycle then return end -- break the cycle
+  -- The engine passes the button code as the fourth argument, only an explicit `true` breaks the cycle.
+  if break_cycle == true then return end
 
   if player:GetRagdollState() == RAGDOLL_FALLENOVER and string.find(bind, '+jump') then
     cw.core:RunCommand('CharGetUp')
@@ -1945,7 +1940,7 @@ function GM:GetPlayerScoreboardOptions(player, options, menu)
   end
 
   if unwhitelist and cw.player:HasFlags(cw.client, unwhitelist.access) then
-    canUnwhitelist = true
+    canUwhitelist = true
   end
 
   if canWhitelist or canUwhitelist then
@@ -2043,8 +2038,9 @@ function GM:PostProcessPermitted(class)
 end
 
 -- Called just after the translucent renderables have been drawn.
-function GM:PostDrawTranslucentRenderables(bDrawingDepth, bDrawingSkybox)
-  if bDrawingSkybox or bDrawingDepth then return end
+function GM:PostDrawTranslucentRenderables(bDrawingDepth, bDrawingSkybox, bDrawing3DSkybox)
+  -- bDrawingSkybox is also true for the main view on maps with a 2D skybox, so only skip the 3D skybox pass.
+  if bDrawingDepth or bDrawing3DSkybox then return end
 
   if !cw.core:IsChoosingCharacter() then
     local eyePos = EyePos()

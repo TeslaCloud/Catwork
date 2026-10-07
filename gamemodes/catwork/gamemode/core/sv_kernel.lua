@@ -56,9 +56,9 @@ function sql.SQLStr(str_in, bNoQuotes)
   return "'"..str.."'"
 end
 
-oldFileioWrite = oldFileioWrite or catio.Write
+oldFileWrite = oldFileWrite or File.write
 
-function catio.Write(fileName, content)
+function File.write(fileName, content)
   local exploded = string.Explode('/', fileName)
   local curPath = ''
 
@@ -70,37 +70,29 @@ function catio.Write(fileName, content)
     curPath = curPath..v..'/'
 
     if !file.Exists(curPath, 'GAME') then
-      catio.MakeDirectory(curPath)
+      File.mkdir(curPath)
     end
   end
 
-  oldFileioWrite(fileName, content)
+  return oldFileWrite(fileName, content)
+end
+
+-- File.append does not create missing folders, cw.core:ServerLog needs this one.
+if !file.Exists('logs/clockwork', 'GAME') then
+  File.mkdir('logs/')
+  File.mkdir('logs/clockwork/')
 end
 
 base64 = base64 or {}
 
--- Ghetto Fix for base64 encoding not properly working with NULL (0) character in C++.
-local oldb64encode = base64.oldEncode or base64.encode
-base64.oldEncode = oldb64encode
-
-local oldb64decode = base64.oldDecode or base64.decode
-base64.oldDecode = oldb64decode
-
+-- util.Base64* are binary safe, so NULL (0) characters need no special treatment anymore.
 function base64.encode(str)
-  str = tostring(str)
-  str = str:Replace(string.char(0), utf8.char(999))
-
-  return oldb64encode(str)
+  return util.Base64Encode(tostring(str), true)
 end
 
 function base64.decode(str)
-  str = oldb64decode(str)
-  str = str:Replace(utf8.char(999), string.char(0))
-
-  return str
+  return util.Base64Decode(str)
 end
-
--- End Ghetto Fix
 
 local ServerLog = ServerLog
 local cvars = cvars
@@ -168,12 +160,12 @@ function cw.core:SaveSchemaData(fileName, data, bForceJSON)
     return
   end
 
-  return catio.Write('settings/catwork/schemas/'..cw.Schema..'/'..fileName..'.cw', self:Serialize(data, bForceJSON))
+  return File.write('settings/catwork/schemas/'..cw.Schema..'/'..fileName..'.cw', self:Serialize(data, bForceJSON))
 end
 
 -- A function to delete schema data.
 function cw.core:DeleteSchemaData(fileName)
-  return catio.Delete('settings/catwork/schemas/'..cw.Schema..'/'..fileName..'.cw')
+  return File.delete('settings/catwork/schemas/'..cw.Schema..'/'..fileName..'.cw')
 end
 
 -- A function to check if schema data exists.
@@ -194,7 +186,7 @@ function cw.core:GetSchemaGamemodeInfo()
 
   local schemaFolder = string.lower(self:GetSchemaFolder())
   local schemaData = util.KeyValuesToTable(
-    catio.Read('gamemodes/'..schemaFolder..'/'..schemaFolder..'.txt')
+    File.read('gamemodes/'..schemaFolder..'/'..schemaFolder..'.txt')
   )
 
   if !schemaData then
@@ -237,7 +229,7 @@ end
 -- A function to restore schema data.
 function cw.core:RestoreSchemaData(fileName, failSafe, bForceJSON)
   if self:SchemaDataExists(fileName) then
-    local data = catio.Read('settings/catwork/schemas/'..cw.Schema..'/'..fileName..'.cw', 'namedesc')
+    local data = File.read('settings/catwork/schemas/'..cw.Schema..'/'..fileName..'.cw')
 
     if data then
       local bSuccess, value = pcall(self.Deserialize, self, data, bForceJSON)
@@ -265,7 +257,7 @@ end
 -- A function to restore Clockwork data.
 function cw.core:RestoreClockworkData(fileName, failSafe)
   if self:ClockworkDataExists(fileName) then
-    local data = catio.Read('settings/clockwork/'..fileName..'.cw')
+    local data = File.read('settings/clockwork/'..fileName..'.cw')
 
     if data then
       local bSuccess, value = pcall(self.Deserialize, self, data)
@@ -296,7 +288,7 @@ function cw.core:SetupFullDirectory(filePath)
   for k, v in ipairs(exploded) do
     if k < #exploded then
       currentPath = currentPath..v..'/'
-      catio.MakeDirectory(currentPath)
+      File.mkdir(currentPath)
     end
   end
 
@@ -315,7 +307,7 @@ function cw.core:SaveClockworkData(fileName, data)
     return
   end
 
-  return catio.Write('settings/clockwork/'..fileName..'.cw', self:Serialize(data))
+  return File.write('settings/clockwork/'..fileName..'.cw', self:Serialize(data))
 end
 
 -- A function to check if Clockwork data exists.
@@ -325,7 +317,7 @@ end
 
 -- A function to delete Clockwork data.
 function cw.core:DeleteClockworkData(fileName)
-  return catio.Delete('settings/clockwork/'..fileName..'.cw')
+  return File.delete('settings/clockwork/'..fileName..'.cw')
 end
 
 -- A function to convert a force.
@@ -733,7 +725,7 @@ function cw.core:ServerLog(text)
     local time = dateInfo.hour..':'..dateInfo.min..':'..dateInfo.sec
     local logText = time..': '..string.gsub(text, '\n', '')
 
-    catio.Append('logs/clockwork/'..fileName..'.log', logText..'\n')
+    File.append('logs/clockwork/'..fileName..'.log', logText..'\n')
   end
 
   ServerLog(text..'\n') hook.Run('ClockworkLog', text, unixTime)
@@ -758,7 +750,7 @@ do
     resource.AddSingleFile('maps/'..game.GetMap()..'.bsp')
   end
 
-  local workshopCollection = GetConVarString('host_workshop_collection')
+  local workshopCollection = cvars.String('host_workshop_collection', '')
 
   if workshopCollection != '' then
     cw.core:AddWorkshopCollection(workshopCollection)
@@ -919,13 +911,13 @@ function playerMeta:PlayStepSound(volume)
 end
 
 -- A function to make a player fire bullets.
-function entityMeta:FireBullets(bulletInfo)
+function entityMeta:FireBullets(bulletInfo, ...)
   if self:IsPlayer() then
     hook.Run('PlayerAdjustBulletInfo', self, bulletInfo)
   end
 
   hook.Run('EntityFireBullets', self, bulletInfo)
-  return self:ClockworkFireBullets(bulletInfo)
+  return self:ClockworkFireBullets(bulletInfo, ...)
 end
 
 -- A function to get whether a player is alive.
@@ -1382,7 +1374,8 @@ function playerMeta:Kick(reason)
 
       if IsValid(self) and isKicked then
         if self:HasSpawned() then
-          game.ConsoleCommand('kickid '..self:UserID()..' '..isKicked..'\n')
+          -- Not `kickid` through the console: the reason would be parsed as console commands.
+          self:ClockworkKick(isKicked)
         else
           self.isKicked = nil
           self:Kick(isKicked)
@@ -1549,7 +1542,7 @@ end
 
 -- A function to create a player'a animation stop delay.
 function playerMeta:CreateAnimationStopDelay(delay)
-  timer.Create('ForcedAnim'..self:UniqueID(), delay, 1, function()
+  timer.Create('ForcedAnim'..self:SteamID64(), delay, 1, function()
     if IsValid(self) then
       local forcedAnimation = self:GetForcedAnimation()
 
@@ -1595,7 +1588,7 @@ function playerMeta:SetForcedAnimation(animation, delay, OnAnimate, OnFinish)
 
     if bIsPermanent then
       timer.Remove(
-        'ForcedAnim'..self:UniqueID()
+        'ForcedAnim'..self:SteamID64()
       )
     else
       self:CreateAnimationStopDelay(delay)
@@ -1955,8 +1948,11 @@ end
 
 -- A function to set a player's walk speed.
 function playerMeta:SetWalkSpeed(speed, bClockwork)
-  if !bClockwork then self.cWalkSpeed = speed end
+  if !bClockwork then self.cwWalkSpeed = speed end
   self:ClockworkSetWalkSpeed(speed)
+
+  -- +walk has its own engine speed since 2020; keep it equal so holding it neither slows nor speeds up.
+  self:SetSlowWalkSpeed(speed)
 end
 
 -- A function to set a player's jump power.
@@ -2154,7 +2150,7 @@ playerMeta.GetName = playerMeta.Name
 playerMeta.Nick = playerMeta.Name
 
 concommand.Add('cwStatus', function(player, command, arguments)
-  local plyTable = player.GetAll()
+  local plyTable = _player.GetAll()
 
   if IsValid(player) then
     if cw.player:IsAdmin(player) then

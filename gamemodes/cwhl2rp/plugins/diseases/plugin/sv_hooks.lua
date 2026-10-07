@@ -118,7 +118,7 @@ function PLUGIN:OnePlayerSecond(player, curTime, infoTable)
           player:SetCharacterData('diseases', 'fever')
         end
 
-        if math.random(1, 200) == 1 and player:GetCharacterData('Hunger') >= 65 then
+        if math.random(1, 200) == 1 and (player:GetCharacterData('Hunger') or 0) >= 65 then
           player:SetCharacterData('diseases', 'diarrhea')
         end
 

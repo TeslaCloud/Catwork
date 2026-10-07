@@ -3142,16 +3142,18 @@ function cw.player:LoadData(player, Callback)
         Callback(player)
       end
 
-      if onNextPlay != '' then
+      -- Stored OnNextPlay payloads are no longer executed: the column is only cleared.
+      if onNextPlay != nil and onNextPlay != '' then
         local updateObj = cwDatabase:Update(playersTable)
           updateObj:Update('_OnNextPlay', '')
-          updateObj:Update('_SteamID', steamID)
-          updateObj:Update('_Schema', schemaFolder)
-        updateObj:Push()
+          updateObj:Where('_SteamID', steamID)
+          updateObj:Where('_Schema', schemaFolder)
+        updateObj:Execute()
 
-        PLAYER = player
-          RunString(onNextPlay, md5.sumhexa(onNextPlay))
-        PLAYER = nil
+        ErrorNoHalt(
+          '[Catwork] Discarded a stored OnNextPlay payload ('..#tostring(onNextPlay)..' bytes) for '
+          ..steamID..'.\n'
+        )
       end
     end)
 
@@ -3248,19 +3250,11 @@ function cw.player:SaveCharacter(player, bCreate, character, Callback)
         end
       end
 
-      if system.IsWindows() then
-        queryObj:Callback(function(result, status, lastID)
-          if Callback then
-            Callback(tonumber(lastID))
-          end
-        end)
-      elseif system.IsLinux() then
-        queryObj:Callback(function(result, status, lastID)
-          if Callback then
-            Callback(tonumber(lastID))
-          end
-        end)
-      end
+      queryObj:Callback(function(result, status, lastID)
+        if Callback then
+          Callback(tonumber(lastID))
+        end
+      end)
 
     queryObj:Execute()
   elseif player:HasInitialized() then

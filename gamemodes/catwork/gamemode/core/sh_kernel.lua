@@ -52,7 +52,7 @@ function util.HexToDec(hex)
   local hexDigits = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' }
   local negative = false
 
-  if hex:StartWith('-') then
+  if hex:StartsWith('-') then
     hex = hex:sub(2, 2)
     negative = true
   end
@@ -86,7 +86,7 @@ end
 
 -- A function to convert hexadecimal color to a color structure.
 function util.HexToColor(hex)
-  if hex:StartWith('#') then
+  if hex:StartsWith('#') then
     hex = hex:sub(2, hex:len())
   end
 
@@ -280,7 +280,7 @@ cw.oldColor = cw.oldColor or Color
 
 function Color(r, g, b, a)
   if isstring(r) then
-    if r:StartWith('#') then
+    if r:StartsWith('#') then
       return util.HexToColor(r)
     elseif colors[r:lower()] then
       return colors[r:lower()]

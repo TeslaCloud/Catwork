@@ -218,11 +218,10 @@ if SERVER then
         if CurTime() >= ply.nextRadFall then
           if 4 > math.random(1, 1000) then
             cw.player:SetRagdollState(ply, RAGDOLL_KNOCKEDOUT, math.random(5, 15))
-            cw.chatBox:Add(
+            chatbox.AddText(
               ply,
-              nil,
-              'sleep',
-              '** Вы сильно устали, и Вам очень плохо. Вы ощущаете жар по всему телу...'
+              '** Вы сильно устали, и Вам очень плохо. Вы ощущаете жар по всему телу...',
+              { textColor = Color('#89D235'), filter = 'player_events', icon = false }
             )
             ply.nextRadFall = CurTime() + 20
           end
@@ -344,10 +343,10 @@ if SERVER then
   end
 
   concommand.Add('cwradsys_get', function(ply)
-    if ply:IsSuperAdmin() then
+    if IsValid(ply) and ply:IsSuperAdmin() then
       netstream.Start(ply, 'cwRadSystemDataClear', {})
 
-      for k, v in pairs(self.stored) do
+      for k, v in pairs(cwRadSystem.stored) do
         netstream.Start(ply, 'cwRadSystemData', {
           pos = v.pos,
           pos1 = v.pos1,

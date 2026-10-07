@@ -80,11 +80,11 @@ function ENT:Use(activator)
 end
 
 function ENT:SetSpawnTime(time)
-  self:SetNetworkedFloat(0, time)
+  self:SetNWFloat(0, time)
 end
 
 function ENT:SetGrowTime(time)
-  self:SetNetworkedFloat(1, time)
+  self:SetNWFloat(1, time)
 end
 
 function ENT:SetItem(uniqueID)

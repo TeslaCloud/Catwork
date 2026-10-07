@@ -99,7 +99,7 @@ cwAnimatedLegs.RadAngle = nil
 function cwAnimatedLegs:ShouldDrawLegs()
   return IsValid(self.LegsEntity) and cw.client:Alive()
   and self:CheckDrawVehicle() and GetViewEntity() == cw.client
-  and !cw.client:ShouldDrawLocalPlayer() and !cw.client:GetObserverTarget()
+  and !cw.client:ShouldDrawLocalPlayer() and !IsValid(cw.client:GetObserverTarget())
   and cw.client:GetFaction() != FACTION_VORT
   and cw.client:GetFaction() != FACTION_VORT_SLAVE
 end

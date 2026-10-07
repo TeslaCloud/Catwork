@@ -22,7 +22,7 @@ function COMMAND:OnRun(player, arguments)
     if modelClass == 'civilProtection' then
       local forcedAnimation = player:GetForcedAnimation()
 
-      if forcedAnimation and cwEmoteAnimscwEmoteAnims[forcedAnimation.animation] then
+      if forcedAnimation and cwEmoteAnims.stanceList[forcedAnimation.animation] then
         cw.player:Notify(player, L('CannotActionRightNow'))
       else
         player:SetForcedAnimation('harassfront2', 1.5)

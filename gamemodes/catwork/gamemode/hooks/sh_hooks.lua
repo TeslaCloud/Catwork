@@ -55,13 +55,14 @@ do
     player.CalcSeqOverride = -1
 
     local baseClass = self.BaseClass
+    local playerTable = player:GetTable()
 
-    if baseClass:HandlePlayerNoClipping(player, velocity) or
-      baseClass:HandlePlayerDriving(player) or
-      baseClass:HandlePlayerVaulting(player, velocity) or
-      baseClass:HandlePlayerJumping(player, velocity) or
-      baseClass:HandlePlayerSwimming(player, velocity) or
-      baseClass:HandlePlayerDucking(player, velocity) then
+    if baseClass:HandlePlayerNoClipping(player, velocity, playerTable) or
+      baseClass:HandlePlayerDriving(player, playerTable) or
+      baseClass:HandlePlayerVaulting(player, velocity, playerTable) or
+      baseClass:HandlePlayerJumping(player, velocity, playerTable) or
+      baseClass:HandlePlayerSwimming(player, velocity, playerTable) or
+      baseClass:HandlePlayerDucking(player, velocity, playerTable) then
     else
       local len2D = velocity:Length2D()
 
@@ -201,7 +202,7 @@ function GM:DoAnimationEvent(player, event, data)
     elseif event == PLAYERANIMEVENT_JUMP then
       -- manually set standard gmod vars.
       player.m_bJumping = true
-      player.m_bFistJumpFrame = true
+      player.m_bFirstJumpFrame = true
       player.m_flJumpStartTime = CurTime()
 
       player:AnimRestartMainSequence()
@@ -234,7 +235,11 @@ function GM:OnReloaded()
   cw.Reloaded = true
 
   if SERVER then
-    cw.database:OnConnected()
+    -- Only sqlite needs its tables re-checked; a MySQL connection survives the reload on its own.
+    if cw.database.Module == 'sqlite' then
+      cw.database:OnConnected()
+    end
+
     print('[Catwork] OnReloaded hook called serverside!')
   else
     cw.theme:Get():CreateFonts()

@@ -8,28 +8,32 @@ if CLIENT then
     size = 13,
     weight = 1000,
     antialias = false,
-    underline = false
+    underline = false,
+    extended = true
   })
   surface.CreateFont('_GR_CMB_FONT_2', {
     font = 'Default',
     size = 11,
     weight = 1000,
     antialias = false,
-    underline = false
+    underline = false,
+    extended = true
   })
   surface.CreateFont('_GR_CMB_FONT_3', {
     font = 'Verdana',
     size = 10,
     weight = 800,
     antialias = false,
-    underline = false
+    underline = false,
+    extended = true
   })
   surface.CreateFont('_GR_CMB_FONT_4', {
     font = 'System',
     size = 40,
     weight = 1000,
     antialias = false,
-    underline = false
+    underline = false,
+    extended = true
   })
 end
 
@@ -59,7 +63,7 @@ function ENT:Initialize()
     self:PhysicsInit(SOLID_VPHYSICS)
     self:SetSolid(SOLID_VPHYSICS)
     self:SetUseType(SIMPLE_USE)
-    self:SetMaterial(Material('models/props_combine/tprotato2_sheet'))
+    self:SetMaterial('models/props_combine/tprotato2_sheet')
     local phys = self:GetPhysicsObject()
 
     if phys then
@@ -104,13 +108,13 @@ function ENT:Initialize()
 end
 
 function ENT:SetupDataTables()
-  self:NetworkVar('Vector', '0', 'ProductPos')
-  self:NetworkVar('Float', '2', 'GarbageCount')
-  self:NetworkVar('Bool', '0', 'IsWorking')
-  self:NetworkVar('Float', '0', 'StartWorkTime')
-  self:NetworkVar('Float', '1', 'NextWorkTime')
-  self:NetworkVar('Int', '0', 'EjectStorage')
-  self:NetworkVar('Float', '3', 'StopWorkTime')
+  self:NetworkVar('Vector', 0, 'ProductPos')
+  self:NetworkVar('Float', 2, 'GarbageCount')
+  self:NetworkVar('Bool', 0, 'IsWorking')
+  self:NetworkVar('Float', 0, 'StartWorkTime')
+  self:NetworkVar('Float', 1, 'NextWorkTime')
+  self:NetworkVar('Int', 0, 'EjectStorage')
+  self:NetworkVar('Float', 3, 'StopWorkTime')
 end
 
 if SERVER then

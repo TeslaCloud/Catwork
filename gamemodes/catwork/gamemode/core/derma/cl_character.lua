@@ -793,7 +793,7 @@ function PANEL:Init()
   self.factionLabel:SetDisabled(true)
   self.factionLabel:SetFont(tinyTextFont)
 
-  local text = cw.lang:GetString(GetConVar('gmod_language'):GetString(), self.customData.faction)
+  local text = cw.lang:GetString(cw.lang:GetLanguage(), self.customData.faction)
 
   self.factionLabel:SetText(text:utf8upper())
   self.factionLabel:SizeToContents()

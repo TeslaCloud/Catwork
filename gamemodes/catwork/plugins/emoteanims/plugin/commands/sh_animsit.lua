@@ -31,7 +31,7 @@ function COMMAND:OnRun(player, arguments)
         player:SetForcedAnimation('sit_ground_to_idle', 2, nil, function(player)
           cwEmoteAnims:MakePlayerExitStance(player)
         end)
-      elseif !forcedAnimation or !cwEmoteAnimscwEmoteAnims[forcedAnimation.animation] then
+      elseif !forcedAnimation or !cwEmoteAnims.stanceList[forcedAnimation.animation] then
         if player:Crouching() then
           cw.player:Notify(player, L('EmoteAnims_CannotWhileCrouching'))
         elseif player:IsOnGround() or IsValid(player:GetGroundEntity()) then

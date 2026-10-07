@@ -36,7 +36,7 @@ function EFFECT:Init(data)
       particle:SetEndSize(startSize)
       particle:SetDieTime(math.random(1, 2))
       particle:SetBounce(0.5)
-      particle:SetColor(Color(math.random(200, 255), math.random(0, 50), math.random(0, 50)))
+      particle:SetColor(math.random(200, 255), math.random(0, 50), math.random(0, 50))
       particle:SetRoll(math.Rand(-180, 180))
     end
   end

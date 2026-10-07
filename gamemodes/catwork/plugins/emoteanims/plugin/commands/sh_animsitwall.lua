@@ -26,7 +26,7 @@ function COMMAND:OnRun(player, arguments)
 
       if forcedAnimation and forcedAnimation.animation == 'plazaidle4' then
         cwEmoteAnims:MakePlayerExitStance(player)
-      elseif !forcedAnimation or !cwEmoteAnimscwEmoteAnims[forcedAnimation.animation] then
+      elseif !forcedAnimation or !cwEmoteAnims.stanceList[forcedAnimation.animation] then
         if player:Crouching() then
           cw.player:Notify(player, L('EmoteAnims_CannotWhileCrouching'))
         else

@@ -89,13 +89,15 @@ end
 -- Called when the SWEP is deployed.
 function SWEP:Deploy()
   if SERVER then
-    self:SetWeaponHoldType('grenade')
+    self:SetHoldType('grenade')
   end
 
   self:SendWeaponAnim(ACT_VM_DRAW)
 
   self.PulledBack = nil
   self.Attacking = nil
+
+  return true
 end
 
 -- Called when the SWEP is holstered.
@@ -120,7 +122,7 @@ end
 -- Called when the SWEP is initialized.
 function SWEP:Initialize()
   if SERVER then
-    self:SetWeaponHoldType('grenade')
+    self:SetHoldType('grenade')
   end
 end
 

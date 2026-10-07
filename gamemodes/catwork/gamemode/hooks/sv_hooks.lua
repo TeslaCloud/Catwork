@@ -14,7 +14,8 @@ DEFINE_BASECLASS('gamemode_base')
 --]]
 
 function GM:Initialize()
-  catio.Initialize()
+  item.Initialize()
+  config.Import('gamemodes/catwork/clockwork.cfg')
 
   local useLocalMachineDate = config.GetVal('use_local_machine_date')
   local useLocalMachineTime = config.GetVal('use_local_machine_time')
@@ -293,7 +294,7 @@ function GM:DatabaseConnected()
 end
 
 -- Called when the Clockwork database connection fails.
-function GM:DatabaseConnectionFailed()
+function GM:DatabaseConnectionFailed(errText)
   cw.database:Error(errText)
 end
 
@@ -676,7 +677,7 @@ function GM:ClockworkConfigChanged(key, data, previousValue, newValue)
     end
   elseif key == 'crouched_speed' then
     for k, v in ipairs(plyTable) do
-      v:SetCrouchedWalkSpeed(newValue)
+      v:SetCrouchedWalkSpeed(newValue / math.max(config.GetVal('walk_speed'), 1))
     end
   elseif key == 'ooc_interval' then
     for k, v in ipairs(plyTable) do
@@ -688,7 +689,9 @@ function GM:ClockworkConfigChanged(key, data, previousValue, newValue)
     end
   elseif key == 'walk_speed' then
     for k, v in ipairs(plyTable) do
+      v:SetCrouchedWalkSpeed(config.GetVal('crouched_speed') / math.max(newValue, 1))
       v:SetWalkSpeed(newValue)
+      v:SetSlowWalkSpeed(newValue)
     end
   elseif key == 'run_speed' then
     for k, v in ipairs(plyTable) do
@@ -818,6 +821,8 @@ function GM:PlayerSpawn(player)
 
       player:SetCrouchedWalkSpeed(config.GetVal('crouched_speed') / config.GetVal('walk_speed'))
       player:SetWalkSpeed(config.GetVal('walk_speed'))
+      -- +walk (IN_WALK) is a native slow-walk now: keep it equal to the normal walk speed.
+      player:SetSlowWalkSpeed(config.GetVal('walk_speed'))
       player:SetJumpPower(config.GetVal('jump_power'))
       player:SetRunSpeed(config.GetVal('run_speed'))
       player:CrosshairDisable()
@@ -2603,7 +2608,7 @@ function GM:PlayerSpawnVehicle(player, model)
 end
 
 -- Called when a player attempts to use a tool.
-function GM:CanTool(player, trace, tool)
+function GM:CanTool(player, trace, tool, toolTable, button)
   local bIsAdmin = cw.player:IsAdmin(player)
 
   if IsValid(trace.Entity) then
@@ -2678,7 +2683,7 @@ function GM:CanTool(player, trace, tool)
       return false
     end
 
-    return self.BaseClass:CanTool(player, trace, tool)
+    return self.BaseClass:CanTool(player, trace, tool, toolTable, button)
   else
     return true
   end
@@ -2855,10 +2860,10 @@ function GM:PlayerCharacterLoaded(player)
   local characterID = player:GetCharacterID()
   local onNextLoad = player:QueryCharacter('OnNextLoad')
   local steamID = player:SteamID()
-  local query = 'UPDATE '..charactersTable..' SET _OnNextLoad = "" WHERE'
   local playerFlags = player:GetPlayerFlags()
 
-  if onNextLoad != '' then
+  -- Stored OnNextLoad payloads are no longer executed: the column is only cleared.
+  if onNextLoad != nil and onNextLoad != '' then
     local queryObj = cw.database:Update(charactersTable)
       queryObj:Update('_OnNextLoad', '')
       queryObj:Where('_Schema', schemaFolder)
@@ -2868,11 +2873,10 @@ function GM:PlayerCharacterLoaded(player)
 
     player:SetCharacterData('OnNextLoad', '', true)
 
-    CHARACTER = player:GetCharacter()
-      PLAYER = player
-      RunString(onNextLoad, md5.sumhexa(onNextLoad))
-      PLAYER = nil
-    CHARACTER = nil
+    ErrorNoHalt(
+      '[Catwork] Discarded a stored OnNextLoad payload ('..#tostring(onNextLoad)..' bytes) for '
+      ..steamID..' (character #'..tostring(characterID)..').\n'
+    )
   end
 
   local itemsList = cw.inventory:GetAsItemsList(
@@ -3649,7 +3653,7 @@ function GM:PlayerSpawnedNPC(player, npc)
   prevRelation[player:SteamID()] = prevRelation[player:SteamID()] or {}
 
   for k, v in ipairs(_player.GetAll()) do
-    faction = faction.FindByID(v:GetFaction())
+    faction = _faction.FindByID(v:GetFaction())
 
     if faction then
       relation = faction.entRelationship

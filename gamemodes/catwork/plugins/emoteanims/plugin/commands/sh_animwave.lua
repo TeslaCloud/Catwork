@@ -25,7 +25,7 @@ function COMMAND:OnRun(player, arguments)
       local forcedAnimation = player:GetForcedAnimation()
       local action = string.lower(arguments[1] or '')
 
-      if forcedAnimation and cwEmoteAnimscwEmoteAnims[forcedAnimation.animation] then
+      if forcedAnimation and cwEmoteAnims.stanceList[forcedAnimation.animation] then
         cw.player:Notify(player, L('CannotActionRightNow'))
       else
         if action == 'close' then

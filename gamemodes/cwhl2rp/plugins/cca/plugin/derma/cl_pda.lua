@@ -87,7 +87,7 @@ function PANEL:PaintOver(width, height)
 
         if faction == FACTION_REFUGEE or faction == FACTION_REBEL then continue end
 
-        if v:Name():utf8lower():find(val) then
+        if v:Name():utf8lower():find(val, 1, true) then
           table.insert(matches, v)
         end
       end

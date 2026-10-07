@@ -30,6 +30,8 @@ AddCSLuaFile('cl_init.lua')
 AddCSLuaFile('shared.lua')
 include('shared.lua')
 
+util.AddNetworkString('ZAR3_S')
+
 -- square of the maximum distance we can move away from the AR3 before we leave it automatically.
 local MAX_DISTANCE = 6000
 local SPREAD = Vector(0.025, 0.025, 0)
@@ -111,7 +113,7 @@ function ENT:Initialize()
   self.NextShot = 0 -- when we can fire our next bullet - used in Think.
   self:SetUseType(SIMPLE_USE)
 
-  local phys = self.Entity:GetPhysicsObject()
+  local phys = self:GetPhysicsObject()
 
   if phys:IsValid() then
     phys:Wake()
@@ -212,9 +214,9 @@ function ENT:TakeOver(ply)
   self.NextShot = CurTime() + dur
 
   -- Inform the client.
-  umsg.Start('ZAR3_S', ply)
-    umsg.Entity(self)
-  umsg.End()
+  net.Start('ZAR3_S')
+    net.WriteEntity(self)
+  net.Send(ply)
 
   -- Wake us up afterwards - might be necessary.
   timer.Simple(
@@ -253,12 +255,15 @@ end
 -- :'(
 function ENT:Abandon()
   self:ResetSequence('retract')
-  -- Send the usermessage to the player to reset his controls.
-  umsg.Start('ZAR3_S', self.Controller)
-    umsg.Entity(NULL)
-  umsg.End()
+  -- Send the net message to the player to reset his controls.
+  if IsValid(self.Controller) then
+    net.Start('ZAR3_S')
+      net.WriteEntity(NULL)
+    net.Send(self.Controller)
 
-  self.Controller.ZAR3 = nil
+    self.Controller.ZAR3 = nil
+  end
+
   self.Controller = nil
   self.Shooting = false
 

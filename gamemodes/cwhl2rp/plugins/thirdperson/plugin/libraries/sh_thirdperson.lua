@@ -5,19 +5,19 @@ library.New('thirdperson', cw)
 
 -- Client
 if CLIENT then
-  CreateClientConVar('chasecam_bob', 1, true, false)
-  CreateClientConVar('chasecam_bobscale', 0.5, true, false)
-  CreateClientConVar('chasecam_back', 75, true, false)
-  CreateClientConVar('chasecam_right', 20, true, false)
-  CreateClientConVar('chasecam_up', 5, true, false)
-  CreateClientConVar('chasecam_smooth', 1, true, false)
-  CreateClientConVar('chasecam_smoothscale', 0.2, true, false)
+  local cvBob = CreateClientConVar('chasecam_bob', 1, true, false)
+  local cvBobScale = CreateClientConVar('chasecam_bobscale', 0.5, true, false)
+  local cvBack = CreateClientConVar('chasecam_back', 75, true, false)
+  local cvRight = CreateClientConVar('chasecam_right', 20, true, false)
+  local cvUp = CreateClientConVar('chasecam_up', 5, true, false)
+  local cvSmooth = CreateClientConVar('chasecam_smooth', 1, true, false)
+  local cvSmoothScale = CreateClientConVar('chasecam_smoothscale', 0.2, true, false)
 
   function cw.thirdperson.CalcView(player, pos, angles, fov)
-    local smooth = GetConVarNumber('chasecam_smooth')
-    local smoothscale = GetConVarNumber('chasecam_smoothscale')
+    local smooth = cvSmooth:GetFloat()
+    local smoothscale = cvSmoothScale:GetFloat()
 
-    if player:GetNetworkedInt('thirdperson') == 1 then
+    if player:GetNWInt('thirdperson') == 1 then
       angles = player:GetAimVector():Angle()
 
       local targetpos = Vector(0, 0, 60)
@@ -37,9 +37,9 @@ if CLIENT then
         if player:KeyDown(IN_SPEED) then
           targetpos = targetpos + player:GetForward() * -10
 
-          if GetConVarNumber('chasecam_bob') != 0 and player:OnGround() then
-            angles.pitch = angles.pitch + GetConVarNumber('chasecam_bobscale') * math.sin(CurTime() * 10)
-            angles.roll = angles.roll + GetConVarNumber('chasecam_bobscale') * math.cos(CurTime() * 10)
+          if cvBob:GetFloat() != 0 and player:OnGround() then
+            angles.pitch = angles.pitch + cvBobScale:GetFloat() * math.sin(CurTime() * 10)
+            angles.roll = angles.roll + cvBobScale:GetFloat() * math.cos(CurTime() * 10)
             targetfov = targetfov + 3
           end
         else
@@ -65,9 +65,9 @@ if CLIENT then
       local offset = Vector(5, 5, 5)
 
       if player:GetVar('thirdperson_zoom') != 1 then
-        offset.x = GetConVarNumber('chasecam_back')
-        offset.y = GetConVarNumber('chasecam_right')
-        offset.z = GetConVarNumber('chasecam_up')
+        offset.x = cvBack:GetFloat()
+        offset.y = cvRight:GetFloat()
+        offset.z = cvUp:GetFloat()
       end
 
       local t = {}
@@ -108,7 +108,7 @@ if CLIENT then
   function cw.thirdperson.HUDPaint()
     local player = LocalPlayer()
 
-    if player:GetNetworkedInt('thirdperson') == 0 then
+    if player:GetNWInt('thirdperson') == 0 then
       return
     end
 
@@ -148,7 +148,7 @@ if CLIENT then
   hook.Add('HUDPaint', 'cw.thirdperson.HUDPaint', cw.thirdperson.HUDPaint)
 
   function cw.thirdperson.HUDShouldDraw(name)
-    if name == 'CHudCrosshair' and LocalPlayer():GetNetworkedInt('thirdperson') == 1 then
+    if name == 'CHudCrosshair' and LocalPlayer():GetNWInt('thirdperson') == 1 then
       return false
     end
   end
@@ -169,7 +169,7 @@ if CLIENT then
 else
   function cw.thirdperson.Command(player, command, arguments)
     if !arguments[1] then
-      if player:GetNetworkedInt('thirdperson') == 1 then
+      if player:GetNWInt('thirdperson') == 1 then
         cw.thirdperson.Disable(player)
       else
         cw.thirdperson.Enable(player)
@@ -184,18 +184,22 @@ else
   concommand.Add('chasecam', cw.thirdperson.Command)
 
   function cw.thirdperson.Disable(player)
-    if player:GetNetworkedInt('thirdperson') == 0 then
+    if player:GetNWInt('thirdperson') == 0 then
       return
     end
 
     local entity = player:GetViewEntity()
-    player:SetNetworkedInt('thirdperson', 0)
+    player:SetNWInt('thirdperson', 0)
     player:SetViewEntity(player)
-    entity:Remove()
+
+    -- The view entity can already be the player again (respawn, another view override); never remove the player.
+    if IsValid(entity) and entity != player then
+      entity:Remove()
+    end
   end
 
   function cw.thirdperson.Enable(player)
-    if player:GetNetworkedInt('thirdperson') == 1 then
+    if player:GetNWInt('thirdperson') == 1 then
       return
     end
 
@@ -211,7 +215,7 @@ else
     entity:SetRenderMode(RENDERMODE_NONE)
     entity:SetSolid(SOLID_NONE)
     player:SetViewEntity(entity)
-    player:SetNetworkedInt('thirdperson', 1)
+    player:SetNWInt('thirdperson', 1)
   end
 end
 

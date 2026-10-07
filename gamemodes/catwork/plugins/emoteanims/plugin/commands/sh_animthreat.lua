@@ -33,7 +33,7 @@ function COMMAND:OnRun(player, arguments)
       if forcedAnimation
       and (forcedAnimation.animation == 'plazathreat1' or forcedAnimation.animation == 'plazathreat2') then
         cwEmoteAnims:MakePlayerExitStance(player)
-      elseif !forcedAnimation or !cwEmoteAnimscwEmoteAnims[forcedAnimation.animation] then
+      elseif !forcedAnimation or !cwEmoteAnims.stanceList[forcedAnimation.animation] then
         if player:Crouching() then
           cw.player:Notify(player, L('EmoteAnims_CannotWhileCrouching'))
         elseif player:IsOnGround() or IsValid(player:GetGroundEntity()) then

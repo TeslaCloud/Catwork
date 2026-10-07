@@ -48,44 +48,19 @@ do
   end
 end
 
-timer.Destroy('HintSystem_OpeningMenu')
-timer.Destroy('HintSystem_Annoy1')
-timer.Destroy('HintSystem_Annoy2')
+timer.Remove('HintSystem_OpeningMenu')
+timer.Remove('HintSystem_Annoy1')
+timer.Remove('HintSystem_Annoy2')
 
 base64 = base64 or {}
 
-local b = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/' -- You will need this for encoding/decoding
--- encoding
+-- Thin wrappers over the engine implementation (binary safe, output is never line-wrapped).
 function base64.encode(data)
-  return ((data:gsub('.', function(x)
-    local r, b = '', x:byte()
-    for i = 8, 1, -1 do r = r..(b % 2 ^ i - b % 2 ^ (i - 1) > 0 and '1' or '0') end
-    return r
-  end)..'0000'):gsub('%d%d%d?%d?%d?%d?', function(x)
-    if #x < 6 then return '' end
-
-    local c = 0
-    for i = 1, 6 do c = c + (x:sub(i, i) == '1' and 2 ^ (6 - i) or 0) end
-    return b:sub(c + 1, c + 1)
-  end)..({ '', '==', '=' })[#data % 3 + 1])
+  return util.Base64Encode(tostring(data), true)
 end
 
--- decoding
 function base64.decode(data)
-  data = string.gsub(data, '[^'..b..'=]', '')
-  return (data:gsub('.', function(x)
-    if x == '=' then return '' end
-
-    local r, f = '', (b:find(x) - 1)
-    for i = 6, 1, -1 do r = r..(f % 2 ^ i - f % 2 ^ (i - 1) > 0 and '1' or '0') end
-    return r
-  end):gsub('%d%d%d?%d?%d?%d?%d?%d?', function(x)
-    if #x != 8 then return '' end
-
-    local c = 0
-    for i = 1, 8 do c = c + (x:sub(i, i) == '1' and 2 ^ (8 - i) or 0) end
-    return string.char(c)
-  end))
+  return util.Base64Decode(data)
 end
 
 do
@@ -173,9 +148,13 @@ concommand.Add('cwSay', function(player, command, arguments)
   return netstream.Start('PlayerSay', table.concat(arguments, ' '))
 end)
 
+-- Developer tool: runs Lua typed into the local console. Superadmins only; the 'RunCommand' net hook
+-- refuses to relay it, so its arguments never come from netstream data.
 concommand.Add('cwLua', function(player, command, arguments)
+  if !IsValid(player) then return end
+
   if player:IsSuperAdmin() then
-    RunString(table.concat(arguments, ' '))
+    RunString(table.concat(arguments, ' '), 'cwLua')
     return
   end
 
@@ -2571,7 +2550,11 @@ function cw.core:SaveSchemaData(fileName, data)
     return
   end
 
-  _file.Write('clockwork/schemas/'..self:GetSchemaFolder()..'/'..fileName..'.txt', self:Serialize(data))
+  local path = 'clockwork/schemas/'..self:GetSchemaFolder()..'/'..fileName..'.txt'
+
+  -- file.Write does not create missing directories.
+  _file.CreateDir(string.match(path, '^(.*)/'))
+  _file.Write(path, self:Serialize(data))
 end
 
 -- A function to delete schema data.
@@ -2661,7 +2644,11 @@ function cw.core:SaveClockworkData(fileName, data)
     return
   end
 
-  _file.Write('clockwork/'..fileName..'.txt', self:Serialize(data))
+  local path = 'clockwork/'..fileName..'.txt'
+
+  -- file.Write does not create missing directories.
+  _file.CreateDir(string.match(path, '^(.*)/'))
+  _file.Write(path, self:Serialize(data))
 end
 
 -- A function to check if Clockwork data exists.
@@ -2785,13 +2772,13 @@ weaponMeta.OldGetPrintName = weaponMeta.OldGetPrintName or weaponMeta.GetPrintNa
 playerMeta.SteamName = playerMeta.SteamName or playerMeta.Name
 
 -- A function to make a player fire bullets.
-function entityMeta:FireBullets(bulletInfo)
+function entityMeta:FireBullets(bulletInfo, ...)
   if self:IsPlayer() then
     hook.Run('PlayerAdjustBulletInfo', self, bulletInfo)
   end
 
   hook.Run('EntityFireBullets', self, bulletInfo)
-  return self:ClockworkFireBullets(bulletInfo)
+  return self:ClockworkFireBullets(bulletInfo, ...)
 end
 
 -- A function to get a weapon's print name.

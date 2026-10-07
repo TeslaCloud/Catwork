@@ -223,7 +223,7 @@ function PANEL:Init()
   self.avatarButton:Dock(FILL)
   self.avatarButton:SetText('')
   self.avatarButton:SetDrawBorder(false)
-  self.avatarButton:SetDrawBackground(false)
+  self.avatarButton:SetPaintBackground(false)
 
   if info.avatarImage then
     self.avatarButton:SetTooltip(

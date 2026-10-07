@@ -64,7 +64,7 @@ SWEP.LoweredAngles = Angle(0.000, 0.000, -22.000)
 
 -- Called when the SWEP is deployed.
 function SWEP:Deploy()
-  local vm = self.Owner:GetViewModel()
+  local vm = self:GetOwner():GetViewModel()
   vm:SendViewModelMatchingSequence(vm:LookupSequence('fists_draw'))
 
   return true
@@ -78,39 +78,39 @@ end
 
 -- Called when the player attempts to primary fire.
 function SWEP:PrimaryAttack()
-  self.Weapon:SetNextPrimaryFire(CurTime() + 1)
+  self:SetNextPrimaryFire(CurTime() + 1)
 
   if SERVER then
-    local action = cw.player:GetAction(self.Owner)
-    local trace = self.Owner:GetEyeTraceNoCursor()
+    local action = cw.player:GetAction(self:GetOwner())
+    local trace = self:GetOwner():GetEyeTraceNoCursor()
 
-    if self.Owner:GetPos():Distance(trace.HitPos) > 192
+    if self:GetOwner():GetPos():Distance(trace.HitPos) > 192
     or !IsValid(trace.Entity) then
       return
     end
 
-    local info = hook.Run('PlayerGetLockInfo', self.Owner, trace.Entity)
+    local info = hook.Run('PlayerGetLockInfo', self:GetOwner(), trace.Entity)
 
-    if info and hook.Run('PlayerCanLockEntity', self.Owner, trace.Entity) then
+    if info and hook.Run('PlayerCanLockEntity', self:GetOwner(), trace.Entity) then
       local isNotUnlocking = (action != 'unlock')
       local isNotLocking = (action != 'lock')
 
       if isNotLocking or isNotUnlocking then
-        cw.player:SetAction(self.Owner, 'lock', info.duration)
-        cw.player:EntityConditionTimer(self.Owner, trace.Entity, nil, info.duration, 192,
+        cw.player:SetAction(self:GetOwner(), 'lock', info.duration)
+        cw.player:EntityConditionTimer(self:GetOwner(), trace.Entity, nil, info.duration, 192,
           function()
-            return (hook.Run('PlayerCanLockEntity', self.Owner, trace.Entity)
-            and self.Owner:Alive() and !self.Owner:IsRagdolled() and self.Owner:IsUsingKeys())
+            return (hook.Run('PlayerCanLockEntity', self:GetOwner(), trace.Entity)
+            and self:GetOwner():Alive() and !self:GetOwner():IsRagdolled() and self:GetOwner():IsUsingKeys())
           end,
           function(success)
             if success then
-              info.Callback(self.Owner, trace.Entity)
+              info.Callback(self:GetOwner(), trace.Entity)
 
               if !info.noSound then
-                self.Owner:EmitSound('doors/door_latch3.wav')
+                self:GetOwner():EmitSound('doors/door_latch3.wav')
               end
             else
-              cw.player:SetAction(self.Owner, 'lock', false)
+              cw.player:SetAction(self:GetOwner(), 'lock', false)
             end
           end
         )
@@ -121,39 +121,39 @@ end
 
 -- Called when the player attempts to secondary fire.
 function SWEP:SecondaryAttack()
-  self.Weapon:SetNextSecondaryFire(CurTime() + 1)
+  self:SetNextSecondaryFire(CurTime() + 1)
 
   if SERVER then
-    local action = cw.player:GetAction(self.Owner)
-    local trace = self.Owner:GetEyeTraceNoCursor()
+    local action = cw.player:GetAction(self:GetOwner())
+    local trace = self:GetOwner():GetEyeTraceNoCursor()
 
-    if self.Owner:GetPos():Distance(trace.HitPos) > 192
+    if self:GetOwner():GetPos():Distance(trace.HitPos) > 192
     or !IsValid(trace.Entity) then
       return
     end
 
-    local info = hook.Run('PlayerGetUnlockInfo', self.Owner, trace.Entity)
+    local info = hook.Run('PlayerGetUnlockInfo', self:GetOwner(), trace.Entity)
 
-    if info and hook.Run('PlayerCanUnlockEntity', self.Owner, trace.Entity) then
+    if info and hook.Run('PlayerCanUnlockEntity', self:GetOwner(), trace.Entity) then
       local isNotUnlocking = (action != 'unlock')
       local isNotLocking = (action != 'lock')
 
       if isNotLocking or isNotUnlocking then
-        cw.player:SetAction(self.Owner, 'unlock', info.duration)
-        cw.player:EntityConditionTimer(self.Owner, trace.Entity, nil, info.duration, 192,
+        cw.player:SetAction(self:GetOwner(), 'unlock', info.duration)
+        cw.player:EntityConditionTimer(self:GetOwner(), trace.Entity, nil, info.duration, 192,
           function()
-            return (hook.Run('PlayerCanUnlockEntity', self.Owner, trace.Entity)
-            and self.Owner:Alive() and !self.Owner:IsRagdolled() and self.Owner:IsUsingKeys())
+            return (hook.Run('PlayerCanUnlockEntity', self:GetOwner(), trace.Entity)
+            and self:GetOwner():Alive() and !self:GetOwner():IsRagdolled() and self:GetOwner():IsUsingKeys())
           end,
           function(success)
             if success then
-              info.Callback(self.Owner, trace.Entity)
+              info.Callback(self:GetOwner(), trace.Entity)
 
               if !info.noSound then
-                self.Owner:EmitSound('doors/door_latch3.wav')
+                self:GetOwner():EmitSound('doors/door_latch3.wav')
               end
             else
-              cw.player:SetAction(self.Owner, 'unlock', false)
+              cw.player:SetAction(self:GetOwner(), 'unlock', false)
             end
           end
         )

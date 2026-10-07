@@ -18,7 +18,7 @@ function ENT:HUDPaintTargetID(x, y, alpha)
 end
 
 function ENT:Draw()
-  local r, g, b, a = self:GetColor()
+  local a = self:GetColor().a
   local rationTime = self:GetDTFloat(0)
   local flashTime = self:GetDTFloat(1)
   local position = self:GetPos()

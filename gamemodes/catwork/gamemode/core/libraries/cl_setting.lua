@@ -179,7 +179,7 @@ function cw.setting:AddSettings()
   cw.setting:AddCheckBox(frameworkStr, '#TwelveHourClock', 'cwTwelveHourClock', '#TwelveHourClockDesc')
   cw.setting:AddCheckBox(frameworkStr, '#ShowBars', 'cwTopBars', '#ShowBarsDesc')
   cw.setting:AddCheckBox(frameworkStr, '#EnableHints', 'cwShowHints', '#EnableHintsDesc')
-  cw.setting:AddMultiChoice(frameworkStr, '#Language', 'gmod_language', langTable, '#LangDesc')
+  cw.setting:AddMultiChoice(frameworkStr, '#Language', 'cwLanguage', langTable, '#LangDesc')
   cw.setting:AddCheckBox(frameworkStr, '#EnableVignette', 'cwShowVignette', '#EnableVignetteDesc')
 
   cw.setting:AddMultiChoice(themeStr, themeStr, 'cwActiveTheme', themeTable, '#ThemeDesc', function ()

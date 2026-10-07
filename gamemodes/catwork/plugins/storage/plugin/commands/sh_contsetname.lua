@@ -29,7 +29,7 @@ function COMMAND:OnRun(player, arguments)
           trace.Entity.inventory = {}
         end
 
-        trace.Entity:SetNetworkedString('Name', name)
+        trace.Entity:SetNWString('Name', name)
         cwStorage:SaveStorage()
       else
         cw.player:Notify(player, L('Container_NotValid'))

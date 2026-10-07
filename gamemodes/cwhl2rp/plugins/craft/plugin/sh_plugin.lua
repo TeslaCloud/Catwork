@@ -100,6 +100,13 @@ function cwCraft:PlayerMeetsRequirements(player, bpTable)
 end
 
 netstream.Hook('Craft::CraftItem', function(player, bpTable)
+  -- Never trust a blueprint sent by the client: it only names the blueprint, the recipe is ours.
+  local uniqueID = istable(bpTable) and bpTable.uniqueID or bpTable
+
+  bpTable = isstring(uniqueID) and cw.blueprints:GetAll()[uniqueID]
+
+  if !bpTable then return end
+
   local bSucc, err = cwCraft:PlayerCanCraft(player, bpTable)
 
   if !bSucc then

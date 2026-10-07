@@ -31,7 +31,7 @@ function COMMAND:OnRun(player, arguments)
         animation = 'motionright'
       end
 
-      if forcedAnimation and cwEmoteAnimscwEmoteAnims[forcedAnimation.animation] then
+      if forcedAnimation and cwEmoteAnims.stanceList[forcedAnimation.animation] then
         cw.player:Notify(player, L('CannotActionRightNow'))
       else
         player:SetForcedAnimation(animation, 2.5)

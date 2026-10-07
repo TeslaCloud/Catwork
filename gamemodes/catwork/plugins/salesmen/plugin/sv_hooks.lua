@@ -68,7 +68,7 @@ function cwSalesmen:PlayerUseSalesman(player, entity)
     cash = entity.cwCash,
     text = entity.cwTextTab,
     buys = entity.cwBuyTab,
-    name = entity:GetNetworkedString('Name'),
+    name = entity:GetNWString('Name'),
     flags = entity.cwFlags
   })
 

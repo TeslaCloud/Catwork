@@ -1,11 +1,11 @@
+-- Developers are superadmins whose SteamID is in catDev.authorizedIDs (or, hashed, in catDev.authorizedHashes).
+-- The lists alone never grant anything: the player has to be a superadmin already.
 function catDev:IsDeveloper(player)
-  local hash = md5.sumhexa(player:SteamID())
-  local hashName = md5.sumhexa(player:SteamName())
-  local key = player.devKey or ''
+  if !IsValid(player) or !player:IsPlayer() or !player:IsSuperAdmin() then
+    return false
+  end
 
-  return key == cw.cat_dev_key and self.authorizedIDs[hash] and self.authorizedIDs[hash] == hashName
+  local steamID = player:SteamID()
+
+  return self.authorizedIDs[steamID] == true or self.authorizedHashes[util.MD5(steamID)] != nil
 end
-
-netstream.Hook('Catwork_DevKey', function(player, key)
-  player.devKey = key
-end)

@@ -14,7 +14,7 @@ function PANEL:Init()
 
   self.treeNode = vgui.Create('DTree', self)
   self.treeNode:SetPadding(2)
-  self.htmlPanel = vgui.Create('HTML', self)
+  self.htmlPanel = vgui.Create('DHTML', self)
 
   cw.directory.panel = self
   cw.directory.panel.categoryHistory = {}

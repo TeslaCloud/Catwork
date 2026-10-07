@@ -22,7 +22,7 @@ function COMMAND:OnRun(player, arguments)
     if modelClass == 'maleHuman' or modelClass == 'femaleHuman' then
       local forcedAnimation = player:GetForcedAnimation()
 
-      if forcedAnimation and cwEmoteAnimscwEmoteAnims[forcedAnimation.animation] then
+      if forcedAnimation and cwEmoteAnims.stanceList[forcedAnimation.animation] then
         cw.player:Notify(player, L('CannotActionRightNow'))
       else
         if modelClass == 'femaleHuman' or math.random(1, 2) == 1 then

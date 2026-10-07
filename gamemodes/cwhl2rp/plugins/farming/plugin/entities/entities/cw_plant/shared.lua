@@ -22,11 +22,11 @@ function ENT:SetupDataTables()
 end
 
 function ENT:GetSpawnTime()
-  return self:GetNetworkedFloat(0)
+  return self:GetNWFloat(0)
 end
 
 function ENT:GetGrowTime()
-  return self:GetNetworkedFloat(1)
+  return self:GetNWFloat(1)
 end
 
 function ENT:GetItem()

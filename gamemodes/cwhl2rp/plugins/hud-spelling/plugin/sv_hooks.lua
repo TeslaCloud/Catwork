@@ -9,7 +9,7 @@ function PLUGIN:ChatboxAdjustMessageInfo(info, listeners)
     local len = info.text:utf8len()
 
     // Add capital
-    if info.text:StartWith('"') then
+    if info.text:StartsWith('"') then
       info.text = info.text:utf8sub(1, 2):utf8upper()..info.text:utf8sub(3, len)
     else
       info.text = info.text:utf8sub(1, 1):utf8upper()..info.text:utf8sub(2, len)

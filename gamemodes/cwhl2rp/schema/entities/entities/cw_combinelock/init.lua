@@ -61,7 +61,7 @@ function ENT:Think()
   end
 
   local smokeChargeTime = self:GetDTFloat(0)
-  local r, g, b, a = self:GetColor()
+  local a = self:GetColor().a
   local flashTime = self:GetDTFloat(1)
   local position = self:GetPos()
   local forward = self:GetForward() * -4

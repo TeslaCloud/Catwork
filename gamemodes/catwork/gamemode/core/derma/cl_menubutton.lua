@@ -20,11 +20,11 @@ cw.fonts:Add('cwMenuButtonSmall', {
 function PANEL:SetupLabel(menuItem, panel)
   self:SetFont('cwMenuButtonSmall')
 
-  if !menuItem.text:StartWith('#') then
+  if !menuItem.text:StartsWith('#') then
     menuItem.text = '#'..menuItem.text
   end
 
-  local text = cw.lang:GetString(GetConVar('gmod_language'):GetString(), menuItem.text)
+  local text = cw.lang:GetString(cw.lang:GetLanguage(), menuItem.text)
 
   self:SetText(text:utf8upper())
 

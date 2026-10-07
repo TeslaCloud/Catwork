@@ -30,44 +30,18 @@ do
     MsgC(Color(0, 255, 100, 255), '[Catwork] Framework is initializing...\n')
   end
 
-  if !SafeRequire('catio') then
-    ErrorNoHalt('[Catwork] catio module has failed to load!\nAborting startup...\n')
+  -- https://github.com/Meow/gmsv_file (the gmsv_file_*.dll matching the server's architecture, in garrysmod/lua/bin).
+  if !SafeRequire('file') or !istable(File) then
+    ErrorNoHalt(
+      "[Catwork] The 'file' binary module (gmsv_file) is missing or has failed to load!\n"..
+        'Get it from https://github.com/Meow/gmsv_file and put it into garrysmod/lua/bin.\nAborting startup...\n'
+    )
 
     return
-  else
-    fileio = catio
-  end
-
-  if !cw.WatchDogAvailable and system.IsWindows() then
-    if file.Exists('lua/bin/gmsv_watchdog_win32.dll', 'GAME') then
-      print('[Catwork] Loading Watch Dog file monitoring tools...')
-
-      local success = SafeRequire('watchdog')
-
-      if success then
-        timer.Create('WatchDogUpdater', (1 / 16), 0, function()
-          WatchdogUpdate()
-        end)
-
-        hook.Add('WatchDogFileChanged', 'Printer', function(fileName)
-          -- fileName is relative to garrysmod/gamemodes/
-          print('[Watchdog] '..fileName)
-        end)
-
-        -- lmao
-        cw.WatchDogAvailable = true
-      else
-        ErrorNoHalt('[Catwork] Failed to load Watchdog!\nYou do not appear to have MS Visual C++ 2015 installed!\n')
-      end
-    end
   end
 
   function GetTimeSinceBoot()
     return math.Round(os.clock() - startTime, 3)
-  end
-
-  function IsWatchdogAvailable()
-    return cw.WatchDogAvailable
   end
 
   -- No need to re-include the stuff that doesn't change.

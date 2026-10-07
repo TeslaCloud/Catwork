@@ -229,7 +229,7 @@ end
 
 function md5.sumhexa(s)
   if (SERVER) then
-	return catio.md5(s)
+	return util.MD5(s)
   else
 	return md5.tohex(md5.sum(s))
   end

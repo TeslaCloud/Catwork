@@ -68,6 +68,8 @@ end
 -- Called when the SWEP is deployed.
 function SWEP:Deploy()
   self:SendWeaponAnim(ACT_VM_DRAW)
+
+  return true
 end
 
 -- Called when the SWEP is holstered.
@@ -79,7 +81,7 @@ end
 
 -- Called when the SWEP is initialized.
 function SWEP:Initialize()
-  self:SetWeaponHoldType(self.HoldType)
+  self:SetHoldType(self.HoldType)
 end
 
 -- A function to play the knock sound.
@@ -270,7 +272,7 @@ function SWEP:PrimaryAttack()
         local strength = cw.attributes:Fraction(self.Owner, ATB_STRENGTH, 3, 1.5)
 
         if trace.Entity:IsPlayer() then
-          local normal = (trace.Entity:GetPos() - self.Owner:GetPos()):GetNormal()
+          local normal = (trace.Entity:GetPos() - self.Owner:GetPos()):GetNormalized()
           local push = 128 * normal
 
           trace.Entity:SetVelocity(push)
@@ -340,7 +342,7 @@ function SWEP:SecondaryAttack()
 
           if trace.Entity:IsPlayer() or trace.Entity:IsNPC() then
             if self.Owner:GetPos():Distance(trace.HitPos) <= 96 then
-              local normal = (trace.Entity:GetPos() - self.Owner:GetPos()):GetNormal()
+              local normal = (trace.Entity:GetPos() - self.Owner:GetPos()):GetNormalized()
               local push = 256 * normal
 
               trace.Entity:SetVelocity(push)

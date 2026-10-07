@@ -15,8 +15,8 @@ function cwStorage:HUDPaintEntityTargetID(entity, info)
     local model = string.lower(entity:GetModel())
 
     if self.containerList[model] then
-      if entity:GetNetworkedString('Name') != '' then
-        info.y = cw.core:DrawInfo(entity:GetNetworkedString('Name'), info.x, info.y, colorTargetID, info.alpha)
+      if entity:GetNWString('Name') != '' then
+        info.y = cw.core:DrawInfo(entity:GetNWString('Name'), info.x, info.y, colorTargetID, info.alpha)
       else
         info.y = cw.core:DrawInfo(self.containerList[model][2], info.x, info.y, colorTargetID, info.alpha)
       end

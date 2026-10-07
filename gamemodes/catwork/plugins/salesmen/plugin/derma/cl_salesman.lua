@@ -373,10 +373,10 @@ function PANEL:Think()
   cw.salesman.showChatBubble = (self.showChatBubble:GetChecked() == true)
   cw.salesman.buyInShipments = (self.buyInShipments:GetChecked() == true)
   cw.salesman.physDesc = self.physDesc:GetValue()
-  cw.salesman.buyRate = self.buyRate:GetValue()
-  cw.salesman.stock = self.stock:GetValue()
+  cw.salesman.buyRate = math.Round(self.buyRate:GetValue())
+  cw.salesman.stock = math.Round(self.stock:GetValue())
   cw.salesman.model = self.model:GetValue()
-  cw.salesman.cash = self.cash:GetValue()
+  cw.salesman.cash = math.Round(self.cash:GetValue())
 
   local priceScale = self.priceScale:GetValue()
   cw.salesman.priceScale = tonumber(priceScale) or 1

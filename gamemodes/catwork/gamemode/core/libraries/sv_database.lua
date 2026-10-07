@@ -13,11 +13,8 @@ local QueueTable = {}
 cw.database.Module = cw.database.Module or 'sqlite'
 local Connected = false
 
-if cw.database.Module != 'sqlite' then
-  print('[Catwork] Using '..cw.database.Module..' as MySQL module...')
-
-  require(cw.database.Module)
-end
+-- The database module is required lazily in cw.database:Connect, because cw.database.Module is only set
+-- by GM:Initialize, after this file has been included.
 
 local type = type
 local tostring = tostring
@@ -28,6 +25,51 @@ local table = table
 --]]
 
 local MODULE_NOT_EXIST = '[CW:Database] The %s module does not exist!\n'
+local MODULE_LOAD_FAILED = '[CW:Database] Unable to load the %s binary module (gmsv_%s_*.dll in garrysmod/lua/bin)!'..
+  '\n%s\n'
+
+-- Seconds to wait before retrying a failed MySQLOO connection attempt.
+local RECONNECT_DELAY = 30
+
+-- A function to require a database module without halting when its binary is absent.
+local function RequireModule(moduleName)
+  local bSuccess, errorText = pcall(require, moduleName)
+
+  if !bSuccess then
+    ErrorNoHalt(string.format(MODULE_LOAD_FAILED, moduleName, moduleName, tostring(errorText)))
+  end
+
+  return bSuccess
+end
+
+-- A function to get whether queries can be sent to the current connection right now.
+local function IsReady(database)
+  local connection = database.connection
+
+  if database.Module == 'mysqloo' then
+    return istable(mysqloo) and connection != nil and connection:status() == mysqloo.DATABASE_CONNECTED
+  elseif database.Module == 'tmysql4' then
+    return connection != nil
+  end
+
+  return true
+end
+
+-- A pure Lua equivalent of mysql_real_escape_string for the default (backslash escaping) SQL mode.
+-- MySQLOO 9 throws when Database:escape is called before the connection is established.
+local MYSQL_ESCAPES = {
+  ['\0'] = '\\0',
+  ['\n'] = '\\n',
+  ['\r'] = '\\r',
+  ['\26'] = '\\Z',
+  ['\\'] = '\\\\',
+  ["'"] = "\\'",
+  ['"'] = '\\"'
+}
+
+local function EscapeMySQL(text)
+  return (string.gsub(text, '[%z\n\r\26\\\'"]', MYSQL_ESCAPES))
+end
 
 --[[
   Begin Query Class.
@@ -393,11 +435,51 @@ function cw.database:SetCurrentConnection(id)
   end
 end
 
+-- A function to create a MySQLOO 9 database object and start connecting it.
+-- mysqloo.connect(host, username, password, database [, port, socket]) no longer takes client flags, and a
+-- database object can only be connected once, so every (re)connection attempt needs a new object.
+function cw.database:ConnectMySQLOO(id, host, username, password, database, port, socket)
+  local connection = mysqloo.connect(
+    tostring(host),
+    tostring(username),
+    tostring(password),
+    tostring(database),
+    port,
+    isstring(socket) and socket or nil
+  )
+
+  -- Lost connections are re-established by the module itself (must be set before connecting).
+  connection:setAutoReconnect(true)
+
+  connection.onConnected = function(dbObj)
+    timer.Remove('cw.Database.Reconnect.'..id)
+
+    self:OnConnected()
+  end
+
+  connection.onConnectionFailed = function(dbObj, errorText)
+    -- Queries issued in the meantime stay in the queue and are flushed once a connection is established.
+    timer.Create('cw.Database.Reconnect.'..id, RECONNECT_DELAY, 1, function()
+      if self.connections[id] == connection then
+        self:ConnectMySQLOO(id, host, username, password, database, port, socket)
+      end
+    end)
+
+    self:OnConnectionFailed(errorText)
+  end
+
+  self.connections[id] = connection
+
+  if self.currentConnectionID == id then
+    self.connection = connection
+  end
+
+  connection:connect()
+end
+
 -- A function to connect to the MySQL database.
 function cw.database:Connect(host, username, password, database, port, socket, flags, id)
-  if !port then
-    port = 3306
-  end
+  port = tonumber(port) or 3306
 
   if !id then
     id = self.currentConnectionID or 'main'
@@ -406,7 +488,11 @@ function cw.database:Connect(host, username, password, database, port, socket, f
   end
 
   if self.Module != 'sqlite' then
-    require(self.Module)
+    print('[Catwork] Using '..self.Module..' as MySQL module...')
+
+    if !RequireModule(self.Module) then
+      return
+    end
 
     if self.Module == 'tmysql4' then
       id = 'main'
@@ -417,6 +503,7 @@ function cw.database:Connect(host, username, password, database, port, socket, f
     return
   end
 
+  -- NOTE: tmysql4 is unsupported and untested (Catwork only ships MySQLOO 9). It is kept so that it compiles.
   if self.Module == 'tmysql4' then
     if !istable(tmysql) then
       require('tmysql4')
@@ -441,23 +528,11 @@ function cw.database:Connect(host, username, password, database, port, socket, f
     end
 
     if mysqloo then
-      local clientFlag = flags or 0
-
-      if !isstring(socket) then
-        self.connections[id] = mysqloo.connect(host, username, password, database, port)
-      else
-        self.connections[id] = mysqloo.connect(host, username, password, database, port, socket, clientFlag)
+      if (tonumber(mysqloo.VERSION) or 0) < 9 then
+        ErrorNoHalt('[CW:Database] MySQLOO 9 or newer is required, found version '..tostring(mysqloo.VERSION)..'!\n')
       end
 
-      self.connections[id].onConnected = function(database)
-        self:OnConnected()
-      end
-
-      self.connections[id].onConnectionFailed = function(database, errorText)
-        self:OnConnectionFailed(errorText)
-      end
-
-      self.connections[id]:connect()
+      self:ConnectMySQLOO(id, host, username, password, database, port, socket)
     else
       ErrorNoHalt(string.format(MODULE_NOT_EXIST, self.Module))
     end
@@ -468,10 +543,13 @@ end
 
 -- A function to query the MySQL database.
 function cw.database:RawQuery(query, callback, flags, ...)
-  if !self.connection and self.Module != 'sqlite' then
-    self:Queue(query)
+  if !IsReady(self) then
+    self:Queue(query, callback)
+
+    return
   end
 
+  -- NOTE: tmysql4 is unsupported and untested (Catwork only ships MySQLOO 9).
   if self.Module == 'tmysql4' then
     local queryFlag = flags or QUERY_FLAG_ASSOC
 
@@ -493,12 +571,15 @@ function cw.database:RawQuery(query, callback, flags, ...)
   elseif self.Module == 'mysqloo' then
     local queryObj = self.connection:query(query)
 
-    queryObj:setOption(mysqloo.OPTION_NAMED_FIELDS)
+    -- Named fields are the default in MySQLOO 9, where this option is a no-op.
+    if mysqloo.OPTION_NAMED_FIELDS then
+      queryObj:setOption(mysqloo.OPTION_NAMED_FIELDS)
+    end
 
     queryObj.onSuccess = function(queryObj, result)
       if callback then
-        -- FFFFFFFUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU
-        local bStatus, value = pcall(callback, result) // , queryObj:status(), queryObj:lastInsert())
+        -- MySQLOO 9 queries have no status(); onSuccess implies success, so the status is always true.
+        local bStatus, value = pcall(callback, result, true, queryObj:lastInsert())
 
         if !bStatus then
           ErrorNoHalt(string.format('[CW:Database] MySQL Callback Error!\n%s\n', value))
@@ -518,7 +599,13 @@ function cw.database:RawQuery(query, callback, flags, ...)
       ErrorNoHalt(string.format('[CW:Database] SQL Query Error!\nQuery: %s\n%s\n', query, sql.LastError()))
     else
       if callback then
-        local bStatus, value = pcall(callback, result)
+        local lastID = nil
+
+        if string.find(query, '^%s*[Ii][Nn][Ss][Ee][Rr][Tt]') then
+          lastID = tonumber(sql.QueryValue('SELECT last_insert_rowid()'))
+        end
+
+        local bStatus, value = pcall(callback, result, true, lastID)
 
         if !bStatus then
           ErrorNoHalt(string.format('[CW:Database] SQL Callback Error!\n%s\n', value))
@@ -537,17 +624,37 @@ function cw.database:Queue(queryString, callback)
   end
 end
 
+-- A function to run every queued query in order, with its callback.
+function cw.database:FlushQueue()
+  local queue = QueueTable
+
+  -- Queries that still cannot be run are queued again into the new table by RawQuery.
+  QueueTable = {}
+
+  for i = 1, #queue do
+    self:RawQuery(queue[i][1], queue[i][2])
+  end
+end
+
 -- A function to escape a string for MySQL.
 function cw.database:Escape(text)
-  if self.connection then
-    if cw.database.Module == 'tmysql4' then
-      return self.connection:Escape(text)
-    elseif cw.database.Module == 'mysqloo' then
-      return self.connection:escape(text)
+  text = tostring(text)
+
+  if self.Module == 'tmysql4' and self.connection then
+    return self.connection:Escape(text)
+  elseif self.Module == 'mysqloo' then
+    if IsReady(self) then
+      local bSuccess, escaped = pcall(self.connection.escape, self.connection, text)
+
+      if bSuccess then
+        return escaped
+      end
     end
-  else
-    return sql.SQLStr(string.gsub(text, '"', "'"), true)
+
+    return EscapeMySQL(text)
   end
+
+  return sql.SQLStr(string.gsub(text, '"', "'"), true)
 end
 
 -- A function to disconnect from the MySQL database.
@@ -555,6 +662,11 @@ function cw.database:Disconnect(id)
   if self.connection then
     if self.Module == 'tmysql4' then
       return self.connection:Disconnect()
+    elseif self.Module == 'mysqloo' then
+      timer.Remove('cw.Database.Reconnect.'..(self.currentConnectionID or 'main'))
+
+      -- Waits for the queries that have already been started to finish.
+      self.connection:disconnect(true)
     end
   end
 
@@ -562,7 +674,7 @@ function cw.database:Disconnect(id)
 end
 
 function cw.database:Think()
-  if #QueueTable > 0 then
+  if #QueueTable > 0 and IsReady(self) then
     if istable(QueueTable[1]) then
       local queueObj = QueueTable[1]
       local queryString = queueObj[1]
@@ -692,15 +804,25 @@ function cw.database:OnConnected()
     queryObj:Execute()
   end
 
+  -- Run everything that was queued while there was no connection (after the tables above exist).
+  self:FlushQueue()
+
   Connected = true
   hook.Run('DatabaseConnected')
 end
 
 -- Called when the database connection fails.
 function cw.database:OnConnectionFailed(errorText)
-  ErrorNoHalt('[CW:Database] Unable to connect to the database!\n'..errorText..'\n')
+  ErrorNoHalt('[CW:Database] Unable to connect to the database!\n'..tostring(errorText)..'\n')
 
   hook.Run('DatabaseConnectionFailed', errorText)
+end
+
+-- A function to report a database error (called by GM:DatabaseConnectionFailed).
+function cw.database:Error(errorText)
+  if errorText then
+    ErrorNoHalt('[CW:Database] MySQL error: '..tostring(errorText)..'\n')
+  end
 end
 
 -- A function to check whether or not the module is connected to a database.

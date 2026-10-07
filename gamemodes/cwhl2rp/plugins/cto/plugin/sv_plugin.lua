@@ -27,8 +27,8 @@ function cwCTO:SafelyPrepareCamera(combineCamera)
   if self.fixedCameras then
     if !combineCamera:CreatedByMap() then
       -- Essentially statics the NPC so that it will load when the server restarts.
-      combineCamera:SetNetworkedString('cw_Name', ' ')
-      combineCamera:SetNetworkedString('cw_Title', ' ')
+      combineCamera:SetNWString('cw_Name', ' ')
+      combineCamera:SetNWString('cw_Title', ' ')
     end
   end
 end
@@ -231,8 +231,8 @@ function cwCTO:PostPlayerSpawn(player, lightSpawn, changeClass, firstSpawn)
 
       if !combineCamera:CreatedByMap() then
         -- Essentially statics the NPC so that it will load when the server restarts.
-        combineCamera:SetNetworkedString('cw_Name', ' ')
-        combineCamera:SetNetworkedString('cw_Title', ' ')
+        combineCamera:SetNWString('cw_Name', ' ')
+        combineCamera:SetNWString('cw_Title', ' ')
       end
     end
 

@@ -37,7 +37,7 @@ function pipeline.Include(pipe, fileName)
 
   local uniqueID = (string.GetFileFromFilename(fileName) or ''):Replace('.lua', ''):MakeID()
 
-  if uniqueID:StartWith('cl_') or uniqueID:StartWith('sh_') or uniqueID:StartWith('sv_') then
+  if uniqueID:StartsWith('cl_') or uniqueID:StartsWith('sh_') or uniqueID:StartsWith('sv_') then
     uniqueID = uniqueID:utf8sub(4, uniqueID:utf8len())
   end
 

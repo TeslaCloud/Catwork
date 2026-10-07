@@ -22,8 +22,8 @@ end
 
 -- A function to setup the salesman.
 function ENT:SetupSalesman(name, physDesc, animation, bShowChatBubble)
-  self:SetNetworkedString('Name', name)
-  self:SetNetworkedString('PhysDesc', physDesc)
+  self:SetNWString('Name', name)
+  self:SetNWString('PhysDesc', physDesc)
   self:SetupAnimation(animation)
 
   if bShowChatBubble then
@@ -36,7 +36,7 @@ function ENT:TalkToPlayer(player, text, default)
   local sayString = text.text or default
 
   if text.bHideName != true then
-    sayString = self:GetNetworkedString('Name')..' '..L('Salesman_Says')..' "'..sayString..'"'
+    sayString = self:GetNWString('Name')..' '..L('Salesman_Says')..' "'..sayString..'"'
   end
 
   if !text.text or (text.text and text.text != '') then

@@ -33,7 +33,7 @@ end
 function CLASS_TABLE:GetServerInfo(property)
   local mode = self:GetMode()
 
-  return GetConVarString(mode..'_'..property)
+  return cvars.String(mode..'_'..property, '')
 end
 
 function CLASS_TABLE:BuildConVarList()
@@ -197,8 +197,7 @@ function CLASS_TABLE:NumObjects()
 end
 
 function CLASS_TABLE:GetHelpText()
---	return "#tool." .. GetConVarString("gmod_toolmode") .. "." .. self:GetStage()
-  return self.HelpText or '#tool.'..GetConVarString('gmod_toolmode')..'.'..self:GetStage()
+  return self.HelpText or '#tool.'..cvars.String('gmod_toolmode', '')..'.'..self:GetStage()
 end
 
 function CLASS_TABLE:MakeGhostEntity(model, pos, angle)

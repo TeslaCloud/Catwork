@@ -10,6 +10,7 @@ end
 
 netstream.Hook('Application::PDA::Controller::CitizenStatus', function(player, target, status)
   if !util.Validate(player, target) then return end
+  if !isstring(status) then return end
 
   local isCombine = player:IsCombine()
   local isCWU = (isCombine or (player:GetFaction() == FACTION_CWU))
@@ -36,6 +37,9 @@ end)
 
 netstream.Hook('Application::PDA::Controller::Residence', function(player, target, address)
   if !util.Validate(player, target) then return end
+  if !isstring(address) then return end
+
+  address = string.utf8sub(address, 1, 128)
 
   if player:IsCombine() or player:GetFaction() == FACTION_CWU then
     cw.core:ServerLog(player:Name()..' has set '..target:Name().."'s residence to "..address..'.')
@@ -51,6 +55,9 @@ end)
 
 netstream.Hook('Application::PDA::Controller::Job', function(player, target, job)
   if !util.Validate(player, target) then return end
+  if !isstring(job) then return end
+
+  job = string.utf8sub(job, 1, 128)
 
   if player:IsCombine() or player:GetFaction() == FACTION_CWU then
     cw.core:ServerLog(player:Name()..' has set '..target:Name().."'s job to "..job..'.')
@@ -72,8 +79,13 @@ local translation = {
 netstream.Hook('Application::PDA::Controller::LP', function(player, target, value, bSubstract)
   if !util.Validate(player, target) then return end
 
+  value = tonumber(value)
+
+  -- NaN would end up in the character data and break every integer format after it.
+  if !value or value != value then return end
+
   if player:IsCombine() then
-    value = math.Round(math.Clamp(tonumber(value), (!bSubstract and 0) or -50, (!bSubstract and 50) or 0))
+    value = math.Round(math.Clamp(value, (!bSubstract and 0) or -50, (!bSubstract and 50) or 0))
 
     cw.core:ServerLog(
       player:Name()..' has '..((!bSubstract and 'Issued ') or 'Removed ')..' '..tostring(math.abs(value))..' LP '..
@@ -94,8 +106,13 @@ end)
 netstream.Hook('Application::PDA::Controller::CP', function(player, target, value, bSubstract)
   if !util.Validate(player, target) then return end
 
+  value = tonumber(value)
+
+  -- NaN would end up in the character data and break every integer format after it.
+  if !value or value != value then return end
+
   if player:IsCombine() then
-    value = math.Round(math.Clamp(tonumber(value), (!bSubstract and 0) or -50, (!bSubstract and 50) or 0))
+    value = math.Round(math.Clamp(value, (!bSubstract and 0) or -50, (!bSubstract and 50) or 0))
 
     cw.core:ServerLog(
       player:Name()..' has '..((!bSubstract and 'Issued ') or 'Removed ')..' '..tostring(math.abs(value))..' CP '..
@@ -116,8 +133,13 @@ end)
 netstream.Hook('Application::PDA::Controller::WP', function(player, target, value)
   if !util.Validate(player, target) then return end
 
+  value = tonumber(value)
+
+  -- NaN would end up in the character data and break every integer format after it.
+  if !value or value != value then return end
+
   if player:IsCombine() or player:GetFaction() == FACTION_CWU then
-    value = math.Round(math.Clamp(tonumber(value), 0, 20))
+    value = math.Round(math.Clamp(value, 0, 20))
 
     cw.core:ServerLog(
       player:Name()..' has '..((!bSubstract and 'Issued ') or 'Removed ')..' '..tostring(math.abs(value))..' WP '..

@@ -240,7 +240,7 @@ end
 
 function Schema:SetJob(player, value)
   player:SetCharacterData('Job', value)
-  player:SetNetVar('Job', amt)
+  player:SetNetVar('Job', value)
 end
 
 function Schema:SetWorkPoints(player, value)
@@ -310,7 +310,7 @@ function Schema:MakePlayerScanner(player, noMessage, lightSpawn)
   end
 
   local position = player:GetShootPos()
-  local uniqueID = player:UniqueID()
+  local uniqueID = player:SteamID64()
   local scanner = ents.Create(scannerClass)
   local marker = ents.Create('path_corner')
 
@@ -811,7 +811,7 @@ function Schema:BustDownDoor(player, door, force)
   if IsValid(physicsObject) then
     if !force then
       if IsValid(player) then
-        physicsObject:ApplyForceCenter((door:GetPos() - player:GetPos()):GetNormal() * 10000)
+        physicsObject:ApplyForceCenter((door:GetPos() - player:GetPos()):GetNormalized() * 10000)
       end
     else
       physicsObject:ApplyForceCenter(force)

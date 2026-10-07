@@ -52,7 +52,7 @@ function cwDisplayTyping:PostDrawTranslucentRenderables()
           local color = player:GetColor()
           local curTime = UnPredictedCurTime()
 
-          if player:GetMaterial() != 'sprites/heatwave' and (a != 0 or player:IsRagdolled()) then
+          if player:GetMaterial() != 'sprites/heatwave' and (color.a != 0 or player:IsRagdolled()) then
             local alpha = cw.core:CalculateAlphaFromDistance(fadeDistance, cw.client, player)
             local position = hook.Run('GetPlayerTypingDisplayPosition', player)
             local headBone = 'ValveBiped.Bip01_Head1'

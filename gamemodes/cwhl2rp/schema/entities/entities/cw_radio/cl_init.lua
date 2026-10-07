@@ -29,7 +29,7 @@ end
 function ENT:Draw()
   self:DrawModel()
 
-  local r, g, b, a = self:GetColor()
+  local a = self:GetColor().a
   local glowColor = Color(0, 255, 0, a)
   local position = self:GetPos()
   local forward = self:GetForward() * 9

@@ -13,8 +13,8 @@ function ENT:HUDPaintTargetID(x, y, alpha)
   if hook.Run('SalesmanTargetID', self, x, y, alpha) then
     local colorTargetID = cw.option:GetColor('target_id')
     local colorWhite = cw.option:GetColor('white')
-    local physDesc = self:GetNetworkedString('PhysDesc')
-    local name = self:GetNetworkedString('Name')
+    local physDesc = self:GetNWString('PhysDesc')
+    local name = self:GetNWString('Name')
 
     y = cw.core:DrawInfo(name, x, y, colorTargetID, alpha)
 

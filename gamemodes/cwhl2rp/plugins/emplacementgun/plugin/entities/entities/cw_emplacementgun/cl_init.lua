@@ -29,8 +29,13 @@ local AR3 = nil -- The AR3 we are currently using.
 local Shooting = false -- If we are shooting or not
 
 -- This message is used for both, getting in and out of AR3s.
-local function ZAR3_S(msg)
-  AR3 = msg:ReadEntity()
+local function ZAR3_S()
+  AR3 = net.ReadEntity()
+
+  -- net.ReadEntity returns the world for a NULL entity, usermessages returned NULL.
+  if !IsValid(AR3) then
+    AR3 = nil
+  end
 
   local wep = LocalPlayer():GetActiveWeapon()
   local vm = LocalPlayer():GetViewModel()
@@ -75,7 +80,7 @@ local function ZAR3_S(msg)
   end
 end
 
-usermessage.Hook('ZAR3_S', ZAR3_S)
+net.Receive('ZAR3_S', ZAR3_S)
 
 function ENT:Draw()
   self:DrawModel()

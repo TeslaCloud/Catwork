@@ -22,8 +22,8 @@ function cwAreaDisplays:PlayerExitedArea(name, minimum, maximum)
 end
 
 -- Called just after the translucent renderables have been drawn.
-function cwAreaDisplays:PostDrawTranslucentRenderables(bDrawingDepth, bDrawingSkybox)
-  if bDrawingSkybox or bDrawingDepth then return end
+function cwAreaDisplays:PostDrawTranslucentRenderables(bDrawingDepth, bDrawingSkybox, bDrawing3DSkybox)
+  if bDrawing3DSkybox or bDrawingDepth then return end
 
   for k, v in pairs(self.activeDisplays) do
     if v.class == '3D' then

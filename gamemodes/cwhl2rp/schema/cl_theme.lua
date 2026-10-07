@@ -302,7 +302,7 @@ function THEME.skin:LayoutFrame(panel)
   panel.lblTitle:SizeToContents()
   panel.lblTitle:SetExpensiveShadow(nil)
 
-  panel.btnClose:SetDrawBackground(true)
+  panel.btnClose:SetPaintBackground(true)
   panel.btnClose:SetPos(panel:GetWide() - 22, 2)
   panel.btnClose:SetSize(18, 18)
   panel.lblTitle:SetPos(8, 2)

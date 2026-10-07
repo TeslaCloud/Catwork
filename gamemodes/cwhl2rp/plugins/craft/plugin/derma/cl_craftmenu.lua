@@ -151,7 +151,7 @@ function PANEL:Rebuild()
       self.craft.doCraft:DockMargin(8 + self.craft:GetWide() / 2, 4, 4, 8)
       self.craft.doCraft:SetShowIcon(false)
       self.craft.doCraft.DoClick = function(button)
-        netstream.Start('Craft::CraftItem', self.bpData)
+        netstream.Start('Craft::CraftItem', self.bpData.uniqueID)
 
         timer.Simple(0, function()
           self:Rebuild()

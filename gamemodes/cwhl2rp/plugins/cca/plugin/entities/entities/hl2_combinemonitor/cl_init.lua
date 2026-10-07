@@ -22,7 +22,8 @@ surface.CreateFont('_CMB_FONT_1', {
   weight = 1000,
   antialias = true,
   underline = false,
-  additive = true
+  additive = true,
+  extended = true
 })
 
 surface.CreateFont('_CMB_FONT_2', {
@@ -31,7 +32,8 @@ surface.CreateFont('_CMB_FONT_2', {
   weight = 1000,
   antialias = true,
   underline = false,
-  additive = true
+  additive = true,
+  extended = true
 })
 
 surface.CreateFont('_CMB_FONT_4', {
@@ -39,7 +41,8 @@ surface.CreateFont('_CMB_FONT_4', {
   size = 72,
   weight = 1000,
   antialias = true,
-  underline = false
+  underline = false,
+  extended = true
 })
 
 surface.CreateFont('_CMB_FONT_5', {
@@ -47,7 +50,8 @@ surface.CreateFont('_CMB_FONT_5', {
   size = 9,
   weight = 500,
   antialias = false,
-  underline = false
+  underline = false,
+  extended = true
 })
 
 function ENT:Initialize()
@@ -119,8 +123,8 @@ function ENT:DrawTranslucent()
           render.Clear(80, 0, 0, 255)
         end
 
-        if #data.name > 19 then
-          data.name = string.sub(data.name, 1, 19 - 3)..'...'
+        if string.utf8len(data.name) > 19 then
+          data.name = string.utf8sub(data.name, 1, 19 - 3)..'...'
         end
 
         if data.status != '#Status_AntiCitizen' then
@@ -188,13 +192,13 @@ function ENT:DrawTranslucent()
             surface.SetTextColor(255, 0, 0)
             surface.SetFont('_CMB_FONT_5')
             surface.SetTextPos(20, 140)
-            surface.DrawText('1E'..string.upper(md5.sumhexa('b'..math.random(0, 9))))
+            surface.DrawText('1E'..string.upper(util.MD5('b'..math.random(0, 9))))
             surface.SetTextPos(20, 155)
             surface.DrawText(bitkek(6)..'cmb_ACCESS')
             surface.SetTextPos(20, 180)
             surface.DrawText(bitkek(2)..util.CRC(self:EntIndex())..bitkek(2)..'CP_cmb'..bitkek(4))
             surface.SetTextPos(20, 220)
-            surface.DrawText(string.upper(md5.sumhexa('b'..math.random(0, 9))))
+            surface.DrawText(string.upper(util.MD5('b'..math.random(0, 9))))
             surface.SetTextPos(88, 50)
             surface.DrawText(bitkek(4)..'cmb_biba'..bitkek(1)..'systems'..bitkek(2)..'failure'..bitkek(3))
           end

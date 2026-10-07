@@ -373,7 +373,7 @@ netstream.Hook('RecalculateHUDObjectives', function(data)
   local lines = {}
 
   for k, v in pairs(string.Split(data[2], '\n')) do
-    if string.StartWith(v, '^') then
+    if string.StartsWith(v, '^') then
       table.insert(lines, '<:: '..string.sub(v, 2)..' ::>')
     end
   end

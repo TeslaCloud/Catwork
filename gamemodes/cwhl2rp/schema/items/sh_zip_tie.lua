@@ -53,12 +53,12 @@ function ITEM:OnUse(player, itemEntity)
     if target then
       if target:GetNetVar('tied') == 0 then
         if target:GetShootPos():Distance(player:GetShootPos()) <= 192 then
-          if target:GetAimVector():DotProduct(player:GetAimVector()) > 0 or target:IsRagdolled() then
+          if target:GetAimVector():Dot(player:GetAimVector()) > 0 or target:IsRagdolled() then
             cw.player:SetAction(player, 'tie', tieTime)
 
             cw.player:EntityConditionTimer(player, target, trace.Entity, tieTime, 192, function()
               if player:Alive() and !player:IsRagdolled() and target:GetNetVar('tied') == 0
-              and target:GetAimVector():DotProduct(player:GetAimVector()) > 0 then
+              and target:GetAimVector():Dot(player:GetAimVector()) > 0 then
                 return true
               end
             end, function(success)

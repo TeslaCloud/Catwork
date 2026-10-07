@@ -38,7 +38,7 @@ SWEP.AdminOnly = true
 SWEP.ViewModel 				= 'models/weapons/v_vortbeamvm.mdl'
 SWEP.WorldModel 			= ''
 
-SWEP.Range = 2 * GetConVarNumber('sk_vortigaunt_zap_range', 100) * 15 -- because it's in feet,we convert it.
+SWEP.Range = 2 * cvars.Number('sk_vortigaunt_zap_range', 100) * 15 -- because it's in feet,we convert it.
 SWEP.DamageForce			= 48000 -- 12000 is the force done by two vortigaunts claws zap attack
 SWEP.AmmoPerUse				= 0 -- we use ar2 altfire ammo,don't exagerate here
 SWEP.HealSound = Sound('HealthKit.Touch')
@@ -69,7 +69,7 @@ function SWEP:Initialize()
   self.ArmorRegenTime = CurTime()
   self.HealTime = CurTime() -- we can heal
   self.ChargeTime = CurTime() -- we can zap
-  self:SetWeaponHoldType('shotgun') -- this is the better holdtype i could find,well,it fits its job
+  self:SetHoldType('shotgun') -- this is the better holdtype i could find,well,it fits its job
 
   if CLIENT then return end
 
@@ -84,11 +84,11 @@ end
 
 function SWEP:CreateSounds()
   if !self.ChargeSound then
-    self.ChargeSound = CreateSound(self.Weapon, self.AttackLoop)
+    self.ChargeSound = CreateSound(self, self.AttackLoop)
   end
 
   if !self.HealingSound then
-    self.HealingSound = CreateSound(self.Weapon, self.HealLoop)
+    self.HealingSound = CreateSound(self, self.HealLoop)
   end
 end
 
@@ -120,9 +120,12 @@ function SWEP:ShootEffect(EFFECTSTR, startpos, endpos)
   if CLIENT then view = GetViewEntity() else view = pPlayer:GetViewEntity() end
 
   if !pPlayer:IsNPC() and view:IsPlayer() then
+    -- The weapon has no world model, so it may well have no muzzle attachment either.
+    local attachment = self:GetAttachment(self:LookupAttachment('muzzle'))
+
     util.ParticleTracerEx(
       EFFECTSTR,
-      self.Weapon:GetAttachment(self.Weapon:LookupAttachment('muzzle')).Pos,
+      attachment and attachment.Pos or startpos,
       endpos,
       true,
       pPlayer:GetViewModel():EntIndex(),
@@ -236,8 +239,6 @@ function SWEP:StopEveryThing()
     return
   end
 
-  local Weapon = self.Weapon
-
   if !IsValid(pPlayer) then return end
   if !pPlayer:GetViewModel() then return end
 
@@ -246,7 +247,7 @@ function SWEP:StopEveryThing()
 end
 
 function SWEP:Deploy()
-  self.Weapon:SendWeaponAnim(ACT_VM_DRAW)
+  self:SendWeaponAnim(ACT_VM_DRAW)
   self:SetDeploySpeed(1)
   return true
 end
@@ -256,12 +257,12 @@ function SWEP:Think()
 
   if self.Charging and self.ChargeTime - 0.25 < CurTime() and !self.attack then
     if self.Owner:GetAmmoCount(self.Primary.Ammo) >= self.AmmoPerUse then -- check always if we have ammo
-      self.Weapon:SendWeaponAnim(ACT_VM_SECONDARYATTACK)
+      self:SendWeaponAnim(ACT_VM_SECONDARYATTACK)
       self:DispatchEffect('vortigaunt_charge_token') -- this effect lags a lot,but we see it for 0.75 seconds,who cares
       timer.Simple(0.75, function()
         if !IsValid(self.Owner) or self.Owner:GetActiveWeapon() != self or !IsValid(self) then return end
 
-        self.Weapon:SendWeaponAnim(ACT_VM_IDLE)
+        self:SendWeaponAnim(ACT_VM_IDLE)
       end)
     end
 
@@ -270,13 +271,13 @@ function SWEP:Think()
 
   if self.Charging and self.ChargeTime < CurTime() then
     if self.Owner:GetAmmoCount(self.Primary.Ammo) < self.AmmoPerUse then
-      self.Weapon:EmitSound(self.Deny)
-      self.Weapon:SetNextPrimaryFire(CurTime() + SoundDuration(self.Deny))
-      self.Weapon:SetNextSecondaryFire(CurTime() + SoundDuration(self.Deny))
+      self:EmitSound(self.Deny)
+      self:SetNextPrimaryFire(CurTime() + SoundDuration(self.Deny))
+      self:SetNextSecondaryFire(CurTime() + SoundDuration(self.Deny))
       if IsValid(self.Owner:GetViewModel())then self.Owner:GetViewModel():StopParticles() end
       self.Owner:StopParticles()
       self.Charging = false
-      self.Weapon:SendWeaponAnim(ACT_VM_IDLE)
+      self:SendWeaponAnim(ACT_VM_IDLE)
       if SERVER and self.ChargeSound then self.ChargeSound:Stop()end
       return
     end
@@ -288,19 +289,19 @@ function SWEP:Think()
     self.attack = false
 
     if SERVER and self.ChargeSound then self.ChargeSound:Stop()end
-    self.Weapon:SetNextPrimaryFire(CurTime() + 3)
-    self.Weapon:SetNextSecondaryFire(CurTime() + 3)
+    self:SetNextPrimaryFire(CurTime() + 3)
+    self:SetNextSecondaryFire(CurTime() + 3)
   end
 
   if self.Healing and self.HealTime < CurTime() then
     if self.Owner:GetAmmoCount(self.Primary.Ammo) < self.AmmoPerUse then
-      self.Weapon:EmitSound(self.Deny)
-      self.Weapon:SetNextPrimaryFire(CurTime() + SoundDuration(self.Deny))
-      self.Weapon:SetNextSecondaryFire(CurTime() + SoundDuration(self.Deny))
+      self:EmitSound(self.Deny)
+      self:SetNextPrimaryFire(CurTime() + SoundDuration(self.Deny))
+      self:SetNextSecondaryFire(CurTime() + SoundDuration(self.Deny))
       if IsValid(self.Owner:GetViewModel())then self.Owner:GetViewModel():StopParticles() end
       self.Owner:StopParticles()
       self.Healing = false
-      self.Weapon:SendWeaponAnim(ACT_VM_IDLE)
+      self:SendWeaponAnim(ACT_VM_IDLE)
 
       if SERVER and self.HealingSound then self.HealingSound:Stop()end
       return
@@ -308,14 +309,14 @@ function SWEP:Think()
 
     if IsValid(self.Owner:GetViewModel())then self.Owner:GetViewModel():StopParticles() end
     self.Owner:StopParticles()
-    self.Weapon:SendWeaponAnim(ACT_VM_IDLE)
+    self:SendWeaponAnim(ACT_VM_IDLE)
     self.Healing = false
     self.Owner:EmitSound(self.HealSound)
 
     if SERVER and self.HealingSound then self.HealingSound:Stop()end
     self:GiveHealth()
-    self.Weapon:SetNextPrimaryFire(CurTime() + 3)
-    self.Weapon:SetNextSecondaryFire(CurTime() + 6)
+    self:SetNextPrimaryFire(CurTime() + 3)
+    self:SetNextSecondaryFire(CurTime() + 6)
   end
 end
 
@@ -347,9 +348,9 @@ function SWEP:PrimaryAttack()
   if self.Charging or self.Healing then return end
 
   if self.Owner:GetAmmoCount(self.Primary.Ammo) < self.AmmoPerUse then
-    self.Weapon:EmitSound(self.Deny)
-    self.Weapon:SetNextPrimaryFire(CurTime() + SoundDuration(self.Deny))
-    self.Weapon:SetNextSecondaryFire(CurTime() + SoundDuration(self.Deny))
+    self:EmitSound(self.Deny)
+    self:SetNextPrimaryFire(CurTime() + SoundDuration(self.Deny))
+    self:SetNextSecondaryFire(CurTime() + SoundDuration(self.Deny))
     return
   end
 
@@ -358,14 +359,14 @@ function SWEP:PrimaryAttack()
   self.ChargeTime = CurTime() + self.BeamChargeTime
   self.attack = false
   self.Charging = true
-  self.Weapon:SendWeaponAnim(ACT_VM_RELOAD)
+  self:SendWeaponAnim(ACT_VM_RELOAD)
 
   if SERVER and self.ChargeSound then
     self.ChargeSound:PlayEx(100, 150)
   end
 
-  self.Weapon:SetNextPrimaryFire(CurTime() + 6)
-  self.Weapon:SetNextSecondaryFire(CurTime() + 6)
+  self:SetNextPrimaryFire(CurTime() + 6)
+  self:SetNextSecondaryFire(CurTime() + 6)
 end
 
 function SWEP:SecondaryAttack()
@@ -378,23 +379,23 @@ function SWEP:SecondaryAttack()
   if (IsValid(trace.Entity) and trace.Entity:IsPlayer() and trace.Entity:Health() < self.HealthLimit)
   or self.Owner:Health() < self.HealthLimit then
     if self.Owner:GetAmmoCount(self.Primary.Ammo) < self.AmmoPerUse then
-      self.Weapon:EmitSound(self.Deny)
-      self.Weapon:SetNextPrimaryFire(CurTime() + SoundDuration(self.Deny))
-      self.Weapon:SetNextSecondaryFire(CurTime() + SoundDuration(self.Deny))
+      self:EmitSound(self.Deny)
+      self:SetNextPrimaryFire(CurTime() + SoundDuration(self.Deny))
+      self:SetNextSecondaryFire(CurTime() + SoundDuration(self.Deny))
       return
     end
 
     self.HealTime = CurTime() + self.HealDelay
     self.Healing = true
     self:DispatchEffect('vortigaunt_charge_token')
-    self.Weapon:SendWeaponAnim(ACT_VM_RELOAD)
+    self:SendWeaponAnim(ACT_VM_RELOAD)
 
     if SERVER and self.HealingSound then
       self.HealingSound:PlayEx(100, 150)
     end
 
-    self.Weapon:SetNextPrimaryFire(CurTime() + 3)
-    self.Weapon:SetNextSecondaryFire(CurTime() + 6)
+    self:SetNextPrimaryFire(CurTime() + 3)
+    self:SetNextSecondaryFire(CurTime() + 6)
   end
 end
 

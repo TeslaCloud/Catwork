@@ -57,7 +57,7 @@ function vgui.Register(className, panelTable, baseName)
     end
   end
 
-  oldRegister(className, panelTable, baseName)
+  return oldRegister(className, panelTable, baseName)
 end
 
 --[[

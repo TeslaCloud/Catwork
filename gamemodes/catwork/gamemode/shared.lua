@@ -171,7 +171,22 @@ plugin.IncludeEntities('catwork/gamemode/core/entities')
 if SERVER then
   hook.Run('ClockworkSaveShared', CW_SCRIPT_SHARED)
 
-  catio.WriteCWLua(cw.core:Serialize(CW_SCRIPT_SHARED))
+  -- Ship the shared table to clients as garrysmod/lua/cw.lua, which cl_init.lua includes.
+  local contents = cw.core:Serialize(CW_SCRIPT_SHARED)
+  local level = 1
+
+  -- Pick a long bracket level that the serialized data cannot close early.
+  while string.find(contents..']', ']'..string.rep('=', level)..']', 1, true) do
+    level = level + 1
+  end
+
+  local equals = string.rep('=', level)
+
+  if File.write('lua/cw.lua', 'CW_SCRIPT_SHARED = ['..equals..'[\n'..contents..']'..equals..']\n') == false then
+    ErrorNoHalt('[Catwork] Failed to write lua/cw.lua, clients will not receive the shared schema data!\n')
+  end
+
+  AddCSLuaFile('cw.lua')
 end
 
 _G['cwSharedBooted'] = true

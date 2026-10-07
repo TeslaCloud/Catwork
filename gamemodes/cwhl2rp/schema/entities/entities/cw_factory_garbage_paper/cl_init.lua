@@ -5,28 +5,32 @@ surface.CreateFont('_GR_CMB_FONT_1', {
   size = 13,
   weight = 1000,
   antialias = false,
-  underline = false
+  underline = false,
+  extended = true
 })
 surface.CreateFont('_GR_CMB_FONT_2', {
   font = 'Default',
   size = 11,
   weight = 1000,
   antialias = false,
-  underline = false
+  underline = false,
+  extended = true
 })
 surface.CreateFont('_GR_CMB_FONT_3', {
   font = 'Verdana',
   size = 10,
   weight = 800,
   antialias = false,
-  underline = false
+  underline = false,
+  extended = true
 })
 surface.CreateFont('_GR_CMB_FONT_4', {
   font = 'System',
   size = 40,
   weight = 1000,
   antialias = false,
-  underline = false
+  underline = false,
+  extended = true
 })
 
 function ENT:Initialize()

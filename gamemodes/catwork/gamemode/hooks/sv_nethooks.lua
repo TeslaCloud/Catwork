@@ -100,7 +100,7 @@ netstream.Hook('InteractCharacter', function(player, data)
       local fault = hook.Run('PlayerCanInteractCharacter', player, action, character)
 
       if fault == false or type(fault) == 'string' then
-        return cw.player:SetCreateFault(fault or L'CharFault_CannotInteract')
+        return cw.player:SetCreateFault(player, fault or L'CharFault_CannotInteract')
       elseif action == 'delete' then
         local bSuccess, fault = cw.player:DeleteCharacter(player, characterID)
 
@@ -249,7 +249,8 @@ netstream.Hook('RecogniseOption', function(player, data)
       if recogniseData == 'look' then
         local target = player:GetEyeTraceNoCursor().Entity
 
-        if target:HasInitialized() and !cw.player:IsNoClipping(target) and target != player then
+        if IsValid(target) and target:IsPlayer() and target:HasInitialized()
+        and !cw.player:IsNoClipping(target) and target != player then
           cw.player:SetRecognises(target, player, RECOGNISE_SAVE)
 
           playSound = true

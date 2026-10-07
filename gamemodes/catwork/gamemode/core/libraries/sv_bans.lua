@@ -19,6 +19,9 @@ cw.bans.stored = stored
 local function DELETE_BAN(identifier)
   stored[identifier] = nil
 
+  local bansTable = config.Get('mysql_bans_table'):Get()
+  local schemaFolder = cw.core:GetSchemaFolder()
+
   local queryObj = cw.database:Delete(bansTable)
     queryObj:Where('_Schema', schemaFolder)
     queryObj:Where('_Identifier', identifier)
@@ -219,7 +222,7 @@ function cw.bans:Add(identifier, duration, reason, Callback, bSaveless)
             insertObj:Insert('_Duration', stored[identifier].duration)
             insertObj:Insert('_Reason', stored[identifier].reason)
             insertObj:Insert('_Schema', schemaFolder)
-          insertObj:Push()
+          insertObj:Execute()
         end
 
         if Callback then

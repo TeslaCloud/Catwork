@@ -14,7 +14,7 @@ local glowMaterial = Material('sprites/glow04_noz')
 function ENT:Draw()
   self:DrawModel()
 
-  local r, g, b, a = self:GetColor()
+  local a = self:GetColor().a
   local flashTime = self:GetDTFloat(0)
   local glowColor = Color(0, 255, 0, a)
   local position = self:GetPos()

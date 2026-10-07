@@ -26,13 +26,13 @@ ENT.GARBAGE_ITEMS = {
 }
 
 function ENT:SetupDataTables()
-  self:NetworkVar('Vector', '0', 'ProductPos')
-  self:NetworkVar('Float', '2', 'GarbageCount')
-  self:NetworkVar('Bool', '0', 'IsWorking')
-  self:NetworkVar('Float', '0', 'StartWorkTime')
-  self:NetworkVar('Float', '1', 'NextWorkTime')
-  self:NetworkVar('Int', '0', 'EjectStorage')
-  self:NetworkVar('Float', '3', 'StopWorkTime')
+  self:NetworkVar('Vector', 0, 'ProductPos')
+  self:NetworkVar('Float', 2, 'GarbageCount')
+  self:NetworkVar('Bool', 0, 'IsWorking')
+  self:NetworkVar('Float', 0, 'StartWorkTime')
+  self:NetworkVar('Float', 1, 'NextWorkTime')
+  self:NetworkVar('Int', 0, 'EjectStorage')
+  self:NetworkVar('Float', 3, 'StopWorkTime')
 end
 
 function ENT:Think()

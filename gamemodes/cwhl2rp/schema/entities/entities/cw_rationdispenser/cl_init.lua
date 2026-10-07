@@ -12,7 +12,7 @@ local glowMaterial = Material('sprites/glow04_noz')
 
 -- Called when the entity should draw.
 function ENT:Draw()
-  local r, g, b, a = self:GetColor()
+  local a = self:GetColor().a
   local rationTime = self:GetDTFloat(0)
   local flashTime = self:GetDTFloat(1)
   local position = self:GetPos()

@@ -85,7 +85,7 @@ Initialize
 ---------------------------------------------------------*/
 
 function SWEP:Initialize()
-  self:SetWeaponHoldType(self.HoldType)
+  self:SetHoldType(self.HoldType)
 end
 
 /*---------------------------------------------------------
@@ -93,10 +93,10 @@ Deploy
 ---------------------------------------------------------*/
 
 function SWEP:Deploy()
-  local vm = self.Owner:GetViewModel()
+  local vm = self:GetOwner():GetViewModel()
 
   vm:SendViewModelMatchingSequence(vm:LookupSequence('fists_draw'))
-  self.Weapon:SetNextPrimaryFire(CurTime() + 1)
+  self:SetNextPrimaryFire(CurTime() + 1)
 
   return true
 end
@@ -107,42 +107,42 @@ PrimaryAttack
 
 function SWEP:PrimaryAttack()
   if SERVER then
-    if hook.Run('PlayerCanThrowPunch', self.Owner) then
+    if hook.Run('PlayerCanThrowPunch', self:GetOwner()) then
       self:PlayPunchAnimation()
-      self.Owner:SetAnimation(PLAYER_ATTACK1)
-      self.Weapon:SetNextPrimaryFire(CurTime() + 0.5)
-      self.Weapon:SetNextSecondaryFire(CurTime() + 0.7)
-      timer.Simple(0.10, function ()self.Weapon:EmitSound(self.SwingSound) end)
+      self:GetOwner():SetAnimation(PLAYER_ATTACK1)
+      self:SetNextPrimaryFire(CurTime() + 0.5)
+      self:SetNextSecondaryFire(CurTime() + 0.7)
+      timer.Simple(0.10, function ()self:EmitSound(self.SwingSound) end)
       self.Primary.Damage = self.Primary.Damage
-      -- + cw.attributes:Get(self.Owner, ATB_MELEE, nil, true) * 0.03
-      -- + cw.attributes:Get(self.Owner, ATB_STRENGTH, nil, true) * 0.03
+      -- + cw.attributes:Get(self:GetOwner(), ATB_MELEE, nil, true) * 0.03
+      -- + cw.attributes:Get(self:GetOwner(), ATB_STRENGTH, nil, true) * 0.03
 
-      local trace = self.Owner:GetEyeTraceNoCursor()
+      local trace = self:GetOwner():GetEyeTraceNoCursor()
 
-      if self.Owner:GetShootPos():Distance(trace.HitPos) <= 64 then
+      if self:GetOwner():GetShootPos():Distance(trace.HitPos) <= 64 then
         if IsValid(trace.Entity) then
           if trace.Entity:IsPlayer() or trace.Entity:IsNPC() or trace.Entity:GetClass() == 'prop_ragdoll' then
             if trace.Entity:IsPlayer() and trace.Entity:Health() - self.Primary.Damage <= 30
-            and hook.Run('PlayerCanPunchKnockout', self.Owner, trace.Entity, trace) then
+            and hook.Run('PlayerCanPunchKnockout', self:GetOwner(), trace.Entity, trace) then
               cw.player:SetRagdollState(trace.Entity, RAGDOLL_KNOCKEDOUT, 15)
-              hook.Run('PlayerPunchKnockout', self.Owner, trace.Entity)
-            elseif hook.Run('PlayerCanPunchEntity', self.Owner, trace.Entity) then
+              hook.Run('PlayerPunchKnockout', self:GetOwner(), trace.Entity)
+            elseif hook.Run('PlayerCanPunchEntity', self:GetOwner(), trace.Entity) then
               self:PunchEntity()
-              hook.Run('PlayerPunchEntity', self.Owner, trace.Entity)
+              hook.Run('PlayerPunchEntity', self:GetOwner(), trace.Entity)
             end
 
             if trace.Entity:IsPlayer() or trace.Entity:IsNPC() then
-              local normal = trace.Entity:GetPos() - self.Owner:GetPos()
+              local normal = trace.Entity:GetPos() - self:GetOwner():GetPos()
                 normal:Normalize()
               local push = 128 * normal
 
               trace.Entity:SetVelocity(push)
             end
           elseif IsValid(trace.Entity:GetPhysicsObject()) then
-            if hook.Run('PlayerCanPunchEntity', self.Owner, trace.Entity) then
+            if hook.Run('PlayerCanPunchEntity', self:GetOwner(), trace.Entity) then
               self:PunchEntity()
 
-              hook.Run('PlayerPunchEntity', self.Owner, trace.Entity)
+              hook.Run('PlayerPunchEntity', self:GetOwner(), trace.Entity)
             end
           elseif trace.Hit then
             self:PunchEntity()
@@ -152,19 +152,19 @@ function SWEP:PrimaryAttack()
         end
       end
 
-      hook.Run('PlayerPunchThrown', self.Owner)
+      hook.Run('PlayerPunchThrown', self:GetOwner())
 
       local info = {
         primaryFire = 0.5,
         secondaryFire = 0.5
       }
 
-      hook.Run('PlayerAdjustNextPunchInfo', self.Owner, info)
+      hook.Run('PlayerAdjustNextPunchInfo', self:GetOwner(), info)
 
-      self.Weapon:SetNextPrimaryFire(CurTime() + info.primaryFire)
-      self.Weapon:SetNextSecondaryFire(CurTime() + info.secondaryFire)
+      self:SetNextPrimaryFire(CurTime() + info.primaryFire)
+      self:SetNextSecondaryFire(CurTime() + info.secondaryFire)
 
-      self.Owner:ViewPunch(Angle(
+      self:GetOwner():ViewPunch(Angle(
         math.Rand(-16, 16), math.Rand(-8, 8), 0
       ))
     end
@@ -177,17 +177,17 @@ SecondaryAttack
 
 function SWEP:SecondaryAttack()
   if SERVER then
-    local trace = self.Owner:GetEyeTraceNoCursor()
+    local trace = self:GetOwner():GetEyeTraceNoCursor()
 
     if IsValid(trace.Entity) and cw.entity:IsDoor(trace.Entity) then
-      if self.Owner:GetShootPos():Distance(trace.HitPos) <= 64 then
-        if hook.Run('PlayerCanKnockOnDoor', self.Owner, trace.Entity) != false then
+      if self:GetOwner():GetShootPos():Distance(trace.HitPos) <= 64 then
+        if hook.Run('PlayerCanKnockOnDoor', self:GetOwner(), trace.Entity) != false then
           self:PlayKnockSound()
 
-          self.Weapon:SetNextPrimaryFire(CurTime() + 0.25)
-          self.Weapon:SetNextSecondaryFire(CurTime() + 0.25)
+          self:SetNextPrimaryFire(CurTime() + 0.25)
+          self:SetNextSecondaryFire(CurTime() + 0.25)
 
-          hook.Run('PlayerKnockOnDoor', self.Owner, trace.Entity)
+          hook.Run('PlayerKnockOnDoor', self:GetOwner(), trace.Entity)
         end
       end
     end
@@ -200,10 +200,10 @@ KnockSound
 
 function SWEP:PlayKnockSound()
   if SERVER then
-    self.Weapon:CallOnClient('PlayKnockSound', '')
+    self:CallOnClient('PlayKnockSound', '')
   end
 
-  self.Weapon:EmitSound('physics/wood/wood_crate_impact_hard2.wav')
+  self:EmitSound('physics/wood/wood_crate_impact_hard2.wav')
 end
 
 /*---------------------------------------------------------
@@ -257,7 +257,7 @@ UpdateNextIdle
 ---------------------------------------------------------*/
 
 function SWEP:UpdateNextIdle()
-  local vm = self.Owner:GetViewModel()
+  local vm = self:GetOwner():GetViewModel()
 
   self:SetNextIdle(CurTime() + vm:SequenceDuration())
 end
@@ -268,26 +268,26 @@ PunchEntity
 
 function SWEP:PunchEntity()
   local bounds = Vector(0, 0, 0)
-  local startPosition = self.Owner:GetShootPos()
-  local finishPosition = startPosition + (self.Owner:GetAimVector() * 64)
+  local startPosition = self:GetOwner():GetShootPos()
+  local finishPosition = startPosition + (self:GetOwner():GetAimVector() * 64)
   local traceLineAttack = util.TraceLine({
     start = startPosition,
     endpos = finishPosition,
-    filter = self.Owner
+    filter = self:GetOwner()
   })
 
   timer.Simple(0.32, function ()
-    if IsValid(self.Weapon) then
-      self.Weapon:EmitSound(self.WallSound)
+    if IsValid(self) then
+      self:EmitSound(self.WallSound)
     end
   end)
 
   if SERVER then
-    self.Weapon:CallOnClient('PunchEntity', '')
+    self:CallOnClient('PunchEntity', '')
 
     if IsValid(traceLineAttack.Entity) then
       traceLineAttack.Entity:TakeDamageInfo(
-        cw.core:FakeDamageInfo(self.Primary.Damage, self, self.Owner, traceLineAttack.HitPos, DMG_CLUB, 1)
+        cw.core:FakeDamageInfo(self.Primary.Damage, self, self:GetOwner(), traceLineAttack.HitPos, DMG_CLUB, 1)
       )
     end
   end
@@ -300,7 +300,7 @@ PunchingAnimation
 
 function SWEP:PlayPunchAnimation()
   if SERVER then
-    self.Weapon:CallOnClient('PlayPunchAnimation', '')
+    self:CallOnClient('PlayPunchAnimation', '')
   end
 
   if self.left == nil then self.left = true else self.left = !self.left end
@@ -313,8 +313,8 @@ function SWEP:PlayPunchAnimation()
     -- ownerAnim = PLAYER_ATTACK2
   end
 
-  local vm = self.Owner:GetViewModel()
+  local vm = self:GetOwner():GetViewModel()
 
-  self.Owner:SetAnimation(ownerAnim)
+  self:GetOwner():SetAnimation(ownerAnim)
   vm:SendViewModelMatchingSequence(vm:LookupSequence(anim))
 end

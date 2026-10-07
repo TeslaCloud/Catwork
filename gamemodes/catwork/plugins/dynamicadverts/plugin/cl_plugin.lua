@@ -32,10 +32,18 @@ function cwDynamicAdverts:CacheMaterial(data)
   if data.material then return end
 
   local exploded = string.Explode('/', data.url)
-  local extension = '.'..string.GetExtensionFromFilename(exploded[#exploded])
+  local extension = (string.GetExtensionFromFilename(exploded[#exploded]) or ''):lower():match('^%a+')
+
+  -- file.Write only accepts whitelisted extensions, and Material can only load png and jpg from data/.
+  if extension == 'jpeg' then
+    extension = 'jpg'
+  elseif extension != 'png' and extension != 'jpg' then
+    return
+  end
+
   local path =
     'catwork/schemas/'..cw.core:GetSchemaFolder()..'/plugins/adverts/'..game.GetMap()..'/'..util.CRC(data.url)..
-    extension
+    '.'..extension
 
   if _file.Exists(path, 'DATA') then
     data.material = Material('../data/'..path, 'noclamp smooth')
@@ -53,7 +61,6 @@ function cwDynamicAdverts:CacheMaterial(data)
   end
 
   http.Fetch(data.url, function(body, length, headers, code)
-    path = path:gsub('.jpeg', '.jpg')
     file.Write(path, body)
     data.material = Material('../data/'..path, 'noclamp smooth')
   end)

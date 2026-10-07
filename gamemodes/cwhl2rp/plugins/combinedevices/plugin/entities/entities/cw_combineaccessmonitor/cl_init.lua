@@ -22,6 +22,7 @@ local errorc = CreateMaterial('_CMB_ERROR', 'Modulate', {
 
 surface.CreateFont('_CMB_FONT_1', {
   font = 'Myriad Pro',
+  extended = true,
   size = 42,
   weight = 1000,
   antialias = true,
