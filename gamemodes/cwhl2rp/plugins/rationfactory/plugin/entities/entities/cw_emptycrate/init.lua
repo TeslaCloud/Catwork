@@ -1,5 +1,5 @@
 --[[
-	© 2012 Iron-Wall.org do not share, re-distribute or modify
+	Â© 2012 Iron-Wall.org do not share, re-distribute or modify
 	without permission of its author (ext@iam1337.ru).
 --]]
 
@@ -18,8 +18,8 @@ function ENT:Initialize()
 	self:SetHealth(50)
 	self:SetSolid(SOLID_VPHYSICS)
 
-	self:SetDTInt(1,0)
-	self:SetDTBool(2,false)
+	self:SetDTInt(1, 0)
+	self:SetDTBool(2, false)
 
 	self.breens_water = item.FindByID("breens_water")
 	self.citizen_supplements = item.FindByID("citizen_supplements")
@@ -52,7 +52,7 @@ function ENT:OnTakeDamage(damageInfo)
 	self:SetHealth(math.max(self:Health() - damageInfo:GetDamage(), 0))
 
 	if (self:Health() <= 0) then
-		self:Explode(); self:Remove()
+		self:Explode() self:Remove()
 	end
 end
 
@@ -63,6 +63,7 @@ function ENT:Touch(ent)
 			self:EmitSound("items/medshot4.wav")
 			self:SetDTInt(1, self:GetDTInt(1) + 1)
 			self.nextadd = CurTime() + 1
+
 			if (self:GetDTInt(1) >= 10) then
 				cw.entity:CreateShipment(nil, "ration_standard", 10, self:GetPos(), self:GetAngles())
 				self:Remove()

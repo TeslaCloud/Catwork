@@ -1,5 +1,5 @@
 --[[
-	© 2012 Iron-Wall.org do not share, re-distribute or modify
+	Â© 2012 Iron-Wall.org do not share, re-distribute or modify
 	without permission of its author (ext@iam1337.ru).
 --]]
 
@@ -34,7 +34,7 @@ function ENT:Initialize()
 	self:PhysicsInitBox(minimum, maximum)
 	self:DrawShadow(false)
 
-	self:SetDTInt(0,5)
+	self:SetDTInt(0, 5)
 end
 
 function ENT:UpdateTransmitState()
@@ -102,7 +102,7 @@ function ENT:ActivateRation(activator, duration, force)
 		duration = 26
 	end
 
-	if (!duration) then duration = 24; end
+	if (!duration) then duration = 24 end
 
 	if (force or !self.nextActivateRation or curTime >= self.nextActivateRation) then
 		self.nextActivateRation = curTime + duration + 2
@@ -132,17 +132,17 @@ function ENT:ActivateRation(activator, duration, force)
 										if (IsValid(self) and IsValid(entity)) then
 											local position = entity:GetPos()
 											local angles = entity:GetAngles()
-											
+
 											entity:CallOnRemove("CreateRation", function()
 												if (IsValid(activator)) then
 													local itemTable = item.CreateInstance(rationType)
-													
+
 													if (itemTable) then
 														cw.entity:CreateItem(activator, itemTable, position, angles)
 													end
 												end
 											end)
-											
+
 											entity:SetNoDraw(true)
 											entity:Remove()
 										end
@@ -193,7 +193,6 @@ function ENT:Use(activator, caller)
 					self:SetFlashDuration(3)
 				end
 			elseif (!self.nextActivateRation or curTime >= self.nextActivateRation) then
-
 				if (activator:HasItemByID("ration_standard") and table.Count(activator:GetItemsByID("ration_standard")) >= 1) then
 					local itemTable = activator:FindItemByID("ration_standard")
 
@@ -217,5 +216,5 @@ function ENT:CanTool(player, trace, tool)
 end
 
 function ENT:SetRationCount(count)
-	self:SetDTInt(0,count)
+	self:SetDTInt(0, count)
 end

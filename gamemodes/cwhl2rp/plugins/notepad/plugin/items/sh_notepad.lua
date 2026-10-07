@@ -1,55 +1,54 @@
 --[[
-	© 2012 CloudSixteen.com do not share, re-distribute or modify
+	Â© 2012 CloudSixteen.com do not share, re-distribute or modify
 	without permission of its author (kurozael@gmail.com).
 --]]
 
-ITEM.name = "Notepad";
-ITEM.PrintName = "#Notepad_Title";
-ITEM.cost = 5;
-ITEM.model = "models/props_lab/clipboard.mdl";
-ITEM.weight = 0.1;
-ITEM.access = "1v";
-ITEM.classes = {CLASS_EMP, CLASS_EOW};
-ITEM.business = true;
-ITEM.description = "#Item_Notepad_Description";
+ITEM.name = "Notepad"
+ITEM.PrintName = "#Notepad_Title"
+ITEM.cost = 5
+ITEM.model = "models/props_lab/clipboard.mdl"
+ITEM.weight = 0.1
+ITEM.access = "1v"
+ITEM.classes = { CLASS_EMP, CLASS_EOW }
+ITEM.business = true
+ITEM.description = "#Item_Notepad_Description"
 
 -- Called when a player uses the item.
 function ITEM:OnUse(player, itemEntity)
-	local trace = player:GetEyeTraceNoCursor();
+	local trace = player:GetEyeTraceNoCursor()
 
-	if (trace.HitPos:Distance( player:GetShootPos() ) <= 192) then
-		local entity = ents.Create("cw_notepad");
+	if (trace.HitPos:Distance(player:GetShootPos()) <= 192) then
+		local entity = ents.Create("cw_notepad")
 
-		cw.player:GiveProperty(player, entity);
+		cw.player:GiveProperty(player, entity)
 
-		entity:SetPos(trace.HitPos);
-		entity:Spawn();
+		entity:SetPos(trace.HitPos)
+		entity:Spawn()
 
 		if (IsValid(itemEntity)) then
-			local physicsObject = itemEntity:GetPhysicsObject();
+			local physicsObject = itemEntity:GetPhysicsObject()
 
-			entity:SetPos( itemEntity:GetPos() );
-			entity:SetAngles( itemEntity:GetAngles() );
+			entity:SetPos(itemEntity:GetPos())
+			entity:SetAngles(itemEntity:GetAngles())
 
 			if (IsValid(physicsObject)) then
 				if (!physicsObject:IsMoveable()) then
-					physicsObject = entity:GetPhysicsObject();
+					physicsObject = entity:GetPhysicsObject()
 
 					if (IsValid(physicsObject)) then
-						physicsObject:EnableMotion(false);
-					end;
-				end;
-			end;
+						physicsObject:EnableMotion(false)
+					end
+				end
+			end
 		else
-			cw.entity:MakeFlushToGround(entity, trace.HitPos, trace.HitNormal);
-		end;
+			cw.entity:MakeFlushToGround(entity, trace.HitPos, trace.HitNormal)
+		end
 	else
-		cw.player:Notify(player, L("CantDropFar"));
+		cw.player:Notify(player, L("CantDropFar"))
 
-		return false;
-	end;
-end;
+		return false
+	end
+end
 
 -- Called when a player drops the item.
-function ITEM:OnDrop(player, position) end;
-
+function ITEM:OnDrop(player, position) end

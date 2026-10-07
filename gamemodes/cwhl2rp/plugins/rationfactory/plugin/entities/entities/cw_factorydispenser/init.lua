@@ -1,5 +1,5 @@
 --[[
-	© 2012 Iron-Wall.org do not share, re-distribute or modify
+	Â© 2012 Iron-Wall.org do not share, re-distribute or modify
 	without permission of its author (ext@iam1337.ru).
 --]]
 
@@ -19,11 +19,11 @@ function ENT:Initialize()
 
 	self.tube = ents.Create("prop_dynamic")
 	self.tube:DrawShadow(false)
-	self.tube:SetAngles(self:GetAngles() + Angle(0,90,0))
+	self.tube:SetAngles(self:GetAngles() + Angle(0, 90, 0))
 	self.tube:SetParent(self)
 	self.tube:SetModel("models/mechanics/solid_steel/box_beam_4.mdl")
 	self.tube:SetMaterial("models/props_pipes/GutterMetal01a")
-	self.tube:SetPos(self:GetPos() + Vector(-16,0,-6))
+	self.tube:SetPos(self:GetPos() + Vector(-16, 0, -6))
 	self.tube:Spawn()
 
 	self:DeleteOnRemove(self.tube)
@@ -38,7 +38,7 @@ end
 
 function ENT:SetSpawnType(entType)
 	if (entType == TYPE_WATERCAN or entType == TYPE_SUPPLIES) then
-		self:SetDTInt(1,entType)
+		self:SetDTInt(1, entType)
 	end
 end
 

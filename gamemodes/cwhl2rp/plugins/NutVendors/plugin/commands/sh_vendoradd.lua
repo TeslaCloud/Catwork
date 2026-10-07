@@ -1,5 +1,5 @@
 --[[
-	© 2013 CloudSixteen.com do not share, re-distribute or modify
+	Â© 2013 CloudSixteen.com do not share, re-distribute or modify
 	without permission of its author (kurozael@gmail.com).
 --]]
 
@@ -11,18 +11,18 @@ COMMAND.access = "a"
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
 	local trace = player:GetEyeTraceNoCursor()
-	--local entity = ents.Create("nut_vend")
+	-- local entity = ents.Create("nut_vend")
 	local entity = scripted_ents.Get("nut_vend"):SpawnFunction(player, trace)
 
-	--entity:SetPos(trace.HitPos + Vector(0, 0, 48))
-	--entity:SpawnFunction(player, trace)
+	-- entity:SetPos(trace.HitPos + Vector(0, 0, 48))
+	-- entity:SpawnFunction(player, trace)
 
 	if (IsValid(entity)) then
-		--entity:SetStock(math.random(10, 20), true)
-		--entity:SetAngles(Angle(0, player:EyeAngles().yaw + 180, 0))
+		-- entity:SetStock(math.random(10, 20), true)
+		-- entity:SetAngles(Angle(0, player:EyeAngles().yaw + 180, 0))
 
 		cw.player:Notify(player, L("NutVend_Added"))
 	end
 end
 
-COMMAND:Register();
+COMMAND:Register()

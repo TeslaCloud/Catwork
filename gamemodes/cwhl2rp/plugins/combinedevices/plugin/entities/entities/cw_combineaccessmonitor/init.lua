@@ -1,5 +1,5 @@
 --[[
-	© 2013 CloudSixteen.com do not share, re-distribute or modify
+	Â© 2013 CloudSixteen.com do not share, re-distribute or modify
 	without permission of its author (kurozael@gmail.com).
 --]]
 
@@ -46,17 +46,18 @@ function ENT:UpdateTransmitState()
 end
 
 function ENT:SetStatus(int)
-	//if int == 0 then
+	// if int == 0 then
 	//	self.glow:SetKeyValue("rendercolor","96 190 255")
-	//elseif int == 1 then
+	// elseif int == 1 then
 	//	self.glow:SetKeyValue("rendercolor","0 0 0")
-	//elseif int == 2 then
+	// elseif int == 2 then
 	//	self.glow:SetKeyValue("rendercolor","255 0 0")
-	//end
-	//self.glow:SetKeyValue("renderalpha","0")
+	// end
+	// self.glow:SetKeyValue("renderalpha","0")
 
 	self:SetDTInt(5, int)
 end
+
 -- Called each frame.
 function ENT:Think()
 	self:NextThink(CurTime() + 0.1)
@@ -75,12 +76,12 @@ function ENT:OnTakeDamage(damageInfo)
 	if self:Health() <= 0 then
 		self:SetStatus(1)
 
-		sound.Play("ambient/energy/zap"..math.random(1,3)..".wav", self:GetPos(), 70, 100, 1)
-		sound.Play("physics/glass/glass_impact_bullet"..math.random(1,4)..".wav", self:GetPos(), 70, 100, 1)
+		sound.Play("ambient/energy/zap"..math.random(1, 3)..".wav", self:GetPos(), 70, 100, 1)
+		sound.Play("physics/glass/glass_impact_bullet"..math.random(1, 4)..".wav", self:GetPos(), 70, 100, 1)
 
 		local effect = EffectData()
 		effect:SetOrigin(self:GetPos() + self:GetForward() * 16 + self:GetUp() * 10)
-		util.Effect("GlassImpact",effect)
+		util.Effect("GlassImpact", effect)
 
 		local effect = EffectData()
 		effect:SetOrigin(self:GetPos() + self:GetForward() * 13 + self:GetUp() * 10)
@@ -88,10 +89,10 @@ function ENT:OnTakeDamage(damageInfo)
 		effect:SetRadius(10)
 		effect:SetMagnitude(0)
 		effect:SetScale(1)
-		util.Effect("cball_bounce",effect)
+		util.Effect("cball_bounce", effect)
 	end
 end
 
 function ENT:OnRemove()
-	//self.glow:Remove()
+	// self.glow:Remove()
 end

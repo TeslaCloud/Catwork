@@ -1,5 +1,5 @@
 --[[
-	© 2012 Iron-Wall.org do not share, re-distribute or modify
+	Â© 2012 Iron-Wall.org do not share, re-distribute or modify
 	without permission of its author (ext@iam1337.ru).
 --]]
 
@@ -19,20 +19,20 @@ function ENT:Initialize()
 
 	self.tube = ents.Create("prop_dynamic")
 	self.tube:DrawShadow(false)
-	self.tube:SetAngles(self:GetAngles() + Angle(90,0,0))
+	self.tube:SetAngles(self:GetAngles() + Angle(90, 0, 0))
 	self.tube:SetParent(self)
 	self.tube:SetModel("models/props_phx/construct/metal_tube.mdl")
 	self.tube:SetMaterial("models/props_pipes/GutterMetal01a")
-	self.tube:SetPos(self:GetPos() + Vector(-40,0,-20))
+	self.tube:SetPos(self:GetPos() + Vector(-40, 0, -20))
 	self.tube:Spawn()
 
 	self.tube2 = ents.Create("prop_dynamic")
 	self.tube2:DrawShadow(false)
-	self.tube2:SetAngles(self:GetAngles() + Angle(90,0,0))
+	self.tube2:SetAngles(self:GetAngles() + Angle(90, 0, 0))
 	self.tube2:SetParent(self)
 	self.tube2:SetModel("models/props_phx/construct/metal_tube.mdl")
 	self.tube2:SetMaterial("models/props_pipes/GutterMetal01a")
-	self.tube2:SetPos(self:GetPos() + Vector(-87,0,-20))
+	self.tube2:SetPos(self:GetPos() + Vector(-87, 0, -20))
 	self.tube2:Spawn()
 
 	self:DeleteOnRemove(self.tube)
@@ -49,7 +49,7 @@ end
 
 function ENT:SetSpawnType(entType)
 	if (entType == TYPE_WATERCAN or entType == TYPE_SUPPLIES) then
-		self:SetDTInt(1,entType)
+		self:SetDTInt(1, entType)
 	end
 end
 
@@ -100,7 +100,7 @@ function ENT:SpawnItem(activator)
 		local entity = ents.Create("cw_emptycrate")
 
 		self.timeStep = 60
-		entity:SetPos(self.tube:GetPos()-Vector(0,0,-20))
+		entity:SetPos(self.tube:GetPos() - Vector(0, 0, -20))
 		entity:Spawn()
 	end
 end

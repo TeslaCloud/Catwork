@@ -1,5 +1,5 @@
 --[[
-	© 2013 CloudSixteen.com do not share, re-distribute or modify
+	Â© 2013 CloudSixteen.com do not share, re-distribute or modify
 	without permission of its author (kurozael@gmail.com).
 --]]
 
@@ -19,10 +19,10 @@ function ENT:Initialize()
 	self:SetSolid(SOLID_VPHYSICS)
 
 	self.glow = ents.Create("env_sprite")
-	self.glow:SetKeyValue("model","glow04.vmt")
-	self.glow:SetKeyValue("rendercolor","0 255 0")
-	self.glow:SetKeyValue("rendermode","9")
-	self.glow:SetKeyValue("scale","0.25")
+	self.glow:SetKeyValue("model", "glow04.vmt")
+	self.glow:SetKeyValue("rendercolor", "0 255 0")
+	self.glow:SetKeyValue("rendermode", "9")
+	self.glow:SetKeyValue("scale", "0.25")
 	self.glow:SetPos(self:GetPos() + self:GetForward() * -3.5 + self:GetUp() * -9 + self:GetRight() * -6)
 	self.glow:SetParent(self)
 	self.glow:Spawn()
@@ -57,7 +57,7 @@ function ENT:Think()
 			end
 		end
 	else
-		self:Explode(); self:Remove()
+		self:Explode() self:Remove()
 	end
 
 	local smokeChargeTime = self:GetDTFloat(0)
@@ -124,7 +124,7 @@ function ENT:SetDoor(entity)
 
 	self.entity = entity
 	self.entity:DeleteOnRemove(self)
-	self.entities = {entity}
+	self.entities = { entity }
 
 	for k, v in ipairs(ents.FindByClass(entity:GetClass())) do
 		if (self.entity != v) then
@@ -207,7 +207,6 @@ function ENT:ActivateSmokeCharge(force)
 
 		timer.Create("smoke_charge_"..self:EntIndex(), 12, 1, function()
 			if (IsValid(self)) then
-
 				for k, v in ipairs(self.entities) do
 					if (IsValid(v) and string.lower(v:GetClass()) == "prop_door_rotating") then
 						Schema:BustDownDoor(nil, v, force)
@@ -238,7 +237,6 @@ function ENT:EmitRandomSound()
 	local randomSound = randomSounds[math.random(1, #randomSounds)]
 
 	if (self.entities) then
-
 		for k, v in ipairs(self.entities) do
 			if (IsValid(v)) then
 				v:EmitSound(randomSound)
@@ -264,10 +262,9 @@ end
 
 -- Called when the entity is removed.
 function ENT:OnRemove()
-	self:Explode(); self:Unlock()
+	self:Explode() self:Unlock()
 
 	if (self.entities) then
-
 		for k, v in ipairs(self.entities) do
 			if (IsValid(v)) then
 				v:Fire("Unlock", "", 0)
@@ -285,7 +282,7 @@ function ENT:ToggleWithChecks(activator)
 			if (curTime > self:GetDTFloat(0)) then
 				self.nextUse = curTime + 3
 
-				if (!Schema:PlayerHasCombineLockAccess(activator,self.access,self.rank) and activator:GetFaction() != FACTION_ADMIN) then
+				if (!Schema:PlayerHasCombineLockAccess(activator, self.access, self.rank) and activator:GetFaction() != FACTION_ADMIN) then
 					self:SetFlashDuration(3)
 				else
 					self:Toggle()

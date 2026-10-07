@@ -1,5 +1,5 @@
 --[[
-	© 2013 CloudSixteen.com do not share, re-distribute or modify
+	Â© 2013 CloudSixteen.com do not share, re-distribute or modify
 	without permission of its author (kurozael@gmail.com).
 --]]
 
@@ -12,7 +12,7 @@ ITEM.weight = 0.2
 ITEM.access = "w"
 ITEM.uniqueID = "vodka"
 ITEM.business = true
-ITEM.attributes = {Strength = 3}
+ITEM.attributes = { Strength = 3 }
 ITEM.thirst = -15
 ITEM.hunger = -20
 ITEM.fatigue = -30
@@ -25,4 +25,3 @@ function ITEM:OnUse(player, itemEntity)
 
 	player:GiveItem("empty_glass_bottle", true)
 end
-

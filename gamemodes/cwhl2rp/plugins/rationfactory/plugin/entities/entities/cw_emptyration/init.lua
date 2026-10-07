@@ -1,5 +1,5 @@
 --[[
-	© 2012 Iron-Wall.org do not share, re-distribute or modify
+	Â© 2012 Iron-Wall.org do not share, re-distribute or modify
 	without permission of its author (ext@iam1337.ru).
 --]]
 
@@ -18,9 +18,9 @@ function ENT:Initialize()
 	self:SetHealth(25)
 	self:SetSolid(SOLID_VPHYSICS)
 
-	self:SetDTBool(1,false)
-	self:SetDTBool(2,false)
-	self:SetDTBool(3,false)
+	self:SetDTBool(1, false)
+	self:SetDTBool(2, false)
+	self:SetDTBool(3, false)
 
 	self.breens_water = item.FindByID("breens_water")
 	self.citizen_supplements = item.FindByID("citizen_supplements")
@@ -53,7 +53,7 @@ function ENT:OnTakeDamage(damageInfo)
 	self:SetHealth(math.max(self:Health() - damageInfo:GetDamage(), 0))
 
 	if (self:Health() <= 0) then
-		self:Explode(); self:Remove()
+		self:Explode() self:Remove()
 	end
 end
 
@@ -62,7 +62,7 @@ function ENT:Touch(ent)
 		if (IsValid(ent) and ent:GetClass() == "cw_item") then
 			local index = ent:GetDTInt(0)
 
-			if (index != 0) then	
+			if (index != 0) then
 				local findedItem = item.FindByID(index)
 
 				if (findedItem == self.citizen_supplements or findedItem == self.breens_water) then
