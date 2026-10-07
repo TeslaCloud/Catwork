@@ -1,27 +1,27 @@
 --[[
-	Catwork © 2016-2017 TeslaCloud Studios
-	Please find license under LICENSE.
+  Catwork © 2016-2017 TeslaCloud Studios
+  Please find license under LICENSE.
 
-	Original code by Alex Grist, 'impulse and Conna Wiles
-	with contributions from Cloud Sixteen community.
+  Original code by Alex Grist, 'impulse and Conna Wiles
+  with contributions from Cloud Sixteen community.
 --]]
 
-ITEM.name = "Potato Dish"
-ITEM.PrintName = "#Item_PotatoDish_PrintName"
+ITEM.name = 'Potato Dish'
+ITEM.PrintName = '#Item_PotatoDish_PrintName'
 ITEM.cost = 5
-ITEM.model = "models/props_junk/garbage_takeoutcarton001a.mdl"
+ITEM.model = 'models/props_junk/garbage_takeoutcarton001a.mdl'
 ITEM.weight = 0.1
-ITEM.access = "v"
-ITEM.uniqueID = "potato_dish"
-ITEM.useText = "Eat"
-ITEM.category = "Consumables"
+ITEM.access = 'v'
+ITEM.uniqueID = 'potato_dish'
+ITEM.useText = 'Eat'
+ITEM.category = 'Consumables'
 ITEM.business = true
-ITEM.description = "#Item_PotatoDish_Description"
+ITEM.description = '#Item_PotatoDish_Description'
 ITEM.hunger = 65
 
 -- Called when a player uses the item.
 function ITEM:OnUse(player, itemEntity)
-	player:GiveItem("empty_takeout_carton", true)
+  player:GiveItem('empty_takeout_carton', true)
 end
 
 -- Called when a player drops the item.

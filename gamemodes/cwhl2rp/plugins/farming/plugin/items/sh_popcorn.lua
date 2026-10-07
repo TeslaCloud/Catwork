@@ -1,27 +1,27 @@
 --[[
-	Catwork © 2016-2017 TeslaCloud Studios
-	Please find license under LICENSE.
+  Catwork © 2016-2017 TeslaCloud Studios
+  Please find license under LICENSE.
 
-	Original code by Alex Grist, 'impulse and Conna Wiles
-	with contributions from Cloud Sixteen community.
+  Original code by Alex Grist, 'impulse and Conna Wiles
+  with contributions from Cloud Sixteen community.
 --]]
 
-ITEM.name = "Popcorn"
-ITEM.PrintName = "#Item_Popcorn_PrintName"
+ITEM.name = 'Popcorn'
+ITEM.PrintName = '#Item_Popcorn_PrintName'
 ITEM.cost = 15
-ITEM.model = "models/bioshockinfinite/topcorn_bag.mdl"
+ITEM.model = 'models/bioshockinfinite/topcorn_bag.mdl'
 ITEM.weight = 0.1
-ITEM.access = "v"
-ITEM.uniqueID = "popcorn"
-ITEM.useText = "Eat"
-ITEM.category = "Consumables"
+ITEM.access = 'v'
+ITEM.uniqueID = 'popcorn'
+ITEM.useText = 'Eat'
+ITEM.category = 'Consumables'
 ITEM.business = true
-ITEM.description = "#Item_Popcorn_Description"
+ITEM.description = '#Item_Popcorn_Description'
 ITEM.hunger = 25
 
 -- Called when a player uses the item.
 function ITEM:OnUse(player, itemEntity)
-	player:GiveItem("empty_carton", true)
+  player:GiveItem('empty_carton', true)
 end
 
 -- Called when a player drops the item.

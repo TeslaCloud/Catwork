@@ -1,19 +1,19 @@
 --[[
-	Catwork © 2016-2017 TeslaCloud Studios
-	Please find license under LICENSE.
+  Catwork © 2016-2017 TeslaCloud Studios
+  Please find license under LICENSE.
 
-	Original code by Alex Grist, 'impulse and Conna Wiles
-	with contributions from Cloud Sixteen community.
+  Original code by Alex Grist, 'impulse and Conna Wiles
+  with contributions from Cloud Sixteen community.
 --]]
 
-ITEM.baseItem = "book_base"
-ITEM.name = "Antlion Anatomy"
-ITEM.PrintName = "#Item_BookAa_PrintName"
+ITEM.baseItem = 'book_base'
+ITEM.name = 'Antlion Anatomy'
+ITEM.PrintName = '#Item_BookAa_PrintName'
 ITEM.cost = 6
-ITEM.model = "models/props_lab/bindergreenlabel.mdl"
-ITEM.uniqueID = "book_aa"
+ITEM.model = 'models/props_lab/bindergreenlabel.mdl'
+ITEM.uniqueID = 'book_aa'
 ITEM.business = true
-ITEM.description = "#Item_BookAa_Description"
+ITEM.description = '#Item_BookAa_Description'
 ITEM.bookInformation = [[
 <font color='red' size='4'>Written by Jamie Ruzicano.</font>
 

@@ -1,42 +1,42 @@
 --[[
-	Catwork © 2016-2017 TeslaCloud Studios
-	Please find license under LICENSE.
+  Catwork © 2016-2017 TeslaCloud Studios
+  Please find license under LICENSE.
 
-	Original code by Alex Grist, 'impulse and Conna Wiles
-	with contributions from Cloud Sixteen community.
+  Original code by Alex Grist, 'impulse and Conna Wiles
+  with contributions from Cloud Sixteen community.
 --]]
 
-local COMMAND = cw.command:New("DoorSetUnownable")
-COMMAND.tip = "#Command_Doorsetunownable_Description"
-COMMAND.text = "#Command_Doorsetunownable_Syntax"
+local COMMAND = cw.command:New('DoorSetUnownable')
+COMMAND.tip = '#Command_Doorsetunownable_Description'
+COMMAND.text = '#Command_Doorsetunownable_Syntax'
 COMMAND.flags = CMD_DEFAULT
-COMMAND.access = "a"
+COMMAND.access = 'a'
 COMMAND.arguments = 1
 COMMAND.optionalArguments = true
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
-	local door = player:GetEyeTraceNoCursor().Entity
+  local door = player:GetEyeTraceNoCursor().Entity
 
-	if (IsValid(door) and cw.entity:IsDoor(door)) then
-		local data = {
-			position = door:GetPos(),
-			entity = door,
-			text = arguments[2],
-			name = arguments[1]
-		}
+  if IsValid(door) and cw.entity:IsDoor(door) then
+    local data = {
+      position = door:GetPos(),
+      entity = door,
+      text = arguments[2],
+      name = arguments[1]
+    }
 
-		cw.entity:SetDoorName(data.entity, data.name)
-		cw.entity:SetDoorText(data.entity, data.text)
-		cw.entity:SetDoorUnownable(data.entity, true)
+    cw.entity:SetDoorName(data.entity, data.name)
+    cw.entity:SetDoorText(data.entity, data.text)
+    cw.entity:SetDoorUnownable(data.entity, true)
 
-		cwDoorCmds.doorData[data.entity] = data
-		cwDoorCmds:SaveDoorData()
+    cwDoorCmds.doorData[data.entity] = data
+    cwDoorCmds:SaveDoorData()
 
-		cw.player:Notify(player, L("DoorCmds_SetUnownable"))
-	else
-		cw.player:Notify(player, L("DoorCmds_NotValidDoor"))
-	end
+    cw.player:Notify(player, L('DoorCmds_SetUnownable'))
+  else
+    cw.player:Notify(player, L('DoorCmds_NotValidDoor'))
+  end
 end
 
 COMMAND:Register()

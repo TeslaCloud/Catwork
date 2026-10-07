@@ -1,48 +1,48 @@
 --[[
-	Catwork © 2016-2017 TeslaCloud Studios
-	Please find license under LICENSE.
+  Catwork © 2016-2017 TeslaCloud Studios
+  Please find license under LICENSE.
 
-	Original code by Alex Grist, 'impulse and Conna Wiles
-	with contributions from Cloud Sixteen community.
+  Original code by Alex Grist, 'impulse and Conna Wiles
+  with contributions from Cloud Sixteen community.
 --]]
 
-local COMMAND = cw.command:New("WoodAdd")
-COMMAND.tip = "#Command_Woodadd_Description"
+local COMMAND = cw.command:New('WoodAdd')
+COMMAND.tip = '#Command_Woodadd_Description'
 COMMAND.flags = CMD_DEFAULT
-COMMAND.access = "s"
+COMMAND.access = 's'
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
-	local class = "prop_physics"
-	local entity = ents.Create(class)
+  local class = 'prop_physics'
+  local entity = ents.Create(class)
 
-	entity:SetModel(table.Random(cwGather.woodNodes))
-	entity:SetMoveType(MOVETYPE_VPHYSICS)
-	entity:PhysicsInit(SOLID_VPHYSICS)
-	entity:SetSolid(SOLID_VPHYSICS)
+  entity:SetModel(table.Random(cwGather.woodNodes))
+  entity:SetMoveType(MOVETYPE_VPHYSICS)
+  entity:PhysicsInit(SOLID_VPHYSICS)
+  entity:SetSolid(SOLID_VPHYSICS)
 
-	local mins, maxs = entity:GetPhysicsObject():GetAABB()
+  local mins, maxs = entity:GetPhysicsObject():GetAABB()
 
-	local Position = player:GetEyeTraceNoCursor().HitPos + Vector(0, 0, maxs.z)
-	entity:SetPos(Position)
-	entity:Spawn()
+  local Position = player:GetEyeTraceNoCursor().HitPos + Vector(0, 0, maxs.z)
+  entity:SetPos(Position)
+  entity:Spawn()
 
-	if (IsValid(entity)) then
-		local Angles = Angle(0, player:EyeAngles().yaw + 180, 0)
-		entity:SetAngles(Angles)
+  if IsValid(entity) then
+    local Angles = Angle(0, player:EyeAngles().yaw + 180, 0)
+    entity:SetAngles(Angles)
 
-		table.insert(cwGather.nodePoints, {
-			position = Position - Vector(0, 0, maxs.z),
-			angles = Angles,
-			nextSpawn = 0,
-			class = class,
-			data = "wood"
-		})
+    table.insert(cwGather.nodePoints, {
+      position = Position - Vector(0, 0, maxs.z),
+      angles = Angles,
+      nextSpawn = 0,
+      class = class,
+      data = 'wood'
+    })
 
-		cw.player:Notify(player, L("Gathering_AddedWoodPoint"))
+    cw.player:Notify(player, L('Gathering_AddedWoodPoint'))
 
-		cwGather:SaveNodesSpawnPoints()
-	end
+    cwGather:SaveNodesSpawnPoints()
+  end
 end
 
 COMMAND:Register()

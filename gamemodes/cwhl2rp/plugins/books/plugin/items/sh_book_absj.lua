@@ -1,17 +1,17 @@
 --[[
-	Catwork © 2016-2017 TeslaCloud Studios
-	Please find license under LICENSE.
+  Catwork © 2016-2017 TeslaCloud Studios
+  Please find license under LICENSE.
 
-	Original code by Alex Grist, 'impulse and Conna Wiles
-	with contributions from Cloud Sixteen community.
+  Original code by Alex Grist, 'impulse and Conna Wiles
+  with contributions from Cloud Sixteen community.
 --]]
 
-ITEM.baseItem = "book_base"
-ITEM.name = "A Blood Stained Journal"
-ITEM.PrintName = "#Item_BookAbsj_PrintName"
-ITEM.model = "models/props_lab/bindergraylabel01b.mdl"
-ITEM.uniqueID = "book_absj"
-ITEM.description = "#Item_BookAbsj_Description"
+ITEM.baseItem = 'book_base'
+ITEM.name = 'A Blood Stained Journal'
+ITEM.PrintName = '#Item_BookAbsj_PrintName'
+ITEM.model = 'models/props_lab/bindergraylabel01b.mdl'
+ITEM.uniqueID = 'book_absj'
+ITEM.description = '#Item_BookAbsj_Description'
 ITEM.bookInformation = [[
 <font color='red' size='4'>Written by [A name covered in blood].</font>
 

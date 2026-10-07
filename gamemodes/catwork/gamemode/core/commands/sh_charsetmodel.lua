@@ -1,32 +1,32 @@
 --[[
-	Catwork © 2016-2017 TeslaCloud Studios
-	Please find license under LICENSE.
+  Catwork © 2016-2017 TeslaCloud Studios
+  Please find license under LICENSE.
 
-	Original code by Alex Grist, 'impulse and Conna Wiles
-	with contributions from Cloud Sixteen community.
+  Original code by Alex Grist, 'impulse and Conna Wiles
+  with contributions from Cloud Sixteen community.
 --]]
 
-local COMMAND = cw.command:New("CharSetModel")
-COMMAND.tip = "#Command_Charsetmodel_Description"
-COMMAND.text = "#Command_Charsetmodel_Syntax"
-COMMAND.access = "o"
+local COMMAND = cw.command:New('CharSetModel')
+COMMAND.tip = '#Command_Charsetmodel_Description'
+COMMAND.text = '#Command_Charsetmodel_Syntax'
+COMMAND.access = 'o'
 COMMAND.arguments = 2
-COMMAND.alias = { "SetModel" }
+COMMAND.alias = { 'SetModel' }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
-	local target = _player.Find(arguments[1])
+  local target = _player.Find(arguments[1])
 
-	if (target) then
-		local model = table.concat(arguments, " ", 2)
+  if target then
+    local model = table.concat(arguments, ' ', 2)
 
-		target:SetCharacterData("Model", model, true)
-		target:SetModel(model)
+    target:SetCharacterData('Model', model, true)
+    target:SetModel(model)
 
-		cw.player:NotifyAll(L("Command_Charsetmodel_Set", player:Name(), target:Name(), model))
-	else
-		cw.player:Notify(player, L(player, "NotValidCharacter", arguments[1]))
-	end
+    cw.player:NotifyAll(L('Command_Charsetmodel_Set', player:Name(), target:Name(), model))
+  else
+    cw.player:Notify(player, L(player, 'NotValidCharacter', arguments[1]))
+  end
 end
 
 COMMAND:Register()

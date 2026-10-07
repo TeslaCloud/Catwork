@@ -1,28 +1,28 @@
 --[[
-	Catwork © 2016-2017 TeslaCloud Studios
-	Please find license under LICENSE.
+  Catwork © 2016-2017 TeslaCloud Studios
+  Please find license under LICENSE.
 
-	Original code by Alex Grist, 'impulse and Conna Wiles
-	with contributions from Cloud Sixteen community.
+  Original code by Alex Grist, 'impulse and Conna Wiles
+  with contributions from Cloud Sixteen community.
 --]]
 
-local COMMAND = cw.command:New("DoorLock")
-COMMAND.tip = "#Command_Doorlock_Description"
+local COMMAND = cw.command:New('DoorLock')
+COMMAND.tip = '#Command_Doorlock_Description'
 COMMAND.flags = CMD_DEFAULT
-COMMAND.access = "o"
+COMMAND.access = 'o'
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
-	local door = player:GetEyeTraceNoCursor().Entity
+  local door = player:GetEyeTraceNoCursor().Entity
 
-	if (IsValid(door) and cw.entity:IsDoor(door)) then
-		door:EmitSound("doors/door_latch3.wav")
-		door:Fire("lock", "", 0)
+  if IsValid(door) and cw.entity:IsDoor(door) then
+    door:EmitSound('doors/door_latch3.wav')
+    door:Fire('lock', '', 0)
 
-		cw.player:Notify(player, L("DoorCmds_Locked"))
-	else
-		cw.player:Notify(player, L("DoorCmds_NotValidDoor"))
-	end
+    cw.player:Notify(player, L('DoorCmds_Locked'))
+  else
+    cw.player:Notify(player, L('DoorCmds_NotValidDoor'))
+  end
 end
 
 COMMAND:Register()

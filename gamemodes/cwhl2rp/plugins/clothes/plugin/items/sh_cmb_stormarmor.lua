@@ -1,20 +1,20 @@
 --[[
-	© 2016 TeslaCloud Studios.
-	Private code for Global Cooldown community.
-	Stealing Lua cache is not nice lol.
-	get a life kiddos.
+  © 2016 TeslaCloud Studios.
+  Private code for Global Cooldown community.
+  Stealing Lua cache is not nice lol.
+  get a life kiddos.
 --]]
 
-ITEM.baseItem = "bodygroup_base"
-ITEM.name = "stormarmor"
-ITEM.PrintName = "#ITEM_Cmb_Stormarmor_Name"
-ITEM.model = "models/half_life2/jnstudio/props/armor.mdl"
-ITEM.plural = "#ITEM_Cmb_Stormarmor_Plural"
+ITEM.baseItem = 'bodygroup_base'
+ITEM.name = 'stormarmor'
+ITEM.PrintName = '#ITEM_Cmb_Stormarmor_Name'
+ITEM.model = 'models/half_life2/jnstudio/props/armor.mdl'
+ITEM.plural = '#ITEM_Cmb_Stormarmor_Plural'
 ITEM.weight = 5
-ITEM.uniqueID = "cmb_stormarmor"
+ITEM.uniqueID = 'cmb_stormarmor'
 ITEM.business = false
 ITEM.bodyGroup = 3
 ITEM.bodyGroupVal = 2
-ITEM.description = ""
+ITEM.description = ''
 ITEM.isCombine = true
 ITEM.protection = 25

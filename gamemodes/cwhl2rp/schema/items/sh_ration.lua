@@ -1,38 +1,38 @@
 --[[
-	Catwork © 2016-2017 TeslaCloud Studios
-	Please find license under LICENSE.
+  Catwork © 2016-2017 TeslaCloud Studios
+  Please find license under LICENSE.
 
-	Original code by Alex Grist, 'impulse and Conna Wiles
-	with contributions from Cloud Sixteen community.
+  Original code by Alex Grist, 'impulse and Conna Wiles
+  with contributions from Cloud Sixteen community.
 --]]
 
-ITEM.name = "Ration Packet"
-ITEM.PrintName = "#ITEM_Normal_Tier_Ration_Packet"
-ITEM.uniqueID = "ration_normal"
-ITEM.model = "models/weapons/w_packatc.mdl"
+ITEM.name = 'Ration Packet'
+ITEM.PrintName = '#ITEM_Normal_Tier_Ration_Packet'
+ITEM.uniqueID = 'ration_normal'
+ITEM.model = 'models/weapons/w_packatc.mdl'
 ITEM.weight = 1.3
-ITEM.useText = "Open"
-ITEM.description = "#ITEM_Normal_Tier_Ration_Packet_Desc"
+ITEM.useText = 'Open'
+ITEM.description = '#ITEM_Normal_Tier_Ration_Packet_Desc'
 
 -- Called when a player attempts to pick up the item.
 function ITEM:CanPickup(player, quickUse, itemEntity)
-	if (quickUse) then
-		if (!player:CanHoldWeight(self.weight)) then
-			cw.player:Notify(player, L("NoSpace"))
+  if quickUse then
+    if !player:CanHoldWeight(self.weight) then
+      cw.player:Notify(player, L('NoSpace'))
 
-			return false
-		end
-	end
+      return false
+    end
+  end
 end
 
 -- Called when a player uses the item.
 function ITEM:OnUse(player, itemEntity)
-	cw.player:GiveCash(player, 30, L("Item_Ration_CashReason"))
+  cw.player:GiveCash(player, 30, L('Item_Ration_CashReason'))
 
-	player:GiveItem(item.CreateInstance("citizen_supplements"), true)
-	player:GiveItem(item.CreateInstance("breens_water"), true)
+  player:GiveItem(item.CreateInstance('citizen_supplements'), true)
+  player:GiveItem(item.CreateInstance('breens_water'), true)
 
-	hook.Run("PlayerUseRation", player)
+  hook.Run('PlayerUseRation', player)
 end
 
 -- Called when a player drops the item.

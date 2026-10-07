@@ -1,100 +1,100 @@
 --[[
-	Catwork © 2016-2017 TeslaCloud Studios
-	Please find license under LICENSE.
+  Catwork © 2016-2017 TeslaCloud Studios
+  Please find license under LICENSE.
 
-	Original code by Alex Grist, 'impulse and Conna Wiles
-	with contributions from Cloud Sixteen community.
+  Original code by Alex Grist, 'impulse and Conna Wiles
+  with contributions from Cloud Sixteen community.
 --]]
 
-local SYSTEM = cw.system:New("Manage Players")
-SYSTEM.toolTip = "#System_ManagePlayers_ToolTip"
+local SYSTEM = cw.system:New('Manage Players')
+SYSTEM.toolTip = '#System_ManagePlayers_ToolTip'
 SYSTEM.doesCreateForm = false
 
 -- Called to get whether the local player has access to the system.
 function SYSTEM:HasAccess()
-	return cw.player:IsAdmin(cw.client)
+  return cw.player:IsAdmin(cw.client)
 end
 
 -- Called when the system should be displayed.
 function SYSTEM:OnDisplay(systemPanel, systemForm)
-	local availableClasses = {}
-	local classes = {}
+  local availableClasses = {}
+  local classes = {}
 
-	for k, v in ipairs(_player.GetAll()) do
-		if (v:HasInitialized()) then
-			local class = hook.Run("GetPlayerScoreboardClass", v)
+  for k, v in ipairs(_player.GetAll()) do
+    if v:HasInitialized() then
+      local class = hook.Run('GetPlayerScoreboardClass', v)
 
-			if (class) then
-				if (!availableClasses[class]) then
-					availableClasses[class] = {}
-				end
+      if class then
+        if !availableClasses[class] then
+          availableClasses[class] = {}
+        end
 
-				availableClasses[class][#availableClasses[class] + 1] = v
-			end
-		end
-	end
+        availableClasses[class][#availableClasses[class] + 1] = v
+      end
+    end
+  end
 
-	for k, v in pairs(availableClasses) do
-		table.sort(v, function(a, b)
-			return hook.Run("ScoreboardSortClassPlayers", k, a, b)
-		end)
+  for k, v in pairs(availableClasses) do
+    table.sort(v, function(a, b)
+      return hook.Run('ScoreboardSortClassPlayers', k, a, b)
+    end)
 
-		if (#v > 0) then
-			classes[#classes + 1] = { name = k, players = v }
-		end
-	end
+    if #v > 0 then
+      classes[#classes + 1] = { name = k, players = v }
+    end
+  end
 
-	table.sort(classes, function(a, b)
-		return a.name < b.name
-	end)
+  table.sort(classes, function(a, b)
+    return a.name < b.name
+  end)
 
-	if (table.Count(classes) > 0) then
-		local label = vgui.Create("cwInfoText", systemPanel)
-			label:SetText("#System_ManagePlayers_Info")
-			label:SetInfoColor("blue")
-			label:DockMargin(0, 0, 0, 8)
-		systemPanel.panelList:AddItem(label)
+  if table.Count(classes) > 0 then
+    local label = vgui.Create('cwInfoText', systemPanel)
+      label:SetText('#System_ManagePlayers_Info')
+      label:SetInfoColor('blue')
+      label:DockMargin(0, 0, 0, 8)
+    systemPanel.panelList:AddItem(label)
 
-		for k, v in pairs(classes) do
-			local characterForm = vgui.Create("DForm", systemPanel)
-			local panelList = vgui.Create("DPanelList", systemPanel)
+    for k, v in pairs(classes) do
+      local characterForm = vgui.Create('DForm', systemPanel)
+      local panelList = vgui.Create('DPanelList', systemPanel)
 
-			for k2, v2 in pairs(v.players) do
-				local label = vgui.Create("cwInfoText", systemPanel)
-					label:SetText(v2:Name())
-					label:SetButton(true)
-					label:SetTooltip(
-						L("#Scoreboard_SteamNameIs").." "..v2:SteamName()..".\n"..L("#Scoreboard_SteamIDIs").." "..v2:SteamID().."."
-					)
-					label:SetInfoColor(_team.GetColor(v2:Team()))
-				panelList:AddItem(label)
+      for k2, v2 in pairs(v.players) do
+        local label = vgui.Create('cwInfoText', systemPanel)
+          label:SetText(v2:Name())
+          label:SetButton(true)
+          label:SetTooltip(
+            L('#Scoreboard_SteamNameIs')..' '..v2:SteamName()..'.\n'..L('#Scoreboard_SteamIDIs')..' '..v2:SteamID()..'.'
+          )
+          label:SetInfoColor(_team.GetColor(v2:Team()))
+        panelList:AddItem(label)
 
-				-- Called when the button is clicked.
-				function label.DoClick(button)
-					if (IsValid(v2)) then
-						local options = {}
-							hook.Run("GetPlayerScoreboardOptions", v2, options)
-						cw.core:AddMenuFromData(nil, options)
-					end
-				end
-			end
+        -- Called when the button is clicked.
+        function label.DoClick(button)
+          if IsValid(v2) then
+            local options = {}
+              hook.Run('GetPlayerScoreboardOptions', v2, options)
+            cw.core:AddMenuFromData(nil, options)
+          end
+        end
+      end
 
-			systemPanel.panelList:AddItem(characterForm)
+      systemPanel.panelList:AddItem(characterForm)
 
-			panelList:SetAutoSize(true)
-			panelList:SetPadding(4)
-			panelList:SetSpacing(4)
+      panelList:SetAutoSize(true)
+      panelList:SetPadding(4)
+      panelList:SetSpacing(4)
 
-			characterForm:SetName(v.name)
-			characterForm:AddItem(panelList)
-			characterForm:SetPadding(4)
-		end
-	else
-		local label = vgui.Create("cwInfoText", systemPanel)
-			label:SetText("#Scoreboard_NoPlayers")
-			label:SetInfoColor("orange")
-		systemPanel.panelList:AddItem(label)
-	end
+      characterForm:SetName(v.name)
+      characterForm:AddItem(panelList)
+      characterForm:SetPadding(4)
+    end
+  else
+    local label = vgui.Create('cwInfoText', systemPanel)
+      label:SetText('#Scoreboard_NoPlayers')
+      label:SetInfoColor('orange')
+    systemPanel.panelList:AddItem(label)
+  end
 end
 
 SYSTEM:Register()

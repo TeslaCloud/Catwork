@@ -1,19 +1,19 @@
 --[[
-	Catwork © 2016-2017 TeslaCloud Studios
-	Please find license under LICENSE.
+  Catwork © 2016-2017 TeslaCloud Studios
+  Please find license under LICENSE.
 
-	Original code by Alex Grist, 'impulse and Conna Wiles
-	with contributions from Cloud Sixteen community.
+  Original code by Alex Grist, 'impulse and Conna Wiles
+  with contributions from Cloud Sixteen community.
 --]]
 
-ITEM.baseItem = "book_base"
+ITEM.baseItem = 'book_base'
 ITEM.cost = 6
-ITEM.name = "Zen of the Union"
-ITEM.PrintName = "#Item_BookZotu_PrintName"
-ITEM.model = "models/props_lab/binderbluelabel.mdl"
+ITEM.name = 'Zen of the Union'
+ITEM.PrintName = '#Item_BookZotu_PrintName'
+ITEM.model = 'models/props_lab/binderbluelabel.mdl'
 ITEM.business = true
-ITEM.uniqueID = "book_zotu"
-ITEM.description = "#Item_BookZotu_Description"
+ITEM.uniqueID = 'book_zotu'
+ITEM.description = '#Item_BookZotu_Description'
 ITEM.bookInformation = [[
 <font color='red' size='4'>Written by Martin Connoly.</font>
 

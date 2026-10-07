@@ -1,86 +1,86 @@
 --[[
-	Catwork © 2016-2017 TeslaCloud Studios
-	Please find license under LICENSE.
+  Catwork © 2016-2017 TeslaCloud Studios
+  Please find license under LICENSE.
 
-	Original code by Alex Grist, 'impulse and Conna Wiles
-	with contributions from Cloud Sixteen community.
+  Original code by Alex Grist, 'impulse and Conna Wiles
+  with contributions from Cloud Sixteen community.
 --]]
 
-local lang = cw.lang:GetTable("ru")
+local lang = cw.lang:GetTable('ru')
 
-lang["#Combine_PDA"] = "КПК Альянса"
-lang["#Combine_PDA_Desc"] = "Доступ к различным системам Альянса, а также к базе данных граждан."
-lang["#Err_CMB_InsufficientPermissions"] = "ОШИБКА ДОСТУПА: Невозможно получить доступ к личному делу юнита."
-lang["#Status_Title"] = "Смена Статуса Гражданина"
-lang["#Status_Desc"] = "Выберите статус гражданина."
-lang["#Status_Citizen"] = "Гражданин"
-lang["#Status_Unverified"] = "Не Подтвержден"
-lang["#Status_AntiCitizen"] = "Нарушитель"
-lang["#Status_NoData"] = "Нет Данных"
-lang["#OK"] = "ОК"
-lang["#Cancel"] = "Отмена"
-lang["#PDA_ChangeCitizenStatus"] = "Сменить Статус"
-lang["#PDA_ChangeResidence"] = "Сменить Прописку"
-lang["#PDA_ChangeJob"] = "Сменить Рабочую Фракцию"
-lang["#PDA_CWUPoints"] = "Выдать Очки Труда"
-lang["#PDA_LP"] = "Выдать Очки Лояльности"
-lang["#PDA_CP"] = "Выдать Очки Нарушений"
-lang["#PDA_Card"] = "Посмотреть Карточку"
-lang["#PDA_Jail"] = "Запрос на Изоляцию"
-lang["#PDA_Unjail"] = "Отмена Изоляции"
-lang["#LP"] = "ОЛ"
-lang["#CP"] = "ОН"
-lang["#WP"] = "ОТ"
-lang["#Job_Title"] = "Сменить Рабочую Фракцию"
-lang["#Job_Desc"] = "Какую рабочую фракцию вы желаете присвоить данному гражданину?"
-lang["#Residence_Title"] = "Управление Прописками"
-lang["#Residence_Desc"] = "По какому адресу (или номеру квартиры) вы желаете прописать данного гражданина?"
-lang["#Residence"] = "Прописка"
+lang['#Combine_PDA'] = 'КПК Альянса'
+lang['#Combine_PDA_Desc'] = 'Доступ к различным системам Альянса, а также к базе данных граждан.'
+lang['#Err_CMB_InsufficientPermissions'] = 'ОШИБКА ДОСТУПА: Невозможно получить доступ к личному делу юнита.'
+lang['#Status_Title'] = 'Смена Статуса Гражданина'
+lang['#Status_Desc'] = 'Выберите статус гражданина.'
+lang['#Status_Citizen'] = 'Гражданин'
+lang['#Status_Unverified'] = 'Не Подтвержден'
+lang['#Status_AntiCitizen'] = 'Нарушитель'
+lang['#Status_NoData'] = 'Нет Данных'
+lang['#OK'] = 'ОК'
+lang['#Cancel'] = 'Отмена'
+lang['#PDA_ChangeCitizenStatus'] = 'Сменить Статус'
+lang['#PDA_ChangeResidence'] = 'Сменить Прописку'
+lang['#PDA_ChangeJob'] = 'Сменить Рабочую Фракцию'
+lang['#PDA_CWUPoints'] = 'Выдать Очки Труда'
+lang['#PDA_LP'] = 'Выдать Очки Лояльности'
+lang['#PDA_CP'] = 'Выдать Очки Нарушений'
+lang['#PDA_Card'] = 'Посмотреть Карточку'
+lang['#PDA_Jail'] = 'Запрос на Изоляцию'
+lang['#PDA_Unjail'] = 'Отмена Изоляции'
+lang['#LP'] = 'ОЛ'
+lang['#CP'] = 'ОН'
+lang['#WP'] = 'ОТ'
+lang['#Job_Title'] = 'Сменить Рабочую Фракцию'
+lang['#Job_Desc'] = 'Какую рабочую фракцию вы желаете присвоить данному гражданину?'
+lang['#Residence_Title'] = 'Управление Прописками'
+lang['#Residence_Desc'] = 'По какому адресу (или номеру квартиры) вы желаете прописать данного гражданина?'
+lang['#Residence'] = 'Прописка'
 
-lang["#PDA_SubLP"] = "Забрать Очки Лояльности"
-lang["#PDA_SubCP"] = "Забрать Очки Нарушений"
-lang["#PDA_IssuePointsDesc"] = "Сколько очков вы желаете выдать?"
-lang["#PDA_RemovePointsDesc"] = "Сколько очков вы желаете забрать?"
-lang["#PDA_JailConfirm"] = "Вы уверены, что хотите изолировать данного гражданина?"
-lang["#PDA_UnjailConfirm"] = "Вы уверены, что хотите отменить изоляцию данного гражданина?"
-lang["#PDA_Error"] = "ОШИБКА!"
-lang["#PDA_NoLogs"] = "Нет записей для отображения!"
+lang['#PDA_SubLP'] = 'Забрать Очки Лояльности'
+lang['#PDA_SubCP'] = 'Забрать Очки Нарушений'
+lang['#PDA_IssuePointsDesc'] = 'Сколько очков вы желаете выдать?'
+lang['#PDA_RemovePointsDesc'] = 'Сколько очков вы желаете забрать?'
+lang['#PDA_JailConfirm'] = 'Вы уверены, что хотите изолировать данного гражданина?'
+lang['#PDA_UnjailConfirm'] = 'Вы уверены, что хотите отменить изоляцию данного гражданина?'
+lang['#PDA_Error'] = 'ОШИБКА!'
+lang['#PDA_NoLogs'] = 'Нет записей для отображения!'
 
-lang["#PDA_Log_UnknownEntry"] = "НЕИЗВЕСТНАЯ ЗАПИСЬ"
-lang["#PDA_Log_Overwatch"] = "Надзор"
-lang["#PDA_Log_CitizenStatus"] = "Статус гражданина изменен:"
-lang["#PDA_Log_Residence"] = "Прописка изменена:"
-lang["#PDA_Log_Job"] = "Рабочая фракция изменена:"
-lang["#PDA_Log_LP"] = "Очки лояльности изменены:"
-lang["#PDA_Log_CP"] = "Очки нарушений изменены:"
-lang["#PDA_Log_WP"] = "Очки труда изменены:"
-lang["#PDA_Log_Jail"] = "Выдан запрос на изоляцию!"
-lang["#PDA_Log_Unjail"] = "Изоляция отменена!"
+lang['#PDA_Log_UnknownEntry'] = 'НЕИЗВЕСТНАЯ ЗАПИСЬ'
+lang['#PDA_Log_Overwatch'] = 'Надзор'
+lang['#PDA_Log_CitizenStatus'] = 'Статус гражданина изменен:'
+lang['#PDA_Log_Residence'] = 'Прописка изменена:'
+lang['#PDA_Log_Job'] = 'Рабочая фракция изменена:'
+lang['#PDA_Log_LP'] = 'Очки лояльности изменены:'
+lang['#PDA_Log_CP'] = 'Очки нарушений изменены:'
+lang['#PDA_Log_WP'] = 'Очки труда изменены:'
+lang['#PDA_Log_Jail'] = 'Выдан запрос на изоляцию!'
+lang['#PDA_Log_Unjail'] = 'Изоляция отменена!'
 
-lang["#PDA_NotCWUOrCombine"] = "Вы не являетесь работником ГСР или сотрудником Альянса!"
-lang["#PDA_NotCombine"] = "Вы не являетесь сотрудником Альянса!"
-lang["#PDA_CitizenStatusSet"] = "Вы изменили статус гражданина #1 на"
-lang["#PDA_ResidenceSet"] = "Прописка гражданина #1 изменена на"
-lang["#PDA_JobSet"] = "Рабочая фракция гражданина #1 изменена на"
-lang["#PDA_LPIssued"] = "Гражданину #2 выдано очков лояльности: #1."
-lang["#PDA_LPRemoved"] = "У гражданина #2 забрано очков лояльности: #1."
-lang["#PDA_CPIssued"] = "Гражданину #2 выдано очков нарушений: #1."
-lang["#PDA_CPRemoved"] = "У гражданина #2 забрано очков нарушений: #1."
-lang["#PDA_WPIssued"] = "Гражданину #2 выдано очков труда: #1."
-lang["#PDA_JailDone"] = "Запрос на изоляцию гражданина #1 успешно выполнен!"
-lang["#PDA_UnjailDone"] = "Изоляция гражданина #1 успешно отменена!"
-lang["#PDA_Jailed"] = "Вы помещены в изоляцию!"
-lang["#PDA_Unjailed"] = "Ваша изоляция отменена!"
+lang['#PDA_NotCWUOrCombine'] = 'Вы не являетесь работником ГСР или сотрудником Альянса!'
+lang['#PDA_NotCombine'] = 'Вы не являетесь сотрудником Альянса!'
+lang['#PDA_CitizenStatusSet'] = 'Вы изменили статус гражданина #1 на'
+lang['#PDA_ResidenceSet'] = 'Прописка гражданина #1 изменена на'
+lang['#PDA_JobSet'] = 'Рабочая фракция гражданина #1 изменена на'
+lang['#PDA_LPIssued'] = 'Гражданину #2 выдано очков лояльности: #1.'
+lang['#PDA_LPRemoved'] = 'У гражданина #2 забрано очков лояльности: #1.'
+lang['#PDA_CPIssued'] = 'Гражданину #2 выдано очков нарушений: #1.'
+lang['#PDA_CPRemoved'] = 'У гражданина #2 забрано очков нарушений: #1.'
+lang['#PDA_WPIssued'] = 'Гражданину #2 выдано очков труда: #1.'
+lang['#PDA_JailDone'] = 'Запрос на изоляцию гражданина #1 успешно выполнен!'
+lang['#PDA_UnjailDone'] = 'Изоляция гражданина #1 успешно отменена!'
+lang['#PDA_Jailed'] = 'Вы помещены в изоляцию!'
+lang['#PDA_Unjailed'] = 'Ваша изоляция отменена!'
 
-lang["#CombineMonitor_Title"] = "Информационный стенд"
-lang["#CombineMonitor_Waiting"] = "Ожидается ввод данных..."
-lang["#CombineMonitor_Name"] = "Имя"
-lang["#CombineMonitor_ID"] = "Идентификатор"
-lang["#CombineMonitor_Loyalty"] = "Лояльность"
-lang["#CombineMonitor_Violations"] = "Нарушения"
-lang["#CombineMonitor_Work"] = "Труд: #1 (#2 ур.)"
-lang["#CombineMonitor_Status"] = "Статус"
-lang["#CombineMonitor_Residence"] = "Прописка"
-lang["#CombineMonitor_Job"] = "Гражд. фракция"
-lang["#CombineMonitor_VerifyStatus"] = "Подтвердите свой статус"
-lang["#CombineMonitor_AtCWU"] = "В отделе ГСР"
+lang['#CombineMonitor_Title'] = 'Информационный стенд'
+lang['#CombineMonitor_Waiting'] = 'Ожидается ввод данных...'
+lang['#CombineMonitor_Name'] = 'Имя'
+lang['#CombineMonitor_ID'] = 'Идентификатор'
+lang['#CombineMonitor_Loyalty'] = 'Лояльность'
+lang['#CombineMonitor_Violations'] = 'Нарушения'
+lang['#CombineMonitor_Work'] = 'Труд: #1 (#2 ур.)'
+lang['#CombineMonitor_Status'] = 'Статус'
+lang['#CombineMonitor_Residence'] = 'Прописка'
+lang['#CombineMonitor_Job'] = 'Гражд. фракция'
+lang['#CombineMonitor_VerifyStatus'] = 'Подтвердите свой статус'
+lang['#CombineMonitor_AtCWU'] = 'В отделе ГСР'

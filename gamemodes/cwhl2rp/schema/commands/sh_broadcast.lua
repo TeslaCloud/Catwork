@@ -1,32 +1,32 @@
 --[[
-	Catwork © 2016-2017 TeslaCloud Studios
-	Please find license under LICENSE.
+  Catwork © 2016-2017 TeslaCloud Studios
+  Please find license under LICENSE.
 
-	Original code by Alex Grist, 'impulse and Conna Wiles
-	with contributions from Cloud Sixteen community.
+  Original code by Alex Grist, 'impulse and Conna Wiles
+  with contributions from Cloud Sixteen community.
 --]]
 
-local COMMAND = cw.command:New("Broadcast")
-COMMAND.tip = "#Command_Broadcast_Description"
-COMMAND.text = "#Command_Broadcast_Syntax"
+local COMMAND = cw.command:New('Broadcast')
+COMMAND.tip = '#Command_Broadcast_Description'
+COMMAND.text = '#Command_Broadcast_Syntax'
 COMMAND.flags = bit.bor(CMD_DEFAULT, CMD_FALLENOVER)
 COMMAND.arguments = 1
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
-	if (player:GetFaction() == FACTION_ADMIN) then
-		local text = table.concat(arguments, " ")
+  if player:GetFaction() == FACTION_ADMIN then
+    local text = table.concat(arguments, ' ')
 
-		if (text == "") then
-			cw.player:Notify(player, L("NotEnoughText"))
+    if text == '' then
+      cw.player:Notify(player, L('NotEnoughText'))
 
-			return
-		end
+      return
+    end
 
-		Schema:SayBroadcast(player, text)
-	else
-		cw.player:Notify(player, L("Err_NotAdministrator"))
-	end
+    Schema:SayBroadcast(player, text)
+  else
+    cw.player:Notify(player, L('Err_NotAdministrator'))
+  end
 end
 
 COMMAND:Register()

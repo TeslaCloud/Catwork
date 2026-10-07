@@ -1,78 +1,78 @@
 --[[
-	Author: Arbiter
-	Clockwork Version: 0.88a.
+  Author: Arbiter
+  Clockwork Version: 0.88a.
 
-	Credits:	A small part of this code comes from kurozael's DoorCommands Plugin.
-				Heavily based off the works of Cervidae Kosmonaut in Faction Doors.
+  Credits:	A small part of this code comes from kurozael's DoorCommands Plugin.
+        Heavily based off the works of Cervidae Kosmonaut in Faction Doors.
 --]]
 
 -- A function to load the door data.
 function PLUGIN:LoadDoorData()
-	self.personalDoors = {}
+  self.personalDoors = {}
 
-	local positions = {}
-	local personalDoors = cw.core:RestoreSchemaData("plugins/personaldoors/"..game.GetMap())
+  local positions = {}
+  local personalDoors = cw.core:RestoreSchemaData('plugins/personaldoors/'..game.GetMap())
 
-	for k, v in pairs(ents.GetAll()) do
-		if (IsValid(v)) then
-			local position = v:GetPos()
+  for k, v in pairs(ents.GetAll()) do
+    if IsValid(v) then
+      local position = v:GetPos()
 
-			if (position) then
-				positions[tostring(position)] = v
-			end
-		end
-	end
+      if position then
+        positions[tostring(position)] = v
+      end
+    end
+  end
 
-	for k, v in pairs(personalDoors) do
-		local entity = positions[tostring(v.position)]
+  for k, v in pairs(personalDoors) do
+    local entity = positions[tostring(v.position)]
 
-		if (IsValid(entity) and !self.personalDoors[entity]) then
-			if (cw.entity:IsDoor(entity)) then
-				local owners = {}
+    if IsValid(entity) and !self.personalDoors[entity] then
+      if cw.entity:IsDoor(entity) then
+        local owners = {}
 
-				for k2, v2 in pairs(v.owners)do
-					local owningPerson = v2
+        for k2, v2 in pairs(v.owners)do
+          local owningPerson = v2
 
-					table.insert(owners, owningPerson)
+          table.insert(owners, owningPerson)
 
-					if(!entity._OwningPersons)then
-						entity._OwningPersons = {}
-					end
+          if !entity._OwningPersons then
+            entity._OwningPersons = {}
+          end
 
-					entity._OwningPersons[string.lower(tostring(owningPerson))] = true
-				end
+          entity._OwningPersons[string.lower(tostring(owningPerson))] = true
+        end
 
-				v.owners = owners
+        v.owners = owners
 
-				self.personalDoors[entity] = v
+        self.personalDoors[entity] = v
 
-				if(v.startLocked)then
-					entity:Fire("Lock", "", 0)
-				else
-					entity:Fire("Unlock", "", 0)
-				end
-			end
-		end
-	end
+        if v.startLocked then
+          entity:Fire('Lock', '', 0)
+        else
+          entity:Fire('Unlock', '', 0)
+        end
+      end
+    end
+  end
 end
 
 -- A function to save the door data.
 function PLUGIN:SaveDoorData()
-	local personalDoors = {}
+  local personalDoors = {}
 
-	for k, v in pairs(self.personalDoors) do
-		local data = {
-			owners = {},
-			position = v.position,
-			startLocked = v.startLocked
-		}
+  for k, v in pairs(self.personalDoors) do
+    local data = {
+      owners = {},
+      position = v.position,
+      startLocked = v.startLocked
+    }
 
-		for k2, v2 in pairs(v.owners)do
-			table.insert(data.owners, v2)
-		end
+    for k2, v2 in pairs(v.owners)do
+      table.insert(data.owners, v2)
+    end
 
-		personalDoors[#personalDoors + 1] = data
-	end
+    personalDoors[#personalDoors + 1] = data
+  end
 
-	cw.core:SaveSchemaData("plugins/personaldoors/"..game.GetMap(), personalDoors)
+  cw.core:SaveSchemaData('plugins/personaldoors/'..game.GetMap(), personalDoors)
 end

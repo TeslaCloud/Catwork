@@ -1,35 +1,35 @@
 --[[
-	Catwork © 2016-2017 TeslaCloud Studios
-	Please find license under LICENSE.
+  Catwork © 2016-2017 TeslaCloud Studios
+  Please find license under LICENSE.
 
-	Original code by Alex Grist, 'impulse and Conna Wiles
-	with contributions from Cloud Sixteen community.
+  Original code by Alex Grist, 'impulse and Conna Wiles
+  with contributions from Cloud Sixteen community.
 --]]
 
-if (SERVER) then
-	AddCSLuaFile("shared.lua")
+if SERVER then
+  AddCSLuaFile('shared.lua')
 end
 
-if (CLIENT) then
-	SWEP.Slot = 0
-	SWEP.SlotPos = 7
-	SWEP.DrawAmmo = false
-	SWEP.PrintName = "Швабра"
-	SWEP.DrawCrosshair = true
+if CLIENT then
+  SWEP.Slot = 0
+  SWEP.SlotPos = 7
+  SWEP.DrawAmmo = false
+  SWEP.PrintName = 'Швабра'
+  SWEP.DrawCrosshair = true
 end
 
-SWEP.Author = "NA"
-SWEP.Instructions = "ЛКМ - Подметать"
-SWEP.Purpose = "Подметает мусор."
-SWEP.Contact = ""
+SWEP.Author = 'NA'
+SWEP.Instructions = 'ЛКМ - Подметать'
+SWEP.Purpose = 'Подметает мусор.'
+SWEP.Contact = ''
 
 SWEP.AdminSpawnable = false
 SWEP.Spawnable = true
 
 -- SWEP.ViewModel = "models/weapons/v_hands.mdl" -- causes console error spam
-SWEP.WorldModel = ""
+SWEP.WorldModel = ''
 
-SWEP.HoldType = "melee"
+SWEP.HoldType = 'melee'
 
 SWEP.Primary.Delay = 0.2 -- In seconds
 SWEP.Primary.Recoil			= 0 -- Gun Kick
@@ -39,126 +39,126 @@ SWEP.Primary.Cone = 0 -- Bullet Spread
 SWEP.Primary.ClipSize = -1	-- Use "-1 if there are no clips"
 SWEP.Primary.DefaultClip = -1 -- Number of shots in next clip
 SWEP.Primary.Automatic = false -- Pistol fire (false) or SMG fire (true)
-SWEP.Primary.Ammo         	= "none" -- Ammo Type
+SWEP.Primary.Ammo         	= 'none' -- Ammo Type
 
 SWEP.Secondary.NeverRaised = true
 SWEP.Secondary.DefaultClip = 0
 SWEP.Secondary.Automatic = false
 SWEP.Secondary.ClipSize = -1
 SWEP.Secondary.Delay = 1
-SWEP.Secondary.Ammo = ""
+SWEP.Secondary.Ammo = ''
 
 function SWEP:Initialize()
-	self:SetWeaponHoldType(self.HoldType)
+  self:SetWeaponHoldType(self.HoldType)
 end
 
 function SWEP:Deploy()
-	if (SERVER) then
-		self.Owner:DrawViewModel(false) -- Workaround for viewmodel error spam
-	end
+  if SERVER then
+    self.Owner:DrawViewModel(false) -- Workaround for viewmodel error spam
+  end
 
-	self.Owner.broomProp = ents.Create("prop_dynamic")
-	self.Owner.broomProp:SetModel("models/props_c17/pushbroom.mdl")
-	self.Owner.broomProp:DrawShadow(true)
-	self.Owner.broomProp:SetMoveType(MOVETYPE_NONE)
-	self.Owner.broomProp:SetParent(self.Owner)
-	self.Owner.broomProp:SetSolid(SOLID_NONE)
-	self.Owner.broomProp:Spawn()
-	self.Owner.broomProp:Fire("setparentattachment", "cleaver_attachment", 0.01)
+  self.Owner.broomProp = ents.Create('prop_dynamic')
+  self.Owner.broomProp:SetModel('models/props_c17/pushbroom.mdl')
+  self.Owner.broomProp:DrawShadow(true)
+  self.Owner.broomProp:SetMoveType(MOVETYPE_NONE)
+  self.Owner.broomProp:SetParent(self.Owner)
+  self.Owner.broomProp:SetSolid(SOLID_NONE)
+  self.Owner.broomProp:Spawn()
+  self.Owner.broomProp:Fire('setparentattachment', 'cleaver_attachment', 0.01)
 end
 
 function SWEP:Holster()
-	if (SERVER) then
-		self.Owner:DrawViewModel(true) -- Workaround for viewmodel error spam
-	end
+  if SERVER then
+    self.Owner:DrawViewModel(true) -- Workaround for viewmodel error spam
+  end
 
-	if (self.Owner.broomProp) then
-		if (self.Owner.broomProp:IsValid()) then
-			self.Owner.broomProp:Remove()
-			self.Owner:SetForcedAnimation(false)
-		end
-	end
+  if self.Owner.broomProp then
+    if self.Owner.broomProp:IsValid() then
+      self.Owner.broomProp:Remove()
+      self.Owner:SetForcedAnimation(false)
+    end
+  end
 
-	return true
+  return true
 end
 
 function SWEP:Think()
-	if (SERVER) then
-		local currentAnim = self.Owner:GetForcedAnimation() -- Get the player's current animation for checks
+  if SERVER then
+    local currentAnim = self.Owner:GetForcedAnimation() -- Get the player's current animation for checks
 
-		if (cw.player:GetWeaponRaised(self.Owner)) then
-			if (self.Owner:GetVelocity() == Vector(0, 0, 0) or !self.Owner:OnGround()) then
-				local curTime = CurTime()
+    if cw.player:GetWeaponRaised(self.Owner) then
+      if self.Owner:GetVelocity() == Vector(0, 0, 0) or !self.Owner:OnGround() then
+        local curTime = CurTime()
 
-				if (self.isSweep) then
-					if (!self.nextSweep) then
-						self.nextSweep = curTime + 2
-					end
+        if self.isSweep then
+          if !self.nextSweep then
+            self.nextSweep = curTime + 2
+          end
 
-					-- If the player's animation is not the one we're trying to set
-					if (currentAnim and currentAnim.animation != "sweep") then
-						self.Owner:SetForcedAnimation(false) -- then remove their forced animation so it can be set to the new one.
-					end
+          -- If the player's animation is not the one we're trying to set
+          if currentAnim and currentAnim.animation != 'sweep' then
+            self.Owner:SetForcedAnimation(false) -- then remove their forced animation so it can be set to the new one.
+          end
 
-					self.Owner:SetForcedAnimation("sweep", 0, nil)
+          self.Owner:SetForcedAnimation('sweep', 0, nil)
 
-					if (self.nextSweep) then
-						if ((curTime >= self.nextSweep)) then
-							self.isSweep = nil
-							self.nextSweep = nil
-						end
-					end
-				else
-					-- If the player's animation is not the one we're trying to set
-					if (currentAnim and currentAnim.animation != "sweep_idle") then
-						self.Owner:SetForcedAnimation(false) -- then remove their forced animation so it can be set to the new one.
-					end
+          if self.nextSweep then
+            if curTime >= self.nextSweep then
+              self.isSweep = nil
+              self.nextSweep = nil
+            end
+          end
+        else
+          -- If the player's animation is not the one we're trying to set
+          if currentAnim and currentAnim.animation != 'sweep_idle' then
+            self.Owner:SetForcedAnimation(false) -- then remove their forced animation so it can be set to the new one.
+          end
 
-					self.Owner:SetForcedAnimation("sweep_idle", 0, nil)
-				end
-			else
-				-- If the player's animation is not the one we're trying to set
-				if (currentAnim and currentAnim.animation != "Walk_all_HoldBroom") then
-					self.Owner:SetForcedAnimation(false) -- then remove their forced animation so it can be set to the new one.
-				end
+          self.Owner:SetForcedAnimation('sweep_idle', 0, nil)
+        end
+      else
+        -- If the player's animation is not the one we're trying to set
+        if currentAnim and currentAnim.animation != 'Walk_all_HoldBroom' then
+          self.Owner:SetForcedAnimation(false) -- then remove their forced animation so it can be set to the new one.
+        end
 
-				self.Owner:SetForcedAnimation("Walk_all_HoldBroom", 0, nil)
-			end
-		end
-	end
+        self.Owner:SetForcedAnimation('Walk_all_HoldBroom', 0, nil)
+      end
+    end
+  end
 end
 
 function SWEP:OnRemove()
-	if (SERVER) then
-		self.Owner:DrawViewModel(true) -- Workaround for viewmodel error spam
-	end
+  if SERVER then
+    self.Owner:DrawViewModel(true) -- Workaround for viewmodel error spam
+  end
 
-	if (self.Owner.broomProp) then
-		if (self.Owner.broomProp:IsValid()) then
-			self.Owner.broomProp:Remove()
-			self.Owner:SetForcedAnimation(false)
-		end
-	end
+  if self.Owner.broomProp then
+    if self.Owner.broomProp:IsValid() then
+      self.Owner.broomProp:Remove()
+      self.Owner:SetForcedAnimation(false)
+    end
+  end
 
-	return true
+  return true
 end
 
 function SWEP:OnLowered()
-	if (SERVER) then
-		self.Owner:SetForcedAnimation(false)
-	end
+  if SERVER then
+    self.Owner:SetForcedAnimation(false)
+  end
 end
 
 function SWEP:PrimaryAttack()
-	if (!self.nextSweep) then
-		if (!self.isSweep) then
-			self.isSweep = true
-		end
-	end
+  if !self.nextSweep then
+    if !self.isSweep then
+      self.isSweep = true
+    end
+  end
 end
 
 local counter = 0
 
 function SWEP:SecondaryAttack()
-	return false
+  return false
 end

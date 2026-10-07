@@ -1,22 +1,22 @@
 local BLUEPRINT = cw.blueprints:New()
 
-BLUEPRINT.name = "#Blueprint_BlueprintGasmask_Name"
-BLUEPRINT.uniqueID = "blueprint_gasmask"
-BLUEPRINT.model = "models/tnb/items/gasmask.mdl"
-BLUEPRINT.category = "#Craft_Category_Clothing"
-BLUEPRINT.description = "#Blueprint_BlueprintGasmask_Description"
+BLUEPRINT.name = '#Blueprint_BlueprintGasmask_Name'
+BLUEPRINT.uniqueID = 'blueprint_gasmask'
+BLUEPRINT.model = 'models/tnb/items/gasmask.mdl'
+BLUEPRINT.category = '#Craft_Category_Clothing'
+BLUEPRINT.description = '#Blueprint_BlueprintGasmask_Description'
 BLUEPRINT.required = {}
 BLUEPRINT.updatt = {
-	{ "rem", 35 }
+  { 'rem', 35 }
 }
 BLUEPRINT.reqatt = {
-	{ "rem", 20 }
+  { 'rem', 20 }
 }
 BLUEPRINT.recipe = {
-	{ "plastic", 2 },
-	{ "charcoal", 2 }
+  { 'plastic', 2 },
+  { 'charcoal', 2 }
 }
 BLUEPRINT.finish = {
-	{ "gasmask", 1 }
+  { 'gasmask', 1 }
 }
 BLUEPRINT:Register()

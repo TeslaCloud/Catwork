@@ -1,33 +1,33 @@
 --[[
-	Catwork © 2016-2017 TeslaCloud Studios
-	Please find license under LICENSE.
+  Catwork © 2016-2017 TeslaCloud Studios
+  Please find license under LICENSE.
 
-	Original code by Alex Grist, 'impulse and Conna Wiles
-	with contributions from Cloud Sixteen community.
+  Original code by Alex Grist, 'impulse and Conna Wiles
+  with contributions from Cloud Sixteen community.
 --]]
 
-local COMMAND = cw.command:New("SetNPCName")
-COMMAND.tip = "#Command_Setnpcname_Description"
-COMMAND.text = "#Command_Setnpcname_Syntax"
+local COMMAND = cw.command:New('SetNPCName')
+COMMAND.tip = '#Command_Setnpcname_Description'
+COMMAND.text = '#Command_Setnpcname_Syntax'
 COMMAND.flags = CMD_DEFAULT
-COMMAND.access = "o"
+COMMAND.access = 'o'
 COMMAND.arguments = 2
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
-	local trace = player:GetEyeTraceNoCursor()
-	local target = trace.Entity
+  local trace = player:GetEyeTraceNoCursor()
+  local target = trace.Entity
 
-	if (target and target:IsNPC()) then
-		if (trace.HitPos:Distance(player:GetShootPos()) <= 192) then
-			target:SetNWString("cw_Name", arguments[1])
-			target:SetNWString("cw_Title", arguments[2])
-		else
-			cw.player:Notify(player, L("Err_NPCTooFar"))
-		end
-	else
-		cw.player:Notify(player, L("Err_MustLookAtNPC"))
-	end
+  if target and target:IsNPC() then
+    if trace.HitPos:Distance(player:GetShootPos()) <= 192 then
+      target:SetNWString('cw_Name', arguments[1])
+      target:SetNWString('cw_Title', arguments[2])
+    else
+      cw.player:Notify(player, L('Err_NPCTooFar'))
+    end
+  else
+    cw.player:Notify(player, L('Err_MustLookAtNPC'))
+  end
 end
 
 COMMAND:Register()

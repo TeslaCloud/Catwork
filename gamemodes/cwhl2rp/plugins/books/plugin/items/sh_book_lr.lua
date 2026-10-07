@@ -1,19 +1,19 @@
 --[[
-	Catwork © 2016-2017 TeslaCloud Studios
-	Please find license under LICENSE.
+  Catwork © 2016-2017 TeslaCloud Studios
+  Please find license under LICENSE.
 
-	Original code by Alex Grist, 'impulse and Conna Wiles
-	with contributions from Cloud Sixteen community.
+  Original code by Alex Grist, 'impulse and Conna Wiles
+  with contributions from Cloud Sixteen community.
 --]]
 
-ITEM.baseItem = "book_base"
-ITEM.name = "Little Red"
-ITEM.PrintName = "#Item_BookLr_PrintName"
+ITEM.baseItem = 'book_base'
+ITEM.name = 'Little Red'
+ITEM.PrintName = '#Item_BookLr_PrintName'
 ITEM.cost = 6
-ITEM.model = "models/props_lab/binderredlabel.mdl"
-ITEM.uniqueID = "book_lr"
+ITEM.model = 'models/props_lab/binderredlabel.mdl'
+ITEM.uniqueID = 'book_lr'
 ITEM.business = true
-ITEM.description = "#Item_BookLr_Description"
+ITEM.description = '#Item_BookLr_Description'
 ITEM.bookInformation = [[
 <font color='red' size='4'>Written by Benjamin Ishibashi.</font>
 

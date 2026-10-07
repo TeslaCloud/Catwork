@@ -1,16 +1,16 @@
 --[[
-	Catwork © 2016-2017 TeslaCloud Studios
-	Please find license under LICENSE.
+  Catwork © 2016-2017 TeslaCloud Studios
+  Please find license under LICENSE.
 
-	Original code by Alex Grist, 'impulse and Conna Wiles
-	with contributions from Cloud Sixteen community.
+  Original code by Alex Grist, 'impulse and Conna Wiles
+  with contributions from Cloud Sixteen community.
 --]]
 
-local lang = cw.lang:GetTable("ru")
+local lang = cw.lang:GetTable('ru')
 
-lang["#PickupObjects_BeingDragged"] = "ВАС ТАЩАТ"
-lang["#PickupObjects_HandsReload"] = "Перезарядка: Бросить"
+lang['#PickupObjects_BeingDragged'] = 'ВАС ТАЩАТ'
+lang['#PickupObjects_HandsReload'] = 'Перезарядка: Бросить'
 
 -- Config
-lang["#TakePhyscannon"] = "Забирать гравипушку"
-lang["#TakePhyscannonDesc"] = "Забирать ли у игрока гравитационную пушку."
+lang['#TakePhyscannon'] = 'Забирать гравипушку'
+lang['#TakePhyscannonDesc'] = 'Забирать ли у игрока гравитационную пушку.'

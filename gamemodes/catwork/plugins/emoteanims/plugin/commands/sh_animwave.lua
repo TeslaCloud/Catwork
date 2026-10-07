@@ -1,56 +1,56 @@
 --[[
-	Catwork © 2016-2017 TeslaCloud Studios
-	Please find license under LICENSE.
+  Catwork © 2016-2017 TeslaCloud Studios
+  Please find license under LICENSE.
 
-	Original code by Alex Grist, 'impulse and Conna Wiles
-	with contributions from Cloud Sixteen community.
+  Original code by Alex Grist, 'impulse and Conna Wiles
+  with contributions from Cloud Sixteen community.
 --]]
 
-local COMMAND = cw.command:New("AnimWave")
-COMMAND.tip = "#Command_Animwave_Description"
-COMMAND.text = "#Command_Animwave_Syntax"
+local COMMAND = cw.command:New('AnimWave')
+COMMAND.tip = '#Command_Animwave_Description'
+COMMAND.text = '#Command_Animwave_Syntax'
 COMMAND.flags = CMD_DEFAULT
 COMMAND.optionalArguments = 1
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
-	local curTime = CurTime()
+  local curTime = CurTime()
 
-	if (!player.cwNextStance or curTime >= player.cwNextStance) then
-		player.cwNextStance = curTime + 2.5
+  if !player.cwNextStance or curTime >= player.cwNextStance then
+    player.cwNextStance = curTime + 2.5
 
-		local modelClass = cw.animation:GetModelClass(player:GetModel())
+    local modelClass = cw.animation:GetModelClass(player:GetModel())
 
-		if (modelClass == "maleHuman" or modelClass == "femaleHuman") then
-			local forcedAnimation = player:GetForcedAnimation()
-			local action = string.lower(arguments[1] or "")
+    if modelClass == 'maleHuman' or modelClass == 'femaleHuman' then
+      local forcedAnimation = player:GetForcedAnimation()
+      local action = string.lower(arguments[1] or '')
 
-			if (forcedAnimation and cwEmoteAnimscwEmoteAnims[forcedAnimation.animation]) then
-				cw.player:Notify(player, L("CannotActionRightNow"))
-			else
-				if (action == "close") then
-					player:SetForcedAnimation("wave_close", 2)
-				else
-					player:SetForcedAnimation("wave", 2)
-				end
+      if forcedAnimation and cwEmoteAnimscwEmoteAnims[forcedAnimation.animation] then
+        cw.player:Notify(player, L('CannotActionRightNow'))
+      else
+        if action == 'close' then
+          player:SetForcedAnimation('wave_close', 2)
+        else
+          player:SetForcedAnimation('wave', 2)
+        end
 
-				player:SetNetVar("StancePos", player:GetPos())
-				player:SetNetVar("StanceAng", player:GetAngles())
-				player:SetNetVar("StanceIdle", false)
-			end
-		else
-			cw.player:Notify(player, L("EmoteAnims_ModelCannotPerform"))
-		end
-	else
-		cw.player:Notify(player, L("EmoteAnims_CannotDoAnotherYet"))
-	end
+        player:SetNetVar('StancePos', player:GetPos())
+        player:SetNetVar('StanceAng', player:GetAngles())
+        player:SetNetVar('StanceIdle', false)
+      end
+    else
+      cw.player:Notify(player, L('EmoteAnims_ModelCannotPerform'))
+    end
+  else
+    cw.player:Notify(player, L('EmoteAnims_CannotDoAnotherYet'))
+  end
 end
 
 COMMAND:Register()
 
-if (CLIENT) then
-	cw.quickmenu:AddCommand("#Emotes_animWave", "#Emotes", COMMAND.name, {
-		"#Emotes_animWave_Close",
-		"#Emotes_animWave_Normal"
-	})
+if CLIENT then
+  cw.quickmenu:AddCommand('#Emotes_animWave', '#Emotes', COMMAND.name, {
+    '#Emotes_animWave_Close',
+    '#Emotes_animWave_Normal'
+  })
 end

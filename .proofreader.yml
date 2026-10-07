@@ -9,17 +9,6 @@ AllReaders:
   Exclude:
     - 'gamemodes/catwork/gamemode/thirdparty/**/*'   # md5, netstream, pon, utf8: vendored as-is
 
-# --- Indentation: Catwork is indented with tabs --------------------------------------------------
-
-Layout/IndentationStyle:
-  Enabled: false                         # only knows "spaces, not tabs"
-
-Layout/IndentationWidth:
-  AutoCorrect: false                     # tab-indented lines are not measured; the fix inserts spaces
-
-Layout/IndentationConsistency:
-  AutoCorrect: false                     # same: the fix re-indents with spaces
-
 Layout/LineLength:
   AutoCorrect: false                     # the fix indents the lines it breaks off with spaces
   Exclude:                               # one record or one sentence per line, whatever its length
@@ -29,12 +18,6 @@ Layout/LineLength:
     - 'gamemodes/cwhl2rp/schema/libraries/sh_voices.lua'
 
 # --- Clockwork conventions -----------------------------------------------------------------------
-
-Style/StringLiterals:
-  EnforcedStyle: double_quotes
-
-Style/ParenthesesAroundCondition:
-  Enabled: false                         # `if (condition) then` is the house style
 
 Style/DocumentationMethod:
   Enabled: false

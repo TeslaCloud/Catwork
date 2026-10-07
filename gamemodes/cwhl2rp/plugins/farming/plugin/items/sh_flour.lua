@@ -1,21 +1,21 @@
 --[[
-	Catwork © 2016-2017 TeslaCloud Studios
-	Please find license under LICENSE.
+  Catwork © 2016-2017 TeslaCloud Studios
+  Please find license under LICENSE.
 
-	Original code by Alex Grist, 'impulse and Conna Wiles
-	with contributions from Cloud Sixteen community.
+  Original code by Alex Grist, 'impulse and Conna Wiles
+  with contributions from Cloud Sixteen community.
 --]]
 
-ITEM.name = "Flour"
-ITEM.PrintName = "#Item_Flour_PrintName"
+ITEM.name = 'Flour'
+ITEM.PrintName = '#Item_Flour_PrintName'
 ITEM.cost = 15
-ITEM.model = "models/bioshockinfinite/topcorn_bag.mdl"
+ITEM.model = 'models/bioshockinfinite/topcorn_bag.mdl'
 ITEM.weight = 0.1
-ITEM.access = "v"
-ITEM.uniqueID = "flour"
-ITEM.category = "Materials"
+ITEM.access = 'v'
+ITEM.uniqueID = 'flour'
+ITEM.category = 'Materials'
 ITEM.business = true
-ITEM.description = "#Item_Flour_Description"
+ITEM.description = '#Item_Flour_Description'
 
 -- Called when a player drops the item.
 function ITEM:OnDrop(player, position) end

@@ -1,14 +1,14 @@
-local COMMAND = cw.command:New("ContainmentSave")
-COMMAND.tip = ""
-COMMAND.text = ""
+local COMMAND = cw.command:New('ContainmentSave')
+COMMAND.tip = ''
+COMMAND.text = ''
 COMMAND.flags = CMD_DEFAULT
-COMMAND.access = "s"
+COMMAND.access = 's'
 COMMAND.arguments = 0
 
 function COMMAND:OnRun(player, arguments)
-	cwRadSystem:SaveAreas()
+  cwRadSystem:SaveAreas()
 
-	cw.player:Notify(player, L("Containment_Saved"))
+  cw.player:Notify(player, L('Containment_Saved'))
 end
 
 COMMAND:Register()

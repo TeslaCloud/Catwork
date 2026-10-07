@@ -1,34 +1,34 @@
 --[[
-	Catwork © 2016-2017 TeslaCloud Studios
-	Please find license under LICENSE.
+  Catwork © 2016-2017 TeslaCloud Studios
+  Please find license under LICENSE.
 
-	Original code by Alex Grist, 'impulse and Conna Wiles
-	with contributions from Cloud Sixteen community.
+  Original code by Alex Grist, 'impulse and Conna Wiles
+  with contributions from Cloud Sixteen community.
 --]]
 
-local COMMAND = cw.command:New("PlyGiveFlags")
-COMMAND.tip = "#Command_Plygiveflags_Description"
-COMMAND.text = "#Command_Plygiveflags_Syntax"
-COMMAND.access = "s"
+local COMMAND = cw.command:New('PlyGiveFlags')
+COMMAND.tip = '#Command_Plygiveflags_Description'
+COMMAND.text = '#Command_Plygiveflags_Syntax'
+COMMAND.access = 's'
 COMMAND.arguments = 2
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
-	local target = _player.Find(arguments[1])
+  local target = _player.Find(arguments[1])
 
-	if (target) then
-		if (string.find(arguments[2], "a") or string.find(arguments[2], "s")
-		or string.find(arguments[2], "o")) then
-			cw.player:Notify(player, L("Command_CannotGiveAdminFlags"))
+  if target then
+    if string.find(arguments[2], 'a') or string.find(arguments[2], 's')
+    or string.find(arguments[2], 'o') then
+      cw.player:Notify(player, L('Command_CannotGiveAdminFlags'))
 
-			return
-		end
+      return
+    end
 
-		cw.player:GivePlayerFlags(target, arguments[2])
-		cw.player:NotifyAll(L("Command_Plygiveflags_Gave", player:Name(), target:SteamName(), arguments[2]))
-	else
-		cw.player:Notify(player, L(player, "NotValidCharacter", arguments[1]))
-	end
+    cw.player:GivePlayerFlags(target, arguments[2])
+    cw.player:NotifyAll(L('Command_Plygiveflags_Gave', player:Name(), target:SteamName(), arguments[2]))
+  else
+    cw.player:Notify(player, L(player, 'NotValidCharacter', arguments[1]))
+  end
 end
 
 COMMAND:Register()

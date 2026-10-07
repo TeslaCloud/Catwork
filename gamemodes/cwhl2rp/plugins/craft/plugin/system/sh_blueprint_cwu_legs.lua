@@ -1,21 +1,21 @@
 local BLUEPRINT = cw.blueprints:New()
 
-BLUEPRINT.name = "#Blueprint_BlueprintCwuLegs_Name"
-BLUEPRINT.uniqueID = "blueprint_cwu_legs"
-BLUEPRINT.model = "models/tnb/items/pants_citizen.mdl"
-BLUEPRINT.category = "#Craft_Category_Clothing"
-BLUEPRINT.description = "#Blueprint_BlueprintCwuLegs_Description"
+BLUEPRINT.name = '#Blueprint_BlueprintCwuLegs_Name'
+BLUEPRINT.uniqueID = 'blueprint_cwu_legs'
+BLUEPRINT.model = 'models/tnb/items/pants_citizen.mdl'
+BLUEPRINT.category = '#Craft_Category_Clothing'
+BLUEPRINT.description = '#Blueprint_BlueprintCwuLegs_Description'
 BLUEPRINT.required = {}
 BLUEPRINT.updatt = {
-	{ "cloth", 45 }
+  { 'cloth', 45 }
 }
 BLUEPRINT.reqatt = {
-	{ "cloth", 15 }
+  { 'cloth', 15 }
 }
 BLUEPRINT.recipe = {
-	{ "cloth", 3 }
+  { 'cloth', 3 }
 }
 BLUEPRINT.finish = {
-	{ "cwu_legs", 1 }
+  { 'cwu_legs', 1 }
 }
 BLUEPRINT:Register()

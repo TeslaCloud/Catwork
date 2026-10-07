@@ -1,6 +1,6 @@
 --[[
-	© 2012 CloudSixteen.com do not share, re-distribute or modify
-	without permission of its author (kurozael@gmail.com).
+  © 2012 CloudSixteen.com do not share, re-distribute or modify
+  without permission of its author (kurozael@gmail.com).
 
 
 ITEM.baseItem = "accessory_base"
@@ -25,10 +25,10 @@ ITEM.attachmentOffsetVector = Vector(-14.78, -3.803, 0.216);
 function ITEM:OnDrop(player, position) end
 
 function ITEM:OnWearAccessory(player, bIsWearing)
-	if (bIsWearing) then
-		cw.player:CreateGear(player, "Backpack", self)
-	else
-		cw.player:RemoveGear(player, "Backpack")
-	end
+  if (bIsWearing) then
+    cw.player:CreateGear(player, "Backpack", self)
+  else
+    cw.player:RemoveGear(player, "Backpack")
+  end
 end
 --]]

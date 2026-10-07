@@ -1,49 +1,49 @@
 --[[
-	Catwork © 2016-2017 TeslaCloud Studios
-	Please find license under LICENSE.
+  Catwork © 2016-2017 TeslaCloud Studios
+  Please find license under LICENSE.
 
-	Original code by Alex Grist, 'impulse and Conna Wiles
-	with contributions from Cloud Sixteen community.
+  Original code by Alex Grist, 'impulse and Conna Wiles
+  with contributions from Cloud Sixteen community.
 --]]
 
 -- Called when the command has been run.
-local COMMAND = cw.command:New("AdvertAdd")
-COMMAND.tip = "#Command_Advertadd_Description"
-COMMAND.text = "#Command_Advertadd_Syntax"
+local COMMAND = cw.command:New('AdvertAdd')
+COMMAND.tip = '#Command_Advertadd_Description'
+COMMAND.text = '#Command_Advertadd_Syntax'
 COMMAND.flags = CMD_DEFAULT
-COMMAND.access = "a"
+COMMAND.access = 'a'
 COMMAND.arguments = 3
 COMMAND.optionalArguments = 1
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
-	local trace = player:GetEyeTraceNoCursor()
-	local scale = tonumber(arguments[4])
-	local width = tonumber(arguments[2]) or 256
-	local height = tonumber(arguments[3]) or 256
+  local trace = player:GetEyeTraceNoCursor()
+  local scale = tonumber(arguments[4])
+  local width = tonumber(arguments[2]) or 256
+  local height = tonumber(arguments[3]) or 256
 
-	if (scale) then
-		scale = scale * 0.25
-	end
+  if scale then
+    scale = scale * 0.25
+  end
 
-	local data = {
-		url = arguments[1],
-		scale = scale,
-		width = width,
-		height = height,
-		angles = trace.HitNormal:Angle(),
-		position = trace.HitPos + (trace.HitNormal * 1.25)
-	}
+  local data = {
+    url = arguments[1],
+    scale = scale,
+    width = width,
+    height = height,
+    angles = trace.HitNormal:Angle(),
+    position = trace.HitPos + (trace.HitNormal * 1.25)
+  }
 
-	data.angles:RotateAroundAxis(data.angles:Forward(), 90)
-	data.angles:RotateAroundAxis(data.angles:Right(), 270)
+  data.angles:RotateAroundAxis(data.angles:Forward(), 90)
+  data.angles:RotateAroundAxis(data.angles:Right(), 270)
 
-	netstream.Start(nil, "DynamicAdvertAdd", data)
+  netstream.Start(nil, 'DynamicAdvertAdd', data)
 
-	cwDynamicAdverts.storedList[#cwDynamicAdverts.storedList + 1] = data
-	cwDynamicAdverts:SaveDynamicAdverts()
+  cwDynamicAdverts.storedList[#cwDynamicAdverts.storedList + 1] = data
+  cwDynamicAdverts:SaveDynamicAdverts()
 
-	cw.player:Notify(player, L("DynamicAdverts_Added"))
+  cw.player:Notify(player, L('DynamicAdverts_Added'))
 end
 
 COMMAND:Register()

@@ -1,83 +1,83 @@
 --[[
-	Catwork © 2016-2017 TeslaCloud Studios
-	Please find license under LICENSE.
+  Catwork © 2016-2017 TeslaCloud Studios
+  Please find license under LICENSE.
 
-	Original code by Alex Grist, 'impulse and Conna Wiles
-	with contributions from Cloud Sixteen community.
+  Original code by Alex Grist, 'impulse and Conna Wiles
+  with contributions from Cloud Sixteen community.
 --]]
 
-include("shared.lua")
+include('shared.lua')
 
-AddCSLuaFile("cl_init.lua")
-AddCSLuaFile("shared.lua")
+AddCSLuaFile('cl_init.lua')
+AddCSLuaFile('shared.lua')
 
 -- Called when the entity initializes.
 function ENT:Initialize()
-	local garbageModels = {
-		"models/props_junk/garbage128_composite001a.mdl",
-		"models/props_junk/garbage128_composite001b.mdl",
-		"models/props_junk/TrashCluster01a.mdl",
-		"models/props_junk/garbage128_composite001d.mdl",
-		"models/props_junk/garbage256_composite001b.mdl"
-	}
+  local garbageModels = {
+    'models/props_junk/garbage128_composite001a.mdl',
+    'models/props_junk/garbage128_composite001b.mdl',
+    'models/props_junk/TrashCluster01a.mdl',
+    'models/props_junk/garbage128_composite001d.mdl',
+    'models/props_junk/garbage256_composite001b.mdl'
+  }
 
-	self:SetModel(table.Random(garbageModels))
+  self:SetModel(table.Random(garbageModels))
 
-	self:SetMoveType(MOVETYPE_VPHYSICS)
-	self:PhysicsInit(SOLID_VPHYSICS)
-	self:SetUseType(SIMPLE_USE)
-	self:SetSolid(SOLID_VPHYSICS)
+  self:SetMoveType(MOVETYPE_VPHYSICS)
+  self:PhysicsInit(SOLID_VPHYSICS)
+  self:SetUseType(SIMPLE_USE)
+  self:SetSolid(SOLID_VPHYSICS)
 
-	self:SetCollisionGroup(COLLISION_GROUP_WORLD)
+  self:SetCollisionGroup(COLLISION_GROUP_WORLD)
 
-	local phys = self:GetPhysicsObject()
-	phys:SetMass(120)
+  local phys = self:GetPhysicsObject()
+  phys:SetMass(120)
 
-	self:SetSpawnType(1)
+  self:SetSpawnType(1)
 end
 
 function ENT:SetSpawnType(entType)
-	if (entType == TYPE_WATERCAN or entType == TYPE_SUPPLIES) then
-		self:SetDTInt(1, entType)
-	end
+  if entType == TYPE_WATERCAN or entType == TYPE_SUPPLIES then
+    self:SetDTInt(1, entType)
+  end
 end
 
 function ENT:UpdateTransmitState()
-	return TRANSMIT_ALWAYS
+  return TRANSMIT_ALWAYS
 end
 
 function ENT:PhysicsUpdate(physicsObject)
-	if (!self:IsPlayerHolding() and !self:IsConstrained()) then
-		physicsObject:SetVelocity(Vector(0, 0, 0))
-		physicsObject:Sleep()
-	end
+  if !self:IsPlayerHolding() and !self:IsConstrained() then
+    physicsObject:SetVelocity(Vector(0, 0, 0))
+    physicsObject:Sleep()
+  end
 end
 
 function ENT:Use(activator, caller)
-	if (activator:IsPlayer() and activator:GetEyeTraceNoCursor().Entity == self) then
-		if (activator:GetNetVar("tied") == 0 and activator:Crouching()) then
-			local time = hook.Run("GetGarbageTime", activator)
+  if activator:IsPlayer() and activator:GetEyeTraceNoCursor().Entity == self then
+    if activator:GetNetVar('tied') == 0 and activator:Crouching() then
+      local time = hook.Run('GetGarbageTime', activator)
 
-			cw.player:SetAction(activator, "cleanup", time)
-			cw.player:EntityConditionTimer(activator, self, self, time, 192, function()
-				return activator:Alive() and !activator:IsRagdolled() and activator:GetNetVar("tied") == 0 and activator:Crouching()
-			end, function(success)
-				if (success) then
-					hook.Run("PlayerTakeGarbage", activator, self)
+      cw.player:SetAction(activator, 'cleanup', time)
+      cw.player:EntityConditionTimer(activator, self, self, time, 192, function()
+        return activator:Alive() and !activator:IsRagdolled() and activator:GetNetVar('tied') == 0 and activator:Crouching()
+      end, function(success)
+        if success then
+          hook.Run('PlayerTakeGarbage', activator, self)
 
-					activator:EmitSound("physics/body/body_medium_impact_soft"..math.random(1, 7)..".wav")
-					activator:FakePickup(self)
-					self:Remove()
-				end
+          activator:EmitSound('physics/body/body_medium_impact_soft'..math.random(1, 7)..'.wav')
+          activator:FakePickup(self)
+          self:Remove()
+        end
 
-				cw.player:SetAction(activator, "cleanup", false)
-			end)
-		elseif (activator:GetNetVar("tied") == 0 and !activator:Crouching()) then
-			cw.player:Notify(activator, L("Gathering_MustCrouch"))
-		end
-	end
+        cw.player:SetAction(activator, 'cleanup', false)
+      end)
+    elseif activator:GetNetVar('tied') == 0 and !activator:Crouching() then
+      cw.player:Notify(activator, L('Gathering_MustCrouch'))
+    end
+  end
 end
 
 function ENT:CanTool(player, trace, tool)
-	return false
+  return false
 end

@@ -1,22 +1,22 @@
 --[[
-	Catwork © 2016-2017 TeslaCloud Studios
-	Please find license under LICENSE.
+  Catwork © 2016-2017 TeslaCloud Studios
+  Please find license under LICENSE.
 
-	Original code by Alex Grist, 'impulse and Conna Wiles
-	with contributions from Cloud Sixteen community.
+  Original code by Alex Grist, 'impulse and Conna Wiles
+  with contributions from Cloud Sixteen community.
 --]]
 
-local lang = cw.lang:GetTable("ru")
+local lang = cw.lang:GetTable('ru')
 
-lang["#Developer_CannotSetTable"] = "Нельзя устанавливать значения-таблицы!"
-lang["#Developer_CannotSetUserData"] = "Нельзя устанавливать значения типа UserData!"
-lang["#Developer_ModifiedKey"] = "Вы изменили ключ данных персонажа"
-lang["#Developer_CreatedKey"] = "Вы создали новый ключ данных персонажа"
-lang["#Developer_Value"] = "значение:"
-lang["#Developer_OriginalType"] = "Исходный тип данных:"
-lang["#Developer_KeyMustBeString"] = "Ключ должен быть строкой!"
-lang["#Developer_NotAuthorized"] = "У вас нет прав на использование этой команды!"
+lang['#Developer_CannotSetTable'] = 'Нельзя устанавливать значения-таблицы!'
+lang['#Developer_CannotSetUserData'] = 'Нельзя устанавливать значения типа UserData!'
+lang['#Developer_ModifiedKey'] = 'Вы изменили ключ данных персонажа'
+lang['#Developer_CreatedKey'] = 'Вы создали новый ключ данных персонажа'
+lang['#Developer_Value'] = 'значение:'
+lang['#Developer_OriginalType'] = 'Исходный тип данных:'
+lang['#Developer_KeyMustBeString'] = 'Ключ должен быть строкой!'
+lang['#Developer_NotAuthorized'] = 'У вас нет прав на использование этой команды!'
 
 -- Commands
-lang["#Command_Setchardata_Description"] = "Установить данные персонажа игрока."
-lang["#Command_Setchardata_Syntax"] = "<игрок> <ключ> <значение>"
+lang['#Command_Setchardata_Description'] = 'Установить данные персонажа игрока.'
+lang['#Command_Setchardata_Syntax'] = '<игрок> <ключ> <значение>'

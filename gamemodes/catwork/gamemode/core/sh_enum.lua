@@ -1,9 +1,9 @@
 --[[
-	Catwork © 2016-2017 TeslaCloud Studios
-	Please find license under LICENSE.
+  Catwork © 2016-2017 TeslaCloud Studios
+  Please find license under LICENSE.
 
-	Original code by Alex Grist, 'impulse and Conna Wiles
-	with contributions from Cloud Sixteen community.
+  Original code by Alex Grist, 'impulse and Conna Wiles
+  with contributions from Cloud Sixteen community.
 --]]
 
 STEAM_COMMUNITY_ID = 76561197960265728
@@ -39,8 +39,8 @@ RAGDOLL_NONE = 4
 SHARED_PLAYER = 1
 SHARED_GLOBAL = 2
 
-GENDER_FEMALE = "Female"
-GENDER_MALE = "Male"
+GENDER_FEMALE = 'Female'
+GENDER_MALE = 'Male'
 
 GRADIENT_CENTER = 1
 GRADIENT_RIGHT = 2

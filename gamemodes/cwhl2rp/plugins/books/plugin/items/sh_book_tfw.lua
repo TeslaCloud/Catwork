@@ -1,19 +1,19 @@
 --[[
-	Catwork © 2016-2017 TeslaCloud Studios
-	Please find license under LICENSE.
+  Catwork © 2016-2017 TeslaCloud Studios
+  Please find license under LICENSE.
 
-	Original code by Alex Grist, 'impulse and Conna Wiles
-	with contributions from Cloud Sixteen community.
+  Original code by Alex Grist, 'impulse and Conna Wiles
+  with contributions from Cloud Sixteen community.
 --]]
 
-ITEM.baseItem = "book_base"
+ITEM.baseItem = 'book_base'
 ITEM.cost = 3
-ITEM.name = "The F. Word"
-ITEM.PrintName = "#Item_BookTfw_PrintName"
-ITEM.model = "models/props_lab/bindergraylabel01b.mdl"
-ITEM.uniqueID = "book_tfw"
+ITEM.name = 'The F. Word'
+ITEM.PrintName = '#Item_BookTfw_PrintName'
+ITEM.model = 'models/props_lab/bindergraylabel01b.mdl'
+ITEM.uniqueID = 'book_tfw'
 ITEM.business = true
-ITEM.description = "#Item_BookTfw_Description"
+ITEM.description = '#Item_BookTfw_Description'
 ITEM.bookInformation = [[
 <font color='red' size='4'>Written by M. Stanley Bubien.</font>
 

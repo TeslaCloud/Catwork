@@ -1,43 +1,43 @@
 --[[
-	Catwork © 2016-2017 TeslaCloud Studios
-	Please find license under LICENSE.
+  Catwork © 2016-2017 TeslaCloud Studios
+  Please find license under LICENSE.
 
-	Original code by Alex Grist, 'impulse and Conna Wiles
-	with contributions from Cloud Sixteen community.
+  Original code by Alex Grist, 'impulse and Conna Wiles
+  with contributions from Cloud Sixteen community.
 --]]
 
-if (SERVER) then
-	AddCSLuaFile("shared.lua")
+if SERVER then
+  AddCSLuaFile('shared.lua')
 
-	SWEP.ActivityTranslate = {
-		[ACT_HL2MP_GESTURE_RANGE_ATTACK] = ACT_HL2MP_GESTURE_RANGE_ATTACK_FIST,
-		[ACT_HL2MP_GESTURE_RELOAD] = ACT_HL2MP_GESTURE_RELOAD_FIST,
-		[ACT_HL2MP_WALK_CROUCH] = ACT_HL2MP_WALK_CROUCH_FIST,
-		[ACT_HL2MP_IDLE_CROUCH] = ACT_HL2MP_IDLE_CROUCH_FIST,
-		[ACT_RANGE_ATTACK1] = ACT_RANGE_ATTACK1,
-		[ACT_HL2MP_IDLE] = ACT_HL2MP_IDLE_FIST,
-		[ACT_HL2MP_WALK] = ACT_HL2MP_WALK_FIST,
-		[ACT_HL2MP_JUMP] = ACT_HL2MP_JUMP_FIST,
-		[ACT_HL2MP_RUN] = ACT_HL2MP_RUN_FIST
-	}
+  SWEP.ActivityTranslate = {
+    [ACT_HL2MP_GESTURE_RANGE_ATTACK] = ACT_HL2MP_GESTURE_RANGE_ATTACK_FIST,
+    [ACT_HL2MP_GESTURE_RELOAD] = ACT_HL2MP_GESTURE_RELOAD_FIST,
+    [ACT_HL2MP_WALK_CROUCH] = ACT_HL2MP_WALK_CROUCH_FIST,
+    [ACT_HL2MP_IDLE_CROUCH] = ACT_HL2MP_IDLE_CROUCH_FIST,
+    [ACT_RANGE_ATTACK1] = ACT_RANGE_ATTACK1,
+    [ACT_HL2MP_IDLE] = ACT_HL2MP_IDLE_FIST,
+    [ACT_HL2MP_WALK] = ACT_HL2MP_WALK_FIST,
+    [ACT_HL2MP_JUMP] = ACT_HL2MP_JUMP_FIST,
+    [ACT_HL2MP_RUN] = ACT_HL2MP_RUN_FIST
+  }
 end
 
-if (CLIENT) then
-	SWEP.Slot = 0
-	SWEP.SlotPos = 5
-	SWEP.DrawAmmo = false
-	SWEP.PrintName = "Suitcase"
-	SWEP.DrawCrosshair = true
+if CLIENT then
+  SWEP.Slot = 0
+  SWEP.SlotPos = 5
+  SWEP.DrawAmmo = false
+  SWEP.PrintName = 'Suitcase'
+  SWEP.DrawCrosshair = true
 end
 
-SWEP.Instructions = "Primary Fire: Toggle."
-SWEP.Contact = ""
-SWEP.Purpose = "For looking like a proper businessman."
-SWEP.Author = "kurozael"
+SWEP.Instructions = 'Primary Fire: Toggle.'
+SWEP.Contact = ''
+SWEP.Purpose = 'For looking like a proper businessman.'
+SWEP.Author = 'kurozael'
 
-SWEP.ViewModel = "models/weapons/c_arms.mdl"
-SWEP.WorldModel = ""
-SWEP.HoldType = "fist"
+SWEP.ViewModel = 'models/weapons/c_arms.mdl'
+SWEP.WorldModel = ''
+SWEP.HoldType = 'fist'
 
 SWEP.AdminSpawnable = false
 SWEP.Spawnable = false
@@ -45,12 +45,12 @@ SWEP.Spawnable = false
 SWEP.Primary.DefaultClip = 0
 SWEP.Primary.Automatic = false
 SWEP.Primary.ClipSize = -1
-SWEP.Primary.Ammo = ""
+SWEP.Primary.Ammo = ''
 
 SWEP.Secondary.DefaultClip = 0
 SWEP.Secondary.Automatic = false
 SWEP.Secondary.ClipSize = -1
-SWEP.Secondary.Ammo = ""
+SWEP.Secondary.Ammo = ''
 
 SWEP.NoIronSightFovChange = true
 SWEP.NoIronSightAttack = true

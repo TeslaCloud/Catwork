@@ -1,19 +1,19 @@
 --[[
-	Catwork © 2016-2017 TeslaCloud Studios
-	Please find license under LICENSE.
+  Catwork © 2016-2017 TeslaCloud Studios
+  Please find license under LICENSE.
 
-	Original code by Alex Grist, 'impulse and Conna Wiles
-	with contributions from Cloud Sixteen community.
+  Original code by Alex Grist, 'impulse and Conna Wiles
+  with contributions from Cloud Sixteen community.
 --]]
 
-ITEM.baseItem = "book_base"
-ITEM.name = "Poison Headcrab Anatomy"
-ITEM.PrintName = "#Item_BookPha_PrintName"
+ITEM.baseItem = 'book_base'
+ITEM.name = 'Poison Headcrab Anatomy'
+ITEM.PrintName = '#Item_BookPha_PrintName'
 ITEM.cost = 6
-ITEM.model = "models/props_lab/bindergraylabel01b.mdl"
-ITEM.uniqueID = "book_pha"
+ITEM.model = 'models/props_lab/bindergraylabel01b.mdl'
+ITEM.uniqueID = 'book_pha'
 ITEM.business = true
-ITEM.description = "#Item_BookPha_Description"
+ITEM.description = '#Item_BookPha_Description'
 ITEM.bookInformation = [[
 <font color='red' size='4'>Written by Jamie Ruzicano.</font>
 

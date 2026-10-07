@@ -1,393 +1,393 @@
 --[[
-	Catwork © 2016-2017 TeslaCloud Studios
-	Please find license under LICENSE.
+  Catwork © 2016-2017 TeslaCloud Studios
+  Please find license under LICENSE.
 
-	Original code by Alex Grist, 'impulse and Conna Wiles
-	with contributions from Cloud Sixteen community.
+  Original code by Alex Grist, 'impulse and Conna Wiles
+  with contributions from Cloud Sixteen community.
 --]]
 
 local PANEL = {}
 
 -- Called when the panel is initialized.
 function PANEL:Init()
-	self:SetTitle(cw.door:GetName())
-	self:SetSizable(false)
-	self:SetDeleteOnClose(false)
-	self:SetBackgroundBlur(true)
+  self:SetTitle(cw.door:GetName())
+  self:SetSizable(false)
+  self:SetDeleteOnClose(false)
+  self:SetBackgroundBlur(true)
 
-	-- Called when the button is clicked.
-	function self.btnClose.DoClick(button)
-		self:Close() self:Remove()
-		gui.EnableScreenClicker(false)
-	end
+  -- Called when the button is clicked.
+  function self.btnClose.DoClick(button)
+    self:Close() self:Remove()
+    gui.EnableScreenClicker(false)
+  end
 
-	self.settingsPanel = vgui.Create("cwPanelList")
-	self.settingsPanel:SetPadding(2)
-	self.settingsPanel:SetSpacing(3)
-	self.settingsPanel:SizeToContents()
-	self.settingsPanel:EnableVerticalScrollbar()
+  self.settingsPanel = vgui.Create('cwPanelList')
+  self.settingsPanel:SetPadding(2)
+  self.settingsPanel:SetSpacing(3)
+  self.settingsPanel:SizeToContents()
+  self.settingsPanel:EnableVerticalScrollbar()
 
-	self.playersPanel = vgui.Create("cwPanelList")
-	self.playersPanel:SetPadding(2)
-	self.playersPanel:SetSpacing(3)
-	self.playersPanel:SizeToContents()
-	self.playersPanel:EnableVerticalScrollbar()
+  self.playersPanel = vgui.Create('cwPanelList')
+  self.playersPanel:SetPadding(2)
+  self.playersPanel:SetSpacing(3)
+  self.playersPanel:SizeToContents()
+  self.playersPanel:EnableVerticalScrollbar()
 
-	self.settingsForm = vgui.Create("DForm")
-	self.settingsForm:SetPadding(4)
-	self.settingsForm:SetName("#Settings")
+  self.settingsForm = vgui.Create('DForm')
+  self.settingsForm:SetPadding(4)
+  self.settingsForm:SetName('#Settings')
 
-	if (cw.door:IsParent()) then
-		local label = vgui.Create("cwInfoText", self)
-			label:SetText("#DoorMenu_ParentInfo")
-			label:SetInfoColor("blue")
-		self.settingsPanel:AddItem(label)
-	end
+  if cw.door:IsParent() then
+    local label = vgui.Create('cwInfoText', self)
+      label:SetText('#DoorMenu_ParentInfo')
+      label:SetInfoColor('blue')
+    self.settingsPanel:AddItem(label)
+  end
 
-	self.settingsPanel:AddItem(self.settingsForm)
-	self.textEntry = self.settingsForm:TextEntry("#DoorMenu_DoorText")
-	self.textEntry:SetAllowNonAsciiCharacters(true)
+  self.settingsPanel:AddItem(self.settingsForm)
+  self.textEntry = self.settingsForm:TextEntry('#DoorMenu_DoorText')
+  self.textEntry:SetAllowNonAsciiCharacters(true)
 
-	-- Called when enter has been pressed.
-	function self.textEntry.OnEnter(textEntry)
-		local text = textEntry:GetValue()
+  -- Called when enter has been pressed.
+  function self.textEntry.OnEnter(textEntry)
+    local text = textEntry:GetValue()
 
-		if (!string.find(string.gsub(string.lower(text), "%s", ""), "thisdoorcanbepurchased")) then
-			netstream.Start("DoorManagement", { cw.door:GetEntity(), "Text", textEntry:GetValue() })
-		end
-	end
+    if !string.find(string.gsub(string.lower(text), '%s', ''), 'thisdoorcanbepurchased') then
+      netstream.Start('DoorManagement', { cw.door:GetEntity(), 'Text', textEntry:GetValue() })
+    end
+  end
 
-	if (cw.door:GetOwner() == cw.client) then
-		if (cw.door:IsParent()) then
-			self.comboBox = self.settingsForm:ComboBox("#DoorMenu_ParentAccess")
-			self.comboBox:AddChoice(L("#DoorMenu_ShareAccess"))
-			self.comboBox:AddChoice(L("#DoorMenu_SeparateAccess"))
+  if cw.door:GetOwner() == cw.client then
+    if cw.door:IsParent() then
+      self.comboBox = self.settingsForm:ComboBox('#DoorMenu_ParentAccess')
+      self.comboBox:AddChoice(L('#DoorMenu_ShareAccess'))
+      self.comboBox:AddChoice(L('#DoorMenu_SeparateAccess'))
 
-			if (cw.door:HasSharedAccess()) then
-				self.comboBox:SetText(L("#DoorMenu_ShareAccess"))
-			else
-				self.comboBox:SetText(L("#DoorMenu_SeparateAccess"))
-			end
+      if cw.door:HasSharedAccess() then
+        self.comboBox:SetText(L('#DoorMenu_ShareAccess'))
+      else
+        self.comboBox:SetText(L('#DoorMenu_SeparateAccess'))
+      end
 
-			-- Called when an option is selected.
-			self.comboBox.OnSelect = function(multiChoice, index, value, data)
-				if (value == L("#DoorMenu_ShareAccess")) then
-					netstream.Start("DoorManagement", { cw.door:GetEntity(), "Share" })
-				else
-					netstream.Start("DoorManagement", { cw.door:GetEntity(), "Unshare" })
-				end
-			end
+      -- Called when an option is selected.
+      self.comboBox.OnSelect = function(multiChoice, index, value, data)
+        if value == L('#DoorMenu_ShareAccess') then
+          netstream.Start('DoorManagement', { cw.door:GetEntity(), 'Share' })
+        else
+          netstream.Start('DoorManagement', { cw.door:GetEntity(), 'Unshare' })
+        end
+      end
 
-			self.parentText = self.settingsForm:ComboBox("#DoorMenu_ParentText")
-			self.parentText:AddChoice(L("#DoorMenu_ShareText"))
-			self.parentText:AddChoice(L("#DoorMenu_SeparateText"))
+      self.parentText = self.settingsForm:ComboBox('#DoorMenu_ParentText')
+      self.parentText:AddChoice(L('#DoorMenu_ShareText'))
+      self.parentText:AddChoice(L('#DoorMenu_SeparateText'))
 
-			if (cw.door:HasSharedText()) then
-				self.parentText:SetText(L("#DoorMenu_ShareText"))
-			else
-				self.parentText:SetText(L("#DoorMenu_SeparateText"))
-			end
+      if cw.door:HasSharedText() then
+        self.parentText:SetText(L('#DoorMenu_ShareText'))
+      else
+        self.parentText:SetText(L('#DoorMenu_SeparateText'))
+      end
 
-			-- Called when an option is selected.
-			self.parentText.OnSelect = function(multiChoice, index, value, data)
-				if (value == L("#DoorMenu_ShareText")) then
-					netstream.Start("DoorManagement", { cw.door:GetEntity(), "Share", "Text" })
-				else
-					netstream.Start("DoorManagement", { cw.door:GetEntity(), "Unshare", "Text" })
-				end
-			end
-		end
+      -- Called when an option is selected.
+      self.parentText.OnSelect = function(multiChoice, index, value, data)
+        if value == L('#DoorMenu_ShareText') then
+          netstream.Start('DoorManagement', { cw.door:GetEntity(), 'Share', 'Text' })
+        else
+          netstream.Start('DoorManagement', { cw.door:GetEntity(), 'Unshare', 'Text' })
+        end
+      end
+    end
 
-		if (!cw.door:IsUnsellable()) then
-			local doorCost = config.GetVal("door_cost")
-			local doorText = "Sell"
-			local button = nil
+    if !cw.door:IsUnsellable() then
+      local doorCost = config.GetVal('door_cost')
+      local doorText = 'Sell'
+      local button = nil
 
-			if (doorCost > 0) then
-				button = self.settingsForm:Button("#DoorMenu_Sell")
-			else
-				button = self.settingsForm:Button("#DoorMenu_Unown")
-			end
+      if doorCost > 0 then
+        button = self.settingsForm:Button('#DoorMenu_Sell')
+      else
+        button = self.settingsForm:Button('#DoorMenu_Unown')
+      end
 
-			-- Called when the button is clicked.
-			function button.DoClick(button)
-				if (doorCost > 0) then
-					Derma_Query(L("#DoorMenu_SellQuery"), L("#DoorMenu_SellTitle"), L("Yes"), function()
-						netstream.Start("DoorManagement", { cw.door:GetEntity(), "Sell" })
+      -- Called when the button is clicked.
+      function button.DoClick(button)
+        if doorCost > 0 then
+          Derma_Query(L('#DoorMenu_SellQuery'), L('#DoorMenu_SellTitle'), L('Yes'), function()
+            netstream.Start('DoorManagement', { cw.door:GetEntity(), 'Sell' })
 
-						gui.EnableScreenClicker(false)
-						self:Close() self:Remove()
-					end, L("No"), function()
-						gui.EnableScreenClicker(false)
-					end)
-				else
-					Derma_Query(L("#DoorMenu_UnownQuery"), L("#DoorMenu_UnownTitle"), L("Yes"), function()
-						netstream.Start("DoorManagement", { cw.door:GetEntity(), "Sell" })
+            gui.EnableScreenClicker(false)
+            self:Close() self:Remove()
+          end, L('No'), function()
+            gui.EnableScreenClicker(false)
+          end)
+        else
+          Derma_Query(L('#DoorMenu_UnownQuery'), L('#DoorMenu_UnownTitle'), L('Yes'), function()
+            netstream.Start('DoorManagement', { cw.door:GetEntity(), 'Sell' })
 
-						gui.EnableScreenClicker(false)
-						self:Close() self:Remove()
-					end, L("No"), function()
-						gui.EnableScreenClicker(false)
-					end)
-				end
+            gui.EnableScreenClicker(false)
+            self:Close() self:Remove()
+          end, L('No'), function()
+            gui.EnableScreenClicker(false)
+          end)
+        end
 
-				gui.EnableScreenClicker(true)
-			end
-		end
-	end
+        gui.EnableScreenClicker(true)
+      end
+    end
+  end
 
-	self.propertySheet = vgui.Create("DPropertySheet", self)
-	self.propertySheet:SetPadding(4)
-	self.propertySheet:AddSheet(
-		L("#DoorMenu_Players"),
-		self.playersPanel,
-		"icon16/user.png",
-		nil,
-		nil,
-		L("#DoorMenu_PlayersTip")
-	)
-	self.propertySheet:AddSheet(
-		L("#Settings"),
-		self.settingsPanel,
-		"icon16/wrench.png",
-		nil,
-		nil,
-		L("#DoorMenu_SettingsTip")
-	)
+  self.propertySheet = vgui.Create('DPropertySheet', self)
+  self.propertySheet:SetPadding(4)
+  self.propertySheet:AddSheet(
+    L('#DoorMenu_Players'),
+    self.playersPanel,
+    'icon16/user.png',
+    nil,
+    nil,
+    L('#DoorMenu_PlayersTip')
+  )
+  self.propertySheet:AddSheet(
+    L('#Settings'),
+    self.settingsPanel,
+    'icon16/wrench.png',
+    nil,
+    nil,
+    L('#DoorMenu_SettingsTip')
+  )
 
-	cw.core:SetNoticePanel(self)
+  cw.core:SetNoticePanel(self)
 end
 
 -- A function to rebuild the panel.
 function PANEL:Rebuild()
-	self.playersPanel:Clear(true)
+  self.playersPanel:Clear(true)
 
-	local accessList = cw.door:GetAccessList()
-	local categories = {}
-	local owner = cw.door:GetOwner()
-	local door = cw.door:GetEntity()
+  local accessList = cw.door:GetAccessList()
+  local categories = {}
+  local owner = cw.door:GetOwner()
+  local door = cw.door:GetEntity()
 
-	for k, v in ipairs(_player.GetAll()) do
-		if (v:HasInitialized()) then
-			if (cw.client != v and owner != v) then
-				local access = accessList[v] or false
+  for k, v in ipairs(_player.GetAll()) do
+    if v:HasInitialized() then
+      if cw.client != v and owner != v then
+        local access = accessList[v] or false
 
-				if (hook.Run("PlayerShouldShowOnDoorAccessList", v, door, owner)) then
-					local name = hook.Run("GetPlayerDoorAccessName", v, door, owner)
-					local index
+        if hook.Run('PlayerShouldShowOnDoorAccessList', v, door, owner) then
+          local name = hook.Run('GetPlayerDoorAccessName', v, door, owner)
+          local index
 
-					if (access == DOOR_ACCESS_COMPLETE) then
-						index = 1
-					elseif (access == DOOR_ACCESS_BASIC) then
-						index = 2
-					else
-						index = 3
-					end
+          if access == DOOR_ACCESS_COMPLETE then
+            index = 1
+          elseif access == DOOR_ACCESS_BASIC then
+            index = 2
+          else
+            index = 3
+          end
 
-					if (!categories[index]) then
-						categories[index] = {}
-					end
+          if !categories[index] then
+            categories[index] = {}
+          end
 
-					categories[index][#categories[index] + 1] = { v, name }
-				end
-			end
-		end
-	end
+          categories[index][#categories[index] + 1] = { v, name }
+        end
+      end
+    end
+  end
 
-	if (table.Count(categories) > 0) then
-		for k, v in pairs(categories) do
-			local collapsibleCategory = vgui.Create("DCollapsibleCategory", self.playersPanel)
-			local panelList = vgui.Create("DPanelList", self.playersPanel)
+  if table.Count(categories) > 0 then
+    for k, v in pairs(categories) do
+      local collapsibleCategory = vgui.Create('DCollapsibleCategory', self.playersPanel)
+      local panelList = vgui.Create('DPanelList', self.playersPanel)
 
-			self.playersPanel:AddItem(collapsibleCategory)
+      self.playersPanel:AddItem(collapsibleCategory)
 
-			table.sort(v, function(a, b)
-				return a[2] < b[2]
-			end)
+      table.sort(v, function(a, b)
+        return a[2] < b[2]
+      end)
 
-			for k2, v2 in pairs(v) do
-				local button = vgui.Create("DButton", self.playersPanel)
-				local access = false
-				local player = v2[1]
+      for k2, v2 in pairs(v) do
+        local button = vgui.Create('DButton', self.playersPanel)
+        local access = false
+        local player = v2[1]
 
-				if (k == 1) then
-					access = DOOR_ACCESS_COMPLETE
-				elseif (k == 2) then
-					access = DOOR_ACCESS_BASIC
-				end
+        if k == 1 then
+          access = DOOR_ACCESS_COMPLETE
+        elseif k == 2 then
+          access = DOOR_ACCESS_BASIC
+        end
 
-				-- Called when the button is clicked.
-				function button.DoClick(button)
-					local options
+        -- Called when the button is clicked.
+        function button.DoClick(button)
+          local options
 
-					if (access == DOOR_ACCESS_COMPLETE) then
-						options = {
-							[L("#DoorMenu_TakeCompleteAccess")] = function()
-								netstream.Start("DoorManagement", { door, "Access", player, access })
-							end
-						}
-					elseif (access == DOOR_ACCESS_BASIC) then
-						options = {
-							[L("#DoorMenu_TakeBasicAccess")] = function()
-								netstream.Start("DoorManagement", { door, "Access", player, access })
-							end,
-							[L("#DoorMenu_GiveCompleteAccess")] = function()
-								netstream.Start("DoorManagement", { door, "Access", player, DOOR_ACCESS_COMPLETE })
-							end
-						}
-					else
-						options = {
-							[L("#DoorMenu_GiveBasicAccess")] = function()
-								netstream.Start("DoorManagement", { door, "Access", player, DOOR_ACCESS_BASIC })
-							end,
-							[L("#DoorMenu_GiveCompleteAccess")] = function()
-								netstream.Start("DoorManagement", { door, "Access", player, DOOR_ACCESS_COMPLETE })
-							end
-						}
-					end
+          if access == DOOR_ACCESS_COMPLETE then
+            options = {
+              [L('#DoorMenu_TakeCompleteAccess')] = function()
+                netstream.Start('DoorManagement', { door, 'Access', player, access })
+              end
+            }
+          elseif access == DOOR_ACCESS_BASIC then
+            options = {
+              [L('#DoorMenu_TakeBasicAccess')] = function()
+                netstream.Start('DoorManagement', { door, 'Access', player, access })
+              end,
+              [L('#DoorMenu_GiveCompleteAccess')] = function()
+                netstream.Start('DoorManagement', { door, 'Access', player, DOOR_ACCESS_COMPLETE })
+              end
+            }
+          else
+            options = {
+              [L('#DoorMenu_GiveBasicAccess')] = function()
+                netstream.Start('DoorManagement', { door, 'Access', player, DOOR_ACCESS_BASIC })
+              end,
+              [L('#DoorMenu_GiveCompleteAccess')] = function()
+                netstream.Start('DoorManagement', { door, 'Access', player, DOOR_ACCESS_COMPLETE })
+              end
+            }
+          end
 
-					if (options) then
-						cw.core:AddMenuFromData(nil, options)
-					end
-				end
+          if options then
+            cw.core:AddMenuFromData(nil, options)
+          end
+        end
 
-				button:SetText(v2[2])
+        button:SetText(v2[2])
 
-				panelList:AddItem(button)
-			end
+        panelList:AddItem(button)
+      end
 
-			panelList:SetAutoSize(true)
-			panelList:SetPadding(4)
-			panelList:SetSpacing(4)
+      panelList:SetAutoSize(true)
+      panelList:SetPadding(4)
+      panelList:SetSpacing(4)
 
-			collapsibleCategory:SetPadding(4)
-			collapsibleCategory:SetContents(panelList)
+      collapsibleCategory:SetPadding(4)
+      collapsibleCategory:SetContents(panelList)
 
-			if (k == 1) then
-				collapsibleCategory:SetLabel(L("#DoorMenu_CompleteAccessList"))
-				collapsibleCategory:SetCookieName("cwDoorComplete")
-			elseif (k == 2) then
-				collapsibleCategory:SetLabel(L("#DoorMenu_BasicAccessList"))
-				collapsibleCategory:SetCookieName("cwDoorBasic")
-			else
-				collapsibleCategory:SetLabel(L("#DoorMenu_NoAccessList"))
-				collapsibleCategory:SetCookieName("cwDoorZero")
-			end
-		end
-	end
+      if k == 1 then
+        collapsibleCategory:SetLabel(L('#DoorMenu_CompleteAccessList'))
+        collapsibleCategory:SetCookieName('cwDoorComplete')
+      elseif k == 2 then
+        collapsibleCategory:SetLabel(L('#DoorMenu_BasicAccessList'))
+        collapsibleCategory:SetCookieName('cwDoorBasic')
+      else
+        collapsibleCategory:SetLabel(L('#DoorMenu_NoAccessList'))
+        collapsibleCategory:SetCookieName('cwDoorZero')
+      end
+    end
+  end
 end
 
 -- Called each frame.
 function PANEL:Think()
-	local entity = cw.door:GetEntity()
-	local scrW = ScrW()
-	local scrH = ScrH()
+  local entity = cw.door:GetEntity()
+  local scrW = ScrW()
+  local scrH = ScrH()
 
-	self:SetSize(scrW * 0.5, scrH * 0.75)
-	self:SetPos((scrW / 2) - (self:GetWide() / 2), (scrH / 2) - (self:GetTall() / 2))
+  self:SetSize(scrW * 0.5, scrH * 0.75)
+  self:SetPos((scrW / 2) - (self:GetWide() / 2), (scrH / 2) - (self:GetTall() / 2))
 
-	if (!IsValid(entity) or entity:GetPos():Distance(cw.client:GetPos()) > 192) then
-		self:Close() self:Remove()
+  if !IsValid(entity) or entity:GetPos():Distance(cw.client:GetPos()) > 192 then
+    self:Close() self:Remove()
 
-		gui.EnableScreenClicker(false)
-	end
+    gui.EnableScreenClicker(false)
+  end
 end
 
 -- Called when the layout should be performed.
 function PANEL:PerformLayout(w, h)
-	DFrame.PerformLayout(self)
+  DFrame.PerformLayout(self)
 
-	self.propertySheet:StretchToParent(4, 28, 4, 4)
+  self.propertySheet:StretchToParent(4, 28, 4, 4)
 end
 
-vgui.Register("cwDoor", PANEL, "DFrame")
+vgui.Register('cwDoor', PANEL, 'DFrame')
 
-netstream.Hook("PurchaseDoor", function(data)
-	local doorCost = config.GetVal("door_cost")
+netstream.Hook('PurchaseDoor', function(data)
+  local doorCost = config.GetVal('door_cost')
 
-	if (doorCost > 0) then
-		Derma_Query(
-			L("#DoorMenu_PurchaseQuery:"..cw.core:FormatCash(config.GetVal("door_cost"), nil, true)..";"),
-			L("#DoorMenu_PurchaseTitle"),
-			L("Yes"),
-			function()
-				netstream.Start("DoorManagement", { data, "Purchase" })
+  if doorCost > 0 then
+    Derma_Query(
+      L('#DoorMenu_PurchaseQuery:'..cw.core:FormatCash(config.GetVal('door_cost'), nil, true)..';'),
+      L('#DoorMenu_PurchaseTitle'),
+      L('Yes'),
+      function()
+        netstream.Start('DoorManagement', { data, 'Purchase' })
 
-				gui.EnableScreenClicker(false)
-			end, L("No"), function()
-				gui.EnableScreenClicker(false)
-			end
-		)
-	else
-		Derma_Query(L("#DoorMenu_OwnQuery"), L("#DoorMenu_OwnTitle"), L("Yes"), function()
-			netstream.Start("DoorManagement", { data, "Purchase" })
+        gui.EnableScreenClicker(false)
+      end, L('No'), function()
+        gui.EnableScreenClicker(false)
+      end
+    )
+  else
+    Derma_Query(L('#DoorMenu_OwnQuery'), L('#DoorMenu_OwnTitle'), L('Yes'), function()
+      netstream.Start('DoorManagement', { data, 'Purchase' })
 
-			gui.EnableScreenClicker(false)
-		end, L("No"), function()
-			gui.EnableScreenClicker(false)
-		end)
-	end
+      gui.EnableScreenClicker(false)
+    end, L('No'), function()
+      gui.EnableScreenClicker(false)
+    end)
+  end
 
-	gui.EnableScreenClicker(true)
+  gui.EnableScreenClicker(true)
 end)
 
-netstream.Hook("SetSharedAccess", function(data)
-	if (cw.door:GetPanel()) then
-		cw.door.cwDoorSharedAxs = data
+netstream.Hook('SetSharedAccess', function(data)
+  if cw.door:GetPanel() then
+    cw.door.cwDoorSharedAxs = data
 
-		cw.door:GetPanel():Rebuild()
-	end
+    cw.door:GetPanel():Rebuild()
+  end
 end)
 
-netstream.Hook("SetSharedText", function(data)
-	if (cw.door:GetPanel()) then
-		cw.door.cwDoorSharedTxt = data
+netstream.Hook('SetSharedText', function(data)
+  if cw.door:GetPanel() then
+    cw.door.cwDoorSharedTxt = data
 
-		cw.door:GetPanel():Rebuild()
-	end
+    cw.door:GetPanel():Rebuild()
+  end
 end)
 
-netstream.Hook("DoorAccess", function(data)
-	if (cw.door:GetPanel()) then
-		local accessList = cw.door:GetAccessList()
+netstream.Hook('DoorAccess', function(data)
+  if cw.door:GetPanel() then
+    local accessList = cw.door:GetAccessList()
 
-		if (IsValid(data[1])) then
-			if (data[2]) then
-				accessList[data[1]] = data[2]
-			else
-				accessList[data[1]] = nil
-			end
+    if IsValid(data[1]) then
+      if data[2] then
+        accessList[data[1]] = data[2]
+      else
+        accessList[data[1]] = nil
+      end
 
-			cw.door:GetPanel():Rebuild()
-		end
-	end
+      cw.door:GetPanel():Rebuild()
+    end
+  end
 end)
 
-netstream.Hook("DoorManagement", function(data)
-	if (cw.door:GetPanel()) then
-		cw.door:GetPanel():Remove()
-	end
+netstream.Hook('DoorManagement', function(data)
+  if cw.door:GetPanel() then
+    cw.door:GetPanel():Remove()
+  end
 
-	gui.EnableScreenClicker(true)
+  gui.EnableScreenClicker(true)
 
-	cw.door.cwDoorSharedAxs = data.cwDoorSharedAxs
-	cw.door.cwDoorSharedTxt = data.cwDoorSharedTxt
-	cw.door.unsellable = data.unsellable
-	cw.door.accessList = data.accessList
-	cw.door.isParent = data.isParent
-	cw.door.entity = data.entity
-	cw.door.owner = data.owner
-	cw.door.name = cw.entity:GetDoorName(data.entity)
+  cw.door.cwDoorSharedAxs = data.cwDoorSharedAxs
+  cw.door.cwDoorSharedTxt = data.cwDoorSharedTxt
+  cw.door.unsellable = data.unsellable
+  cw.door.accessList = data.accessList
+  cw.door.isParent = data.isParent
+  cw.door.entity = data.entity
+  cw.door.owner = data.owner
+  cw.door.name = cw.entity:GetDoorName(data.entity)
 
-	if (cw.door.name == "") then
-		cw.door.name = L("#Doors_Name")
-	end
+  if cw.door.name == '' then
+    cw.door.name = L('#Doors_Name')
+  end
 
-	cw.door.panel = vgui.Create("cwDoor")
-	cw.door.panel:MakePopup()
-	cw.door.panel:Rebuild()
+  cw.door.panel = vgui.Create('cwDoor')
+  cw.door.panel:MakePopup()
+  cw.door.panel:Rebuild()
 
-	if (!cw.entity:HasOwner(data.entity) or IsValid(data.owner)) then
-		cw.door.panel.textEntry:SetValue(cw.entity:GetDoorText(data.entity))
-	end
+  if !cw.entity:HasOwner(data.entity) or IsValid(data.owner) then
+    cw.door.panel.textEntry:SetValue(cw.entity:GetDoorText(data.entity))
+  end
 end)

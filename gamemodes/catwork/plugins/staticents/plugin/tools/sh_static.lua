@@ -1,37 +1,37 @@
 --[[
-	Catwork © 2016-2017 TeslaCloud Studios
-	Please find license under LICENSE.
+  Catwork © 2016-2017 TeslaCloud Studios
+  Please find license under LICENSE.
 
-	Original code by Alex Grist, 'impulse and Conna Wiles
-	with contributions from Cloud Sixteen community.
+  Original code by Alex Grist, 'impulse and Conna Wiles
+  with contributions from Cloud Sixteen community.
 --]]
 
 local TOOL = cw.tool:New()
 
-TOOL.Category = "Clockwork"
-TOOL.UniqueID = "static"
-TOOL.Name = "#tool.static.name"
+TOOL.Category = 'Clockwork'
+TOOL.UniqueID = 'static'
+TOOL.Name = '#tool.static.name'
 TOOL.Command = nil
-TOOL.ConfigName = ""
+TOOL.ConfigName = ''
 
 function TOOL:LeftClick(trace)
-	if (CLIENT) then return true end
+  if CLIENT then return true end
 
-	local player = self:GetOwner()
+  local player = self:GetOwner()
 
-	plugin.Call("PlayerMakeStatic", player, true)
+  plugin.Call('PlayerMakeStatic', player, true)
 
-	return true
+  return true
 end
 
 function TOOL:RightClick(trace)
-	if (CLIENT) then return true end
+  if CLIENT then return true end
 
-	local player = self:GetOwner()
+  local player = self:GetOwner()
 
-	plugin.Call("PlayerMakeStatic", player, false)
+  plugin.Call('PlayerMakeStatic', player, false)
 
-	return true
+  return true
 end
 
 TOOL:Register()

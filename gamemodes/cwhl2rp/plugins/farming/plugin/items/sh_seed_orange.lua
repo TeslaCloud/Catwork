@@ -1,18 +1,18 @@
 --[[
-	Catwork © 2016-2017 TeslaCloud Studios
-	Please find license under LICENSE.
+  Catwork © 2016-2017 TeslaCloud Studios
+  Please find license under LICENSE.
 
-	Original code by Alex Grist, 'impulse and Conna Wiles
-	with contributions from Cloud Sixteen community.
+  Original code by Alex Grist, 'impulse and Conna Wiles
+  with contributions from Cloud Sixteen community.
 --]]
 
-ITEM.baseItem = "seeds_base"
-ITEM.name = "Orange Seeds"
-ITEM.PrintName = "#Item_SeedOrange_PrintName"
-ITEM.description = "#Item_SeedOrange_Description"
-ITEM.model = "models/props_lab/box01a.mdl"
-ITEM.uniqueID = "seed_orange"
-ITEM.PlantModel = "models/props/cs_office/plant01_p1.mdl"
-ITEM.PlantName = "#Farming_Plant_Orange"
+ITEM.baseItem = 'seeds_base'
+ITEM.name = 'Orange Seeds'
+ITEM.PrintName = '#Item_SeedOrange_PrintName'
+ITEM.description = '#Item_SeedOrange_Description'
+ITEM.model = 'models/props_lab/box01a.mdl'
+ITEM.uniqueID = 'seed_orange'
+ITEM.PlantModel = 'models/props/cs_office/plant01_p1.mdl'
+ITEM.PlantName = '#Farming_Plant_Orange'
 ITEM.GrowTime = { 1337, 1488 }
-ITEM.Harvest = { "seed_orange", "orange" }
+ITEM.Harvest = { 'seed_orange', 'orange' }

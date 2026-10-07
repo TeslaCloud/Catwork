@@ -1,78 +1,78 @@
 --[[
-	Catwork © 2016-2017 TeslaCloud Studios
-	Please find license under LICENSE.
+  Catwork © 2016-2017 TeslaCloud Studios
+  Please find license under LICENSE.
 
-	Original code by Alex Grist, 'impulse and Conna Wiles
-	with contributions from Cloud Sixteen community.
+  Original code by Alex Grist, 'impulse and Conna Wiles
+  with contributions from Cloud Sixteen community.
 --]]
 
-local lang = cw.lang:GetTable("ru")
+local lang = cw.lang:GetTable('ru')
 
-lang["#Attribute_Farm"] = "Фермерство"
-lang["#Attribute_Farm_Desc"] = "Влияет на шанс успешного сбора урожая."
+lang['#Attribute_Farm'] = 'Фермерство'
+lang['#Attribute_Farm_Desc'] = 'Влияет на шанс успешного сбора урожая.'
 
-lang["#Farming_UseText_Plant"] = "Посадить"
-lang["#Farming_UseText_Peel"] = "Очистить"
-lang["#Farming_Category_Plants"] = "Растения"
-lang["#Farming_Plant_Default"] = "Растение"
-lang["#Farming_Maturity"] = "Зрелость: #1%"
-lang["#Farming_ProgressBar_Cleanup"] = "Вы убираете мусор..."
+lang['#Farming_UseText_Plant'] = 'Посадить'
+lang['#Farming_UseText_Peel'] = 'Очистить'
+lang['#Farming_Category_Plants'] = 'Растения'
+lang['#Farming_Plant_Default'] = 'Растение'
+lang['#Farming_Maturity'] = 'Зрелость: #1%'
+lang['#Farming_ProgressBar_Cleanup'] = 'Вы убираете мусор...'
 
-lang["#Farming_Planted"] = "Вы успешно посадили семена."
-lang["#Farming_TooClose"] = "Нельзя сажать растения так близко друг к другу!"
-lang["#Farming_BadSoil"] = "Растения можно сажать только в подходящую почву."
-lang["#Farming_TooFar"] = "Вы не можете посадить растение так далеко!"
-lang["#Farming_MustCrouch"] = "Вы должны присесть, чтобы собрать урожай."
-lang["#Farming_NotRipe"] = "Растение еще не созрело. Нужно подождать еще немного."
-lang["#Farming_HarvestSuccess"] = "Вы успешно собрали урожай."
-lang["#Farming_HarvestFail"] = "Вам не удалось собрать урожай."
+lang['#Farming_Planted'] = 'Вы успешно посадили семена.'
+lang['#Farming_TooClose'] = 'Нельзя сажать растения так близко друг к другу!'
+lang['#Farming_BadSoil'] = 'Растения можно сажать только в подходящую почву.'
+lang['#Farming_TooFar'] = 'Вы не можете посадить растение так далеко!'
+lang['#Farming_MustCrouch'] = 'Вы должны присесть, чтобы собрать урожай.'
+lang['#Farming_NotRipe'] = 'Растение еще не созрело. Нужно подождать еще немного.'
+lang['#Farming_HarvestSuccess'] = 'Вы успешно собрали урожай.'
+lang['#Farming_HarvestFail'] = 'Вам не удалось собрать урожай.'
 
-lang["#Item_BakedPotato_PrintName"] = "Печеный картофель"
-lang["#Item_BakedPotato_Description"] = "Приятная на ощупь печеная картошка."
-lang["#Item_Banana_PrintName"] = "Банан"
-lang["#Item_Banana_Description"] = "Длинный сладкий желтый банан."
-lang["#Item_BoiledCorn_PrintName"] = "Вареная кукуруза"
-lang["#Item_BoiledCorn_Description"] = "Отваренная кукуруза."
-lang["#Item_Corn_PrintName"] = "Кукуруза"
-lang["#Item_Corn_Description"] = "Свежая кукуруза."
-lang["#Item_Flour_PrintName"] = "Мука"
-lang["#Item_Flour_Description"] = "Желтоватая кукурузная мука."
-lang["#Item_Orange_PrintName"] = "Апельсин"
-lang["#Item_Orange_Description"] = "В этом фрукте содержится вся сила. Для начала нужно почистить."
-lang["#Item_OrangeCleaned_PrintName"] = "Очищенный апельсин"
-lang["#Item_OrangeCleaned_Description"] = "В этом фрукте содержится вся сила. Очищен и готов к употреблению."
-lang["#Item_OrangeJuice_PrintName"] = "Апельсиновый сок"
-lang["#Item_OrangeJuice_Description"] = "Освежающий апельсиновый сок. Слегка кисловат."
-lang["#Item_Popcorn_PrintName"] = "Попкорн"
-lang["#Item_Popcorn_Description"] = "Рекомендуется к употреблению при захватывающем зрелище."
-lang["#Item_Potato_PrintName"] = "Картофелина"
-lang["#Item_Potato_Description"] = "Клубень картофеля, покрытый землей."
-lang["#Item_PotatoDish_PrintName"] = "Жареный картофель с овощами"
-lang["#Item_PotatoDish_Description"] = "Жареная картошечка со свежей кукурузой и помидорами."
-lang["#Item_SeedBanana_PrintName"] = "Семена банана"
-lang["#Item_SeedBanana_Description"] = "Коробочка с семенами банана внутри."
-lang["#Farming_Plant_Banana"] = "Банан"
-lang["#Item_SeedCorn_PrintName"] = "Семена кукурузы"
-lang["#Item_SeedCorn_Description"] = "Коробочка с семенами кукурузы внутри."
-lang["#Farming_Plant_Corn"] = "Кукуруза"
-lang["#Item_SeedMelon_PrintName"] = "Семена арбуза"
-lang["#Item_SeedMelon_Description"] = "Коробочка с семенами арбуза внутри."
-lang["#Farming_Plant_Melon"] = "Арбуз"
-lang["#Item_SeedOrange_PrintName"] = "Семена апельсина"
-lang["#Item_SeedOrange_Description"] = "Коробочка с семенами апельсина внутри."
-lang["#Farming_Plant_Orange"] = "Апельсин"
-lang["#Item_SeedPotato_PrintName"] = "Семена картофеля"
-lang["#Item_SeedPotato_Description"] = "Коробочка с семенами картофеля внутри."
-lang["#Farming_Plant_Potato"] = "Картофель"
-lang["#Item_SeedTomato_PrintName"] = "Семена томата"
-lang["#Item_SeedTomato_Description"] = "Коробочка с семенами помидоров внутри."
-lang["#Farming_Plant_Tomato"] = "Томат"
-lang["#Item_SeedWeed_PrintName"] = "Семена марихуаны"
-lang["#Item_SeedWeed_Description"] = "Коробочка с семенами марихуаны внутри."
-lang["#Farming_Plant_Weed"] = "Марихуана"
-lang["#Item_Tomato_PrintName"] = "Помидор"
-lang["#Item_Tomato_Description"] = "А я томат."
-lang["#Item_TomatoJuice_PrintName"] = "Томатный сок"
-lang["#Item_TomatoJuice_Description"] = "Красный, словно кровь."
-lang["#Item_Weed_PrintName"] = "Марихуана"
-lang["#Item_Weed_Description"] = "Несколько листов конопли в коробочке."
+lang['#Item_BakedPotato_PrintName'] = 'Печеный картофель'
+lang['#Item_BakedPotato_Description'] = 'Приятная на ощупь печеная картошка.'
+lang['#Item_Banana_PrintName'] = 'Банан'
+lang['#Item_Banana_Description'] = 'Длинный сладкий желтый банан.'
+lang['#Item_BoiledCorn_PrintName'] = 'Вареная кукуруза'
+lang['#Item_BoiledCorn_Description'] = 'Отваренная кукуруза.'
+lang['#Item_Corn_PrintName'] = 'Кукуруза'
+lang['#Item_Corn_Description'] = 'Свежая кукуруза.'
+lang['#Item_Flour_PrintName'] = 'Мука'
+lang['#Item_Flour_Description'] = 'Желтоватая кукурузная мука.'
+lang['#Item_Orange_PrintName'] = 'Апельсин'
+lang['#Item_Orange_Description'] = 'В этом фрукте содержится вся сила. Для начала нужно почистить.'
+lang['#Item_OrangeCleaned_PrintName'] = 'Очищенный апельсин'
+lang['#Item_OrangeCleaned_Description'] = 'В этом фрукте содержится вся сила. Очищен и готов к употреблению.'
+lang['#Item_OrangeJuice_PrintName'] = 'Апельсиновый сок'
+lang['#Item_OrangeJuice_Description'] = 'Освежающий апельсиновый сок. Слегка кисловат.'
+lang['#Item_Popcorn_PrintName'] = 'Попкорн'
+lang['#Item_Popcorn_Description'] = 'Рекомендуется к употреблению при захватывающем зрелище.'
+lang['#Item_Potato_PrintName'] = 'Картофелина'
+lang['#Item_Potato_Description'] = 'Клубень картофеля, покрытый землей.'
+lang['#Item_PotatoDish_PrintName'] = 'Жареный картофель с овощами'
+lang['#Item_PotatoDish_Description'] = 'Жареная картошечка со свежей кукурузой и помидорами.'
+lang['#Item_SeedBanana_PrintName'] = 'Семена банана'
+lang['#Item_SeedBanana_Description'] = 'Коробочка с семенами банана внутри.'
+lang['#Farming_Plant_Banana'] = 'Банан'
+lang['#Item_SeedCorn_PrintName'] = 'Семена кукурузы'
+lang['#Item_SeedCorn_Description'] = 'Коробочка с семенами кукурузы внутри.'
+lang['#Farming_Plant_Corn'] = 'Кукуруза'
+lang['#Item_SeedMelon_PrintName'] = 'Семена арбуза'
+lang['#Item_SeedMelon_Description'] = 'Коробочка с семенами арбуза внутри.'
+lang['#Farming_Plant_Melon'] = 'Арбуз'
+lang['#Item_SeedOrange_PrintName'] = 'Семена апельсина'
+lang['#Item_SeedOrange_Description'] = 'Коробочка с семенами апельсина внутри.'
+lang['#Farming_Plant_Orange'] = 'Апельсин'
+lang['#Item_SeedPotato_PrintName'] = 'Семена картофеля'
+lang['#Item_SeedPotato_Description'] = 'Коробочка с семенами картофеля внутри.'
+lang['#Farming_Plant_Potato'] = 'Картофель'
+lang['#Item_SeedTomato_PrintName'] = 'Семена томата'
+lang['#Item_SeedTomato_Description'] = 'Коробочка с семенами помидоров внутри.'
+lang['#Farming_Plant_Tomato'] = 'Томат'
+lang['#Item_SeedWeed_PrintName'] = 'Семена марихуаны'
+lang['#Item_SeedWeed_Description'] = 'Коробочка с семенами марихуаны внутри.'
+lang['#Farming_Plant_Weed'] = 'Марихуана'
+lang['#Item_Tomato_PrintName'] = 'Помидор'
+lang['#Item_Tomato_Description'] = 'А я томат.'
+lang['#Item_TomatoJuice_PrintName'] = 'Томатный сок'
+lang['#Item_TomatoJuice_Description'] = 'Красный, словно кровь.'
+lang['#Item_Weed_PrintName'] = 'Марихуана'
+lang['#Item_Weed_Description'] = 'Несколько листов конопли в коробочке.'

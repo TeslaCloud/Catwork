@@ -1,17 +1,17 @@
 --[[
-	Catwork © 2016-2017 TeslaCloud Studios
-	Please find license under LICENSE.
+  Catwork © 2016-2017 TeslaCloud Studios
+  Please find license under LICENSE.
 
-	Original code by Alex Grist, 'impulse and Conna Wiles
-	with contributions from Cloud Sixteen community.
+  Original code by Alex Grist, 'impulse and Conna Wiles
+  with contributions from Cloud Sixteen community.
 --]]
 
-ITEM.baseItem = "book_base"
-ITEM.name = "Nova Prospekt Codes"
-ITEM.PrintName = "#Item_BookNpc_PrintName"
-ITEM.model = "models/props_lab/binderredlabel.mdl"
-ITEM.uniqueID = "book_npc"
-ITEM.description = "#Item_BookNpc_Description"
+ITEM.baseItem = 'book_base'
+ITEM.name = 'Nova Prospekt Codes'
+ITEM.PrintName = '#Item_BookNpc_PrintName'
+ITEM.model = 'models/props_lab/binderredlabel.mdl'
+ITEM.uniqueID = 'book_npc'
+ITEM.description = '#Item_BookNpc_Description'
 ITEM.bookInformation = [[
 <font color='red' size='4'>Written by Chris Hawkins.</font>
 

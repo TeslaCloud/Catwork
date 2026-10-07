@@ -1,74 +1,74 @@
 --[[
-	Catwork © 2016-2017 TeslaCloud Studios
-	Please find license under LICENSE.
+  Catwork © 2016-2017 TeslaCloud Studios
+  Please find license under LICENSE.
 
-	Original code by Alex Grist, 'impulse and Conna Wiles
-	with contributions from Cloud Sixteen community.
+  Original code by Alex Grist, 'impulse and Conna Wiles
+  with contributions from Cloud Sixteen community.
 --]]
 
-local COMMAND = cw.command:New("ContFill")
-COMMAND.tip = "#Command_Contfill_Description"
-COMMAND.text = "#Command_Contfill_Syntax"
+local COMMAND = cw.command:New('ContFill')
+COMMAND.tip = '#Command_Contfill_Description'
+COMMAND.text = '#Command_Contfill_Syntax'
 COMMAND.flags = CMD_DEFAULT
-COMMAND.access = "s"
+COMMAND.access = 's'
 COMMAND.arguments = 1
 COMMAND.optionalArguments = 1
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
-	local trace = player:GetEyeTraceNoCursor()
-	local scale = tonumber(arguments[1])
+  local trace = player:GetEyeTraceNoCursor()
+  local scale = tonumber(arguments[1])
 
-	if (scale) then
-		scale = math.Clamp(math.Round(scale), 1, 5)
+  if scale then
+    scale = math.Clamp(math.Round(scale), 1, 5)
 
-		if (IsValid(trace.Entity)) then
-			if (cw.entity:IsPhysicsEntity(trace.Entity)) then
-				local model = string.lower(trace.Entity:GetModel())
+    if IsValid(trace.Entity) then
+      if cw.entity:IsPhysicsEntity(trace.Entity) then
+        local model = string.lower(trace.Entity:GetModel())
 
-				if (cwStorage.containerList[model]) then
-					if (!trace.Entity.cwInventory) then
-						cwStorage.storage[trace.Entity] = trace.Entity
+        if cwStorage.containerList[model] then
+          if !trace.Entity.cwInventory then
+            cwStorage.storage[trace.Entity] = trace.Entity
 
-						trace.Entity.cwInventory = {}
-					end
+            trace.Entity.cwInventory = {}
+          end
 
-					local containerWeight = cwStorage.containerList[model][1] / (6 - scale)
-					local weight = cw.inventory:CalculateWeight(trace.Entity.cwInventory)
+          local containerWeight = cwStorage.containerList[model][1] / (6 - scale)
+          local weight = cw.inventory:CalculateWeight(trace.Entity.cwInventory)
 
-					if (!arguments[2] or cwStorage:CategoryExists(arguments[2])) then
-						while (weight < containerWeight) do
-							local randomItem = cwStorage:GetRandomItem(arguments[2])
+          if !arguments[2] or cwStorage:CategoryExists(arguments[2]) then
+            while weight < containerWeight do
+              local randomItem = cwStorage:GetRandomItem(arguments[2])
 
-							if (randomItem) then
-								cw.inventory:AddInstance(
-									trace.Entity.cwInventory, item.CreateInstance(randomItem[1])
-								)
+              if randomItem then
+                cw.inventory:AddInstance(
+                  trace.Entity.cwInventory, item.CreateInstance(randomItem[1])
+                )
 
-								weight = weight + randomItem[2]
-							end
-						end
+                weight = weight + randomItem[2]
+              end
+            end
 
-						cwStorage:SaveStorage()
+            cwStorage:SaveStorage()
 
-						cw.player:Notify(player, L("Container_Filled"))
-						return
-					else
-						cw.player:Notify(player, L("Container_CategoryNotExist"))
-						return
-					end
-				end
+            cw.player:Notify(player, L('Container_Filled'))
+            return
+          else
+            cw.player:Notify(player, L('Container_CategoryNotExist'))
+            return
+          end
+        end
 
-				cw.player:Notify(player, L("Container_NotValid"))
-			else
-				cw.player:Notify(player, L("Container_NotValid"))
-			end
-		else
-			cw.player:Notify(player, L("Container_NotValid"))
-		end
-	else
-		cw.player:Notify(player, L("Container_NotValidScale"))
-	end
+        cw.player:Notify(player, L('Container_NotValid'))
+      else
+        cw.player:Notify(player, L('Container_NotValid'))
+      end
+    else
+      cw.player:Notify(player, L('Container_NotValid'))
+    end
+  else
+    cw.player:Notify(player, L('Container_NotValidScale'))
+  end
 end
 
 COMMAND:Register()

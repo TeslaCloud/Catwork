@@ -1,17 +1,17 @@
 --[[
-	Catwork © 2016-2017 TeslaCloud Studios
-	Please find license under LICENSE.
+  Catwork © 2016-2017 TeslaCloud Studios
+  Please find license under LICENSE.
 
-	Original code by Alex Grist, 'impulse and Conna Wiles
-	with contributions from Cloud Sixteen community.
+  Original code by Alex Grist, 'impulse and Conna Wiles
+  with contributions from Cloud Sixteen community.
 --]]
 
-ITEM.baseItem = "book_base"
-ITEM.name = "Into the Night"
-ITEM.PrintName = "#Item_BookItn_PrintName"
-ITEM.model = "models/props_lab/bindergreenlabel.mdl"
-ITEM.uniqueID = "book_itn"
-ITEM.description = "#Item_BookItn_Description"
+ITEM.baseItem = 'book_base'
+ITEM.name = 'Into the Night'
+ITEM.PrintName = '#Item_BookItn_PrintName'
+ITEM.model = 'models/props_lab/bindergreenlabel.mdl'
+ITEM.uniqueID = 'book_itn'
+ITEM.description = '#Item_BookItn_Description'
 ITEM.bookInformation = [[
 <font color='red' size='4'>Author unknown.</font>
 

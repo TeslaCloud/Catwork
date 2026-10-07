@@ -1,22 +1,22 @@
 --[[
-	Catwork © 2016-2017 TeslaCloud Studios
-	Please find license under LICENSE.
+  Catwork © 2016-2017 TeslaCloud Studios
+  Please find license under LICENSE.
 
-	Original code by Alex Grist, 'impulse and Conna Wiles
-	with contributions from Cloud Sixteen community.
+  Original code by Alex Grist, 'impulse and Conna Wiles
+  with contributions from Cloud Sixteen community.
 --]]
 
-local lang = cw.lang:GetTable("en")
+local lang = cw.lang:GetTable('en')
 
-lang["#Developer_CannotSetTable"] = "Cannot set table values!"
-lang["#Developer_CannotSetUserData"] = "Cannot set UserData values!"
-lang["#Developer_ModifiedKey"] = "You have modified a char data key"
-lang["#Developer_CreatedKey"] = "You have created a new char data key"
-lang["#Developer_Value"] = "value:"
-lang["#Developer_OriginalType"] = "The original data type was:"
-lang["#Developer_KeyMustBeString"] = "The key must be a valid string value!"
-lang["#Developer_NotAuthorized"] = "You are not authorized to use this command!"
+lang['#Developer_CannotSetTable'] = 'Cannot set table values!'
+lang['#Developer_CannotSetUserData'] = 'Cannot set UserData values!'
+lang['#Developer_ModifiedKey'] = 'You have modified a char data key'
+lang['#Developer_CreatedKey'] = 'You have created a new char data key'
+lang['#Developer_Value'] = 'value:'
+lang['#Developer_OriginalType'] = 'The original data type was:'
+lang['#Developer_KeyMustBeString'] = 'The key must be a valid string value!'
+lang['#Developer_NotAuthorized'] = 'You are not authorized to use this command!'
 
 -- Commands
-lang["#Command_Setchardata_Description"] = "Set a player's character data."
-lang["#Command_Setchardata_Syntax"] = "<string Player> <string key> <any value>"
+lang['#Command_Setchardata_Description'] = "Set a player's character data."
+lang['#Command_Setchardata_Syntax'] = '<string Player> <string key> <any value>'

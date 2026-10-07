@@ -1,15 +1,15 @@
 --[[
-	Catwork � 2016-2017 TeslaCloud Studios
-	Please find license under LICENSE.
+  Catwork � 2016-2017 TeslaCloud Studios
+  Please find license under LICENSE.
 
-	Original code by Alex Grist, 'impulse and Conna Wiles
-	with contributions from Cloud Sixteen community.
+  Original code by Alex Grist, 'impulse and Conna Wiles
+  with contributions from Cloud Sixteen community.
 --]]
 
-include("shared.lua")
+include('shared.lua')
 
 function ENT:Draw()
-	self:DrawModel()
+  self:DrawModel()
 end
 
 function ENT:Initialize()

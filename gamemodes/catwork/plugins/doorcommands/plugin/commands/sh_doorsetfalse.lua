@@ -1,52 +1,52 @@
 --[[
-	Catwork © 2016-2017 TeslaCloud Studios
-	Please find license under LICENSE.
+  Catwork © 2016-2017 TeslaCloud Studios
+  Please find license under LICENSE.
 
-	Original code by Alex Grist, 'impulse and Conna Wiles
-	with contributions from Cloud Sixteen community.
+  Original code by Alex Grist, 'impulse and Conna Wiles
+  with contributions from Cloud Sixteen community.
 --]]
 
-local COMMAND = cw.command:New("DoorSetFalse")
-COMMAND.tip = "#Command_Doorsetfalse_Description"
-COMMAND.text = "#Command_Doorsetfalse_Syntax"
+local COMMAND = cw.command:New('DoorSetFalse')
+COMMAND.tip = '#Command_Doorsetfalse_Description'
+COMMAND.text = '#Command_Doorsetfalse_Syntax'
 COMMAND.flags = CMD_DEFAULT
-COMMAND.access = "a"
+COMMAND.access = 'a'
 COMMAND.arguments = 1
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
-	local door = player:GetEyeTraceNoCursor().Entity
+  local door = player:GetEyeTraceNoCursor().Entity
 
-	if (IsValid(door) and cw.entity:IsDoor(door)) then
-		if (cw.core:ToBool(arguments[1])) then
-			local data = {
-				position = door:GetPos(),
-				entity = door
-			}
+  if IsValid(door) and cw.entity:IsDoor(door) then
+    if cw.core:ToBool(arguments[1]) then
+      local data = {
+        position = door:GetPos(),
+        entity = door
+      }
 
-			cw.entity:SetDoorFalse(door, true)
+      cw.entity:SetDoorFalse(door, true)
 
-			cwDoorCmds.doorData[data.entity] = {
-				position = door:GetPos(),
-				entity = door,
-				text = "hidden",
-				name = "hidden"
-			}
+      cwDoorCmds.doorData[data.entity] = {
+        position = door:GetPos(),
+        entity = door,
+        text = 'hidden',
+        name = 'hidden'
+      }
 
-			cwDoorCmds:SaveDoorData()
+      cwDoorCmds:SaveDoorData()
 
-			cw.player:Notify(player, L("DoorCmds_MadeFalse"))
-		else
-			cw.entity:SetDoorFalse(door, false)
+      cw.player:Notify(player, L('DoorCmds_MadeFalse'))
+    else
+      cw.entity:SetDoorFalse(door, false)
 
-			cwDoorCmds.doorData[door] = nil
-			cwDoorCmds:SaveDoorData()
+      cwDoorCmds.doorData[door] = nil
+      cwDoorCmds:SaveDoorData()
 
-			cw.player:Notify(player, L("DoorCmds_MadeNotFalse"))
-		end
-	else
-		cw.player:Notify(player, L("DoorCmds_NotValidDoor"))
-	end
+      cw.player:Notify(player, L('DoorCmds_MadeNotFalse'))
+    end
+  else
+    cw.player:Notify(player, L('DoorCmds_NotValidDoor'))
+  end
 end
 
 COMMAND:Register()

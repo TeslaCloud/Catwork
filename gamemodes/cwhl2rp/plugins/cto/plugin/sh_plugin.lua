@@ -1,11 +1,11 @@
-PLUGIN:SetGlobalAlias("cwCTO")
+PLUGIN:SetGlobalAlias('cwCTO')
 
 cwCTO.sociostatusColors = {
-	GREEN = Color(0, 255, 0),
-	BLUE = Color(0, 128, 255),
-	YELLOW = Color(255, 255, 0),
-	RED = Color(255, 0, 0),
-	BLACK = Color(128, 128, 128)
+  GREEN = Color(0, 255, 0),
+  BLUE = Color(0, 128, 255),
+  YELLOW = Color(255, 255, 0),
+  RED = Color(255, 0, 0),
+  BLACK = Color(128, 128, 128)
 }
 
 -- Biosignal change enums, used for player/admin command language variations.
@@ -21,5 +21,5 @@ cwCTO.VIOLATION_JUMPING = 2
 cwCTO.VIOLATION_CROUCHING = 3
 cwCTO.VIOLATION_FALLEN_OVER = 4
 
-util.Include("cl_hooks.lua")
-util.Include("sv_plugin.lua")
+util.Include('cl_hooks.lua')
+util.Include('sv_plugin.lua')

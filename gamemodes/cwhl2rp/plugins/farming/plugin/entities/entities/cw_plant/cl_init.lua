@@ -1,29 +1,29 @@
 --[[
-	Catwork © 2016-2017 TeslaCloud Studios
-	Please find license under LICENSE.
+  Catwork © 2016-2017 TeslaCloud Studios
+  Please find license under LICENSE.
 
-	Original code by Alex Grist, 'impulse and Conna Wiles
-	with contributions from Cloud Sixteen community.
+  Original code by Alex Grist, 'impulse and Conna Wiles
+  with contributions from Cloud Sixteen community.
 --]]
 
 function ENT:HUDPaintTargetID(x, y, alpha)
-	local colorTargetID = cw.option:GetColor("target_id")
-	local colorWhite = cw.option:GetColor("white")
-	local itemTable = item.FindByID(self:GetItem())
+  local colorTargetID = cw.option:GetColor('target_id')
+  local colorWhite = cw.option:GetColor('white')
+  local itemTable = item.FindByID(self:GetItem())
 
-	y = cw.core:DrawInfo(itemTable.PlantName, x, y, colorTargetID, alpha)
+  y = cw.core:DrawInfo(itemTable.PlantName, x, y, colorTargetID, alpha)
 
-	if (cw.attributes:Fraction(ATB_FARM, 100) > 25) then
-		local GrowthPercent =
-			math.Clamp(math.Round((CurTime() - self:GetSpawnTime()) / (self:GetGrowTime() - self:GetSpawnTime()) * 100), 0, 100)
-		y = cw.core:DrawInfo(L("#Farming_Maturity:"..GrowthPercent..";"), x, y, Color(255, 255, 255), alpha)
-	end
+  if cw.attributes:Fraction(ATB_FARM, 100) > 25 then
+    local GrowthPercent =
+      math.Clamp(math.Round((CurTime() - self:GetSpawnTime()) / (self:GetGrowTime() - self:GetSpawnTime()) * 100), 0, 100)
+    y = cw.core:DrawInfo(L('#Farming_Maturity:'..GrowthPercent..';'), x, y, Color(255, 255, 255), alpha)
+  end
 end
 
-include("shared.lua")
+include('shared.lua')
 
 function ENT:Draw()
-	self:DrawModel()
+  self:DrawModel()
 end
 
 function ENT:Initialize()

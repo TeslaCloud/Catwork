@@ -1,13 +1,13 @@
 --[[
-	© 2012 Iron-Wall.org do not share, re-distribute or modify
-	without permission of its author (ext@iam1337.ru).
+  © 2012 Iron-Wall.org do not share, re-distribute or modify
+  without permission of its author (ext@iam1337.ru).
 --]]
 
-include("shared.lua")
+include('shared.lua')
 
 -- Called when the entity should draw.
 function ENT:Draw()
-	self:DrawModel()
+  self:DrawModel()
 end
 
 function ENT:Initialize()

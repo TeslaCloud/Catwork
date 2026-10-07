@@ -1,19 +1,19 @@
 --[[
-	Catwork © 2016-2017 TeslaCloud Studios
-	Please find license under LICENSE.
+  Catwork © 2016-2017 TeslaCloud Studios
+  Please find license under LICENSE.
 
-	Original code by Alex Grist, 'impulse and Conna Wiles
-	with contributions from Cloud Sixteen community.
+  Original code by Alex Grist, 'impulse and Conna Wiles
+  with contributions from Cloud Sixteen community.
 --]]
 
-ITEM.baseItem = "book_base"
+ITEM.baseItem = 'book_base'
 ITEM.cost = 8
-ITEM.name = "The Cat Strangler"
-ITEM.PrintName = "#Item_BookTcs_PrintName"
-ITEM.model = "models/props_lab/binderredlabel.mdl"
-ITEM.uniqueID = "book_tcs"
+ITEM.name = 'The Cat Strangler'
+ITEM.PrintName = '#Item_BookTcs_PrintName'
+ITEM.model = 'models/props_lab/binderredlabel.mdl'
+ITEM.uniqueID = 'book_tcs'
 ITEM.business = true
-ITEM.description = "#Item_BookTcs_Description"
+ITEM.description = '#Item_BookTcs_Description'
 ITEM.bookInformation = [[
 <font color='red' size='4'>Written by Richard K. Weems.</font>
 
