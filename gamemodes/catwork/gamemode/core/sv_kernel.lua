@@ -56,32 +56,9 @@ function sql.SQLStr(str_in, bNoQuotes)
   return "'"..str.."'"
 end
 
-oldFileWrite = oldFileWrite or File.write
-
-function File.write(fileName, content)
-  local exploded = string.Explode('/', fileName)
-  local curPath = ''
-
-  for k, v in ipairs(exploded) do
-    if string.GetExtensionFromFilename(v) != nil then
-      break
-    end
-
-    curPath = curPath..v..'/'
-
-    if !file.Exists(curPath, 'GAME') then
-      File.mkdir(curPath)
-    end
-  end
-
-  return oldFileWrite(fileName, content)
-end
-
--- File.append does not create missing folders, cw.core:ServerLog needs this one.
-if !file.Exists('logs/clockwork', 'GAME') then
-  File.mkdir('logs/')
-  File.mkdir('logs/clockwork/')
-end
+-- File.write creates missing folders itself, File.append does not and
+-- cw.core:ServerLog needs this one. File.mkdir is recursive.
+File.mkdir('logs/clockwork')
 
 base64 = base64 or {}
 
@@ -277,22 +254,6 @@ function cw.core:RestoreClockworkData(fileName, failSafe)
   else
     return {}
   end
-end
-
--- A function to setup a full directory.
-function cw.core:SetupFullDirectory(filePath)
-  local directory = string.gsub(self:GetPathToGMod()..filePath, '\\', '/')
-  local exploded = string.Explode('/', directory)
-  local currentPath = ''
-
-  for k, v in ipairs(exploded) do
-    if k < #exploded then
-      currentPath = currentPath..v..'/'
-      File.mkdir(currentPath)
-    end
-  end
-
-  return currentPath..exploded[#exploded]
 end
 
 -- A function to save Clockwork data.
