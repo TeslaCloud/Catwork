@@ -22,10 +22,10 @@ function PANEL:Init()
 	end
 
 	self.containerPanel = vgui.Create("cwPanelList", self)
- 	self.containerPanel:SetPadding(2)
- 	self.containerPanel:SetSpacing(3)
- 	self.containerPanel:SizeToContents()
- 	self.containerPanel:EnableVerticalScrollbar()
+	self.containerPanel:SetPadding(2)
+	self.containerPanel:SetSpacing(3)
+	self.containerPanel:SizeToContents()
+	self.containerPanel:EnableVerticalScrollbar()
 
 	if (!cw.storage:GetIsOneSided()) then
 		self.inventoryPanel = vgui.Create("cwPanelList", self)
@@ -383,7 +383,10 @@ end
 function PANEL:Think()
 	self.spaceUsed:SetSize(self:GetWide() - 2, self:GetTall() - 2)
 	self.weightLabel:SetText(math.floor(self:GetUsedWeight()).."/"..math.floor(self:GetWeight())..L("#Unit_Kilograms"))
-	self.weightLabel:SetPos(self:GetWide() / 2 - self.weightLabel:GetWide() / 2, self:GetTall() / 2 - self.weightLabel:GetTall() / 2)
+	self.weightLabel:SetPos(
+		self:GetWide() / 2 - self.weightLabel:GetWide() / 2,
+		self:GetTall() / 2 - self.weightLabel:GetTall() / 2
+	)
 	self.weightLabel:SizeToContents()
 end
 

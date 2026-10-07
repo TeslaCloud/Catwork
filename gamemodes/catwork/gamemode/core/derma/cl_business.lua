@@ -13,10 +13,10 @@ function PANEL:Init()
 	self:SetSize(cw.menu:GetWidth(), cw.menu:GetHeight())
 
 	self.panelList = vgui.Create("cwPanelList", self)
- 	self.panelList:SetPadding(8)
- 	self.panelList:SetSpacing(4)
- 	self.panelList:StretchToParent(4, 4, 4, 4)
- 	self.panelList:HideBackground()
+	self.panelList:SetPadding(8)
+	self.panelList:SetSpacing(4)
+	self.panelList:StretchToParent(4, 4, 4, 4)
+	self.panelList:HideBackground()
 
 	self:Rebuild()
 end

@@ -21,7 +21,7 @@ function TOOL:LeftClick(trace)
 
 	plugin.Call("PlayerMakeStatic", player, true)
 
- 	return true
+	return true
 end
 
 function TOOL:RightClick(trace)

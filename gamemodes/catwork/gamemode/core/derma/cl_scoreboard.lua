@@ -13,8 +13,8 @@ function PANEL:Init()
 	self:SetSize(cw.menu:GetWidth(), cw.menu:GetHeight())
 
 	self.panelList = vgui.Create("cwPanelList", self)
- 	self.panelList:SetPadding(8)
- 	self.panelList:SetSpacing(8)
+	self.panelList:SetPadding(8)
+	self.panelList:SetSpacing(8)
 	self.panelList:StretchToParent(4, 4, 4, 4)
 	self.panelList:HideBackground()
 
@@ -66,7 +66,9 @@ function PANEL:Rebuild()
 		self.panelList:AddItem(label)
 
 		local playersLabel = vgui.Create("DLabel", self)
-			playersLabel:SetText("#Scoreboard_PlayersOnline:"..tostring(#_player.GetAll())..","..tostring(game.MaxPlayers())..";")
+			playersLabel:SetText(
+				"#Scoreboard_PlayersOnline:"..tostring(#_player.GetAll())..","..tostring(game.MaxPlayers())..";"
+			)
 			playersLabel:SetFont(cw.option:GetFont("scoreboard_desc"))
 			playersLabel:SizeToContents()
 		self.panelList:AddItem(playersLabel)
@@ -83,7 +85,11 @@ function PANEL:Rebuild()
 			characterForm:SetPadding(8)
 			characterForm:SetSpacing(8)
 			characterForm:SetAutoSize(true)
-			characterForm:SetText(cw.lang:TranslateText(v.name)..(istable(v.players) and " ("..tostring(#v.players)..")"), cw.option:GetFont("scoreboard_class"), classColor)
+			characterForm:SetText(
+				cw.lang:TranslateText(v.name)..(istable(v.players) and " ("..tostring(#v.players)..")"),
+				cw.option:GetFont("scoreboard_class"),
+				classColor
+			)
 
 			local panelList = vgui.Create("DPanelList", self)
 
@@ -220,7 +226,9 @@ function PANEL:Init()
 	self.avatarButton:SetDrawBackground(false)
 
 	if (info.avatarImage) then
-		self.avatarButton:SetTooltip(L("#Scoreboard_SteamNameIs").." "..info.steamName..".\n"..L("#Scoreboard_SteamIDIs").." "..info.player:SteamID()..".")
+		self.avatarButton:SetTooltip(
+			L("#Scoreboard_SteamNameIs").." "..info.steamName..".\n"..L("#Scoreboard_SteamIDIs").." "..info.player:SteamID().."."
+		)
 		self.avatarButton.DoClick = function(button)
 			if (IsValid(info.player)) then
 				info.player:ShowProfile()

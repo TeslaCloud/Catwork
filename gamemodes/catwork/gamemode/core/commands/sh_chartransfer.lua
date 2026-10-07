@@ -29,35 +29,36 @@ function COMMAND:OnRun(player, arguments)
 		end
 
 		-- if (!_faction.GetStored()[faction].whitelist or cw.player:IsWhitelisted(target, faction)) then
-			local targetFaction = target:GetFaction()
+		local targetFaction = target:GetFaction()
 
-			if (targetFaction == faction) then
-				cw.player:Notify(player, L("Command_Chartransfer_AlreadyFaction", target:Name(), faction))
-				return
-			end
+		if (targetFaction == faction) then
+			cw.player:Notify(player, L("Command_Chartransfer_AlreadyFaction", target:Name(), faction))
+			return
+		end
 
-			if (!_faction.IsGenderValid(faction, target:GetGender())) then
-				cw.player:Notify(player, L("Command_Chartransfer_WrongGender", target:Name(), faction))
+		if (!_faction.IsGenderValid(faction, target:GetGender())) then
+			cw.player:Notify(player, L("Command_Chartransfer_WrongGender", target:Name(), faction))
 
-				return
-			end
+			return
+		end
 
-			if (!_faction.GetStored()[faction].OnTransferred) then
-				cw.player:Notify(player, L("Command_Chartransfer_CannotTransfer", target:Name(), faction))
+		if (!_faction.GetStored()[faction].OnTransferred) then
+			cw.player:Notify(player, L("Command_Chartransfer_CannotTransfer", target:Name(), faction))
 
-				return
-			end
+			return
+		end
 
-			local bSuccess, fault = _faction.GetStored()[faction]:OnTransferred(target, _faction.GetStored()[targetFaction], arguments[3])
+		local bSuccess, fault =
+			_faction.GetStored()[faction]:OnTransferred(target, _faction.GetStored()[targetFaction], arguments[3])
 
-			if (bSuccess != false) then
-				target:SetCharacterData("Faction", faction, true)
+		if (bSuccess != false) then
+			target:SetCharacterData("Faction", faction, true)
 
-				cw.player:LoadCharacter(target, cw.player:GetCharacterID(target))
-				cw.player:NotifyAll(L("Command_Chartransfer_Transferred", player:Name(), name, faction))
-			else
-				cw.player:Notify(player, fault or L("Command_Chartransfer_CannotTransfer", target:Name(), faction))
-			end
+			cw.player:LoadCharacter(target, cw.player:GetCharacterID(target))
+			cw.player:NotifyAll(L("Command_Chartransfer_Transferred", player:Name(), name, faction))
+		else
+			cw.player:Notify(player, fault or L("Command_Chartransfer_CannotTransfer", target:Name(), faction))
+		end
 
 		-- else
 			-- cw.player:Notify(player, target:Name().." is not on the "..faction.." whitelist!")

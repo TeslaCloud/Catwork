@@ -23,7 +23,9 @@ function COMMAND:OnRun(player, arguments)
 		if (modelClass == "maleHuman" or modelClass == "femaleHuman") then
 			local forcedAnimation = player:GetForcedAnimation()
 
-			if (forcedAnimation and (forcedAnimation.animation == "d2_coast03_postbattle_idle02" or forcedAnimation.animation == "d2_coast03_postbattle_idle02_entry")) then
+			if (forcedAnimation
+			and (forcedAnimation.animation == "d2_coast03_postbattle_idle02"
+			or forcedAnimation.animation == "d2_coast03_postbattle_idle02_entry")) then
 				cwEmoteAnims:MakePlayerExitStance(player)
 			elseif (!forcedAnimation or !cwEmoteAnimscwEmoteAnims[forcedAnimation.animation]) then
 				if (player:Crouching()) then

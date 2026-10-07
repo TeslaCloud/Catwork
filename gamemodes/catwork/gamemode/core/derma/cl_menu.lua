@@ -364,7 +364,8 @@ function PANEL:Paint(w, h)
 	elseif (CW_CONVAR_SHOWMATERIAL:GetInt() == 1) then
 		local material = Material(CW_CONVAR_MATERIAL:GetString());
 
-		surface.SetDrawColor(GetConVarNumber("cwBackColorR"), GetConVarNumber("cwBackColorG"), GetConVarNumber("cwBackColorB"), GetConVarNumber("cwBackColorA"))
+		surface.SetDrawColor(GetConVarNumber("cwBackColorR"), GetConVarNumber("cwBackColorG"),
+		GetConVarNumber("cwBackColorB"), GetConVarNumber("cwBackColorA"))
 		surface.SetMaterial(material)
 		surface.DrawTexturedRect(x, y, w, h)
 	end*/

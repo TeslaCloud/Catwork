@@ -145,7 +145,17 @@ function SWEP:CreateGrenade(power)
 				entity:GetPhysicsObject():AddAngleVelocity(Vector(600, math.random(-1200, 1200), 0))
 			end
 
-			local trail = util.SpriteTrail(entity, entity:LookupAttachment("fuse"), Color(255, 100, 0), true, 8, 1, 1, (1 / 9) * 0.5, "sprites/bluelaser1.vmt")
+			local trail = util.SpriteTrail(
+				entity,
+				entity:LookupAttachment("fuse"),
+				Color(255, 100, 0),
+				true,
+				8,
+				1,
+				1,
+				(1 / 9) * 0.5,
+				"sprites/bluelaser1.vmt"
+			)
 
 			if (IsValid(trail)) then
 				entity:DeleteOnRemove(trail)

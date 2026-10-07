@@ -865,7 +865,8 @@ function cw.core:GetAmmoInformation(weapon)
 		end
 
 		if (!weapon.AmmoInfo.secondary.doesNotShoot and weapon.AmmoInfo.secondary.ownerAmmo > 0) then
-			weapon.AmmoInfo.secondary.ownerClips = math.ceil(weapon.AmmoInfo.secondary.clipSize / weapon.AmmoInfo.secondary.ownerAmmo)
+			weapon.AmmoInfo.secondary.ownerClips =
+				math.ceil(weapon.AmmoInfo.secondary.clipSize / weapon.AmmoInfo.secondary.ownerAmmo)
 		else
 			weapon.AmmoInfo.secondary.ownerClips = 0
 		end
@@ -1385,7 +1386,8 @@ function cw.core:ParseData(text)
 			end
 
 			if (amount) then
-				text = string.gsub(text, v..string.gsub(key, "([%(%)])", "%%%1")..v, tostring(self:FormatCash(amount, k == 2, lower)))
+				text =
+					string.gsub(text, v..string.gsub(key, "([%(%)])", "%%%1")..v, tostring(self:FormatCash(amount, k == 2, lower)))
 			end
 		end
 	end

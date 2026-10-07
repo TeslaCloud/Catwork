@@ -13,12 +13,12 @@ function PLUGIN:HandleCitizenStatusButton(panel, id)
 	netstream.Start("Application::PDA::Controller::CitizenStatus", panel.player, id)
 end
 
-function PLUGIN:HandleResidenceChangeButton(panel, input)
-	netstream.Start("Application::PDA::Controller::Residence", panel.player, input)
+function PLUGIN:HandleResidenceChangeButton(panel, value)
+	netstream.Start("Application::PDA::Controller::Residence", panel.player, value)
 end
 
-function PLUGIN:HandleJobChangeButton(panel, input)
-	netstream.Start("Application::PDA::Controller::Job", panel.player, input)
+function PLUGIN:HandleJobChangeButton(panel, value)
+	netstream.Start("Application::PDA::Controller::Job", panel.player, value)
 end
 
 function PLUGIN:HandleLoyaltyPointsIssue(panel, value)

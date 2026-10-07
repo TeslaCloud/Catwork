@@ -12,7 +12,7 @@ PLUGIN.author = "Mr. Meow"
 PLUGIN.compatibility = "1.2"
 PLUGIN:SetGlobalAlias("cwWeaponSelect")
 
-local function fixTable(tab)
+local function FixTable(tab)
 	local newTable = {}
 
 	for k, v in pairs(tab) do
@@ -24,7 +24,7 @@ end
 
 if (SERVER) then
 	concommand.Add("selectweapon", function(player, command, arguments)
-		local weapon = fixTable(player:GetWeapons())[tonumber(arguments[1]) or 1]
+		local weapon = FixTable(player:GetWeapons())[tonumber(arguments[1]) or 1]
 
 		if (IsValid(weapon)) then
 			player:SelectWeapon(weapon:GetClass())
@@ -43,18 +43,18 @@ PLUGIN.IndexOffset = PLUGIN.IndexOffset or nil
 PLUGIN.ForcedDir = nil
 PLUGIN.ForcedIndex = nil
 
-local function relativeClamp(n, min, max)
+local function RelativeClamp(n, min, max)
 	if (n > max) then
-		return relativeClamp(n - max, min, max)
+		return RelativeClamp(n - max, min, max)
 	elseif (n < min) then
-		return relativeClamp(max - n, min, max)
+		return RelativeClamp(max - n, min, max)
 	end
 
 	return n
 end
 
-local function safeIndex(tab, idx)
-	return tab[relativeClamp(idx, 1, #tab)]
+local function SafeIndex(tab, idx)
+	return tab[RelativeClamp(idx, 1, #tab)]
 end
 
 -- A function to draw a weapon's information.
@@ -99,7 +99,8 @@ function PLUGIN:DrawWeaponInformation(itemTable, weapon, x, y, alpha)
 		end
 
 		if (itemTable and itemTable.description != "") then
-			text = text..titleColor..cw.lang:TranslateText("#SWEPS_Description"):utf8upper().."</color>\n"..textColor..config.Parse(itemTable.description).."</color>\n"
+			text = text..titleColor..cw.lang:TranslateText("#SWEPS_Description"):utf8upper().."</color>\n"..textColor..
+				config.Parse(itemTable.description).."</color>\n"
 		end
 
 		if (primaryAmmo or secondaryAmmo) then
@@ -115,19 +116,23 @@ function PLUGIN:DrawWeaponInformation(itemTable, weapon, x, y, alpha)
 		end
 
 		if (weapon.Instructions != "") then
-			text = text..titleColor..cw.lang:TranslateText("#SWEPS_Instructions"):utf8upper().."</color>\n"..textColor..weapon.Instructions.."</color>\n"
+			text = text..titleColor..cw.lang:TranslateText("#SWEPS_Instructions"):utf8upper().."</color>\n"..textColor..
+				weapon.Instructions.."</color>\n"
 		end
 
 		if (weapon.Purpose != "") then
-			text = text..titleColor..cw.lang:TranslateText("#SWEPS_Purpose"):utf8upper().."</color>\n"..textColor..weapon.Purpose.."</color>\n"
+			text = text..titleColor..cw.lang:TranslateText("#SWEPS_Purpose"):utf8upper().."</color>\n"..textColor..
+				weapon.Purpose.."</color>\n"
 		end
 
 		if (weapon.Contact != "") then
-			text = text..titleColor..cw.lang:TranslateText("#SWEPS_Contact"):utf8upper().."</color>\n"..textColor..weapon.Contact.."</color>\n"
+			text = text..titleColor..cw.lang:TranslateText("#SWEPS_Contact"):utf8upper().."</color>\n"..textColor..
+				weapon.Contact.."</color>\n"
 		end
 
 		if (weapon.Author != "") then
-			text = text..titleColor..cw.lang:TranslateText("#SWEPS_Author"):utf8upper().."</color>\n"..textColor..weapon.Author.."</color>\n"
+			text = text..titleColor..cw.lang:TranslateText("#SWEPS_Author"):utf8upper().."</color>\n"..textColor..weapon.Author..
+				"</color>\n"
 		end
 
 		weapon.InfoMarkup = markup.Parse(text.."</font>", 248)
@@ -200,7 +205,7 @@ function PLUGIN:HUDPaint()
 
 			for k, v in ipairs(self.Display) do
 				if (!v.target) then
-					local next = safeIndex(targets, (dir and k - 1) or k + 1)
+					local next = SafeIndex(targets, (dir and k - 1) or k + 1)
 
 					-- Make first and last weapons look nicer when scrolling.
 					if (dir and k == 1) then
@@ -244,7 +249,14 @@ function PLUGIN:HUDPaint()
 				textColor = cw.option:GetColor("information")
 			end
 
-			surface.DrawScaledText((IsValid(v.weapon) and v.weapon:GetPrintName():utf8upper()) or "#WeaponSelect_UnknownWeapon", cw.option:GetFont("menu_text_tiny"), v.x, v.y, v.scale, textColor)
+			surface.DrawScaledText(
+				(IsValid(v.weapon) and v.weapon:GetPrintName():utf8upper()) or "#WeaponSelect_UnknownWeapon",
+				cw.option:GetFont("menu_text_tiny"),
+				v.x,
+				v.y,
+				v.scale,
+				textColor
+			)
 		end
 
 		render.SetScissorRect(0, 0, 0, 0, false)
@@ -266,7 +278,7 @@ function PLUGIN:Think()
 end
 
 function PLUGIN:MakeDisplay(index, tab)
-	local clientWeapons = fixTable(cw.client:GetWeapons())
+	local clientWeapons = FixTable(cw.client:GetWeapons())
 	local count = table.Count(clientWeapons)
 	local offsetY = 32
 	local result = {}
@@ -275,7 +287,7 @@ function PLUGIN:MakeDisplay(index, tab)
 		local scale = 1 - math.abs(i * 0.25)
 
 		table.insert(result, {
-			weapon = safeIndex(clientWeapons, index + i),
+			weapon = SafeIndex(clientWeapons, index + i),
 			scale = scale,
 			x = ScrW() - 300,
 			y = ScrH() / 2 - 90 + offsetY - 36 * scale / 2
@@ -333,9 +345,10 @@ do
 			local oldIndex = self.WeaponIndex
 			bind = bind:lower()
 
-			if (bind:find("invprev") and hook.Run("ShouldWeaponMenuOpen", player, oldIndex, self.WeaponIndex) != false and bIsPressed) then
+			if (bind:find("invprev") and hook.Run("ShouldWeaponMenuOpen", player, oldIndex, self.WeaponIndex) != false
+			and bIsPressed) then
 				if (self.IsOpen) then
-					self.WeaponIndex = relativeClamp(self.WeaponIndex - 1, 1, weaponCount)
+					self.WeaponIndex = RelativeClamp(self.WeaponIndex - 1, 1, weaponCount)
 
 					hook.Run("OnWeaponIndexChange", oldIndex, self.WeaponIndex)
 				else
@@ -346,9 +359,10 @@ do
 				end
 
 				return true
-			elseif (bind:find("invnext") and hook.Run("ShouldWeaponMenuOpen", player, oldIndex, self.WeaponIndex) != false and bIsPressed) then
+			elseif (bind:find("invnext") and hook.Run("ShouldWeaponMenuOpen", player, oldIndex, self.WeaponIndex) != false
+			and bIsPressed) then
 				if (self.IsOpen) then
-					self.WeaponIndex = relativeClamp(self.WeaponIndex + 1, 1, weaponCount)
+					self.WeaponIndex = RelativeClamp(self.WeaponIndex + 1, 1, weaponCount)
 
 					hook.Run("OnWeaponIndexChange", oldIndex, self.WeaponIndex)
 				else
@@ -359,7 +373,8 @@ do
 				end
 
 				return true
-			elseif (bind:find("slot") and hook.Run("ShouldWeaponMenuOpen", player, oldIndex, self.WeaponIndex) != false and bIsPressed) then
+			elseif (bind:find("slot") and hook.Run("ShouldWeaponMenuOpen", player, oldIndex, self.WeaponIndex) != false
+			and bIsPressed) then
 				local slot = tonumber(string.match(bind, "slot(%d)")) or 1
 
 				if (IsValid(cpgui_radiomenu)) then
@@ -379,7 +394,7 @@ do
 							self.WeaponIndex = self.WeaponIndex + 1
 						end
 
-						self.WeaponIndex = relativeClamp(self.WeaponIndex, 1, weaponCount)
+						self.WeaponIndex = RelativeClamp(self.WeaponIndex, 1, weaponCount)
 
 						classicScroll = true
 					end
@@ -387,7 +402,7 @@ do
 					prevIndex = index
 
 					if (!classicScroll) then
-						index = relativeClamp(index, 1, weaponCount)
+						index = RelativeClamp(index, 1, weaponCount)
 
 						self.WeaponIndex = index
 					else

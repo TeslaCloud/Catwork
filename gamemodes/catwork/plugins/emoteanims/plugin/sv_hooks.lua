@@ -52,7 +52,8 @@ function cwEmoteAnims:PlayerThink(player, curTime, infoTable)
 		if (player:GetNetVar("StancePos")) then
 			if (tr.Entity != NULL) then
 				if (player:GetPos():Distance(player:GetNetVar("StancePos")) > 16 or !player:IsOnGround() or isMoving
-				or (tr.Entity:GetClass() != "prop_physics" and tr.Entity:GetClass() != "prop_static" and tr.Entity:GetClass() != "worldspawn")) then
+				or (tr.Entity:GetClass() != "prop_physics" and tr.Entity:GetClass() != "prop_static"
+				and tr.Entity:GetClass() != "worldspawn")) then
 					player:SetForcedAnimation(false)
 					player.cwPreviousPos = nil
 					player:SetNetVar("StancePos", Vector(0, 0, 0))

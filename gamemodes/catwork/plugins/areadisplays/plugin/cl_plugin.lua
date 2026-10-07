@@ -128,10 +128,10 @@ function cwAreaDisplays:DrawDisplay3D(displayInfo)
 		local areaTable = displayInfo.areaTable
 
 		cam.Start3D2D(areaTable.position, areaTable.angles, (areaTable.scale or 1) * 0.2)
-			cw.core:DrawInfo(areaTable.name, 0, 0, colorWhite, displayInfo.alpha, nil,
-				function(x, y, width, height)
-					return x, y - (height / 2)
-				end, 3
+		cw.core:DrawInfo(areaTable.name, 0, 0, colorWhite, displayInfo.alpha, nil,
+			function(x, y, width, height)
+				return x, y - (height / 2)
+			end, 3
 			)
 		cam.End3D2D()
 	cam.End3D()

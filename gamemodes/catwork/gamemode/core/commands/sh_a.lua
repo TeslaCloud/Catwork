@@ -15,7 +15,7 @@ COMMAND.alias = { "AD", "OP" }
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
-  local listeners = {}
+	local listeners = {}
 
 	for k, v in ipairs(_player.GetAll()) do
 		if (v:IsUserGroup("operator") or v:IsAdmin()

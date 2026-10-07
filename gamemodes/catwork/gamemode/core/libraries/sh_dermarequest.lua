@@ -22,7 +22,12 @@ if (SERVER) then
 
 	function cw.dermaRequest:RequestString(player, title, question, default, Callback)
 		local rID = self:GenerateID()
-		netstream.Start(player, "dermaRequest_stringQuery", { id = rID, title = title, question = question, default = default })
+		netstream.Start(player, "dermaRequest_stringQuery", {
+			id = rID,
+			title = title,
+			question = question,
+			default = default
+		})
 		hooks[rID] = { Callback = Callback, player = player }
 	end
 

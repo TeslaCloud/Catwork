@@ -295,7 +295,11 @@ local function BuildCreateQuery(queryObj)
 
 		for i = 1, #queryObj.createList do
 			if (cw.database.Module == "sqlite") then
-				createList[#createList + 1] = queryObj.createList[i][1].." "..string.gsub(string.gsub(string.gsub(queryObj.createList[i][2], "AUTO_INCREMENT", ""), "AUTOINCREMENT", ""), "INT ", "INTEGER ")
+				createList[#createList + 1] = queryObj.createList[i][1].." "..string.gsub(
+					string.gsub(string.gsub(queryObj.createList[i][2], "AUTO_INCREMENT", ""), "AUTOINCREMENT", ""),
+					"INT ",
+					"INTEGER "
+				)
 			else
 				createList[#createList + 1] = queryObj.createList[i][1].." "..queryObj.createList[i][2]
 			end
@@ -712,7 +716,9 @@ function cw.database:EasyWrite(tableName, where, data)
 	end
 
 	if (!where) then
-		ErrorNoHalt("[Catwork] Easy MySQL error! 'where' table is malformed! ([1] = "..type(where[1])..", [2] = "..type(where[2])..")\n")
+		ErrorNoHalt(
+			"[Catwork] Easy MySQL error! 'where' table is malformed! ([1] = "..type(where[1])..", [2] = "..type(where[2])..")\n"
+		)
 
 		return
 	end
@@ -777,7 +783,10 @@ end
 
 function cw.database:EasyRead(tableName, where, callback)
 	if (!where) then
-		ErrorNoHalt("[Catwork] Easy MySQL Read error! 'where' table is malformed! ([1] = "..type(where[1])..", [2] = "..type(where[2])..")\n")
+		ErrorNoHalt(
+			"[Catwork] Easy MySQL Read error! 'where' table is malformed! ([1] = "..type(where[1])..", [2] = "..type(where[2])..
+				")\n"
+		)
 		return false
 	end
 

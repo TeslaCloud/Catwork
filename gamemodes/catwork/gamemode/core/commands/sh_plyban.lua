@@ -36,7 +36,9 @@ function COMMAND:OnRun(player, arguments)
 							if (hours >= 1) then
 								cw.player:NotifyAll(L("Command_Plyban_Hours", player:Name(), steamName, hours).." "..reason)
 							else
-								cw.player:NotifyAll(L("Command_Plyban_Minutes", player:Name(), steamName, math.Round(duration / 60)).." "..reason)
+								cw.player:NotifyAll(
+									L("Command_Plyban_Minutes", player:Name(), steamName, math.Round(duration / 60)).." "..reason
+								)
 							end
 						else
 							cw.player:NotifyAll(L("Command_Plyban_Permanent", player:Name(), steamName).." "..reason)

@@ -308,9 +308,9 @@ end
 -- Called when a player's weapons should be given.
 function Schema:PlayerGiveWeapons(player)
 	if (player:GetFaction() == FACTION_MPF) then
-			if (self:IsPlayerCombineRank(player, "GHOST")) then
-		cw.player:GiveSpawnWeapon(player, "weapon_ep2sniper")
-			end
+		if (self:IsPlayerCombineRank(player, "GHOST")) then
+			cw.player:GiveSpawnWeapon(player, "weapon_ep2sniper")
+		end
 	elseif (player:GetFaction() == FACTION_VORT) then
 		cw.player:GiveSpawnWeapon(player, "weapon_vort")
 	elseif (player:GetFaction() == FACTION_VORT_SLAVE) then
@@ -582,7 +582,8 @@ function Schema:KeyPress(player, key)
 						local playerDot = v:GetAimVector():Dot((position - playerPosition):GetNormal())
 						local threshold = 0.2 + math.Clamp((0.6 / 384) * playerPosition:Distance(position), 0, 0.6)
 
-						if (cw.player:CanSeeEntity(v, scanner, 0.9, { marker }) and playerDot >= threshold and scannerDot >= threshold) then
+						if (cw.player:CanSeeEntity(v, scanner, 0.9, { marker }) and playerDot >= threshold
+						and scannerDot >= threshold) then
 							if (player != v) then
 								if (v:GetFaction() == FACTION_CITIZEN) then
 									if (!v:GetForcedAnimation()) then
@@ -711,7 +712,7 @@ function Schema:PlayerAdjustCharacterScreenInfo(player, character, info)
 		end
 
 	--	if self.OTACanUse then
-			info.details = L("CharScreen_OTAAvailable")
+		info.details = L("CharScreen_OTAAvailable")
 	--	else
 	--		info.details = "Overwatch Transhuman Arms в данный момент в стазисе."
 	--	end
@@ -771,7 +772,14 @@ function Schema:PlayerRadioUsed(player, text, listeners, eavesdroppers)
 	end
 
 	if (table.Count(newEavesdroppers) > 0) then
-		chatbox.AddText(newEavesdroppers, text, { suffix = " #Suffix_StationaryRadio ", sender = player, isPlayerMessage = true, filter = "ic", radius = 0, textColor = Color(255, 255, 200, 255) })
+		chatbox.AddText(newEavesdroppers, text, {
+			suffix = " #Suffix_StationaryRadio ",
+			sender = player,
+			isPlayerMessage = true,
+			filter = "ic",
+			radius = 0,
+			textColor = Color(255, 255, 200, 255)
+		})
 	end
 end
 
@@ -783,7 +791,8 @@ function Schema:PlayerAdjustRadioInfo(player, info)
 		if (v:HasInitialized()) then
 			if (isCombine and Schema:PlayerIsCombine(v)) then
 				info.listeners[v] = v
-			elseif (v:HasItemByID("handheld_radio") and v:GetCharacterData("frequency") == player:GetCharacterData("frequency")) then
+			elseif (v:HasItemByID("handheld_radio")
+			and v:GetCharacterData("frequency") == player:GetCharacterData("frequency")) then
 				if (v:GetNetVar("tied") == 0) then
 					info.listeners[v] = v
 				end
@@ -953,7 +962,8 @@ end
 function Schema:PlayerCanUseCharacter(player, character)
 	if (character.data["permakilled"]) then
 		return L("CharIsPermaKilled", character.name)
-	-- elseif (character.faction == FACTION_OTA) and !self:IsStringCombineRank(character.name, "GUARD") and !self.OTACanUse then
+	-- elseif (character.faction == FACTION_OTA) and !self:IsStringCombineRank(character.name, "GUARD") and !self.OTACanUse
+	-- then
 	--	return "Overwatch Transhuman Arms сейчас в стазисе!"
 	elseif (character.faction == FACTION_MPF) then
 		if (!self:CanUseCP(player) and self:GetPlayerCombineRank(player) < 6) then
@@ -999,7 +1009,9 @@ end
 
 -- Called when a player attempts to use a door.
 function Schema:PlayerCanUseDoor(player, door)
-	if (player:GetNetVar("tied") != 0 or (!self:PlayerIsCombine(player) and player:GetFaction() != FACTION_ADMIN and !player:HasItemByID("combine_lock_access_x"))) then
+	if (player:GetNetVar("tied") != 0
+	or (!self:PlayerIsCombine(player) and player:GetFaction() != FACTION_ADMIN
+	and !player:HasItemByID("combine_lock_access_x"))) then
 		return false
 	end
 end
@@ -1104,7 +1116,8 @@ function Schema:PlayerUse(player, entity)
 
 	if (player:KeyDown(IN_SPEED) and cw.entity:IsDoor(entity)) then
 		if IsValid(entity.combineLock) then
-			if (self:PlayerIsCombine(player) or player:GetFaction() == FACTION_ADMIN or Schema:PlayerHasCombineLockAccess(player, entity.combineLock.access, entity.combineLock.rank)) then
+			if (self:PlayerIsCombine(player) or player:GetFaction() == FACTION_ADMIN
+			or Schema:PlayerHasCombineLockAccess(player, entity.combineLock.access, entity.combineLock.rank)) then
 				if (!player.nextCombineLock or curTime >= player.nextCombineLock) then
 					entity.combineLock:ToggleWithChecks(player)
 
@@ -1291,7 +1304,7 @@ function Schema:PlayerPlayPainSound(player, gender, damageInfo, hitGroup)
 	end
 end
 
-local function splitVoiceCodes(str)
+local function SplitVoiceCodes(str)
 	local chars = string.Explode("", str)
 	local exploded = {}
 	local curPhrase = ""
@@ -1401,8 +1414,10 @@ function Schema:PlayerDeath(player, inflictor, attacker, damageInfo)
 	end
 
 	if ((attacker:IsPlayer() or attacker:IsNPC()) and damageInfo) then
-		if (config.Get("enable_permakill"):Get() and !player:GetCharacterData("permakilled") and !cw.player:HasFlags(player, "d")) then
-			local miscellaneousDamage = damageInfo:IsBulletDamage() or damageInfo:IsFallDamage() or damageInfo:IsExplosionDamage()
+		if (config.Get("enable_permakill"):Get() and !player:GetCharacterData("permakilled")
+		and !cw.player:HasFlags(player, "d")) then
+			local miscellaneousDamage =
+				damageInfo:IsBulletDamage() or damageInfo:IsFallDamage() or damageInfo:IsExplosionDamage()
 			local meleeDamage = damageInfo:IsDamageType(DMG_CLUB) or damageInfo:IsDamageType(DMG_SLASH)
 
 			if (miscellaneousDamage or meleeDamage) then

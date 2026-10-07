@@ -559,7 +559,8 @@ function GM:CreateMove(userCmd)
 
 	if (ragdollEyeAngles and IsValid(cw.client)) then
 		local defaultSensitivity = 0.05
-		local sensitivity = defaultSensitivity * (hook.Run("AdjustMouseSensitivity", defaultSensitivity) or defaultSensitivity)
+		local sensitivity =
+			defaultSensitivity * (hook.Run("AdjustMouseSensitivity", defaultSensitivity) or defaultSensitivity)
 
 		if (sensitivity <= 0) then
 			sensitivity = defaultSensitivity
@@ -728,7 +729,11 @@ function GM:CalcViewModelView(weapon, viewModel, oldEyePos, oldEyeAngles, eyePos
 	eyeAngles:RotateAroundAxis(eyeAngles:Forward(), viewInfo.angles.y * fraction)
 	eyeAngles:RotateAroundAxis(eyeAngles:Right(), viewInfo.angles.r * fraction)
 
-	oldEyePos = oldEyePos + ((eyeAngles:Forward() * viewInfo.origin.y) + (eyeAngles:Right() * viewInfo.origin.x) + (eyeAngles:Up() * viewInfo.origin.z)) * fraction
+	oldEyePos = oldEyePos + (
+		(eyeAngles:Forward() * viewInfo.origin.y)
+		+ (eyeAngles:Right() * viewInfo.origin.x)
+		+ (eyeAngles:Up() * viewInfo.origin.z)
+	) * fraction
 
 	cw.client.cwRaisedFraction = Lerp(FrameTime() * 2, cw.client.cwRaisedFraction or 100, targetValue)
 
@@ -836,7 +841,8 @@ function GM:MenuItemsAdd(menuItems)
 
 	if (config.Get("show_business"):GetBoolean() == true) then
 		local businessName = cw.option:GetKey("name_business")
-		-- menuItems:Add(businessName, "cwBusiness", cw.option:GetKey("description_business"), cw.option:GetKey("icon_data_business"))
+		-- menuItems:Add(businessName, "cwBusiness", cw.option:GetKey("description_business"),
+		-- cw.option:GetKey("icon_data_business"))
 	end
 end
 
@@ -1121,7 +1127,13 @@ function GM:HUDPaintForeground()
 
 	if (LocalPlayer().ErrorBoxTime and LocalPlayer().ErrorBoxTime > (curTime)) then
 		draw.RoundedBox(2, scrW - 300, 8, 292, 24, Color(math.Clamp(255 * (math.sin(curTime)), 150, 255), 90, 90))
-		draw.SimpleText(L"#HookErrors", cw.fonts:GetSize(cw.option:GetFont("menu_text_small"), 18), scrW - 292, 10, Color(255, 255, 255))
+		draw.SimpleText(
+			L"#HookErrors",
+			cw.fonts:GetSize(cw.option:GetFont("menu_text_small"), 18),
+			scrW - 292,
+			10,
+			Color(255, 255, 255)
+		)
 	end
 
 	if (cw.client:GetRagdollState() == RAGDOLL_FALLENOVER) then
@@ -1199,7 +1211,13 @@ function GM:HUDPaintForeground()
 		draw.RoundedBox(0, 0, 0, scrW, scrH, Color(0, 0, 0, cw.client.respawnAlpha))
 
 		draw.SimpleText("#DeathScreen_YouDied", font, 16, 16, color_white)
-		draw.SimpleText("#DeathScreen_SpawnPercentage:"..respawnRounded..";%", font, 16, 16 + draw.GetFontHeight(font), color_white)
+		draw.SimpleText(
+			"#DeathScreen_SpawnPercentage:"..respawnRounded..";%",
+			font,
+			16,
+			16 + draw.GetFontHeight(font),
+			color_white
+		)
 
 		draw.RoundedBox(0, 0, 0, scrW / 100 * percentage, 2, color_white)
 
@@ -1426,7 +1444,8 @@ function GM:HUDDrawTargetID()
 										local unrecognisedName, usedPhysDesc = cw.player:GetUnrecognisedName(entity)
 										local wrappedTable = { unrecognisedName }
 										local teamColor = _team.GetColor(entity:Team())
-										local result = hook.Run("PlayerCanShowUnrecognised", entity, x, y, unrecognisedName, teamColor, alpha, flashAlpha)
+										local result =
+											hook.Run("PlayerCanShowUnrecognised", entity, x, y, unrecognisedName, teamColor, alpha, flashAlpha)
 										local newY
 
 										if (isstring(result)) then
@@ -1596,26 +1615,56 @@ function GM:GetProgressBarInfo()
 
 	if (!cw.client:Alive() and action == "spawn") then
 		return
-		-- return {text = cw.lang:TranslateText("#ProgressBarInfo_spawn"), percentage = percentage, flash = percentage < 10, isBlocky = true, blocksAmt = 32}
+		-- return {text = cw.lang:TranslateText("#ProgressBarInfo_spawn"), percentage = percentage, flash = percentage < 10,
+		-- isBlocky = true, blocksAmt = 32}
 	end
 
 	if (!cw.client:IsRagdolled()) then
 		if (action == "lock") then
-			return { text = cw.lang:TranslateText("#ProgressBarInfo_lock"), percentage = percentage, flash = percentage < 10, isBlocky = true, blocksAmt = 32 }
+			return {
+				text = cw.lang:TranslateText("#ProgressBarInfo_lock"),
+				percentage = percentage,
+				flash = percentage < 10,
+				isBlocky = true,
+				blocksAmt = 32
+			}
 		elseif (action == "unlock") then
-			return { text = cw.lang:TranslateText("#ProgressBarInfo_unlock"), percentage = percentage, flash = percentage < 10, isBlocky = true, blocksAmt = 32 }
+			return {
+				text = cw.lang:TranslateText("#ProgressBarInfo_unlock"),
+				percentage = percentage,
+				flash = percentage < 10,
+				isBlocky = true,
+				blocksAmt = 32
+			}
 		end
 	elseif (action == "unragdoll") then
 		if (cw.client:GetRagdollState() == RAGDOLL_FALLENOVER) then
-			return { text = cw.lang:TranslateText("#ProgressBarInfo_unragdoll_fallenover"), percentage = percentage, flash = percentage < 10, isBlocky = true, blocksAmt = 32 }
+			return {
+				text = cw.lang:TranslateText("#ProgressBarInfo_unragdoll_fallenover"),
+				percentage = percentage,
+				flash = percentage < 10,
+				isBlocky = true,
+				blocksAmt = 32
+			}
 		else
-			return { text = cw.lang:TranslateText("#ProgressBarInfo_unragdoll"), percentage = percentage, flash = percentage < 10, isBlocky = true, blocksAmt = 32 }
+			return {
+				text = cw.lang:TranslateText("#ProgressBarInfo_unragdoll"),
+				percentage = percentage,
+				flash = percentage < 10,
+				isBlocky = true,
+				blocksAmt = 32
+			}
 		end
 	elseif (cw.client:GetRagdollState() == RAGDOLL_FALLENOVER) then
 		local fallenOver = cw.client:GetDTBool(BOOL_FALLENOVER)
 
 		if (fallenOver and hook.Run("PlayerCanGetUp")) then
-			return { text = cw.lang:TranslateText("#ProgressBarInfo_PlayerCanGetUp"), percentage = 100, isBlocky = true, blocksAmt = 32 }
+			return {
+				text = cw.lang:TranslateText("#ProgressBarInfo_PlayerCanGetUp"),
+				percentage = 100,
+				isBlocky = true,
+				blocksAmt = 32
+			}
 		end
 	end
 end
@@ -1659,7 +1708,10 @@ function GM:GetPlayerInfoText(playerInfoText)
 
 	if (config.Get("cash_enabled"):Get()) then
 		if (cash > 0) then
-			playerInfoText:Add("CASH", cw.lang:TranslateText(cw.option:GetKey("name_cash")..": "..cw.core:FormatCash(cash, true)))
+			playerInfoText:Add(
+				"CASH",
+				cw.lang:TranslateText(cw.option:GetKey("name_cash")..": "..cw.core:FormatCash(cash, true))
+			)
 		end
 
 		if (wages > 0) then
@@ -1673,7 +1725,8 @@ end
 
 --[[
 	@codebase Client
-	@details This function is called when the player's fade distance is needed for their target text (when you look at them).
+	@details This function is called when the player's fade distance is needed for their target text (when you look at
+	them).
 	@class Clockwork
 	@param Table The player we are finding the distance for.
 	@returns Int The fade distance, defaulted at 4096.
@@ -1819,9 +1872,14 @@ function GM:GetPlayerScoreboardOptions(player, options, menu)
 
 	if (charTakeFlags and cw.player:HasFlags(cw.client, charTakeFlags.access)) then
 		options["#ScoreboardOptions_CharTakeFlags"] = function()
-			Derma_StringRequest(player:Name(), "#ScoreboardOptions_CharTakeFlags_StringRequest", player:GetDTString(STRING_FLAGS), function(text)
-				cw.core:RunCommand("CharTakeFlags", player:Name(), text)
-			end)
+			Derma_StringRequest(
+				player:Name(),
+				"#ScoreboardOptions_CharTakeFlags_StringRequest",
+				player:GetDTString(STRING_FLAGS),
+				function(text)
+					cw.core:RunCommand("CharTakeFlags", player:Name(), text)
+				end
+			)
 		end
 	end
 
@@ -2379,13 +2437,24 @@ function GM:HUDDrawScoreBoard()
 		end
 
 		cw.core:DrawSimpleGradientBox(0, 0, 0, scrW, scrH, Color(0, 0, 0, cw.DataStreamedAlpha))
-		draw.SimpleText(textString, introTextSmallFont, scrW / 2, scrH * 0.75, Color(colorWhite.r, colorWhite.g, colorWhite.b, cw.DataStreamedAlpha), 1, 1)
+		draw.SimpleText(
+			textString,
+			introTextSmallFont,
+			scrW / 2,
+			scrH * 0.75,
+			Color(colorWhite.r, colorWhite.g, colorWhite.b, cw.DataStreamedAlpha),
+			1,
+			1
+		)
 
 		drawPendingScreenBlack = nil
 	end
 
 	if (drawCharacterLoading) then
-		hook.Run("HUDPaintCharacterLoading", math.Clamp((255 / cw.CharacterLoadingDelay) * (cw.LastChatBoxCheck - curTime), 0, 255))
+		hook.Run(
+			"HUDPaintCharacterLoading",
+			math.Clamp((255 / cw.CharacterLoadingDelay) * (cw.LastChatBoxCheck - curTime), 0, 255)
+		)
 	elseif (drawPendingScreenBlack) then
 		cw.core:DrawSimpleGradientBox(0, 0, 0, scrW, scrH, Color(0, 0, 0, 255))
 	end
@@ -2439,7 +2508,14 @@ function GM:PostDrawBackgroundBlurs()
 		local menuPanel = cw.TitledMenu.menuPanel
 		local menuTitle = cw.TitledMenu.title or ""
 
-		cw.core:DrawSimpleGradientBox(2, menuPanel.x - 4, menuPanel.y - 4, menuPanel:GetWide() + 8, menuPanel:GetTall() + 8, backgroundColor)
+		cw.core:DrawSimpleGradientBox(
+			2,
+			menuPanel.x - 4,
+			menuPanel.y - 4,
+			menuPanel:GetWide() + 8,
+			menuPanel:GetTall() + 8,
+			backgroundColor
+		)
 		cw.core:OverrideMainFont(menuTextTiny)
 			cw.core:DrawInfo(menuTitle, menuPanel.x, menuPanel.y, colorWhite, 255, true, function(x, y, width, height)
 				return x, y - height - 4
@@ -2490,7 +2566,8 @@ function GM:HUDPaint()
 			end
 		end
 
-		if (cw.event:CanRun("view", "vignette") and config.GetVal("enable_vignette") and CW_CONVAR_VIGNETTE:GetInt() == 1) then
+		if (cw.event:CanRun("view", "vignette") and config.GetVal("enable_vignette")
+		and CW_CONVAR_VIGNETTE:GetInt() == 1) then
 			hook.Run("DrawPlayerVignette")
 		end
 

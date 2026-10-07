@@ -113,7 +113,8 @@ function cwCTO:DoPostBiosignalLoss(player)
 
 	-- Alert all other units.
 	Schema:AddCombineDisplayLine(L("CTO_Display_DownloadingLostBiosignal"), Color(255, 255, 255, 255))
-	-- Schema:AddCombineDisplayLine("WARNING! Biosignal lost for protection team unit "..digits.." at "..location.."...", Color(255, 0, 0, 255))
+	-- Schema:AddCombineDisplayLine("WARNING! Biosignal lost for protection team unit "..digits.." at "..location.."...",
+	-- Color(255, 0, 0, 255))
 	for k, v in ipairs(_player.GetAll()) do
 		if (Schema:PlayerIsCombine(v) and v != player and !v:GetSharedVar("IsBiosignalGone")) then
 			v:EmitSound("npc/metropolice/vo/on"..math.random(1, 2)..".wav")

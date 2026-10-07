@@ -8,7 +8,8 @@
 
 -- Called when a player's character has unloaded.
 function cwSpawnSaver:PlayerCharacterUnloaded(player)
-	if (config.Get("spawn_where_left"):Get() and hook.Run("ShouldSavePlayerSpawn", player) != false and player:Alive()) then
+	if (config.Get("spawn_where_left"):Get() and hook.Run("ShouldSavePlayerSpawn", player) != false
+	and player:Alive()) then
 		local position = player:GetPos()
 		local posTable = {
 			map = game.GetMap(),

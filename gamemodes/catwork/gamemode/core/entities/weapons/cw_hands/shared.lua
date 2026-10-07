@@ -113,7 +113,9 @@ function SWEP:PrimaryAttack()
 			self.Weapon:SetNextPrimaryFire(CurTime() + 0.5)
 			self.Weapon:SetNextSecondaryFire(CurTime() + 0.7)
 			timer.Simple(0.10, function ()self.Weapon:EmitSound(self.SwingSound) end)
-			self.Primary.Damage = self.Primary.Damage -- + cw.attributes:Get(self.Owner, ATB_MELEE, nil, true) * 0.03 + cw.attributes:Get(self.Owner, ATB_STRENGTH, nil, true) * 0.03
+			self.Primary.Damage = self.Primary.Damage
+			-- + cw.attributes:Get(self.Owner, ATB_MELEE, nil, true) * 0.03
+			-- + cw.attributes:Get(self.Owner, ATB_STRENGTH, nil, true) * 0.03
 
 			local trace = self.Owner:GetEyeTraceNoCursor()
 
@@ -247,7 +249,7 @@ SetupDataTables
 
 function SWEP:SetupDataTables()
 	self:NetworkVar("Float", 0, "NextMeleeAttack")
- 	self:NetworkVar("Float", 1, "NextIdle")
+	self:NetworkVar("Float", 1, "NextIdle")
 end
 
 /*---------------------------------------------------------
@@ -255,9 +257,9 @@ UpdateNextIdle
 ---------------------------------------------------------*/
 
 function SWEP:UpdateNextIdle()
- 	local vm = self.Owner:GetViewModel()
+	local vm = self.Owner:GetViewModel()
 
- 	self:SetNextIdle(CurTime() + vm:SequenceDuration())
+	self:SetNextIdle(CurTime() + vm:SequenceDuration())
 end
 
 /*---------------------------------------------------------
@@ -301,18 +303,18 @@ function SWEP:PlayPunchAnimation()
 		self.Weapon:CallOnClient("PlayPunchAnimation", "")
 	end
 
- 	if (self.left == nil) then self.left = true else self.left = !self.left end
+	if (self.left == nil) then self.left = true else self.left = !self.left end
 
 	local anim = "fists_right"
 	local ownerAnim = PLAYER_ATTACK1
 
- 	if (self.left) then
+	if (self.left) then
 		anim = "fists_left"
 		-- ownerAnim = PLAYER_ATTACK2
 	end
 
- 	local vm = self.Owner:GetViewModel()
+	local vm = self.Owner:GetViewModel()
 
- 	self.Owner:SetAnimation(ownerAnim)
- 	vm:SendViewModelMatchingSequence(vm:LookupSequence(anim))
+	self.Owner:SetAnimation(ownerAnim)
+	vm:SendViewModelMatchingSequence(vm:LookupSequence(anim))
 end

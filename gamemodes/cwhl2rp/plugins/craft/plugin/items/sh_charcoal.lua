@@ -11,5 +11,5 @@ function ITEM:OnDrop(player, position) end
 
 	-- Called when the item entity has spawned.
 function ITEM:OnEntitySpawned(entity)
-		entity:SetMaterial("models/props_foliage/tree_deciduous_01a_trunk")
-	end
+	entity:SetMaterial("models/props_foliage/tree_deciduous_01a_trunk")
+end

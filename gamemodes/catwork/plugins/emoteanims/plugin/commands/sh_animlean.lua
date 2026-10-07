@@ -76,5 +76,9 @@ end
 COMMAND:Register()
 
 if (CLIENT) then
-	cw.quickmenu:AddCommand("#Emotes_animLean", "#Emotes", COMMAND.name, { { "#Emotes_animLean_ArmsBack", "ArmsBack" }, { "#Emotes_animLean_ArmsDown", "ArmsDown" }, "#Emotes_animLean_Normal" })
+	cw.quickmenu:AddCommand("#Emotes_animLean", "#Emotes", COMMAND.name, {
+		{ "#Emotes_animLean_ArmsBack", "ArmsBack" },
+		{ "#Emotes_animLean_ArmsDown", "ArmsDown" },
+		"#Emotes_animLean_Normal"
+	})
 end

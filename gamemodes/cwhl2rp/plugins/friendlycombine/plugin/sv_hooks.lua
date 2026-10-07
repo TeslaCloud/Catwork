@@ -22,7 +22,7 @@ local stored = {
 	"npc_turret_floor"
 }
 
-local function applyNPCRelations(player, bHostile)
+local function ApplyNPCRelations(player, bHostile)
 	if (!bHostile) then
 		player:SetVar("faction", "f_combine")
 		player:SetName("f_combine")
@@ -60,34 +60,36 @@ function PLUGIN:PlayerSpawnedNPC(player, npc)
 end
 
 function PLUGIN:PlayerRagdolled(player, state, ragTab)
-	applyNPCRelations(player, false)
+	ApplyNPCRelations(player, false)
 end
 
 function PLUGIN:PlayerUnragdolled(player, state, ragdollTable)
-	if (!player:IsCombine() and player:GetFaction(player) != FACTION_ADMIN and !player:HasItemByID("combine_security_card")) then
-		applyNPCRelations(player, true)
+	if (!player:IsCombine() and player:GetFaction(player) != FACTION_ADMIN
+	and !player:HasItemByID("combine_security_card")) then
+		ApplyNPCRelations(player, true)
 	end
 end
 
 function PLUGIN:PlayerCharacterLoaded(player)
 	local faction = player:GetFaction(player)
 
-	if (faction == FACTION_MPF or faction == FACTION_OTA or faction == FACTION_ADMIN or player:HasItemByID("combine_security_card")) then
-		applyNPCRelations(player, false)
+	if (faction == FACTION_MPF or faction == FACTION_OTA or faction == FACTION_ADMIN
+	or player:HasItemByID("combine_security_card")) then
+		ApplyNPCRelations(player, false)
 	else
-		applyNPCRelations(player, true)
+		ApplyNPCRelations(player, true)
 	end
 end
 
 function PLUGIN:PlayerItemTaken(player, itemTable)
 	if (itemTable.uniqueID == "combine_security_card" and player:GetItemCountByID("combine_security_card") < 2) then
-		applyNPCRelations(player, true)
+		ApplyNPCRelations(player, true)
 	end
 end
 
 function PLUGIN:PlayerItemGiven(player, itemTable, bForce)
 	if (itemTable.uniqueID == "combine_security_card") then
-		applyNPCRelations(player, false)
+		ApplyNPCRelations(player, false)
 	end
 end
 

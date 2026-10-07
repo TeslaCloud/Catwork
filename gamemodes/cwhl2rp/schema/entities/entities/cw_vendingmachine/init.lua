@@ -39,11 +39,26 @@ function ENT:CreateWater(activator)
 	local up = self:GetUp() * -24
 
 	if (chance == 20) then
-		cw.entity:CreateItem(activator, item.CreateInstance("special_breens_water"), self:GetPos() + forward + right + up, self:GetAngles())
+		cw.entity:CreateItem(
+			activator,
+			item.CreateInstance("special_breens_water"),
+			self:GetPos() + forward + right + up,
+			self:GetAngles()
+		)
 	elseif (chance >= 10) then
-		cw.entity:CreateItem(activator, item.CreateInstance("smooth_breens_water"), self:GetPos() + forward + right + up, self:GetAngles())
+		cw.entity:CreateItem(
+			activator,
+			item.CreateInstance("smooth_breens_water"),
+			self:GetPos() + forward + right + up,
+			self:GetAngles()
+		)
 	else
-		cw.entity:CreateItem(activator, item.CreateInstance("breens_water"), self:GetPos() + forward + right + up, self:GetAngles())
+		cw.entity:CreateItem(
+			activator,
+			item.CreateInstance("breens_water"),
+			self:GetPos() + forward + right + up,
+			self:GetAngles()
+		)
 	end
 end
 

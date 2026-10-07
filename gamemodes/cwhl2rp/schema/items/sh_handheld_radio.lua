@@ -22,7 +22,7 @@ ITEM.customFunctions = { "Frequency" }
 function ITEM:OnDrop(player, position) end
 
 if (SERVER) then
-function ITEM:OnCustomFunction(player, name)
+	function ITEM:OnCustomFunction(player, name)
 		if (name == "Frequency") then
 			netstream.Start(player, "Frequency", player:GetCharacterData("frequency", ""))
 		end

@@ -144,7 +144,8 @@ end
 function PANEL:OverrideTextColor(color)
 	if (color) then
 		self.OverrideColorNormal = color
-		self.OverrideColorHover = Color(math.max(color.r - 50, 0), math.max(color.g - 50, 0), math.max(color.b - 50, 0), color.a)
+		self.OverrideColorHover =
+			Color(math.max(color.r - 50, 0), math.max(color.g - 50, 0), math.max(color.b - 50, 0), color.a)
 	else
 		self.OverrideColorNormal = nil
 		self.OverrideColorHover = nil

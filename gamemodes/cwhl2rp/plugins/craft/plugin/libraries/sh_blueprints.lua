@@ -77,7 +77,8 @@ function cw.blueprints:New()
 end
 
 function cw.blueprints:Register(blueprint)
-	blueprint.uniqueID = string.lower(string.gsub(blueprint.uniqueID or string.gsub(blueprint.name, "%s", "_"), "['%.]", ""))
+	blueprint.uniqueID =
+		string.lower(string.gsub(blueprint.uniqueID or string.gsub(blueprint.name, "%s", "_"), "['%.]", ""))
 	stored[blueprint.uniqueID] = blueprint
 
 	if (blueprint.model) then

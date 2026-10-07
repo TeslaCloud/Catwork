@@ -84,7 +84,7 @@ function base64.decode(data)
 
 		local c = 0
 		for i = 1, 8 do c = c + (x:sub(i, i) == "1" and 2 ^ (8 - i) or 0) end
-			return string.char(c)
+		return string.char(c)
 	end))
 end
 
@@ -1018,7 +1018,18 @@ function cw.core:DrawBars(info, class)
 		cw.option:SetFont("bar_text", cw.option:GetFont("auto_bar_text"))
 
 			for k, v in ipairs(cw.bars.stored) do
-				cw.bars.y = self:DrawBar(cw.bars.x, cw.bars.y, cw.bars.width, cw.bars.height, v.color, v.text, v.value, v.maximum, v.flash, table.Copy(v)) + (cw.bars.padding + 2)
+				cw.bars.y = self:DrawBar(
+					cw.bars.x,
+					cw.bars.y,
+					cw.bars.width,
+					cw.bars.height,
+					v.color,
+					v.text,
+					v.value,
+					v.maximum,
+					v.flash,
+					table.Copy(v)
+				) + (cw.bars.padding + 2)
 			end
 
 		cw.option:SetFont("bar_text", barTextFont)
@@ -1252,7 +1263,13 @@ function cw.core:DrawBar(x, y, width, height, color, text, value, maximum, flash
 				local textWide = util.GetTextSize(cw.fonts:GetSize("hl2_BarsFont", 15), limitText)
 
 				render.SetScissorRect(barInfo.x + width - length, barInfo.y, barInfo.x + width, barInfo.y + barInfo.height, true)
-					draw.SimpleText(limitText, cw.fonts:GetSize("hl2_BarsFont", 15), barInfo.x + barInfo.width - textWide - 8, barInfo.y - 1, Color("white"))
+					draw.SimpleText(
+						limitText,
+						cw.fonts:GetSize("hl2_BarsFont", 15),
+						barInfo.x + barInfo.width - textWide - 8,
+						barInfo.y - 1,
+						Color("white")
+					)
 				render.SetScissorRect(0, 0, 0, 0, false)
 			end
 		end
@@ -1693,7 +1710,10 @@ function cw.core:HandleItemSpawnIconClick(itemTable, spawnIcon, Callback)
 	hook.Run("PlayerAdjustItemFunctions", itemTable, itemFunctions)
 	self:ValidateTableKeys(itemFunctions)
 
-	table.sort(itemFunctions, function(a, b) return ((type(a) == "table" and a.title) or a) < ((type(b) == "table" and b.title) or b) end)
+	table.sort(
+		itemFunctions,
+		function(a, b) return ((type(a) == "table" and a.title) or a) < ((type(b) == "table" and b.title) or b) end
+	)
 	if (#itemFunctions == 0 and !Callback) then return end
 
 	local options = {}
@@ -2221,7 +2241,15 @@ function cw.core:DrawCinematic(cinematicTable, curTime)
 	if (cinematicTable) then
 		draw.RoundedBox(0, 0, -maxBarLength + cinematicTable.add, ScrW(), maxBarLength, Color(0, 0, 0, 255))
 		draw.RoundedBox(0, 0, ScrH() - cinematicTable.add, ScrW(), maxBarLength, Color(0, 0, 0, 255))
-		draw.SimpleText(cinematicTable.text, font, ScrW() / 2, (ScrH() - cinematicTable.add) + (maxBarLength / 2), cinematicTable.color, 1, 1)
+		draw.SimpleText(
+			cinematicTable.text,
+			font,
+			ScrW() / 2,
+			(ScrH() - cinematicTable.add) + (maxBarLength / 2),
+			cinematicTable.color,
+			1,
+			1
+		)
 	end
 end
 
@@ -2255,7 +2283,12 @@ function cw.core:DrawCinematicIntro(curTime)
 				local alpha = math.Clamp(cw.CinematicScreenAlpha, 0, 255)
 
 				self:OverrideMainFont(cw.option:GetFont("intro_text_tiny"))
-					self:DrawSimpleText(cinematicInfo.credits, ScrW() / 8, ScrH() * 0.75, Color(colorWhite.r, colorWhite.g, colorWhite.b, alpha))
+					self:DrawSimpleText(
+						cinematicInfo.credits,
+						ScrW() / 8,
+						ScrH() * 0.75,
+						Color(colorWhite.r, colorWhite.g, colorWhite.b, alpha)
+					)
 				self:OverrideMainFont(false)
 			end
 		else
@@ -2299,7 +2332,11 @@ function cw.core:DrawCinematicIntroBars()
 				cw.IntroBarsMultiplier = math.Clamp(cw.IntroBarsMultiplier + (FrameTime() * 8), 1, 12)
 			end
 
-			cw.CinematicScreenBarLength = math.Clamp((maxBarLength / 255) * math.Clamp(cw.CinematicBarsAlpha * cw.IntroBarsMultiplier, 0, 255), 0, maxBarLength)
+			cw.CinematicScreenBarLength = math.Clamp(
+				(maxBarLength / 255) * math.Clamp(cw.CinematicBarsAlpha * cw.IntroBarsMultiplier, 0, 255),
+				0,
+				maxBarLength
+			)
 		end
 
 		draw.RoundedBox(0, 0, 0, ScrW(), cw.CinematicScreenBarLength, Color(0, 0, 0, 255))
@@ -2363,17 +2400,41 @@ function cw.core:DrawCinematicInfo()
 			end
 
 			self:OverrideMainFont(introTextBigFont)
-				self:DrawSimpleText(cinematicInfoTitle, textPosX, textPosY, Color(colorInfo.r, colorInfo.g, colorInfo.b, cw.CinematicInfoAlpha), nil, nil, true)
+				self:DrawSimpleText(
+					cinematicInfoTitle,
+					textPosX,
+					textPosY,
+					Color(colorInfo.r, colorInfo.g, colorInfo.b, cw.CinematicInfoAlpha),
+					nil,
+					nil,
+					true
+				)
 			self:OverrideMainFont(false)
 
 			if (cinematicInfo.text) then
 				self:OverrideMainFont(introTextSmallFont)
-					self:DrawSimpleText(cinematicIntroText, textPosX, textPosY + textHeight + 8, Color(colorWhite.r, colorWhite.g, colorWhite.b, cw.CinematicInfoAlpha), nil, nil, true)
+					self:DrawSimpleText(
+						cinematicIntroText,
+						textPosX,
+						textPosY + textHeight + 8,
+						Color(colorWhite.r, colorWhite.g, colorWhite.b, cw.CinematicInfoAlpha),
+						nil,
+						nil,
+						true
+					)
 				self:OverrideMainFont(false)
 			end
 		elseif (cinematicInfo.text) then
 			self:OverrideMainFont(introTextSmallFont)
-				self:DrawSimpleText(cinematicIntroText, textPosX, textPosY, Color(colorWhite.r, colorWhite.g, colorWhite.b, cw.CinematicInfoAlpha), nil, nil, true)
+				self:DrawSimpleText(
+					cinematicIntroText,
+					textPosX,
+					textPosY,
+					Color(colorWhite.r, colorWhite.g, colorWhite.b, cw.CinematicInfoAlpha),
+					nil,
+					nil,
+					true
+				)
 			self:OverrideMainFont(false)
 		end
 	end
@@ -2440,13 +2501,13 @@ function cw.core:DrawDoorText(entity, eyePos, eyeAngles, font, nameColor, textCo
 
 				cam.Start3D2D(doorData.position, doorData.angles, nameScale)
 					self:OverrideMainFont(font)
-						frontY = self:DrawInfo(name, 0, frontY, nameColor, alpha, nil, nil, 3)
+					frontY = self:DrawInfo(name, 0, frontY, nameColor, alpha, nil, nil, 3)
 					self:OverrideMainFont(false)
 				cam.End3D2D()
 
 				cam.Start3D2D(doorData.positionBack, doorData.anglesBack, nameScale)
 					self:OverrideMainFont(font)
-						backY = self:DrawInfo(name, 0, backY, nameColor, alpha, nil, nil, 3)
+					backY = self:DrawInfo(name, 0, backY, nameColor, alpha, nil, nil, 3)
 					self:OverrideMainFont(false)
 				cam.End3D2D()
 			end
@@ -2454,13 +2515,13 @@ function cw.core:DrawDoorText(entity, eyePos, eyeAngles, font, nameColor, textCo
 			if (text) then
 				cam.Start3D2D(doorData.position, doorData.angles, textScale)
 					self:OverrideMainFont(font)
-						frontY = self:DrawInfo(text, 0, frontY, textColor, alpha, nil, nil, 3)
+					frontY = self:DrawInfo(text, 0, frontY, textColor, alpha, nil, nil, 3)
 					self:OverrideMainFont(false)
 				cam.End3D2D()
 
 				cam.Start3D2D(doorData.positionBack, doorData.anglesBack, textScale)
 					self:OverrideMainFont(font)
-						backY = self:DrawInfo(text, 0, backY, textColor, alpha, nil, nil, 3)
+					backY = self:DrawInfo(text, 0, backY, textColor, alpha, nil, nil, 3)
 					self:OverrideMainFont(false)
 				cam.End3D2D()
 			end
@@ -2486,7 +2547,11 @@ end
 -- A function to save schema data.
 function cw.core:SaveSchemaData(fileName, data)
 	if (type(data) != "table") then
-		MsgC(Color(255, 100, 0, 255), "[CW:Kernel] The '"..fileName.."' schema data has failed to save.\nUnable to save type "..type(data)..", table required.\n")
+		MsgC(
+			Color(255, 100, 0, 255),
+			"[CW:Kernel] The '"..fileName.."' schema data has failed to save.\nUnable to save type "..type(data)..
+				", table required.\n"
+		)
 
 		return
 	end
@@ -2566,7 +2631,11 @@ end
 -- A function to save Clockwork data.
 function cw.core:SaveClockworkData(fileName, data)
 	if (type(data) != "table") then
-		MsgC(Color(255, 100, 0, 255), "[CW:Kernel] The '"..fileName.."' clockwork data has failed to save.\nUnable to save type "..type(data)..", table required.\n")
+		MsgC(
+			Color(255, 100, 0, 255),
+			"[CW:Kernel] The '"..fileName.."' clockwork data has failed to save.\nUnable to save type "..type(data)..
+				", table required.\n"
+		)
 
 		return
 	end
@@ -2607,7 +2676,18 @@ function cw.core:IncludeSchema()
 	end
 end
 
-function Derma_NumRequest(strTitle, strText, nDefaultValue, min, max, dec, fnEnter, fnCancel, strButtonText, strButtonCancelText)
+function Derma_NumRequest(
+	strTitle,
+	strText,
+	nDefaultValue,
+	min,
+	max,
+	dec,
+	fnEnter,
+	fnCancel,
+	strButtonText,
+	strButtonCancelText
+)
 	local Window = vgui.Create("DFrame")
 	Window:SetTitle(strTitle or "Message Title (First Parameter)")
 	Window:SetDraggable(false)

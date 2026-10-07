@@ -29,7 +29,10 @@ function PANEL:Init()
 
 		if (self.BorderColor) then
 			local alpha = math.min(self.BorderColor.a, self:GetAlpha())
-			cw.SpawnIconMaterial:SetVector("$color", Vector(self.BorderColor.r / 255, self.BorderColor.g / 255, self.BorderColor.b / 255))
+			cw.SpawnIconMaterial:SetVector(
+				"$color",
+				Vector(self.BorderColor.r / 255, self.BorderColor.g / 255, self.BorderColor.b / 255)
+			)
 			cw.SpawnIconMaterial:SetFloat("$alpha", alpha / 255)
 				surface.SetDrawColor(self.BorderColor.r, self.BorderColor.g, self.BorderColor.b, alpha)
 				surface.SetMaterial(cw.SpawnIconMaterial)

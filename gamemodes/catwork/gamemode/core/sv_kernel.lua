@@ -160,7 +160,11 @@ cw.WorkshopMaps = {
 -- A function to save schema data.
 function cw.core:SaveSchemaData(fileName, data, bForceJSON)
 	if (type(data) != "table") then
-		MsgC(Color(255, 100, 0, 255), "[CW:Kernel] The '"..fileName.."' schema data has failed to save.\nUnable to save type "..type(data)..", table required.\n")
+		MsgC(
+			Color(255, 100, 0, 255),
+			"[CW:Kernel] The '"..fileName.."' schema data has failed to save.\nUnable to save type "..type(data)..
+				", table required.\n"
+		)
 		return
 	end
 
@@ -241,7 +245,10 @@ function cw.core:RestoreSchemaData(fileName, failSafe, bForceJSON)
 			if (bSuccess and value != nil) then
 				return value
 			elseif (!bSuccess) then
-				MsgC(Color(255, 100, 0, 255), "[CW:Kernel] '"..fileName.."' schema data has failed to restore.\n"..tostring(value).."\n")
+				MsgC(
+					Color(255, 100, 0, 255),
+					"[CW:Kernel] '"..fileName.."' schema data has failed to restore.\n"..tostring(value).."\n"
+				)
 
 				self:DeleteSchemaData(fileName)
 			end
@@ -299,7 +306,11 @@ end
 -- A function to save Clockwork data.
 function cw.core:SaveClockworkData(fileName, data)
 	if (type(data) != "table") then
-		MsgC(Color(255, 100, 0, 255), "[CW:Kernel] The '"..fileName.."' clockwork data has failed to save.\nUnable to save type "..type(data)..", table required.\n")
+		MsgC(
+			Color(255, 100, 0, 255),
+			"[CW:Kernel] The '"..fileName.."' clockwork data has failed to save.\nUnable to save type "..type(data)..
+				", table required.\n"
+		)
 
 		return
 	end
@@ -450,7 +461,8 @@ end
 
 -- A function to calculate player damage.
 function cw.core:CalculatePlayerDamage(player, hitGroup, damageInfo)
-	local bDamageIsValid = damageInfo:IsBulletDamage() or damageInfo:IsDamageType(DMG_CLUB) or damageInfo:IsDamageType(DMG_SLASH)
+	local bDamageIsValid =
+		damageInfo:IsBulletDamage() or damageInfo:IsDamageType(DMG_CLUB) or damageInfo:IsDamageType(DMG_SLASH)
 	local bHitGroupIsValid = true
 
 	if (config.GetVal("armor_chest_only")) then
@@ -815,11 +827,17 @@ end
 
 --[[ Disable game saving and admin cleanup. --]]
 concommand.Add("gm_save", function(player, command, arguments)
-	ErrorNoHalt("[Catwork] "..player:Name().." ("..player:SteamID()..") has attempted to use gm_save command to potentially crash the server!\n")
+	ErrorNoHalt(
+		"[Catwork] "..player:Name().." ("..player:SteamID()..
+			") has attempted to use gm_save command to potentially crash the server!\n"
+	)
 end)
 
 concommand.Add("gmod_admin_cleanup", function(player, command, arguments)
-	ErrorNoHalt("[Catwork] "..player:Name().." ("..player:SteamID()..") has attempted to use gmod_admin_cleanup command to wipe all props from the server!\n")
+	ErrorNoHalt(
+		"[Catwork] "..player:Name().." ("..player:SteamID()..
+			") has attempted to use gmod_admin_cleanup command to wipe all props from the server!\n"
+	)
 end)
 
 concommand.Add("cat_add_bots", function(player, command, arguments)
@@ -1277,7 +1295,12 @@ do
 			end
 
 			if (meleeWeapons[weaponClass] and player.GetCharacterData and player.SetCharacterData) then
-				player:SetCharacterData("Stamina", math.Clamp(player:GetCharacterData("Stamina", 0) - meleeWeapons[weaponClass]), 0, 100 - player:GetCharacterData("Fatigue", 0))
+				player:SetCharacterData(
+					"Stamina",
+					math.Clamp(player:GetCharacterData("Stamina", 0) - meleeWeapons[weaponClass]),
+					0,
+					100 - player:GetCharacterData("Fatigue", 0)
+				)
 			end
 		end
 	end
@@ -2519,8 +2542,8 @@ function playerMeta:RemoveAccessory(itemTable)
 
 	accessoryData[itemID] = nil
 		netstream.Start(
-		self, "RemoveAccessory", { itemID = itemID }
-	)
+			self, "RemoveAccessory", { itemID = itemID }
+		)
 
 	if (itemTable.OnWearAccessory) then
 		itemTable:OnWearAccessory(self, false)

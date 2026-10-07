@@ -586,9 +586,9 @@ end
 function cw.animation:GetTable(model)
 	local lowerModel = string.lower(model)
 
- 	if (string.find(model, "/player/")) then
- 		return nil
- 	end
+	if (string.find(model, "/player/")) then
+		return nil
+	end
 
 	local class = models[lowerModel]
 

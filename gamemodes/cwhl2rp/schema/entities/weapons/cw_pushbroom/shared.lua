@@ -95,7 +95,8 @@ function SWEP:Think()
 						self.nextSweep = curTime + 2
 					end
 
-					if (currentAnim and currentAnim.animation != "sweep") then -- If the player's animation is not the one we're trying to set
+					-- If the player's animation is not the one we're trying to set
+					if (currentAnim and currentAnim.animation != "sweep") then
 						self.Owner:SetForcedAnimation(false) -- then remove their forced animation so it can be set to the new one.
 					end
 
@@ -108,14 +109,16 @@ function SWEP:Think()
 						end
 					end
 				else
-					if (currentAnim and currentAnim.animation != "sweep_idle") then -- If the player's animation is not the one we're trying to set
+					-- If the player's animation is not the one we're trying to set
+					if (currentAnim and currentAnim.animation != "sweep_idle") then
 						self.Owner:SetForcedAnimation(false) -- then remove their forced animation so it can be set to the new one.
 					end
 
 					self.Owner:SetForcedAnimation("sweep_idle", 0, nil)
 				end
 			else
-				if (currentAnim and currentAnim.animation != "Walk_all_HoldBroom") then -- If the player's animation is not the one we're trying to set
+				-- If the player's animation is not the one we're trying to set
+				if (currentAnim and currentAnim.animation != "Walk_all_HoldBroom") then
 					self.Owner:SetForcedAnimation(false) -- then remove their forced animation so it can be set to the new one.
 				end
 

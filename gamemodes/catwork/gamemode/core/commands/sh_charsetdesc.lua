@@ -33,9 +33,15 @@ function COMMAND:OnRun(player, arguments)
 
 			cw.player:Notify(player, L("Command_Charsetdesc_Changed", target:Name()).." '"..physDesc.."'")
 		else
-			cw.dermaRequest:RequestString(player, "#Command_Charphysdesc_RequestTitle", "#Command_Charsetdesc_RequestText", target:GetDTString(STRING_PHYSDESC), function(result)
-				player:RunClockworkCmd(self.name, target:Name(), result)
-			end)
+			cw.dermaRequest:RequestString(
+				player,
+				"#Command_Charphysdesc_RequestTitle",
+				"#Command_Charsetdesc_RequestText",
+				target:GetDTString(STRING_PHYSDESC),
+				function(result)
+					player:RunClockworkCmd(self.name, target:Name(), result)
+				end
+			)
 		end
 	else
 		cw.player:Notify(player, L(player, "NotValidCharacter", arguments[1]))

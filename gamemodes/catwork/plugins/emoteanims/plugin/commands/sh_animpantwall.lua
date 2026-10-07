@@ -24,7 +24,9 @@ function COMMAND:OnRun(player, arguments)
 			local forcedAnimation = player:GetForcedAnimation()
 			local angles = player:GetAngles():Forward()
 
-			if (forcedAnimation and (forcedAnimation.animation == "d2_coast03_postbattle_idle01" or forcedAnimation.animation == "d2_coast03_postbattle_idle01_entry")) then
+			if (forcedAnimation
+			and (forcedAnimation.animation == "d2_coast03_postbattle_idle01"
+			or forcedAnimation.animation == "d2_coast03_postbattle_idle01_entry")) then
 				cwEmoteAnims:MakePlayerExitStance(player)
 			elseif (!forcedAnimation or !cwEmoteAnimscwEmoteAnims[forcedAnimation]) then
 				if (player:Crouching()) then

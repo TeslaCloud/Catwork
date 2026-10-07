@@ -13,7 +13,8 @@ ITEM.customFunctions = { "Give" }
 
 -- Called when a player uses the item.
 function ITEM:OnUse(player, itemEntity)
-	if (player:GetCharacterData("diseases") == "fever" or player:GetCharacterData("diseases") == "cough" or player:GetCharacterData("diseases") == "pneumonia") then
+	if (player:GetCharacterData("diseases") == "fever" or player:GetCharacterData("diseases") == "cough"
+	or player:GetCharacterData("diseases") == "pneumonia") then
 		player:SetCharacterData("diseases", "none")
 	end
 
@@ -28,7 +29,8 @@ if (SERVER) then
 			local lookingPly = player:GetEyeTrace().Entity
 
 			if (lookingPly:IsPlayer()) then
-				if (lookingPly:GetCharacterData("diseases") == "fever" or lookingPly:GetCharacterData("diseases") == "cough" or lookingPly:GetCharacterData("diseases") == "pneumonia") then
+				if (lookingPly:GetCharacterData("diseases") == "fever" or lookingPly:GetCharacterData("diseases") == "cough"
+				or lookingPly:GetCharacterData("diseases") == "pneumonia") then
 					lookingPly:SetCharacterData("diseases", "none")
 				end
 

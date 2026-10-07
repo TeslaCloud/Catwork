@@ -10,83 +10,83 @@ local THEME = cw.theme:Begin()
 
 function THEME:CreateFonts()
 	cw.fonts:Add("hl2_PlayerInfoText", {
-			font		= "Exo 2",
-			size		= cw.core:FontScreenScale(7),
-			weight = 600,
-			antialiase = true,
-			additive = false
+		font		= "Exo 2",
+		size		= cw.core:FontScreenScale(7),
+		weight = 600,
+		antialiase = true,
+		additive = false
 	})
 
 	cw.fonts:Add("hl2_Large3D2D", {
-			font		= "Exo 2",
-			size		= cw.core:GetFontSize3D(),
-			weight = 600,
-			antialiase = true,
-			additive = false
+		font		= "Exo 2",
+		size		= cw.core:GetFontSize3D(),
+		weight = 600,
+		antialiase = true,
+		additive = false
 	})
 
 	cw.fonts:Add("hl2_SurfaceTextFont", {
-			font		= "Kelly Slab",
-			size		= cw.core:GetFontSize3D(),
-			weight = 400,
-			antialiase = true,
-			additive = false
+		font		= "Kelly Slab",
+		size		= cw.core:GetFontSize3D(),
+		weight = 400,
+		antialiase = true,
+		additive = false
 	})
 
 	cw.fonts:Add("hl2_IntroTextSmall", {
-			font		= "Exo 2",
-			size		= 28,
-			weight = 600,
-			antialiase = true,
-			additive = false
+		font		= "Exo 2",
+		size		= 28,
+		weight = 600,
+		antialiase = true,
+		additive = false
 	})
 
 	cw.fonts:Add("hl2_IntroTextTiny", {
-			font		= "Exo 2",
-			size		= cw.core:FontScreenScale(9),
-			weight = 600,
-			antialiase = true,
-			additive = false
+		font		= "Exo 2",
+		size		= cw.core:FontScreenScale(9),
+		weight = 600,
+		antialiase = true,
+		additive = false
 	})
 
 	cw.fonts:Add("hl2_CinematicText", {
-			font		= "Exo 2",
-			size		= cw.core:FontScreenScale(8),
-			weight = 600,
-			antialiase = true,
-			additive = false
+		font		= "Exo 2",
+		size		= cw.core:FontScreenScale(8),
+		weight = 600,
+		antialiase = true,
+		additive = false
 	})
 
 	cw.fonts:Add("hl2_IntroTextBig", {
-			font		= "Exo 2",
-			size		= cw.core:FontScreenScale(18),
-			weight = 600,
-			antialiase = true,
-			additive = false
+		font		= "Exo 2",
+		size		= cw.core:FontScreenScale(18),
+		weight = 600,
+		antialiase = true,
+		additive = false
 	})
 
 	cw.fonts:Add("hl2_MainText", {
-			font		= "Exo 2",
-			size		= cw.core:FontScreenScale(7),
-			weight = 600,
-			antialiase = true,
-			additive = false
+		font		= "Exo 2",
+		size		= cw.core:FontScreenScale(7),
+		weight = 600,
+		antialiase = true,
+		additive = false
 	})
 
 	cw.fonts:Add("hl2_TargetIDText", {
-			font		= "Exo 2",
-			size		= cw.core:FontScreenScale(7),
-			weight = 600,
-			antialiase = true,
-			additive = false
+		font		= "Exo 2",
+		size		= cw.core:FontScreenScale(7),
+		weight = 600,
+		antialiase = true,
+		additive = false
 	})
 
 	cw.fonts:Add("hl2_MenuTextHuge", {
-			font		= "Exo 2",
-			size		= cw.core:FontScreenScale(30),
-			weight = 600,
-			antialiase = true,
-			additive = false
+		font		= "Exo 2",
+		size		= cw.core:FontScreenScale(30),
+		weight = 600,
+		antialiase = true,
+		additive = false
 	})
 
 	cw.fonts:Add("hl2_MenuTextBig", {
@@ -142,7 +142,7 @@ function THEME:Initialize()
 	Schema:DownloadMaterial("http://teslacdn.net/files/logo/logo_white_512_256.png", "catwork/tc_logo_512.png")
 end
 
-local function drawHL2Bar(x, y, w, h, amt, spacing, percentage, color)
+local function DrawHL2Bar(x, y, w, h, amt, spacing, percentage, color)
 	local ox, oy = 0, 0
 	local width = (w - (amt * spacing)) / amt
 	local amtToDraw = math.ceil(amt / (w / percentage))
@@ -174,7 +174,7 @@ end
 -- Called just after a bar is drawn.
 function THEME.module:PostDrawBar(barInfo)
 	if (!barInfo.uniqueID) then
-		drawHL2Bar(barInfo.x, barInfo.y, barInfo.width, barInfo.height, 42, 4, barInfo.progressWidth, barInfo.color)
+		DrawHL2Bar(barInfo.x, barInfo.y, barInfo.width, barInfo.height, 42, 4, barInfo.progressWidth, barInfo.color)
 	else
 		if (barInfo.progressWidth > 4) then
 			local color = barInfo.color:Darken(10)
@@ -188,7 +188,13 @@ function THEME.module:PostDrawBar(barInfo)
 			render.SetScissorRect(0, 0, 0, 0, false)
 
 			DisableClipping(true)
-				draw.SimpleText(barInfo.uniqueID, cw.fonts:GetSize("hl2_BarsFont", 15), barInfo.x + 6, barInfo.y - 1, Color("white"))
+				draw.SimpleText(
+					barInfo.uniqueID,
+					cw.fonts:GetSize("hl2_BarsFont", 15),
+					barInfo.x + 6,
+					barInfo.y - 1,
+					Color("white")
+				)
 			DisableClipping(false)
 		end
 	end

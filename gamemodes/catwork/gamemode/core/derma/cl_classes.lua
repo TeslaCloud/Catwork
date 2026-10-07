@@ -13,8 +13,8 @@ function PANEL:Init()
 	self:SetSize(cw.menu:GetWidth(), cw.menu:GetHeight())
 
 	self.panelList = vgui.Create("cwPanelList", self)
- 	self.panelList:SetPadding(8)
- 	self.panelList:SetSpacing(8)
+	self.panelList:SetPadding(8)
+	self.panelList:SetSpacing(8)
 	self.panelList:StretchToParent(4, 4, 4, 4)
 	self.panelList:HideBackground()
 
@@ -184,7 +184,10 @@ end
 -- Called each frame.
 function PANEL:Think()
 	if (self.classTable and !self.overrideData.information) then
-		self.information:SetText("#ClassesMenu_CurrentPlayers:".._team.NumPlayers(self.classTable.index)..","..cw.class:GetLimit(self.classTable.name)..";")
+		self.information:SetText(
+			"#ClassesMenu_CurrentPlayers:".._team.NumPlayers(self.classTable.index)..","..
+				cw.class:GetLimit(self.classTable.name)..";"
+		)
 		self.information:SizeToContents()
 	end
 

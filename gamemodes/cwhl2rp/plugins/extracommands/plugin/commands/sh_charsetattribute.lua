@@ -22,7 +22,10 @@ function COMMAND:OnRun(player, arguments)
 		if (attribute) then
 			cw.attributes:Update(target, attribute.uniqueID, amt)
 
-			cw.player:Notify(player, L("ExtraCommands_AttributeSet", target:Name(), (attribute.name or "Unknown"), attribute.uniqueID, tostring(amt)))
+			cw.player:Notify(
+				player,
+				L("ExtraCommands_AttributeSet", target:Name(), (attribute.name or "Unknown"), attribute.uniqueID, tostring(amt))
+			)
 		else
 			cw.player:Notify(player, L("ExtraCommands_NotValidAttribute", arguments[2]))
 		end

@@ -55,14 +55,15 @@ end
 
 function ENT:Use(activator, caller)
 	if (activator:IsPlayer() and activator:GetEyeTraceNoCursor().Entity == self) then
-	local weapon = activator:GetActiveWeapon()
+		local weapon = activator:GetActiveWeapon()
 
 		if ((activator:GetNetVar("tied") == 0 and activator:Crouching()) or (weapon:GetClass() == "cw_pushbroom")) then
 			local time = hook.Run("GetGarbageTime", activator)
 
 			cw.player:SetAction(activator, "cleanup", time)
 			cw.player:EntityConditionTimer(activator, self, self, time, 192, function()
-				return activator:Alive() and !activator:IsRagdolled() and activator:GetNetVar("tied") == 0 and (activator:Crouching() or weapon:GetClass() == "cw_pushbroom")
+				return activator:Alive() and !activator:IsRagdolled() and activator:GetNetVar("tied") == 0 and
+					(activator:Crouching() or weapon:GetClass() == "cw_pushbroom")
 			end, function(success)
 				if (success) then
 					hook.Run("PlayerTakeGarbage", activator, self)

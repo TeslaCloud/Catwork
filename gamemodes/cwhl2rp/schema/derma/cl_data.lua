@@ -21,9 +21,9 @@ function PANEL:Init()
 	end
 
 	self.panelList = vgui.Create("DPanelList", self)
- 	self.panelList:SetPadding(2)
- 	self.panelList:SetSpacing(3)
- 	self.panelList:SizeToContents()
+	self.panelList:SetPadding(2)
+	self.panelList:SetSpacing(3)
+	self.panelList:SizeToContents()
 	self.panelList:EnableVerticalScrollbar()
 end
 

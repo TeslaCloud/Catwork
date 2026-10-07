@@ -144,7 +144,8 @@ function cwPickupObjects:CanHandsPickupEntity(player, entity, trace)
 	end
 
 	if (IsValid(entity:GetPhysicsObject()) and entity:GetSolid() == SOLID_VPHYSICS) then
-		if (entity:GetClass() == "prop_ragdoll" or entity:GetPhysicsObject():GetMass() <= 100 + cw.attributes:Fraction(player, ATB_STRENGTH, 100)) then
+		if (entity:GetClass() == "prop_ragdoll"
+		or entity:GetPhysicsObject():GetMass() <= 100 + cw.attributes:Fraction(player, ATB_STRENGTH, 100)) then
 			if (entity:GetPhysicsObject():IsMoveable() and !IsValid(entity.cwHoldingGrab)) then
 				if (!entity.noHandsPickup) then
 					return true

@@ -17,7 +17,7 @@ COMMAND.access = "o"
 function COMMAND:OnRun(player, arguments)
 	local text = table.concat(arguments, " ")
 
- 	cw.player:NotifyAll(text)
+	cw.player:NotifyAll(text)
 end
 
 COMMAND:Register()

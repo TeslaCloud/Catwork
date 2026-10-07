@@ -15,7 +15,8 @@ COMMAND.arguments = 1
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
 	if (player:IsCombine()) then
-		if (Schema:IsPlayerCombineRank(player, { "SCN", "OfC", "EpU", "DvL", "CmD", "SeC" }) or player:GetFaction() == FACTION_OTA) then
+		if (Schema:IsPlayerCombineRank(player, { "SCN", "OfC", "EpU", "DvL", "CmD", "SeC" })
+		or player:GetFaction() == FACTION_OTA) then
 			local text = table.concat(arguments, " ")
 
 			if (text == "") then

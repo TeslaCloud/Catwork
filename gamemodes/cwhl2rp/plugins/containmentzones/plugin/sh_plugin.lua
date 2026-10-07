@@ -40,7 +40,7 @@ if (SERVER) then
 		end
 	end
 
-	local function checkRadSphere(pos, radius, rad)
+	local function CheckRadSphere(pos, radius, rad)
 		for k, v in pairs(ents.FindInSphere(pos, radius)) do
 			if !v:IsPlayer() then continue end
 
@@ -50,7 +50,7 @@ if (SERVER) then
 		end
 	end
 
-	local function checkRadBox(pos1, pos2, rad)
+	local function CheckRadBox(pos1, pos2, rad)
 		for k, v in pairs(ents.FindInBox(pos1, pos2)) do
 			if !v:IsPlayer() then continue end
 
@@ -68,12 +68,12 @@ if (SERVER) then
 
 		for k, zone in pairs(self.stored) do
 			if zone.pos then
-				checkRadSphere(zone.pos, zone.radius, zone.rad)
+				CheckRadSphere(zone.pos, zone.radius, zone.rad)
 			end
 
 			if zone.pos1 then
 				if zone.pos2 then
-					checkRadBox(zone.pos1, zone.pos2, zone.rad)
+					CheckRadBox(zone.pos1, zone.pos2, zone.rad)
 				end
 			end
 		end
@@ -343,7 +343,13 @@ if (SERVER) then
 			netstream.Start(ply, "cwRadSystemDataClear", {})
 
 			for k, v in pairs(self.stored) do
-				netstream.Start(ply, "cwRadSystemData", { pos = v.pos, pos1 = v.pos1, pos2 = v.pos2, radius = v.radius, rad = v.rad })
+				netstream.Start(ply, "cwRadSystemData", {
+					pos = v.pos,
+					pos1 = v.pos1,
+					pos2 = v.pos2,
+					radius = v.radius,
+					rad = v.rad
+				})
 			end
 		end
 	end)
@@ -379,7 +385,17 @@ else
 			local raddelta = LP:GetCharacterData("radlevel", 0) / (1000 + 449)
 			local mod = (0.5 * raddelta) * (LP:GetMaxHealth() / LP:Health())
 			local sinScaler = math.sin(CT * mod)
-			DrawBloom(0, 5 * mod, sinScaler * math.Rand(-5, 5), sinScaler * math.Rand(-5, 5), 6 * mod, 1, (1 * math.Clamp(math.abs(sinScaler), 1, 100) + math.abs(math.cos(CT))) * mod, 0, 0)
+			DrawBloom(
+				0,
+				5 * mod,
+				sinScaler * math.Rand(-5, 5),
+				sinScaler * math.Rand(-5, 5),
+				6 * mod,
+				1,
+				(1 * math.Clamp(math.abs(sinScaler), 1, 100) + math.abs(math.cos(CT))) * mod,
+				0,
+				0
+			)
 		end
 
 		-- if rad > 299 then

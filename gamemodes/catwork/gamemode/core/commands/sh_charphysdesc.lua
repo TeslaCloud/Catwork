@@ -27,9 +27,15 @@ function COMMAND:OnRun(player, arguments)
 
 		player:SetCharacterData("PhysDesc", cw.core:ModifyPhysDesc(text))
 	else
-		cw.dermaRequest:RequestString(player, "#Command_Charphysdesc_RequestTitle", "#Command_Charphysdesc_RequestText", player:GetDTString(STRING_PHYSDESC), function(result)
-			player:RunClockworkCmd(self.name, result)
-		end)
+		cw.dermaRequest:RequestString(
+			player,
+			"#Command_Charphysdesc_RequestTitle",
+			"#Command_Charphysdesc_RequestText",
+			player:GetDTString(STRING_PHYSDESC),
+			function(result)
+				player:RunClockworkCmd(self.name, result)
+			end
+		)
 	end
 end
 

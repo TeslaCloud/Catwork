@@ -337,9 +337,14 @@ function Schema:GetPlayerScoreboardOptions(player, options, menu)
 		if (cw.player:HasFlags(cw.client, cw.command:FindByID("CharSetCustomClass").access)) then
 			options["#ScoreboardOptions_CustomClass"] = {}
 			options["#ScoreboardOptions_CustomClass"]["#ScoreboardOptions_CustomClass_Set"] = function()
-				Derma_StringRequest(player:Name(), "#ScoreboardOptions_CustomClass_Set_StringRequest", player:GetNetVar("customClass"), function(text)
-					cw.core:RunCommand("CharSetCustomClass", player:Name(), text)
-				end)
+				Derma_StringRequest(
+					player:Name(),
+					"#ScoreboardOptions_CustomClass_Set_StringRequest",
+					player:GetNetVar("customClass"),
+					function(text)
+						cw.core:RunCommand("CharSetCustomClass", player:Name(), text)
+					end
+				)
 			end
 
 			if (player:GetNetVar("customClass") != "") then
@@ -410,7 +415,8 @@ function Schema:PlayerAdjustColorModify(colorModify)
 			self.colorModify.contrast = math.Approach(self.colorModify.contrast, 1, interval)
 			self.colorModify.color = math.Approach(self.colorModify.color, 1, interval)
 		else
-			self.colorModify.brightness = math.Approach(self.colorModify.brightness, colorModify["$pp_colour_brightness"], interval)
+			self.colorModify.brightness =
+				math.Approach(self.colorModify.brightness, colorModify["$pp_colour_brightness"], interval)
 			self.colorModify.contrast = math.Approach(self.colorModify.contrast, colorModify["$pp_colour_contrast"], interval)
 			self.colorModify.color = math.Approach(self.colorModify.color, colorModify["$pp_colour_colour"], interval)
 		end

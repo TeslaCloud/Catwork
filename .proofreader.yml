@@ -22,6 +22,11 @@ Layout/IndentationConsistency:
 
 Layout/LineLength:
   AutoCorrect: false                     # the fix indents the lines it breaks off with spaces
+  Exclude:                               # one record or one sentence per line, whatever its length
+    - 'gamemodes/**/language/*.lua'
+    - 'gamemodes/cwhl2rp/plugins/books/plugin/items/*.lua'
+    - 'gamemodes/cwhl2rp/plugins/voices/plugin/sh_plugin.lua'
+    - 'gamemodes/cwhl2rp/schema/libraries/sh_voices.lua'
 
 # --- Clockwork conventions -----------------------------------------------------------------------
 

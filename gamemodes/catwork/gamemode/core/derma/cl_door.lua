@@ -22,15 +22,15 @@ function PANEL:Init()
 	end
 
 	self.settingsPanel = vgui.Create("cwPanelList")
- 	self.settingsPanel:SetPadding(2)
- 	self.settingsPanel:SetSpacing(3)
- 	self.settingsPanel:SizeToContents()
+	self.settingsPanel:SetPadding(2)
+	self.settingsPanel:SetSpacing(3)
+	self.settingsPanel:SizeToContents()
 	self.settingsPanel:EnableVerticalScrollbar()
 
 	self.playersPanel = vgui.Create("cwPanelList")
- 	self.playersPanel:SetPadding(2)
- 	self.playersPanel:SetSpacing(3)
- 	self.playersPanel:SizeToContents()
+	self.playersPanel:SetPadding(2)
+	self.playersPanel:SetSpacing(3)
+	self.playersPanel:SizeToContents()
 	self.playersPanel:EnableVerticalScrollbar()
 
 	self.settingsForm = vgui.Create("DForm")
@@ -138,8 +138,22 @@ function PANEL:Init()
 
 	self.propertySheet = vgui.Create("DPropertySheet", self)
 	self.propertySheet:SetPadding(4)
-	self.propertySheet:AddSheet(L("#DoorMenu_Players"), self.playersPanel, "icon16/user.png", nil, nil, L("#DoorMenu_PlayersTip"))
-	self.propertySheet:AddSheet(L("#Settings"), self.settingsPanel, "icon16/wrench.png", nil, nil, L("#DoorMenu_SettingsTip"))
+	self.propertySheet:AddSheet(
+		L("#DoorMenu_Players"),
+		self.playersPanel,
+		"icon16/user.png",
+		nil,
+		nil,
+		L("#DoorMenu_PlayersTip")
+	)
+	self.propertySheet:AddSheet(
+		L("#Settings"),
+		self.settingsPanel,
+		"icon16/wrench.png",
+		nil,
+		nil,
+		L("#DoorMenu_SettingsTip")
+	)
 
 	cw.core:SetNoticePanel(self)
 end
@@ -292,13 +306,18 @@ netstream.Hook("PurchaseDoor", function(data)
 	local doorCost = config.GetVal("door_cost")
 
 	if (doorCost > 0) then
-		Derma_Query(L("#DoorMenu_PurchaseQuery:"..cw.core:FormatCash(config.GetVal("door_cost"), nil, true)..";"), L("#DoorMenu_PurchaseTitle"), L("Yes"), function()
-			netstream.Start("DoorManagement", { data, "Purchase" })
+		Derma_Query(
+			L("#DoorMenu_PurchaseQuery:"..cw.core:FormatCash(config.GetVal("door_cost"), nil, true)..";"),
+			L("#DoorMenu_PurchaseTitle"),
+			L("Yes"),
+			function()
+				netstream.Start("DoorManagement", { data, "Purchase" })
 
-			gui.EnableScreenClicker(false)
-		end, L("No"), function()
-			gui.EnableScreenClicker(false)
-		end)
+				gui.EnableScreenClicker(false)
+			end, L("No"), function()
+				gui.EnableScreenClicker(false)
+			end
+		)
 	else
 		Derma_Query(L("#DoorMenu_OwnQuery"), L("#DoorMenu_OwnTitle"), L("Yes"), function()
 			netstream.Start("DoorManagement", { data, "Purchase" })

@@ -311,7 +311,7 @@ end
 function ITEM:OnHolster(player, bForced) end
 
 if (CLIENT) then
-function ITEM:GetClientSideInfo()
+	function ITEM:GetClientSideInfo()
 		if (!self:IsInstance()) then
 			return
 		end

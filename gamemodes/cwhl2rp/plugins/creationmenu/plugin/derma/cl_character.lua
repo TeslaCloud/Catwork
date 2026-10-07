@@ -46,7 +46,10 @@ function PANEL:Init()
 			self.titleLabel:SetVisible(false)
 			self.titleLabel:SetSize(512, 256)
 			self.titleLabel:SetPos((scrW / 2) - (self.titleLabel:GetWide() / 2), scrH * 0.4 - 128)
-			self.subLabel:SetPos(self.titleLabel.x + (self.titleLabel:GetWide() / 2) - (self.subLabel:GetWide() / 2), self.titleLabel.y + self.titleLabel:GetTall() + 8)
+			self.subLabel:SetPos(
+				self.titleLabel.x + (self.titleLabel:GetWide() / 2) - (self.subLabel:GetWide() / 2),
+				self.titleLabel.y + self.titleLabel:GetTall() + 8
+			)
 		end
 
 		self.authorLabel = vgui.Create("cwLabelButton", self)
@@ -54,14 +57,20 @@ function PANEL:Init()
 		self.authorLabel:SetFont(tinyTextFont)
 		self.authorLabel:SetText("#MainMenu_DevelopedBy:"..string.upper(Schema:GetAuthor())..";")
 		self.authorLabel:SizeToContents()
-		self.authorLabel:SetPos(self.subLabel.x + (self.subLabel:GetWide() - self.authorLabel:GetWide()), self.subLabel.y + self.subLabel:GetTall() + 4)
+		self.authorLabel:SetPos(
+			self.subLabel.x + (self.subLabel:GetWide() - self.authorLabel:GetWide()),
+			self.subLabel.y + self.subLabel:GetTall() + 4
+		)
 
 		self.lmaoCopyright = vgui.Create("cwLabelButton", self)
 		self.lmaoCopyright:SetDisabled(true)
 		self.lmaoCopyright:SetFont(tinyTextFont)
 		self.lmaoCopyright:SetText("CATWORK "..cw.KernelVersion:upper())
 		self.lmaoCopyright:SizeToContents()
-		self.lmaoCopyright:SetPos(self.authorLabel.x + (self.authorLabel:GetWide() - self.lmaoCopyright:GetWide()), self.authorLabel.y + self.authorLabel:GetTall() + 4)
+		self.lmaoCopyright:SetPos(
+			self.authorLabel.x + (self.authorLabel:GetWide() - self.lmaoCopyright:GetWide()),
+			self.authorLabel.y + self.authorLabel:GetTall() + 4
+		)
 
 		self.communityButton = vgui.Create("cwLabelButton", self)
 		self.communityButton:SetFont(smallTextFont)
@@ -261,11 +270,11 @@ function PANEL:ReturnToMainMenu()
 
 	if (panel) then
 	--	if (CW_CONVAR_FADEPANEL:GetInt() == 1) then
-			panel:FadeOut(0.5, function()
-				cw.character.activePanel = nil
-					panel:Remove()
-				self:FadeInTitle()
-			end)
+		panel:FadeOut(0.5, function()
+			cw.character.activePanel = nil
+				panel:Remove()
+			self:FadeInTitle()
+		end)
 
 --		else
 --			cw.character.activePanel = nil

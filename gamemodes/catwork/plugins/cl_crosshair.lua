@@ -19,7 +19,8 @@ function PLUGIN:HUDPaint()
 		local trace = cw.client:GetEyeTraceNoCursor()
 		local distance = cw.client:GetPos():Distance(trace.HitPos)
 		local drawColor = plugin.Call("AdjustCrosshairColor", trace, distance) or Color(255, 255, 255)
-		local realGap = plugin.Call("AdjustCrosshairGap", trace, distance) or math.Round(gap * math.Clamp(distance / 400, 0.5, 4))
+		local realGap =
+			plugin.Call("AdjustCrosshairGap", trace, distance) or math.Round(gap * math.Clamp(distance / 400, 0.5, 4))
 		curGap = Lerp(FrameTime() * 6, curGap, realGap)
 
 		if (math.abs(curGap - realGap) < 0.5) then

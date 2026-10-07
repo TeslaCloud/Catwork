@@ -48,7 +48,14 @@ function PANEL:Init()
 		self.sellsPanel:SizeToContents()
 		self.sellsPanel:EnableVerticalScrollbar()
 
-		self.propertySheet:AddSheet(L"Sells", self.sellsPanel, "icon16/box.png", nil, nil, string.Replace(L("#Salesman_SellsTip"), "#1", salesmenuName))
+		self.propertySheet:AddSheet(
+			L"Sells",
+			self.sellsPanel,
+			"icon16/box.png",
+			nil,
+			nil,
+			string.Replace(L("#Salesman_SellsTip"), "#1", salesmenuName)
+		)
 	end
 
 	if (table.Count(cw.salesmenu:GetBuys()) > 0) then
@@ -58,7 +65,14 @@ function PANEL:Init()
 		self.buysPanel:SizeToContents()
 		self.buysPanel:EnableVerticalScrollbar()
 
-		self.propertySheet:AddSheet(L"Buys", self.buysPanel, "icon16/add.png", nil, nil, string.Replace(L("#Salesman_BuysTip"), "#1", salesmenuName))
+		self.propertySheet:AddSheet(
+			L"Buys",
+			self.buysPanel,
+			"icon16/add.png",
+			nil,
+			nil,
+			string.Replace(L("#Salesman_BuysTip"), "#1", salesmenuName)
+		)
 	end
 
 	cw.core:SetNoticePanel(self)
@@ -79,7 +93,11 @@ function PANEL:RebuildPanel(typeName, panelList, inventory)
 			panelList:AddItem(cashForm)
 
 			cashForm:Help(
-				string.Replace(string.Replace(L("#Salesman_CashInfo"), "#2", cw.core:FormatCash(totalCash, nil, true)), "#1", cw.salesmenu:GetName())
+				string.Replace(
+					string.Replace(L("#Salesman_CashInfo"), "#2", cw.core:FormatCash(totalCash, nil, true)),
+					"#1",
+					cw.salesmenu:GetName()
+				)
 			)
 		end
 	end

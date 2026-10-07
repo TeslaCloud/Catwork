@@ -17,18 +17,18 @@ function COMMAND:OnRun(player, arguments)
 		amount = 100
 	end
 
-		if (target) then
-			target:SetCharacterData("Hunger", amount)
+	if (target) then
+		target:SetCharacterData("Hunger", amount)
 
-			if (player != target) then
-				cw.player:Notify(target, L("Hunger_HungerSetBy", player:Name(), amount))
-				cw.player:Notify(player, L("Hunger_HungerSet", target:Name(), amount))
-			else
-				cw.player:Notify(player, L("Hunger_HungerSetOwn", amount))
-			end
+		if (player != target) then
+			cw.player:Notify(target, L("Hunger_HungerSetBy", player:Name(), amount))
+			cw.player:Notify(player, L("Hunger_HungerSet", target:Name(), amount))
 		else
-			cw.player:Notify(player, L("NotValidPlayer", arguments[1]))
+			cw.player:Notify(player, L("Hunger_HungerSetOwn", amount))
 		end
+	else
+		cw.player:Notify(player, L("NotValidPlayer", arguments[1]))
+	end
 end
 
 COMMAND:Register()

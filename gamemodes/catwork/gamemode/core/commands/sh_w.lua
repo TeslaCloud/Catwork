@@ -27,7 +27,15 @@ function COMMAND:OnRun(player, arguments)
 		return
 	end
 
-	chatbox.AddText(nil, "\""..text.."\"", { suffix = " #Suffix_Whisper ", sender = player, isPlayerMessage = true, filter = "ic", radius = talkRadius, textColor = Color(255, 255, 230, 200), data = { sizeMultiplier = 0.85 } })
+	chatbox.AddText(nil, "\""..text.."\"", {
+		suffix = " #Suffix_Whisper ",
+		sender = player,
+		isPlayerMessage = true,
+		filter = "ic",
+		radius = talkRadius,
+		textColor = Color(255, 255, 230, 200),
+		data = { sizeMultiplier = 0.85 }
+	})
 end
 
 COMMAND:Register()

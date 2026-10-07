@@ -30,7 +30,8 @@ function COMMAND:OnRun(player, arguments)
 				animation = "plazathreat2"
 			end
 
-			if (forcedAnimation and (forcedAnimation.animation == "plazathreat1" or forcedAnimation.animation == "plazathreat2")) then
+			if (forcedAnimation
+			and (forcedAnimation.animation == "plazathreat1" or forcedAnimation.animation == "plazathreat2")) then
 				cwEmoteAnims:MakePlayerExitStance(player)
 			elseif (!forcedAnimation or !cwEmoteAnimscwEmoteAnims[forcedAnimation.animation]) then
 				if (player:Crouching()) then

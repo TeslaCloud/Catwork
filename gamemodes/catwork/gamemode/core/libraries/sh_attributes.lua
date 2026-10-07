@@ -18,9 +18,13 @@ if (SERVER) then
 
 			if (gradual and attributes[attribute]) then
 				if (amount > 0) then
-					amount = math.max(amount - ((amount / attributeTable.maximum) * attributes[attribute].amount), amount / attributeTable.maximum)
+					amount = math.max(
+						amount - ((amount / attributeTable.maximum) * attributes[attribute].amount),
+						amount / attributeTable.maximum
+					)
 				else
-					amount = math.min((amount / attributeTable.maximum) * attributes[attribute].amount, amount / attributeTable.maximum)
+					amount =
+						math.min((amount / attributeTable.maximum) * attributes[attribute].amount, amount / attributeTable.maximum)
 				end
 			end
 

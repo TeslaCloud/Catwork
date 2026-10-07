@@ -29,13 +29,15 @@ function COMMAND:OnRun(player, arguments)
 		end
 
 		cwSpawnPoints.spawnPoints[name] = cwSpawnPoints.spawnPoints[name] or {}
-		cwSpawnPoints.spawnPoints[name][#cwSpawnPoints.spawnPoints[name] + 1] = { position = player:GetEyeTraceNoCursor().HitPos, rotate = rotate }
+		cwSpawnPoints.spawnPoints[name][#cwSpawnPoints.spawnPoints[name] + 1] =
+			{ position = player:GetEyeTraceNoCursor().HitPos, rotate = rotate }
 		cwSpawnPoints:SaveSpawnPoints()
 
 		cw.player:Notify(player, L("SpawnPoints_Added", name))
 	elseif (string.lower(arguments[1]) == "default") then
 		cwSpawnPoints.spawnPoints["default"] = cwSpawnPoints.spawnPoints["default"] or {}
-		cwSpawnPoints.spawnPoints["default"][#cwSpawnPoints.spawnPoints["default"] + 1] = { position = player:GetEyeTraceNoCursor().HitPos, rotate = rotate }
+		cwSpawnPoints.spawnPoints["default"][#cwSpawnPoints.spawnPoints["default"] + 1] =
+			{ position = player:GetEyeTraceNoCursor().HitPos, rotate = rotate }
 		cwSpawnPoints:SaveSpawnPoints()
 
 		cw.player:Notify(player, L("SpawnPoints_AddedDefault"))

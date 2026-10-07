@@ -29,8 +29,21 @@ function COMMAND:OnRun(player, arguments)
 			end
 		end
 
-		chatbox.AddText(vorts, "\""..table.concat(arguments, " ").."\"", { suffix = " #VortHowl_ShoutsSuffix ", sender = player, isPlayerMessage = true, filter = "ic", radius = 99999, textColor = Color(220, 110, 110, 255) })
-		chatbox.AddText(people, "shouts something in Vortigese.", { sender = player, isPlayerMessage = true, filter = "ic", radius = 500, textColor = Color(160, 160, 160, 255) })
+		chatbox.AddText(vorts, "\""..table.concat(arguments, " ").."\"", {
+			suffix = " #VortHowl_ShoutsSuffix ",
+			sender = player,
+			isPlayerMessage = true,
+			filter = "ic",
+			radius = 99999,
+			textColor = Color(220, 110, 110, 255)
+		})
+		chatbox.AddText(people, "shouts something in Vortigese.", {
+			sender = player,
+			isPlayerMessage = true,
+			filter = "ic",
+			radius = 500,
+			textColor = Color(160, 160, 160, 255)
+		})
 	else
 		if (!player:IsCombine()) then
 			if (faction != FACTION_CWU) then

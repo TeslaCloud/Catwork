@@ -168,7 +168,11 @@ do
 		local newRunSpeed = infoTable.runSpeed * 2
 		local diffRunSpeed = newRunSpeed - infoTable.walkSpeed
 
-		infoTable.runSpeed = math.Clamp(newRunSpeed - (diffRunSpeed - ((diffRunSpeed / 100) * player:GetCharacterData("Stamina"))), infoTable.walkSpeed, run_speed)
+		infoTable.runSpeed = math.Clamp(
+			newRunSpeed - (diffRunSpeed - ((diffRunSpeed / 100) * player:GetCharacterData("Stamina"))),
+			infoTable.walkSpeed,
+			run_speed
+		)
 	end
 
 	function cwStamina:PlayerDisconnected(player)

@@ -21,9 +21,21 @@ function COMMAND:OnRun(player, arguments)
 		local voicemail = target:GetCharacterData("Voicemail")
 
 		if (voicemail and voicemail != "") then
-			chatbox.AddText({ target, player }, voicemail, { sender = player, isPlayerMessage = true, filter = "pm", textColor = Color("#FFFF00") })
+			chatbox.AddText({ target, player }, voicemail, {
+				sender = player,
+				isPlayerMessage = true,
+				filter = "pm",
+				textColor = Color("#FFFF00")
+			})
 		else
-			chatbox.AddText({ target, player }, table.concat(arguments, " ", 2), { sender = player, isPlayerMessage = true, filter = "pm", type = "pm", textColor = Color("#65DBAC"), icon = false })
+			chatbox.AddText({ target, player }, table.concat(arguments, " ", 2), {
+				sender = player,
+				isPlayerMessage = true,
+				filter = "pm",
+				type = "pm",
+				textColor = Color("#65DBAC"),
+				icon = false
+			})
 		end
 	else
 		cw.player:Notify(player, L("NotValidPlayer", arguments[1]))

@@ -131,7 +131,13 @@ function Schema:DetermineLoyalistTier(num)
 		end
 	end
 
-	return tier or self.LoyalistTiers[1] or { name = "ERROR", description = "ERROR", color = Color(255, 0, 255), min = -1, max = -1 }
+	return tier or self.LoyalistTiers[1] or {
+		name = "ERROR",
+		description = "ERROR",
+		color = Color(255, 0, 255),
+		min = -1,
+		max = -1
+	}
 end
 
 function Schema:PlayerIsLoyalistTier(player, tier)

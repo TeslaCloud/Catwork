@@ -107,7 +107,13 @@ function PANEL:Paint(w, h)
 
 	if (self.iconID) then
 		// draw.RoundedBox(0, self.iconX, self.iconY, self.iconSize, self.iconSize, Color(255, 0, 0)) --debug
-		cw.FontIcons:Draw(self.iconID, (self.iconX or 0) + 1, (self.iconY or 0) - 1, (self.iconH or 16), (self.overrideColor or textColor or Color(255, 255, 255)))
+		cw.FontIcons:Draw(
+			self.iconID,
+			(self.iconX or 0) + 1,
+			(self.iconY or 0) - 1,
+			(self.iconH or 16),
+			(self.overrideColor or textColor or Color(255, 255, 255))
+		)
 	end
 
 	if (self.shouldDrawText) then
@@ -118,7 +124,13 @@ function PANEL:Paint(w, h)
 		end
 
 		if (self.drawText) then
-			draw.SimpleText(self.drawText, (self.m_Font or "Derma16"), (self.textOX or offsetX), (self.textOY or 0), (self.overrideColor or textColor or Color(255, 255, 255)))
+			draw.SimpleText(
+				self.drawText,
+				(self.m_Font or "Derma16"),
+				(self.textOX or offsetX),
+				(self.textOY or 0),
+				(self.overrideColor or textColor or Color(255, 255, 255))
+			)
 		end
 	end
 end

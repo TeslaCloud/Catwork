@@ -58,27 +58,27 @@ function PANEL:Init()
 	end
 
 	self.sellsPanel = vgui.Create("cwPanelList")
- 	self.sellsPanel:SetPadding(2)
- 	self.sellsPanel:SetSpacing(3)
- 	self.sellsPanel:SizeToContents()
+	self.sellsPanel:SetPadding(2)
+	self.sellsPanel:SetSpacing(3)
+	self.sellsPanel:SizeToContents()
 	self.sellsPanel:EnableVerticalScrollbar()
 
 	self.buysPanel = vgui.Create("cwPanelList")
- 	self.buysPanel:SetPadding(2)
- 	self.buysPanel:SetSpacing(3)
- 	self.buysPanel:SizeToContents()
+	self.buysPanel:SetPadding(2)
+	self.buysPanel:SetSpacing(3)
+	self.buysPanel:SizeToContents()
 	self.buysPanel:EnableVerticalScrollbar()
 
 	self.itemsPanel = vgui.Create("cwPanelList")
- 	self.itemsPanel:SetPadding(2)
- 	self.itemsPanel:SetSpacing(3)
- 	self.itemsPanel:SizeToContents()
+	self.itemsPanel:SetPadding(2)
+	self.itemsPanel:SetSpacing(3)
+	self.itemsPanel:SizeToContents()
 	self.itemsPanel:EnableVerticalScrollbar()
 
 	self.settingsPanel = vgui.Create("cwPanelList")
- 	self.settingsPanel:SetPadding(2)
- 	self.settingsPanel:SetSpacing(3)
- 	self.settingsPanel:SizeToContents()
+	self.settingsPanel:SetPadding(2)
+	self.settingsPanel:SetSpacing(3)
+	self.settingsPanel:SizeToContents()
 	self.settingsPanel:EnableVerticalScrollbar()
 	self.settingsPanel.Paint = function(sp, w, h)
 		draw.RoundedBox(0, 0, 0, w, h, Color(200, 200, 200))
@@ -222,9 +222,30 @@ function PANEL:Init()
 
 	self.propertySheet = vgui.Create("DPropertySheet", self)
 		self.propertySheet:SetPadding(4)
-		self.propertySheet:AddSheet(L"Sells", self.sellsPanel, "icon16/box.png", nil, nil, string.Replace(L("#Salesman_SellsTip"), "#1", salesmanName))
-		self.propertySheet:AddSheet(L"Buys", self.buysPanel, "icon16/add.png", nil, nil, string.Replace(L("#Salesman_BuysTip"), "#1", salesmanName))
-		self.propertySheet:AddSheet(L"Items", self.itemsPanel, "icon16/application_view_tile.png", nil, nil, L("#Salesman_ItemsTip"))
+		self.propertySheet:AddSheet(
+			L"Sells",
+			self.sellsPanel,
+			"icon16/box.png",
+			nil,
+			nil,
+			string.Replace(L("#Salesman_SellsTip"), "#1", salesmanName)
+		)
+		self.propertySheet:AddSheet(
+			L"Buys",
+			self.buysPanel,
+			"icon16/add.png",
+			nil,
+			nil,
+			string.Replace(L("#Salesman_BuysTip"), "#1", salesmanName)
+		)
+		self.propertySheet:AddSheet(
+			L"Items",
+			self.itemsPanel,
+			"icon16/application_view_tile.png",
+			nil,
+			nil,
+			L("#Salesman_ItemsTip")
+		)
 		self.propertySheet:AddSheet(L"Settings", self.settingsPanel, "icon16/tick.png", nil, nil, L("#Salesman_SettingsTip"))
 	cw.core:SetNoticePanel(self)
 end

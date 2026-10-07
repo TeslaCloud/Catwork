@@ -25,7 +25,8 @@ function GM:Initialize()
 	local password = config.GetVal("mysql_password")
 	local database = config.GetVal("mysql_database")
 	local dateInfo = os.date("*t")
-	local host = string.gsub(config.GetVal("mysql_host"), "^http[s]?://", "", 1) -- Matches at beginning of string, matches http:// or https://, no need to check twice
+	-- Matches at beginning of string, matches http:// or https://, no need to check twice
+	local host = string.gsub(config.GetVal("mysql_host"), "^http[s]?://", "", 1)
 	local port = config.GetVal("mysql_port")
 
 	cw.database.Module = "mysqloo"
@@ -234,8 +235,15 @@ function GM:PlayerDisconnected(player)
 			player:SaveCharacter()
 		end
 
-		cw.core:PrintLog(LOGTYPE_MINOR, player:Name().." ("..player:SteamID().." / "..player:IPAddress()..") has disconnected.")
-		chatbox.AddText(nil, player:SteamName()..L"PlayerDisconnected", { filter = "events", icon = "icon16/user_delete.png", textColor = Color(180, 80, 150) })
+		cw.core:PrintLog(
+			LOGTYPE_MINOR,
+			player:Name().." ("..player:SteamID().." / "..player:IPAddress()..") has disconnected."
+		)
+		chatbox.AddText(nil, player:SteamName()..L"PlayerDisconnected", {
+			filter = "events",
+			icon = "icon16/user_delete.png",
+			textColor = Color(180, 80, 150)
+		})
 	end
 end
 
@@ -875,7 +883,9 @@ function GM:PlayerSpawn(player)
 								prevRelation[player:SteamID()][k] = v2:Disposition(player)
 								v2:AddEntityRelationship(player, D_HT, 1)
 							else
-								ErrorNoHalt("Attempting to add relationship using invalid relation '"..v.."' towards faction '"..FACTION.name.."'.\r\n")
+								ErrorNoHalt(
+									"Attempting to add relationship using invalid relation '"..v.."' towards faction '"..FACTION.name.."'.\r\n"
+								)
 							end
 						end
 					end
@@ -1085,8 +1095,15 @@ function GM:PlayerInitialSpawn(player)
 	end
 
 	if (!player:IsKicked()) then
-		cw.core:PrintLog(LOGTYPE_MINOR, player:SteamName().." ("..player:SteamID().." / "..player:IPAddress()..") has connected.")
-		chatbox.AddText(nil, player:SteamName()..L"PlayerConnected", { filter = "events", icon = "icon16/user_add.png", textColor = Color(150, 80, 210) })
+		cw.core:PrintLog(
+			LOGTYPE_MINOR,
+			player:SteamName().." ("..player:SteamID().." / "..player:IPAddress()..") has connected."
+		)
+		chatbox.AddText(nil, player:SteamName()..L"PlayerConnected", {
+			filter = "events",
+			icon = "icon16/user_add.png",
+			textColor = Color(150, 80, 210)
+		})
 	end
 end
 
@@ -1550,7 +1567,8 @@ function GM:PlayerSelectCharacterOption(player, character, option) end
 
 -- Called when a player attempts to see another player's status.
 function GM:PlayerCanSeeStatus(player, target)
-	return "# "..target:UserID().." | "..target:Name().." | "..target:SteamName().." | "..target:SteamID().." | "..target:IPAddress()
+	return "# "..target:UserID().." | "..target:Name().." | "..target:SteamName().." | "..target:SteamID().." | "..
+		target:IPAddress()
 end
 
 -- Called when a player attempts to see a player's chat.
@@ -2031,13 +2049,13 @@ function GM:PlayerSay(player, text, bPublic)
 	local prefix = config.Get("command_prefix"):Get()
 	local prefixLength = string.len(prefix)
 
- 	if (string.sub(text, 1, prefixLength) == prefix) then
+	if (string.sub(text, 1, prefixLength) == prefix) then
 		local arguments = cw.core:ExplodeByTags(text, " ", "\"", "\"", true)
 		local command = string.sub(arguments[1], prefixLength + 1)
 		local realCommand = cw.command:GetAlias()[command] or command
 
 		return string.Replace(text, prefix..command, prefix..realCommand)
- 	end
+	end
 end
 
 -- Called when a player attempts to suicide.
@@ -2848,7 +2866,7 @@ function GM:PlayerCharacterLoaded(player)
 
 		CHARACTER = player:GetCharacter()
 			PLAYER = player
-				RunString(onNextLoad, md5.sumhexa(onNextLoad))
+			RunString(onNextLoad, md5.sumhexa(onNextLoad))
 			PLAYER = nil
 		CHARACTER = nil
 	end
@@ -3002,9 +3020,21 @@ function GM:DoPlayerDeath(player, attacker, damageInfo)
 	local decayTime = config.Get("body_decay_time"):Get()
 
 	if (decayTime > 0) then
-		cw.player:SetRagdollState(player, RAGDOLL_KNOCKEDOUT, nil, decayTime, cw.core:ConvertForce(damageInfo:GetDamageForce() * 32))
+		cw.player:SetRagdollState(
+			player,
+			RAGDOLL_KNOCKEDOUT,
+			nil,
+			decayTime,
+			cw.core:ConvertForce(damageInfo:GetDamageForce() * 32)
+		)
 	else
-		cw.player:SetRagdollState(player, RAGDOLL_KNOCKEDOUT, nil, 600, cw.core:ConvertForce(damageInfo:GetDamageForce() * 32))
+		cw.player:SetRagdollState(
+			player,
+			RAGDOLL_KNOCKEDOUT,
+			nil,
+			600,
+			cw.core:ConvertForce(damageInfo:GetDamageForce() * 32)
+		)
 	end
 
 	if (hook.Run("PlayerCanDeathClearRecognisedNames", player, attacker, damageInfo)) then
@@ -3063,16 +3093,32 @@ function GM:PlayerDeath(player, inflictor, attacker, damageInfo)
 			local itemTable = item.GetByWeapon(weapon)
 
 			if (IsValid(weapon) and itemTable) then
-				cw.core:PrintLog(LOGTYPE_CRITICAL, attacker:Name().." has dealt "..tostring(math.ceil(damageInfo:GetDamage())).." damage to "..player:Name().." with "..itemTable.name..", killing them!")
+				cw.core:PrintLog(
+					LOGTYPE_CRITICAL,
+					attacker:Name().." has dealt "..tostring(math.ceil(damageInfo:GetDamage())).." damage to "..player:Name()..
+						" with "..itemTable.name..", killing them!"
+				)
 			else
-				cw.core:PrintLog(LOGTYPE_CRITICAL, attacker:Name().." has dealt "..tostring(math.ceil(damageInfo:GetDamage())).." damage to "..player:Name().." with "..cw.player:GetWeaponClass(attacker)..", killing them!")
+				cw.core:PrintLog(
+					LOGTYPE_CRITICAL,
+					attacker:Name().." has dealt "..tostring(math.ceil(damageInfo:GetDamage())).." damage to "..player:Name()..
+						" with "..cw.player:GetWeaponClass(attacker)..", killing them!"
+				)
 			end
 		else
-			cw.core:PrintLog(LOGTYPE_CRITICAL, attacker:Name().." has dealt "..tostring(math.ceil(damageInfo:GetDamage())).." damage to "..player:Name()..", killing them!")
+			cw.core:PrintLog(
+				LOGTYPE_CRITICAL,
+				attacker:Name().." has dealt "..tostring(math.ceil(damageInfo:GetDamage())).." damage to "..player:Name()..
+					", killing them!"
+			)
 		end
 	else
 		if (damageInfo) then
-			cw.core:PrintLog(LOGTYPE_CRITICAL, attacker:GetClass().." has dealt "..tostring(math.ceil(damageInfo:GetDamage())).." damage to "..player:Name()..", killing them!")
+			cw.core:PrintLog(
+				LOGTYPE_CRITICAL,
+				attacker:GetClass().." has dealt "..tostring(math.ceil(damageInfo:GetDamage())).." damage to "..player:Name()..
+					", killing them!"
+			)
 		end
 	end
 end
@@ -3264,7 +3310,8 @@ function GM:EntityTakeDamage(entity, damageInfo)
 			data.endpos = entity:GetPos()
 		local trace = util.TraceLine(data)
 
-		cw.player:SetRagdollState(entity, RAGDOLL_FALLENOVER, nil, nil, nil, nil, function(physicsObject, boneIndex, ragdoll, velocity, force)
+		cw.player:SetRagdollState(entity, RAGDOLL_FALLENOVER, nil, nil, nil, nil, function(physicsObject, boneIndex, ragdoll,
+		velocity, force)
 			physicsObject:SetVelocity(trace.Normal * damageInfo:GetReportedPosition())
 		end)
 		entity:SetDTBool(BOOL_FALLENOVER, true)
@@ -3282,7 +3329,8 @@ function GM:EntityTakeDamage(entity, damageInfo)
 	if (config.Get("prop_kill_protection"):Get()) then
 		local curTime = CurTime()
 
-		if ((IsValid(inflictor) and inflictor.cwDamageImmunity and inflictor.cwDamageImmunity > curTime and !inflictor:IsVehicle())
+		if ((IsValid(inflictor) and inflictor.cwDamageImmunity and inflictor.cwDamageImmunity > curTime
+		and !inflictor:IsVehicle())
 		or (IsValid(attacker) and attacker.cwDamageImmunity and attacker.cwDamageImmunity > curTime)) then
 			entity.cwDamageImmunity = curTime + 1
 
@@ -3369,9 +3417,18 @@ function GM:EntityTakeDamage(entity, damageInfo)
 						end
 
 						if (attacker:IsPlayer()) then
-							cw.core:PrintLog(LOGTYPE_MAJOR, player:Name().." has taken "..tostring(math.ceil(damageInfo:GetDamage())).." damage from "..attacker:Name().." with "..cw.player:GetWeaponClass(attacker, "an unknown weapon")..", leaving them at "..player:Health().." health"..armor)
+							cw.core:PrintLog(
+								LOGTYPE_MAJOR,
+								player:Name().." has taken "..tostring(math.ceil(damageInfo:GetDamage())).." damage from "..attacker:Name()..
+									" with "..cw.player:GetWeaponClass(attacker, "an unknown weapon")..", leaving them at "..player:Health()..
+									" health"..armor
+							)
 						else
-							cw.core:PrintLog(LOGTYPE_MAJOR, player:Name().." has taken "..tostring(math.ceil(damageInfo:GetDamage())).." damage from "..attacker:GetClass()..", leaving them at "..player:Health().." health"..armor)
+							cw.core:PrintLog(
+								LOGTYPE_MAJOR,
+								player:Name().." has taken "..tostring(math.ceil(damageInfo:GetDamage())).." damage from "..
+									attacker:GetClass()..", leaving them at "..player:Health().." health"..armor
+							)
 						end
 					end
 				end
@@ -3424,9 +3481,18 @@ function GM:EntityTakeDamage(entity, damageInfo)
 					end
 
 					if (attacker:IsPlayer()) then
-						cw.core:PrintLog(LOGTYPE_MAJOR, player:Name().." has taken "..tostring(math.ceil(damageInfo:GetDamage())).." damage from "..attacker:Name().." with "..cw.player:GetWeaponClass(attacker, "an unknown weapon")..", leaving them at "..player:Health().." health"..armor)
+						cw.core:PrintLog(
+							LOGTYPE_MAJOR,
+							player:Name().." has taken "..tostring(math.ceil(damageInfo:GetDamage())).." damage from "..attacker:Name()..
+								" with "..cw.player:GetWeaponClass(attacker, "an unknown weapon")..", leaving them at "..player:Health()..
+								" health"..armor
+						)
 					else
-						cw.core:PrintLog(LOGTYPE_MAJOR, player:Name().." has taken "..tostring(math.ceil(damageInfo:GetDamage())).." damage from "..attacker:GetClass()..", leaving them at "..player:Health().." health"..armor)
+						cw.core:PrintLog(
+							LOGTYPE_MAJOR,
+							player:Name().." has taken "..tostring(math.ceil(damageInfo:GetDamage())).." damage from "..attacker:GetClass()..
+								", leaving them at "..player:Health().." health"..armor
+						)
 					end
 				end
 			end
@@ -3593,7 +3659,9 @@ function GM:PlayerSpawnedNPC(player, npc)
 						prevRelation[player:SteamID()][k2] = prevRelation[player:SteamID()][k2] or npc:Disposition(v)
 						npc:AddEntityRelationship(v, D_HT, 1)
 					else
-						ErrorNoHalt("Attempting to add relationship using invalid relation '"..v2.."' towards faction '"..faction.name.."'.\r\n")
+						ErrorNoHalt(
+							"Attempting to add relationship using invalid relation '"..v2.."' towards faction '"..faction.name.."'.\r\n"
+						)
 					end
 				end
 			end

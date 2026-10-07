@@ -85,14 +85,14 @@ function cw.command:Register(data, name)
 	end
 
 	-- We do that so the Command Interpreter can find the command
- 	-- if it's original, non-aliased name has been used.
- 	alias[uniqueID] = uniqueID
+	-- if it's original, non-aliased name has been used.
+	alias[uniqueID] = uniqueID
 
- 	if (data.alias and type(data.alias) == "table") then
- 		for k, v in pairs(data.alias) do
- 			alias[string.lower(tostring(v))] = uniqueID
- 		end
- 	end
+	if (data.alias and type(data.alias) == "table") then
+		for k, v in pairs(data.alias) do
+			alias[string.lower(tostring(v))] = uniqueID
+		end
+	end
 
 	stored[uniqueID] = data
 	stored[uniqueID].name = realName
@@ -210,14 +210,20 @@ if (SERVER) then
 									local bSuccess, value = pcall(commandTable.OnRun, commandTable, player, arguments)
 
 									if (!bSuccess) then
-										MsgC(Color(255, 100, 0, 255), "\n[CW:Command]\nThe '"..commandTable.name.."' command has failed to run.\n"..value.."\n")
+										MsgC(
+											Color(255, 100, 0, 255),
+											"\n[CW:Command]\nThe '"..commandTable.name.."' command has failed to run.\n"..value.."\n"
+										)
 									elseif (cw.player:GetDeathCode(player, true)) then
 										cw.player:UseDeathCode(player, commandTable.name, arguments)
 									end
 
 									if (bSuccess) then
 										if (table.concat(arguments, " ") != "") then
-											cw.core:PrintLog(LOGTYPE_GENERIC, player:Name(true).." has used '"..commandPrefix..commandTable.name.." "..table.concat(arguments, " ").."'.")
+											cw.core:PrintLog(
+												LOGTYPE_GENERIC,
+												player:Name(true).." has used '"..commandPrefix..commandTable.name.." "..table.concat(arguments, " ").."'."
+											)
 										else
 											cw.core:PrintLog(LOGTYPE_GENERIC, player:Name(true).." has used '"..commandPrefix..commandTable.name.."'.")
 										end

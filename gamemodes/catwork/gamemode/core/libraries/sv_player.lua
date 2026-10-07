@@ -606,7 +606,8 @@ cw.player.CanSeeNPC = cw.player.CanSeeEntity
 function cw.player:CanSeePosition(player, position, iAllowance, tIgnoreEnts, targetEnt)
 	local trace = {}
 
-	trace.mask = CONTENTS_SOLID + CONTENTS_MOVEABLE + CONTENTS_OPAQUE + CONTENTS_DEBRIS + CONTENTS_HITBOX + CONTENTS_MONSTER
+	trace.mask =
+		CONTENTS_SOLID + CONTENTS_MOVEABLE + CONTENTS_OPAQUE + CONTENTS_DEBRIS + CONTENTS_HITBOX + CONTENTS_MONSTER
 	trace.start = player:GetShootPos()
 	trace.endpos = position
 	trace.filter = { player, targetEnt }
@@ -1507,10 +1508,26 @@ function cw.player:SayRadio(player, text, check, noEavesdrop)
 	end
 
 	if (canRadio) then
-		info = chatbox.AddText(listeners, "\""..info.text.."\"", { suffix = " #Suffix_Radio ", sender = player, isPlayerMessage = true, filter = "ic", radius = 0, textColor = Color(10, 200, 10, 255), data = { radio = true } })
+		info = chatbox.AddText(listeners, "\""..info.text.."\"", {
+			suffix = " #Suffix_Radio ",
+			sender = player,
+			isPlayerMessage = true,
+			filter = "ic",
+			radius = 0,
+			textColor = Color(10, 200, 10, 255),
+			data = { radio = true }
+		})
 
 		if (info and IsValid(info.sender)) then
-			chatbox.AddText(eavesdroppers, info.text, { suffix = " #Suffix_Radio ", sender = player, isPlayerMessage = true, filter = "ic", radius = 0, textColor = Color(255, 255, 200, 255), data = { radio = true } })
+			chatbox.AddText(eavesdroppers, info.text, {
+				suffix = " #Suffix_Radio ",
+				sender = player,
+				isPlayerMessage = true,
+				filter = "ic",
+				radius = 0,
+				textColor = Color(255, 255, 200, 255),
+				data = { radio = true }
+			})
 
 			hook.Run("PlayerRadioUsed", player, info.text, listeners, eavesdroppers)
 		end

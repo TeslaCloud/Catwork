@@ -4,24 +4,34 @@
 -- ZAR3
 -- Copyright (c) 2012 Zaubermuffin
 --
--- Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+-- Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+-- documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
+-- rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+-- permit persons to whom the Software is furnished to do so, subject to the following conditions:
 --
--- The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+-- The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
+-- Software.
 --
--- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+-- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+-- WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+-- COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+-- OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 --
 -- Based on the original Bouncy Ball.
 --
 -- Note: Here's a lot of code commented out - for a reason.
--- The whole "aiming at crosshair position" is horribly broken and I'm not in a mood to do mathematical thinking what would be correct - I ported the C++ code from func_tank and
--- used the data from the sdk_d2_coast12.vmf that also features one of these AR3s - however, it was horribly broken even afterwards with little to zero improvement.
+-- The whole "aiming at crosshair position" is horribly broken and I'm not in a mood to do mathematical thinking what
+-- would be correct - I ported the C++ code from func_tank and
+-- used the data from the sdk_d2_coast12.vmf that also features one of these AR3s - however, it was horribly broken even
+-- afterwards with little to zero improvement.
 -- In addition, the flashlight is kind-of-buggy - but a certain someone just wanted me to release this, so take it.
 
 AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 include("shared.lua")
 
-local MAX_DISTANCE = 6000 -- square of the maximum distance we can move away from the AR3 before we leave it automatically.
+-- square of the maximum distance we can move away from the AR3 before we leave it automatically.
+local MAX_DISTANCE = 6000
 local SPREAD = Vector(0.025, 0.025, 0)
 local SHOT_INTERVAL = 0.05
 
@@ -207,7 +217,10 @@ function ENT:TakeOver(ply)
 	umsg.End()
 
 	-- Wake us up afterwards - might be necessary.
-	timer.Simple(dur, function() if IsValid(self) and IsValid(self:GetPhysicsObject()) then self:GetPhysicsObject():Wake() end end)
+	timer.Simple(
+		dur,
+		function() if IsValid(self) and IsValid(self:GetPhysicsObject()) then self:GetPhysicsObject():Wake() end end
+	)
 	ply.ZAR3 = self
 end
 
@@ -297,7 +310,7 @@ local function FindCone(ent, retry)
 
 	for k, v in pairs(ents.FindByClass("spotlight_end")) do
 		if v:GetOwner() == ent.Flashlight then
-				ent.FlashlightCone = v
+			ent.FlashlightCone = v
 			return
 		end
 	end
@@ -367,7 +380,8 @@ function ENT:TrackTarget()
 	self.LocAng.yaw = math.NormalizeAngle(currentAngles.yaw + yawDiff)
 	self.LocAng.pitch = math.NormalizeAngle(currentAngles.pitch + pitchDiff)
 
--- ~ 	self.Controller:PrintMessage(HUD_PRINTCENTER, string.format('%3.f - %.3f => %.3f; set to %.3f == %.3f', currentAngles.yaw, angles.yaw, yawDiff, math.NormalizeAngle(currentAngles.yaw + yawDiff), self.LocAng.yaw))
+-- ~ 	self.Controller:PrintMessage(HUD_PRINTCENTER, string.format('%3.f - %.3f => %.3f; set to %.3f == %.3f',
+-- ~ 	currentAngles.yaw, angles.yaw, yawDiff, math.NormalizeAngle(currentAngles.yaw + yawDiff), self.LocAng.yaw))
 
 	--[["Official" way.
 	self:RotateTankToAngles(angles)
@@ -399,8 +413,14 @@ function ENT:CalcPlayerCrosshairTarget()
 	vecDir = player:GetAimVector()
 
 	-- // Make sure to start the trace outside of the player's bbox!
-	-- UTIL_TraceLine(vecStart + vecDir * 24, vecStart + vecDir * 8192, MASK_OPAQUE_AND_NPCS, this, COLLISION_GROUP_NONE, &tr)
-	tr = util.TraceLine({ start = vecStart + vecDir * 24, endpos = vecStart + vecDir * 8192, mask = MASK_OPAQUE_AND_NPCS, filter = { self, player, self:GetParent() } })
+	-- UTIL_TraceLine(vecStart + vecDir * 24, vecStart + vecDir * 8192, MASK_OPAQUE_AND_NPCS, this, COLLISION_GROUP_NONE,
+	-- &tr)
+	tr = util.TraceLine({
+		start = vecStart + vecDir * 24,
+		endpos = vecStart + vecDir * 8192,
+		mask = MASK_OPAQUE_AND_NPCS,
+		filter = { self, player, self:GetParent() }
+	})
 
 	-- *pVecTarget = tr.endpos
 	return tr.HitPos
@@ -439,28 +459,33 @@ function ENT:AimBarrelAt(parentTarget)
 -- ~ 		return Angle(self:GetPoseParameter('aim_pitch'), self:GetPoseParameter('aim_yaw'), 0)
 	-- else
 -- ~ 	else
-		-- // We're trying to aim the offset barrel at an arbitrary point.
-		-- // To calculate this, I think of the target as being on a sphere with
-		-- // it's center at the origin of the gun.
-		-- // The rotation we need is the opposite of the rotation that moves the target
-		-- // along the surface of that sphere to intersect with the gun's shooting direction
-		-- // To calculate that rotation, we simply calculate the intersection of the ray
-		-- // coming out of the barrel with the target sphere (that's the new target position)
-		-- // and use atan2() to get angles
-		--
-		-- // angles from target pos to center
-		-- float targetToCenterYaw = atan2(target.y, target.x)
-		local targetToCenterYaw = math.atan2(target.y, target.x)
-		-- float centerToGunYaw = atan2(m_barrelPos.y, sqrt(quadTarget - (m_barrelPos.y*m_barrelPos.y)))
-		local centerToGunYaw = math.atan2(m_barrelPos.y, math.sqrt(quadTarget - (m_barrelPos.y * m_barrelPos.y)))
-		-- float targetToCenterPitch = atan2(target.z, sqrt(quadTargetXY))
-		local targetToCenterPitch = math.atan2(target.z, math.sqrt(quadTargetXY))
-		-- float centerToGunPitch = atan2(-m_barrelPos.z, sqrt(quadTarget - (m_barrelPos.z*m_barrelPos.z)))
-		local centerToGunPitch = math.atan2(-m_barrelPos.z, math.sqrt(quadTarget - (m_barrelPos.z * m_barrelPos.z)))
+	-- // We're trying to aim the offset barrel at an arbitrary point.
+	-- // To calculate this, I think of the target as being on a sphere with
+	-- // it's center at the origin of the gun.
+	-- // The rotation we need is the opposite of the rotation that moves the target
+	-- // along the surface of that sphere to intersect with the gun's shooting direction
+	-- // To calculate that rotation, we simply calculate the intersection of the ray
+	-- // coming out of the barrel with the target sphere (that's the new target position)
+	-- // and use atan2() to get angles
+	--
+	-- // angles from target pos to center
+	-- float targetToCenterYaw = atan2(target.y, target.x)
+	local targetToCenterYaw = math.atan2(target.y, target.x)
+	-- float centerToGunYaw = atan2(m_barrelPos.y, sqrt(quadTarget - (m_barrelPos.y*m_barrelPos.y)))
+	local centerToGunYaw = math.atan2(m_barrelPos.y, math.sqrt(quadTarget - (m_barrelPos.y * m_barrelPos.y)))
+	-- float targetToCenterPitch = atan2(target.z, sqrt(quadTargetXY))
+	local targetToCenterPitch = math.atan2(target.z, math.sqrt(quadTargetXY))
+	-- float centerToGunPitch = atan2(-m_barrelPos.z, sqrt(quadTarget - (m_barrelPos.z*m_barrelPos.z)))
+	local centerToGunPitch = math.atan2(-m_barrelPos.z, math.sqrt(quadTarget - (m_barrelPos.z * m_barrelPos.z)))
 		-- return QAngle(-RAD2DEG(targetToCenterPitch+centerToGunPitch), RAD2DEG(targetToCenterYaw + centerToGunYaw), 0)
 
--- ~ 		self.Controller:PrintMessage(HUD_PRINTCENTER, string.format('%.3f - %.3f | %.3f - %.3f', targetToCenterYaw, centerToGunYaw, targetToCenterPitch, centerToGunPitch))
-		return Angle(math.NormalizeAngle(-math.Rad2Deg(targetToCenterPitch + centerToGunPitch)), math.NormalizeAngle(math.Rad2Deg(targetToCenterYaw + centerToGunYaw)), 0)
+-- ~ 		self.Controller:PrintMessage(HUD_PRINTCENTER, string.format('%.3f - %.3f | %.3f - %.3f', targetToCenterYaw,
+-- ~ 		centerToGunYaw, targetToCenterPitch, centerToGunPitch))
+	return Angle(
+		math.NormalizeAngle(-math.Rad2Deg(targetToCenterPitch + centerToGunPitch)),
+		math.NormalizeAngle(math.Rad2Deg(targetToCenterYaw + centerToGunYaw)),
+		0
+	)
 -- ~ 	end
 end
 
@@ -537,7 +562,8 @@ end
 
 -- ]==]--
 
--- I have no idea why I have to set pose parameters *here* - but the C++ does it in PhysicsSimulate, so I guess that's the way to do it.
+-- I have no idea why I have to set pose parameters *here* - but the C++ does it in PhysicsSimulate, so I guess that's
+-- the way to do it.
 function ENT:PhysicsSimulate()
 	if !IsValid(self) or !IsValid(self.Controller) then
 		return SIM_NOTHING

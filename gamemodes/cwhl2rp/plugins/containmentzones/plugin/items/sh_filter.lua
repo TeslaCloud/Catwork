@@ -12,7 +12,7 @@ ITEM.description = "#Item_Filter_Description"
 ITEM:AddData("energy", 100, true)
 
 if CLIENT then
-function ITEM:GetClientSideDescription()
+	function ITEM:GetClientSideDescription()
 		local desc = L(self.description)
 		local filter = self:GetData("energy")
 

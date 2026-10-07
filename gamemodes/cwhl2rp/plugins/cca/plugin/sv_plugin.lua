@@ -75,7 +75,10 @@ netstream.Hook("Application::PDA::Controller::LP", function(player, target, valu
 	if (player:IsCombine()) then
 		value = math.Round(math.Clamp(tonumber(value), (!bSubstract and 0) or -50, (!bSubstract and 50) or 0))
 
-		cw.core:ServerLog(player:Name().." has "..((!bSubstract and "Issued ") or "Removed ").." "..tostring(math.abs(value)).." LP "..((!bSubstract and "to ") or "from ").." "..target:Name()..".")
+		cw.core:ServerLog(
+			player:Name().." has "..((!bSubstract and "Issued ") or "Removed ").." "..tostring(math.abs(value)).." LP "..
+				((!bSubstract and "to ") or "from ").." "..target:Name().."."
+		)
 
 		local type = ((!bSubstract and "add") or "remove")
 		cca.AppendLog(player, target, L("PDA_Log_LP").." "..(translation[type] or "")..value, "loyalty_"..type)
@@ -94,7 +97,10 @@ netstream.Hook("Application::PDA::Controller::CP", function(player, target, valu
 	if (player:IsCombine()) then
 		value = math.Round(math.Clamp(tonumber(value), (!bSubstract and 0) or -50, (!bSubstract and 50) or 0))
 
-		cw.core:ServerLog(player:Name().." has "..((!bSubstract and "Issued ") or "Removed ").." "..tostring(math.abs(value)).." CP "..((!bSubstract and "to ") or "from ").." "..target:Name()..".")
+		cw.core:ServerLog(
+			player:Name().." has "..((!bSubstract and "Issued ") or "Removed ").." "..tostring(math.abs(value)).." CP "..
+				((!bSubstract and "to ") or "from ").." "..target:Name().."."
+		)
 
 		local type = ((!bSubstract and "add") or "remove")
 		cca.AppendLog(player, target, L("PDA_Log_CP").." "..(translation[type] or "")..value, "crime_"..type)
@@ -113,7 +119,10 @@ netstream.Hook("Application::PDA::Controller::WP", function(player, target, valu
 	if (player:IsCombine() or player:GetFaction() == FACTION_CWU) then
 		value = math.Round(math.Clamp(tonumber(value), 0, 20))
 
-		cw.core:ServerLog(player:Name().." has "..((!bSubstract and "Issued ") or "Removed ").." "..tostring(math.abs(value)).." WP "..((!bSubstract and "to ") or "from ").." "..target:Name()..".")
+		cw.core:ServerLog(
+			player:Name().." has "..((!bSubstract and "Issued ") or "Removed ").." "..tostring(math.abs(value)).." WP "..
+				((!bSubstract and "to ") or "from ").." "..target:Name().."."
+		)
 
 		local type = ((!bSubstract and "add") or "remove")
 		cca.AppendLog(player, target, L("PDA_Log_WP").." "..(translation[type] or "")..value, "work_"..type)

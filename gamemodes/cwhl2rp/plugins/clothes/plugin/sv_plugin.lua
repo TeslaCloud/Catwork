@@ -163,7 +163,8 @@ function PLUGIN:EntityTakeDamage(victim, dmg)
 		if (!clothesItem) then
 			local clothesData = victim.bgClothesData or {}
 			local skinClothesData = victim.skinClothesData or {}
-			local protection = math.Clamp((clothesData.plyProtection or 0) + (skinClothesData.plyProtection or 0), 0, maxArmorValue)
+			local protection =
+				math.Clamp((clothesData.plyProtection or 0) + (skinClothesData.plyProtection or 0), 0, maxArmorValue)
 
 			dmg:ScaleDamage(1 - (protection / 100))
 		end

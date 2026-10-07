@@ -13,12 +13,12 @@ function PANEL:Init()
 	self:SetSize(cw.menu:GetWidth(), cw.menu:GetHeight())
 
 	self.inventoryList = vgui.Create("cwPanelList", self)
- 	self.inventoryList:SetPadding(8)
- 	self.inventoryList:SetSpacing(8)
+	self.inventoryList:SetPadding(8)
+	self.inventoryList:SetSpacing(8)
 
 	self.equipmentList = vgui.Create("cwPanelList", self)
- 	self.equipmentList:SetPadding(8)
- 	self.equipmentList:SetSpacing(8)
+	self.equipmentList:SetPadding(8)
+	self.equipmentList:SetSpacing(8)
 
 	self.columnSheet = vgui.Create("cwColumnSheet", self)
 	self.columnSheet.Navigation:SetWidth(150)
@@ -38,17 +38,17 @@ end
 function PANEL:HandleUnequip(itemTable)
 	if (itemTable.OnHandleUnequip) then
 		itemTable:OnHandleUnequip(
-		function(arguments)
-			if (arguments) then
-				netstream.Start(
-					"UnequipItem", { itemTable.uniqueID, itemTable.itemID, arguments }
-				)
-			else
-				netstream.Start(
-					"UnequipItem", { itemTable.uniqueID, itemTable.itemID }
-				)
-			end
-		end)
+			function(arguments)
+				if (arguments) then
+					netstream.Start(
+						"UnequipItem", { itemTable.uniqueID, itemTable.itemID, arguments }
+					)
+				else
+					netstream.Start(
+						"UnequipItem", { itemTable.uniqueID, itemTable.itemID }
+					)
+				end
+			end)
 	else
 		netstream.Start(
 			"UnequipItem", { itemTable.uniqueID, itemTable.itemID }

@@ -23,7 +23,8 @@ function COMMAND:OnRun(player, arguments)
 		if (modelClass == "maleHuman" or modelClass == "femaleHuman") then
 			local forcedAnimation = player:GetForcedAnimation()
 
-			if (forcedAnimation and (forcedAnimation.animation == "sit_ground" or forcedAnimation.animation == "idle_to_sit_ground"
+			if (forcedAnimation
+			and (forcedAnimation.animation == "sit_ground" or forcedAnimation.animation == "idle_to_sit_ground"
 			or forcedAnimation.animation == "sit_ground_to_idle")) then
 				player:SetForcedAnimation(false)
 

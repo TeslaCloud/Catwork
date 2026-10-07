@@ -219,9 +219,16 @@ else
 
 						if (configObject("isPrivate")) then
 							if (configObject("needsRestart")) then
-								cw.player:NotifyAll(L("Config_ValueSetRestart", player:Name(), keyPrefix..data.key).." '"..string.rep("*", string.utf8len(printValue)).."'")
+								cw.player:NotifyAll(
+									L("Config_ValueSetRestart", player:Name(), keyPrefix..data.key).." '"..string.rep("*", string.utf8len(
+										printValue
+									)).."'"
+								)
 							else
-								cw.player:NotifyAll(L("Config_ValueSet", player:Name(), keyPrefix..data.key).." '"..string.rep("*", string.utf8len(printValue)).."'")
+								cw.player:NotifyAll(
+									L("Config_ValueSet", player:Name(), keyPrefix..data.key).." '"..string.rep("*", string.utf8len(printValue))..
+										"'"
+								)
 							end
 						elseif (configObject("needsRestart")) then
 							cw.player:NotifyAll(L("Config_ValueSetRestart", player:Name(), keyPrefix..data.key).." '"..printValue.."'")

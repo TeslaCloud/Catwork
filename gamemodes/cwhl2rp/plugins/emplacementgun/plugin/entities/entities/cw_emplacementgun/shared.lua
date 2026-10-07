@@ -25,7 +25,10 @@ ENT.PhysgunDisabled = true
 
 -- Almost no properties.
 local function CanProperty(ply, act, ent)
-	if !IsValid(ent) or (ent:GetClass() != "cw_emplacementgun" and ent:GetModel() != "models/props_combine/combine_barricade_short01a.mdl") or (act != "bonemanipulate" and act != "drive" and act != "persist" and act != "nocollide_on" and act != "collision") then
+	if !IsValid(ent)
+	or (ent:GetClass() != "cw_emplacementgun" and ent:GetModel() != "models/props_combine/combine_barricade_short01a.mdl")
+	or (act != "bonemanipulate" and act != "drive" and act != "persist" and act != "nocollide_on"
+	and act != "collision") then
 		return
 	end
 

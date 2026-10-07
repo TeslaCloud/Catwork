@@ -22,7 +22,12 @@ function COMMAND:OnRun(player, arguments)
 		text = string.gsub(text, "eventlocal ", "", 1)
 	end
 
-	chatbox.AddText(nil, "* "..text, { filter = "player_events", textColor = Color("#FFAB00"), icon = false, position = player:GetPos() })
+	chatbox.AddText(nil, "* "..text, {
+		filter = "player_events",
+		textColor = Color("#FFAB00"),
+		icon = false,
+		position = player:GetPos()
+	})
 end
 
 COMMAND:Register()

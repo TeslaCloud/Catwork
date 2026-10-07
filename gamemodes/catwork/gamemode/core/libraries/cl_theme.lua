@@ -244,7 +244,8 @@ end
 --[[
 	@codebase Client
 	@details A function to get whether the currently active theme allows clients to change the information color.
-	@returns Bool Whether or not the active theme has a fixed information color or not. Returns false if players can change the color.
+	@returns Bool Whether or not the active theme has a fixed information color or not. Returns false if players can change
+	the color.
 --]]
 
 function cw.theme:IsFixed()
@@ -334,7 +335,8 @@ end
 	@codebase Client
 	@details A function to smoothly transition between themes, and call the hooks for loading and unloading them.
 	@params String The name of the theme to be loaded, can also be the theme table itself.
-	@params Bool Whether or not this is the first theme being loaded, used by Clockwork when initializing. Do NOT set to true.
+	@params Bool Whether or not this is the first theme being loaded, used by Clockwork when initializing. Do NOT set to
+	true.
 --]]
 
 function cw.theme:SetActive(theme, firstLoad)

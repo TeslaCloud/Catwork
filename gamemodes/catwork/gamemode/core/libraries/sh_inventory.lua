@@ -115,7 +115,8 @@ function cw.inventory:FindItemByName(inventory, uniqueID, name)
 	end
 
 	for k, v in pairs(inventory[itemTable.uniqueID]) do
-		if (string.utf8lower(v.name) == string.utf8lower(name) or string.utf8lower(v.PrintName) == string.utf8lower(name)) then
+		if (string.utf8lower(v.name) == string.utf8lower(name)
+		or string.utf8lower(v.PrintName) == string.utf8lower(name)) then
 			return v
 		end
 	end
@@ -142,7 +143,8 @@ function cw.inventory:FindItemsByName(inventory, uniqueID, name)
 	end
 
 	for k, v in pairs(inventory[itemTable.uniqueID]) do
-		if (string.utf8lower(v.name) == string.utf8lower(name) or string.utf8lower(v.PrintName) == string.utf8lower(name)) then
+		if (string.utf8lower(v.name) == string.utf8lower(name)
+		or string.utf8lower(v.PrintName) == string.utf8lower(name)) then
 			itemsList[#itemsList + 1] = v
 		end
 	end

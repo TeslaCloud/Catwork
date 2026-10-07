@@ -55,7 +55,7 @@ function TOOL:LeftClick(trace)
 
 	cw.player:Notify(player, L("SurfaceTexts_Added"))
 
- 	return true
+	return true
 end
 
 function TOOL:RightClick(trace)
@@ -84,15 +84,28 @@ function TOOL.BuildCPanel(CPanel)
 
 	CPanel:AddControl("Header", { Description = "#tool.texts.desc" })
 
-	local controlPresets = CPanel:AddControl("ComboBox", { MenuButton = 1, Folder = "textstyle", Options = options, CVars = { "texts_style" } })
+	local controlPresets =
+		CPanel:AddControl("ComboBox", { MenuButton = 1, Folder = "textstyle", Options = options, CVars = { "texts_style" } })
 	controlPresets.Button:SetVisible(false)
 	controlPresets.DropDown:SetValue("#tool.texts.choose")
 
 	CPanel:AddControl("TextBox", { Label = "#tool.texts.text", Command = "texts_text", MaxLenth = "128" })
 	CPanel:AddControl("TextBox", { Label = "#tool.texts.color", Command = "texts_color", MaxLenth = "16" })
 	CPanel:AddControl("TextBox", { Label = "#tool.texts.extraColor", Command = "texts_extraColor", MaxLenth = "16" })
-	CPanel:AddControl("Slider", { Label = "#tool.texts.scale", Command = "texts_scale", Type = "Float", Min = 0.01, Max = 10 })
-	CPanel:AddControl("Slider", { Label = "#tool.texts.fade", Command = "texts_fade", Type = "Integer", Min = -1024, Max = 10000 })
+	CPanel:AddControl("Slider", {
+		Label = "#tool.texts.scale",
+		Command = "texts_scale",
+		Type = "Float",
+		Min = 0.01,
+		Max = 10
+	})
+	CPanel:AddControl("Slider", {
+		Label = "#tool.texts.fade",
+		Command = "texts_fade",
+		Type = "Integer",
+		Min = -1024,
+		Max = 10000
+	})
 end
 
 TOOL:Register()

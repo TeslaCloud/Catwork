@@ -14,7 +14,7 @@ ITEM.weight = 2
 ITEM.access = "v"
 ITEM.whitelist = {
 	FACTION_VORT
- }
+}
 ITEM.business = true
 ITEM.category = "Reusables"
 ITEM.description = "#Item_VortPoncho_Description"

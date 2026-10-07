@@ -16,11 +16,11 @@ COMMAND.cooldown = 2
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
-   if (!cw.player:IsAdmin(player)) then
-	  cw.player:NotifyAdmins("o", L("Command_Arequest_From", player:Name()).." "..table.concat(arguments, " "), nil)
-   else
-	  cw.player:Notify(player, L("UseA"))
-   end
+	if (!cw.player:IsAdmin(player)) then
+		cw.player:NotifyAdmins("o", L("Command_Arequest_From", player:Name()).." "..table.concat(arguments, " "), nil)
+	else
+		cw.player:Notify(player, L("UseA"))
+	end
 end
 
 COMMAND:Register()

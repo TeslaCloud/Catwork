@@ -35,7 +35,8 @@ function COMMAND:OnRun(player, arguments)
 					local cashSpace = config.GetVal("cash_space")
 					local mySpace = cw.storage:GetSpace(player)
 
-					if (cw.storage:GetWeight(player) + (config.GetVal("cash_weight") * cash) <= storageTable.weight and mySpace + (cashSpace * cash) <= storageTable.space) then
+					if (cw.storage:GetWeight(player) + (config.GetVal("cash_weight") * cash) <= storageTable.weight
+					and mySpace + (cashSpace * cash) <= storageTable.space) then
 						cw.player:GiveCash(player, -cash, nil, true)
 						cw.storage:UpdateCash(player, storageTable.cash + cash)
 					end

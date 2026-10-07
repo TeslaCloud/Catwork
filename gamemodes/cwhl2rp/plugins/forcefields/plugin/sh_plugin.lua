@@ -33,8 +33,7 @@ local allowedEnts = {
 	prop_vehicle_zapc		= true,
 	prop_physics = true,
 	hunter_flechette = true,
-	npc_tripmine = true,
-	prop_vehicle_zapc = true
+	npc_tripmine = true
 }
 
 function cwForceField:ShouldCollide(a, b)
@@ -55,7 +54,8 @@ function cwForceField:ShouldCollide(a, b)
 
 	if (IsValid(entity) and entity:GetClass() == "cw_forcefield") then
 		if (IsValid(player)) then
-			if (player:KeyDown(IN_USE)) then return true end -- if the player is pressing "use" key they should always collide so that using works.
+			-- if the player is pressing "use" key they should always collide so that using works.
+			if (player:KeyDown(IN_USE)) then return true end
 
 			if (player:IsCombine() or player:GetNetVar("ShouldForceFieldCollide") == false) then
 				return false

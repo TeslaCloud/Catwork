@@ -54,7 +54,8 @@ netstream.Hook("MenuOption", function(player, data)
 		if (itemTable.HandleOptions) then
 			if (player:HasItemInstance(itemTable)) then
 				itemTable:HandleOptions(option, player, data)
-			elseif (IsValid(entity) and entity:GetClass() == "cw_item" and entity:GetItemTable() == itemTable and entity:NearestPoint(shootPos):Distance(shootPos) <= 80) then
+			elseif (IsValid(entity) and entity:GetClass() == "cw_item" and entity:GetItemTable() == itemTable
+			and entity:NearestPoint(shootPos):Distance(shootPos) <= 80) then
 				itemTable:HandleOptions(option, player, data, entity)
 			end
 		end
@@ -216,7 +217,8 @@ netstream.Hook("DoorManagement", function(player, data)
 				end
 			elseif (data[2] == "Text" and data[3] != "") then
 				if (cw.player:HasDoorAccess(player, data[1], DOOR_ACCESS_COMPLETE)) then
-					if (!string.find(string.gsub(string.lower(data[3]), "%s", ""), "thisdoorcanbepurchased") and string.find(data[3], "%w")) then
+					if (!string.find(string.gsub(string.lower(data[3]), "%s", ""), "thisdoorcanbepurchased")
+					and string.find(data[3], "%w")) then
 						cw.entity:SetDoorText(data[1], string.utf8sub(data[3], 1, 32))
 					end
 				end

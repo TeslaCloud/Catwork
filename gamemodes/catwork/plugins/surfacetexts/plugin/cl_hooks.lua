@@ -71,7 +71,14 @@ function cwSurfaceTexts:PostDrawOpaqueRenderables()
 						boxAlpha = boxAlpha * math.abs(math.sin(CurTime() * 3))
 					end
 
-					draw.RoundedBox(0, posX - 32, posY - 16, w + 64, h + 32, ColorAlpha(v.extraColor, math.Clamp(fadeAlpha, 0, boxAlpha)))
+					draw.RoundedBox(
+						0,
+						posX - 32,
+						posY - 16,
+						w + 64,
+						h + 32,
+						ColorAlpha(v.extraColor, math.Clamp(fadeAlpha, 0, boxAlpha))
+					)
 				end
 
 				if (style != 3) then

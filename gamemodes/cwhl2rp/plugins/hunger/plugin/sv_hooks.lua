@@ -34,7 +34,8 @@ end
 function PLUGIN:PlayerUseItem(player, itemTable)
 	local category = itemTable.category:utf8lower()
 
-	if (itemTable.hunger or itemTable.thirst or itemTable.fatigue or category:find("consumables") or category:find("alcohol") or category:find("uu-branded items") or category:find("food")) then
+	if (itemTable.hunger or itemTable.thirst or itemTable.fatigue or category:find("consumables")
+	or category:find("alcohol") or category:find("uu-branded items") or category:find("food")) then
 		local hungerRefill = itemTable.hunger or config.GetVal("hunger_default_refill") or 25
 		local thirstRefill = itemTable.thirst or config.GetVal("hunger_default_refill") or 25
 		local fatigueRefill = itemTable.fatigue or config.GetVal("hunger_default_refill") or 25
@@ -48,7 +49,10 @@ function PLUGIN:PlayerUseItem(player, itemTable)
 			player:SetCharacterData("Fatigue", math.Clamp(player:GetCharacterData("Fatigue") - fatigueRefill, 0, 100))
 		end
 
-		player:SetCharacterData("Hunger", math.Clamp(player:GetCharacterData("Hunger") + math.Clamp(hungerRefill, 0, 100), 0, 100))
+		player:SetCharacterData(
+			"Hunger",
+			math.Clamp(player:GetCharacterData("Hunger") + math.Clamp(hungerRefill, 0, 100), 0, 100)
+		)
 		player:SaveCharacter()
 	end
 end

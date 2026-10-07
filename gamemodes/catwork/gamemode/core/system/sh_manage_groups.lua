@@ -44,7 +44,8 @@ if (CLIENT) then
 				userGroupsForm:SetPadding(4)
 			systemPanel.panelList:AddItem(userGroupsForm)
 
-			local userGroups = { "#System_ManageGroups_SuperAdmins", "#System_ManageGroups_Administrators", "#System_ManageGroups_Operators" }
+			local userGroups =
+				{ "#System_ManageGroups_SuperAdmins", "#System_ManageGroups_Administrators", "#System_ManageGroups_Operators" }
 
 			for k, v in pairs(userGroups) do
 				local groupButton = vgui.Create("DButton", systemPanel)

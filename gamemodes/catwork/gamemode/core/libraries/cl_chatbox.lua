@@ -164,7 +164,8 @@ end
 
 	display table prototype:
 chatbox.display[1] = {
-	[1] = { 0, LocalPlayer(), Color(255, 255, 255), "[SendTime:"..os.time().."]", "[icon:icon16/shield.png]", Color(255, 0, 0), "[SenderAvatar]", "[OOC] ", Color(255, 255, 255), "Mr. Meow: ", "Test message Test Message"},
+	[1] = { 0, LocalPlayer(), Color(255, 255, 255), "[SendTime:"..os.time().."]", "[icon:icon16/shield.png]", Color(255, 0,
+	0), "[SenderAvatar]", "[OOC] ", Color(255, 255, 255), "Mr. Meow: ", "Test message Test Message"},
 	[2] = { 20, Color(255, 255, 255), "It is hardcoded btw. Render testing." }
 }
 --]]
@@ -418,7 +419,12 @@ do
 
 			return Color(code)
 		else
-			return Color((tonumber(exploded[1]) or 255), (tonumber(exploded[2]) or 255), (tonumber(exploded[3]) or 255), (tonumber(exploded[4]) or 255))
+			return Color(
+				(tonumber(exploded[1]) or 255),
+				(tonumber(exploded[2]) or 255),
+				(tonumber(exploded[3]) or 255),
+				(tonumber(exploded[4]) or 255)
+			)
 		end
 	end)
 
@@ -587,24 +593,27 @@ function chatbox.ParseText(messageData)
 
 			cw.AvatarsData[steamID64] = os.time() + 86400
 
-			http.Fetch("http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=76415A95E2F81DDA1D7CD2378D16C11D&steamids="..steamID64, function(body)
-				local response = util.JSONToTable(body)
+			http.Fetch(
+				"http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=76415A95E2F81DDA1D7CD2378D16C11D&steamids="..steamID64,
+				function(body)
+					local response = util.JSONToTable(body)
 
-				if (istable(response)) then
-					local avatarURL = response["response"]["players"][1].avatar
+					if (istable(response)) then
+						local avatarURL = response["response"]["players"][1].avatar
 
-					http.Fetch(avatarURL, function(avatarImage)
-						if (isstring(avatarImage) and IsValid(messageData.sender)) then
-							file.Write("cwavatars/"..steamID64..".jpg", avatarImage)
-							file.Write("cwavatars.txt", pon.encode(cw.AvatarsData or {}))
+						http.Fetch(avatarURL, function(avatarImage)
+							if (isstring(avatarImage) and IsValid(messageData.sender)) then
+								file.Write("cwavatars/"..steamID64..".jpg", avatarImage)
+								file.Write("cwavatars.txt", pon.encode(cw.AvatarsData or {}))
 
-							if (cw.core.CachedMaterial[steamID64..".jpg"]) then
-								cw.core.CachedMaterial[steamID64..".jpg"] = nil
+								if (cw.core.CachedMaterial[steamID64..".jpg"]) then
+									cw.core.CachedMaterial[steamID64..".jpg"] = nil
+								end
 							end
-						end
-					end)
+						end)
+					end
 				end
-			end)
+			)
 		end
 
 		table.insert(parsed[1], "[SenderAvatar]")
@@ -740,7 +749,8 @@ function PANEL:Init()
 
 	self.scrollBar.OnMouseWheeled = function(sb, delta)
 		-- prettiest code contest 2k16 lmao
-		self.scrollOffset = math.Clamp(self.scrollOffset + delta, 0, math.Clamp(chatbox.GetLineCount() - 19, 0, chatbox.GetLineCount()))
+		self.scrollOffset =
+			math.Clamp(self.scrollOffset + delta, 0, math.Clamp(chatbox.GetLineCount() - 19, 0, chatbox.GetLineCount()))
 		chatbox.UpdateDisplay()
 	end
 end
@@ -820,7 +830,17 @@ function PANEL:Paint(w, h)
 					if (IsTime(v2)) then
 						local time = os.date("%H:%M", SendTime(v2))
 
-						draw.SimpleTextOutlined(time, font, offX, offY, curColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP, 1, Color(60, 60, 60, chatbox.curAlpha))
+						draw.SimpleTextOutlined(
+							time,
+							font,
+							offX,
+							offY,
+							curColor,
+							TEXT_ALIGN_LEFT,
+							TEXT_ALIGN_TOP,
+							1,
+							Color(60, 60, 60, chatbox.curAlpha)
+						)
 
 						local width = util.GetTextSize(font, time)
 						offX = offX + width + 2
@@ -845,7 +865,17 @@ function PANEL:Paint(w, h)
 							offX = offX + 18
 						end
 					else
-						draw.SimpleTextOutlined(v2, font, offX, offY, curColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP, 1, Color(60, 60, 60, chatbox.curAlpha))
+						draw.SimpleTextOutlined(
+							v2,
+							font,
+							offX,
+							offY,
+							curColor,
+							TEXT_ALIGN_LEFT,
+							TEXT_ALIGN_TOP,
+							1,
+							Color(60, 60, 60, chatbox.curAlpha)
+						)
 
 						local width = util.GetTextSize(font, v2)
 						offX = offX + width
@@ -887,24 +917,26 @@ function PANEL:Paint(w, h)
 					commandLen = 1
 				end
 
-				if (string.utf8sub(k, 1, commandLen) == string.lower(command) and (!splitTable[2] or string.lower(command) == k)) then
+				if (string.utf8sub(k, 1, commandLen) == string.lower(command)
+				and (!splitTable[2] or string.lower(command) == k)) then
 					local cmdTable = cw.command:FindByAlias(v)
 
- 					if (cmdTable and (cw.player:HasFlags(cw.client, cmdTable.access) or cw.client:HasPermission(cmdTable.uniqueID))) then
- 						local bShouldAdd = true
+					if (cmdTable
+					and (cw.player:HasFlags(cw.client, cmdTable.access) or cw.client:HasPermission(cmdTable.uniqueID))) then
+						local bShouldAdd = true
 
- 						-- It can so happen that multiple alias for the same command begin with the same string.
- 						-- We don't want to display the same command multiple times, so we check for that.
- 						for k, v in pairs(commands) do
- 							if (v == cmdTable) then
- 								bShouldAdd = false
- 							end
- 						end
+						-- It can so happen that multiple alias for the same command begin with the same string.
+						-- We don't want to display the same command multiple times, so we check for that.
+						for k, v in pairs(commands) do
+							if (v == cmdTable) then
+								bShouldAdd = false
+							end
+						end
 
- 						if (bShouldAdd) then
- 							commands[#commands + 1] = cmdTable
- 						end
- 					end
+						if (bShouldAdd) then
+							commands[#commands + 1] = cmdTable
+						end
+					end
 				end
 
 				if (#commands == 8) then
@@ -914,10 +946,30 @@ function PANEL:Paint(w, h)
 
 			for k, v in ipairs(commands) do
 				cX = 4
-				draw.SimpleTextOutlined("/"..v.name, "cwChatBoxSyntax", cX, cY, Color(240, 240, 240), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP, 1, Color(0, 0, 0))
+				draw.SimpleTextOutlined(
+					"/"..v.name,
+					"cwChatBoxSyntax",
+					cX,
+					cY,
+					Color(240, 240, 240),
+					TEXT_ALIGN_LEFT,
+					TEXT_ALIGN_TOP,
+					1,
+					Color(0, 0, 0)
+				)
 				local w = util.GetTextSize("cwChatBoxSyntax", "/"..v.name)
 				cX = cX + w + 8
-				draw.SimpleTextOutlined((v.tip or ""), "cwChatBoxFont", cX, cY + 4, Color(206, 206, 206), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP, 1, Color(0, 0, 0))
+				draw.SimpleTextOutlined(
+					(v.tip or ""),
+					"cwChatBoxFont",
+					cX,
+					cY + 4,
+					Color(206, 206, 206),
+					TEXT_ALIGN_LEFT,
+					TEXT_ALIGN_TOP,
+					1,
+					Color(0, 0, 0)
+				)
 
 				if (#commands == 1) then
 					local offsetX = 24
@@ -933,12 +985,32 @@ function PANEL:Paint(w, h)
 							text = text..v.alias[1]
 						end
 
-						draw.SimpleTextOutlined(text, "cwChatBoxFont", 4, cY + offsetX, Color(240, 240, 240), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP, 1, Color(0, 0, 0))
+						draw.SimpleTextOutlined(
+							text,
+							"cwChatBoxFont",
+							4,
+							cY + offsetX,
+							Color(240, 240, 240),
+							TEXT_ALIGN_LEFT,
+							TEXT_ALIGN_TOP,
+							1,
+							Color(0, 0, 0)
+						)
 
 						offsetX = offsetX + 20
 					end
 
-					draw.SimpleTextOutlined("#CMDDesc_Usage ".."/"..v.name.." "..v.text, "cwChatBoxFont", 4, cY + offsetX, Color(240, 240, 240), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP, 1, Color(0, 0, 0))
+					draw.SimpleTextOutlined(
+						"#CMDDesc_Usage ".."/"..v.name.." "..v.text,
+						"cwChatBoxFont",
+						4,
+						cY + offsetX,
+						Color(240, 240, 240),
+						TEXT_ALIGN_LEFT,
+						TEXT_ALIGN_TOP,
+						1,
+						Color(0, 0, 0)
+					)
 				end
 
 				cY = cY + 24

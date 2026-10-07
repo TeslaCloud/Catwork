@@ -80,7 +80,8 @@ function ENT:Think()
 
 		if self:GetIsWorking() then
 			if !self.NextGarbageDecrease then
-				self.NextGarbageDecrease = CurTime() + ((self:GetNextWorkTime() - self:GetStartWorkTime()) - 5) / self.METAL_GARBAGE_COUNT_START
+				self.NextGarbageDecrease =
+					CurTime() + ((self:GetNextWorkTime() - self:GetStartWorkTime()) - 5) / self.METAL_GARBAGE_COUNT_START
 			elseif self.NextGarbageDecrease and CurTime() > self.NextGarbageDecrease then
 				self:SetGarbageCount(math.Clamp(self:GetGarbageCount() - 1, 0, self.METAL_GARBAGE_COUNT_START))
 				table.remove(self.Garbages)
@@ -99,7 +100,8 @@ function ENT:Think()
 				local i = self.WORK_TIME - self:GetStopWorkTime()
 				self:SetStartWorkTime(CurTime() - i)
 				self:SetNextWorkTime((CurTime() + self.WORK_TIME) - i)
-				self.NextGarbageDecrease = CurTime() + ((self:GetNextWorkTime() - (self:GetStartWorkTime() + i)) - 5) / self.METAL_GARBAGE_COUNT_START
+				self.NextGarbageDecrease =
+					CurTime() + ((self:GetNextWorkTime() - (self:GetStartWorkTime() + i)) - 5) / self.METAL_GARBAGE_COUNT_START
 			end
 		end
 	end
@@ -112,12 +114,27 @@ hook.Add("PostDrawOpaqueRenderables", "Factories", function()
 		if LocalPlayer():GetActiveWeapon():GetClass() == "gmod_tool" then
 			for k, self in pairs(ents.GetAll()) do
 				if (self:GetClass() != "cw_factory_garbage_metal" or
-				   self:GetClass() != "cw_factory_garbage_paper" or
-				   self:GetClass() != "cw_factory_garbage_plastic") then continue end
+				self:GetClass() != "cw_factory_garbage_paper" or
+				self:GetClass() != "cw_factory_garbage_plastic") then continue end
 
-				render.DrawLine(self:GetProductPos() - self:GetForward() * 12, self:GetProductPos() + self:GetForward() * 12, Color(255, 255, 255), true)
-				render.DrawLine(self:GetProductPos() - self:GetRight() * 12, self:GetProductPos() + self:GetRight() * 12, Color(255, 255, 255), true)
-				render.DrawLine(self:GetProductPos() - self:GetUp() * 12, self:GetProductPos() + self:GetUp() * 12, Color(255, 255, 255), true)
+				render.DrawLine(
+					self:GetProductPos() - self:GetForward() * 12,
+					self:GetProductPos() + self:GetForward() * 12,
+					Color(255, 255, 255),
+					true
+				)
+				render.DrawLine(
+					self:GetProductPos() - self:GetRight() * 12,
+					self:GetProductPos() + self:GetRight() * 12,
+					Color(255, 255, 255),
+					true
+				)
+				render.DrawLine(
+					self:GetProductPos() - self:GetUp() * 12,
+					self:GetProductPos() + self:GetUp() * 12,
+					Color(255, 255, 255),
+					true
+				)
 				render.DrawLine(self:GetProductPos(), self:GetPos(), Color(255, 255, 255), true)
 			end
 		end

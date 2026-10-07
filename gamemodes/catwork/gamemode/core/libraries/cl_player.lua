@@ -269,7 +269,8 @@ function cw.player:CanSeeNPC(player, target, allowance, ignoreEnts)
 	else
 		local trace = {}
 
-		trace.mask = CONTENTS_SOLID + CONTENTS_MOVEABLE + CONTENTS_OPAQUE + CONTENTS_DEBRIS + CONTENTS_HITBOX + CONTENTS_MONSTER
+		trace.mask =
+			CONTENTS_SOLID + CONTENTS_MOVEABLE + CONTENTS_OPAQUE + CONTENTS_DEBRIS + CONTENTS_HITBOX + CONTENTS_MONSTER
 		trace.start = player:GetShootPos()
 		trace.endpos = target:GetShootPos()
 		trace.filter = { player, target }
@@ -299,7 +300,8 @@ function cw.player:CanSeePlayer(player, target, allowance, ignoreEnts)
 	else
 		local trace = {}
 
-		trace.mask = CONTENTS_SOLID + CONTENTS_MOVEABLE + CONTENTS_OPAQUE + CONTENTS_DEBRIS + CONTENTS_HITBOX + CONTENTS_MONSTER
+		trace.mask =
+			CONTENTS_SOLID + CONTENTS_MOVEABLE + CONTENTS_OPAQUE + CONTENTS_DEBRIS + CONTENTS_HITBOX + CONTENTS_MONSTER
 		trace.start = player:GetShootPos()
 		trace.endpos = target:GetShootPos()
 		trace.filter = { player, target }
@@ -327,7 +329,8 @@ function cw.player:CanSeeEntity(player, target, allowance, ignoreEnts)
 	else
 		local trace = {}
 
-		trace.mask = CONTENTS_SOLID + CONTENTS_MOVEABLE + CONTENTS_OPAQUE + CONTENTS_DEBRIS + CONTENTS_HITBOX + CONTENTS_MONSTER
+		trace.mask =
+			CONTENTS_SOLID + CONTENTS_MOVEABLE + CONTENTS_OPAQUE + CONTENTS_DEBRIS + CONTENTS_HITBOX + CONTENTS_MONSTER
 		trace.start = player:GetShootPos()
 		trace.endpos = target:LocalToWorld(target:OBBCenter())
 		trace.filter = { player, target }
@@ -352,7 +355,8 @@ end
 function cw.player:CanSeePosition(player, position, allowance, ignoreEnts)
 	local trace = {}
 
-	trace.mask = CONTENTS_SOLID + CONTENTS_MOVEABLE + CONTENTS_OPAQUE + CONTENTS_DEBRIS + CONTENTS_HITBOX + CONTENTS_MONSTER
+	trace.mask =
+		CONTENTS_SOLID + CONTENTS_MOVEABLE + CONTENTS_OPAQUE + CONTENTS_DEBRIS + CONTENTS_HITBOX + CONTENTS_MONSTER
 	trace.start = player:GetShootPos()
 	trace.endpos = position
 	trace.filter = player

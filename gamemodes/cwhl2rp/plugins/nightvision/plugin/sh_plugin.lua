@@ -75,7 +75,17 @@ if CLIENT then
 			colorTable["$pp_colour_brightness"] = CurScale * 0.8
 			colorTable["$pp_colour_contrast"] = CurScale * 2
 			DrawColorModify(colorTable)
-			DrawBloom(Bloom_Darken, CurScale * Bloom_Multiply, Bloom_Blur, Bloom_Blur, Bloom_Passes, CurScale * Bloom_ColorMul, 0, 1, 0) -- Blue
+			DrawBloom(
+				Bloom_Darken,
+				CurScale * Bloom_Multiply,
+				Bloom_Blur,
+				Bloom_Blur,
+				Bloom_Passes,
+				CurScale * Bloom_ColorMul,
+				0,
+				1,
+				0
+			) -- Blue
 		end
 	end
 

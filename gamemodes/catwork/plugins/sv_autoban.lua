@@ -21,7 +21,6 @@ local blacklist = {
 	["STEAM_0:1:36296412"] = "Banned for severe ToS violations.", -- ddosed me
 	["STEAM_0:1:8387555"] = "No Flux for you mate :p", -- kuro
 	["STEAM_0:1:66844990"] = "Banned for severe ToS violations.", -- ddos
-	["STEAM_0:1:49235892"] = "Banned for severe ToS violations.", -- ddos
 	-- TNF community players and admins
 	["STEAM_0:0:53046893"] = "You have been blacklisted due to bad affiliations!", -- [TNF]AnalCaptain
 	["STEAM_0:1:98463373"] = "You have been blacklisted due to bad affiliations!", -- Дови

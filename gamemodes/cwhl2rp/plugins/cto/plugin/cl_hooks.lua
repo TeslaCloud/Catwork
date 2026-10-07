@@ -21,7 +21,9 @@ function cwCTO:UpdateBiosignalLocations()
 
 	-- Clear active biosignals and expired lost biosignals.
 	for unit, data in pairs(self.biosignalLocations) do
-		if (!IsValid(unit) or !Schema:PlayerIsCombine(unit) or (!cw.client:GetSharedVar("IsBiosignalGone") and !unit:GetSharedVar("IsBiosignalGone")) or curTime - data.time >= 120) then
+		if (!IsValid(unit) or !Schema:PlayerIsCombine(unit)
+		or (!cw.client:GetSharedVar("IsBiosignalGone") and !unit:GetSharedVar("IsBiosignalGone"))
+		or curTime - data.time >= 120) then
 			self.biosignalLocations[unit] = nil
 		end
 
@@ -104,7 +106,15 @@ function cwCTO:HUDPaintForeground()
 						toScreen.y = toScreen.y + fontHeight
 						draw.SimpleText(text2, "BudgetLabel", toScreen.x, toScreen.y, colorRed, 1, 1)
 						toScreen.y = toScreen.y + fontHeight
-						draw.SimpleText("<:: "..L("#CTO_HUD_Removal:"..timeUntil..";").." ::>", "BudgetLabel", toScreen.x, toScreen.y, colorRed, 1, 1)
+						draw.SimpleText(
+							"<:: "..L("#CTO_HUD_Removal:"..timeUntil..";").." ::>",
+							"BudgetLabel",
+							toScreen.x,
+							toScreen.y,
+							colorRed,
+							1,
+							1
+						)
 					else
 						local text2 = "<:: "..L("#CTO_HUD_Received:"..timeSince..";").." ::>"
 						draw.SimpleText(text, "BudgetLabel", toScreen.x, toScreen.y, color, 1, 1)
@@ -138,7 +148,15 @@ function cwCTO:HUDPaintForeground()
 					toScreen.y = toScreen.y + fontHeight
 					draw.SimpleText(showDetail and text2 or lowDetailText, "BudgetLabel", toScreen.x, toScreen.y, colorWhite, 1, 1)
 					toScreen.y = toScreen.y + fontHeight
-					draw.SimpleText("<:: "..L("#CTO_HUD_Removal:"..timeUntil..";").." ::>", "BudgetLabel", toScreen.x, toScreen.y, colorRed, 1, 1)
+					draw.SimpleText(
+						"<:: "..L("#CTO_HUD_Removal:"..timeUntil..";").." ::>",
+						"BudgetLabel",
+						toScreen.x,
+						toScreen.y,
+						colorRed,
+						1,
+						1
+					)
 				end
 			end
 		end
@@ -181,7 +199,15 @@ function cwCTO:HUDPaintForeground()
 
 							for i, violation in ipairs(violations) do
 								toScreen.y = toScreen.y + fontHeight
-								draw.SimpleText(showDetail and violation or lowDetailText, "BudgetLabel", toScreen.x, toScreen.y, colorWhite, 1, 1)
+								draw.SimpleText(
+									showDetail and violation or lowDetailText,
+									"BudgetLabel",
+									toScreen.x,
+									toScreen.y,
+									colorWhite,
+									1,
+									1
+								)
 							end
 						end
 					else
@@ -201,7 +227,8 @@ function cwCTO:HUDPaintForeground()
 		end
 
 		for _, v in pairs(_player.GetAll()) do
-			if (!(Schema:PlayerIsCombine(v) and !v:GetSharedVar("IsBiosignalGone")) and clientEyePos:Distance(v:GetPos()) <= maximumDistance and !cw.player:IsNoClipping(v)) then
+			if (!(Schema:PlayerIsCombine(v) and !v:GetSharedVar("IsBiosignalGone"))
+			and clientEyePos:Distance(v:GetPos()) <= maximumDistance and !cw.player:IsNoClipping(v)) then
 				local physBone = v:LookupBone("ValveBiped.Bip01_Head1")
 				local position = nil
 
@@ -243,7 +270,15 @@ function cwCTO:HUDPaintForeground()
 
 						for i, violation in ipairs(violations) do
 							toScreen.y = toScreen.y + fontHeight
-							draw.SimpleText(showDetail and violation or lowDetailText, "BudgetLabel", toScreen.x, toScreen.y, colorWhite, 1, 1)
+							draw.SimpleText(
+								showDetail and violation or lowDetailText,
+								"BudgetLabel",
+								toScreen.x,
+								toScreen.y,
+								colorWhite,
+								1,
+								1
+							)
 						end
 					end
 				end
@@ -326,7 +361,14 @@ function cwCTO:HUDPaintTopScreen()
 
 		socioColor = Color(socioColor.r, socioColor.g, socioColor.b, 255 - blackFadeAlpha)
 
-		draw.SimpleText("<:: "..L("#CTO_HUD_SocioStatus:"..self.socioStatus..";").." ::>", "BudgetLabel", info.x, info.y, socioColor, TEXT_ALIGN_RIGHT)
+		draw.SimpleText(
+			"<:: "..L("#CTO_HUD_SocioStatus:"..self.socioStatus..";").." ::>",
+			"BudgetLabel",
+			info.x,
+			info.y,
+			socioColor,
+			TEXT_ALIGN_RIGHT
+		)
 		info.y = info.y + height
 
 		for k, v in ipairs(self.hudObjectives) do

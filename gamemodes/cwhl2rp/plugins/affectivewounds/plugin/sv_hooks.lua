@@ -1,6 +1,7 @@
 local PLUGIN = PLUGIN
 
--- If there's a certain weapon you don't want to be dropped when a player's arm is hit, add said weapon's CLASS NAME here.
+-- If there's a certain weapon you don't want to be dropped when a player's arm is hit, add said weapon's CLASS NAME
+-- here.
 local NoStripWeps = {
 	["cw_hands"] = true,
 	["cw_keys"] = true,

@@ -58,10 +58,18 @@ netstream.Hook("Salesmenu", function(player, data)
 
 						if (amount > 1) then
 							cw.player:GiveCash(player, -(cost * amount), amount.." "..itemTable.PrintName)
-							cw.player:Notify(player, L("Salesman_YouReceived", amount).." "..itemTable.PrintName.." "..L("Salesman_From").." "..data.entity:GetNetworkedString("Name")..".")
+							cw.player:Notify(
+								player,
+								L("Salesman_YouReceived", amount).." "..itemTable.PrintName.." "..L("Salesman_From").." "..
+									data.entity:GetNetworkedString("Name").."."
+							)
 						else
 							cw.player:GiveCash(player, -(cost * amount), amount.." "..itemTable.PrintName)
-							cw.player:Notify(player, L("Salesman_YouReceived", amount).." "..itemTable.PrintName.." "..L("Salesman_From").." "..data.entity:GetNetworkedString("Name")..".")
+							cw.player:Notify(
+								player,
+								L("Salesman_YouReceived", amount).." "..itemTable.PrintName.." "..L("Salesman_From").." "..
+									data.entity:GetNetworkedString("Name").."."
+							)
 						end
 
 						data.entity.cwCash = data.entity.cwCash + cost
@@ -102,7 +110,11 @@ netstream.Hook("Salesmenu", function(player, data)
 							end
 
 							cw.player:GiveCash(player, cost, "1 "..itemTable.PrintName)
-							cw.player:Notify(player, L("Salesman_YouSold").." "..itemTable.PrintName.." "..L("Salesman_To").." "..data.entity:GetNetworkedString("Name")..".")
+							cw.player:Notify(
+								player,
+								L("Salesman_YouSold").." "..itemTable.PrintName.." "..L("Salesman_To").." "..
+									data.entity:GetNetworkedString("Name").."."
+							)
 						end
 					else
 						data.entity:TalkToPlayer(player, data.entity.cwTextTab.cannotAfford, L("Salesman_Default_CannotAfford"))

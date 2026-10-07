@@ -125,7 +125,7 @@ function cwDisplayTyping:PostDrawTranslucentRenderables()
 								if (textWidth and textHeight) then
 									cam.Start3D2D(position, Angle(0, eyeAngles.y, 90), 0.04)
 										cw.core:OverrideMainFont(large3D2DFont)
-											cw.core:DrawInfo(drawText, 0, 0, colorWhite, alpha, nil, nil, 4)
+										cw.core:DrawInfo(drawText, 0, 0, colorWhite, alpha, nil, nil, 4)
 										cw.core:OverrideMainFont(false)
 									cam.End3D2D()
 								end
@@ -179,7 +179,8 @@ function cwDisplayTyping:ChatBoxTextChanged(previousText, newText)
 		if (string.utf8sub(previousText, 1, 3) != prefix..".//") then
 			RunConsoleCommand("cwTypingStart", "o")
 		end
-	elseif (newText != "" and string.utf8len(newText) >= 4 and previousText != "" and string.utf8len(previousText) < 4) then
+	elseif (newText != "" and string.utf8len(newText) >= 4 and previousText != ""
+	and string.utf8len(previousText) < 4) then
 		RunConsoleCommand("cwTypingStart", "n")
 	end
 end

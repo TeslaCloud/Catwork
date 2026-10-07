@@ -4,7 +4,7 @@
 	do not re-distribute without the permission of it's author.
 --]]
 
-local function adjustInCombineFavor(player, target, adjust1, adjust2)
+local function AdjustInCombineFavor(player, target, adjust1, adjust2)
 	if (player:IsCombine() and !Schema:PlayerIsCombine(target)) then
 		local strength = cw.attributes:Fraction(target, ATB_STRENGTH, 1, 1)
 
@@ -39,29 +39,29 @@ function PLUGIN:AdjustRollNumber(player, roll, max, target)
 				end
 
 				if (playerName:find(".CmD", 1, true)) then
-					return adjustInCombineFavor(player, target, 20, -5)
+					return AdjustInCombineFavor(player, target, 20, -5)
 				elseif (playerName:find(".SeC", 1, true)) then
-					return adjustInCombineFavor(player, target, 20, -5)
+					return AdjustInCombineFavor(player, target, 20, -5)
 				elseif (playerName:find(".DvL", 1, true)) then
-					return adjustInCombineFavor(player, target, 20, -5)
+					return AdjustInCombineFavor(player, target, 20, -5)
 				elseif (playerName:find(".OWS", 1, true)) then
-					return adjustInCombineFavor(player, target, 20, -5)
+					return AdjustInCombineFavor(player, target, 20, -5)
 				elseif (playerName:find(".OWC", 1, true)) then
-					return adjustInCombineFavor(player, target, 25, -5)
+					return AdjustInCombineFavor(player, target, 25, -5)
 				elseif (playerName:find(".EOW", 1, true)) then
-					return adjustInCombineFavor(player, target, 40, -5)
+					return AdjustInCombineFavor(player, target, 40, -5)
 				elseif (playerName:find(".InS", 1, true) or playerName:find(".INS", 1, true)) then
-					return adjustInCombineFavor(player, target, 15, -5)
+					return AdjustInCombineFavor(player, target, 15, -5)
 				elseif (playerName:find(".OfC", 1, true) or playerName:find(".OFC", 1, true)) then
-					return adjustInCombineFavor(player, target, 15, -5)
+					return AdjustInCombineFavor(player, target, 15, -5)
 				elseif (playerName:find(".GHOST", 1, true)) then
-					return adjustInCombineFavor(player, target, 25, -5)
+					return AdjustInCombineFavor(player, target, 25, -5)
 				elseif (playerName:find(".S-GU", 1, true)) then
-					return adjustInCombineFavor(player, target, 10, -5)
+					return AdjustInCombineFavor(player, target, 10, -5)
 				elseif (playerName:find(".GU", 1, true)) then
-					return adjustInCombineFavor(player, target, 7, -2)
+					return AdjustInCombineFavor(player, target, 7, -2)
 				elseif (playerName:find(".RCT", 1, true)) then
-					return adjustInCombineFavor(player, target, 4, -2)
+					return AdjustInCombineFavor(player, target, 4, -2)
 				end
 
 				local rankPos, endRankPos = playerName:find(".0")
@@ -70,7 +70,7 @@ function PLUGIN:AdjustRollNumber(player, roll, max, target)
 					local num = tonumber(playerName:utf8sub(endRankPos, endRankPos + 1))
 
 					if (num) then
-						return adjustInCombineFavor(player, target, math.abs(12 - (num * 2)), -5)
+						return AdjustInCombineFavor(player, target, math.abs(12 - (num * 2)), -5)
 					end
 				end
 			end

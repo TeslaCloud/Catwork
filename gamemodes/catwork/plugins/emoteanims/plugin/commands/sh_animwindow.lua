@@ -24,7 +24,9 @@ function COMMAND:OnRun(player, arguments)
 			local forcedAnimation = player:GetForcedAnimation()
 			local angles = player:GetAngles():Forward()
 
-			if (forcedAnimation and (forcedAnimation.animation == "d1_t03_tenements_look_out_window_idle" or forcedAnimation.animation == "d1_t03_lookoutwindow")) then
+			if (forcedAnimation
+			and (forcedAnimation.animation == "d1_t03_tenements_look_out_window_idle"
+			or forcedAnimation.animation == "d1_t03_lookoutwindow")) then
 				cwEmoteAnims:MakePlayerExitStance(player)
 			elseif (!forcedAnimation or !cwEmoteAnimscwEmoteAnims[forcedAnimation]) then
 				if (player:Crouching()) then

@@ -651,7 +651,10 @@ do
 						local success, a, b, c, d, e, f = pcall(v[1], v[2], ...)
 
 						if (!success) then
-							MsgC(Color(255, 100, 0, 255), "\n[CW:"..(v.id or v[2]:GetName()).."]\nThe '"..name.."' hook has failed to run.\n")
+							MsgC(
+								Color(255, 100, 0, 255),
+								"\n[CW:"..(v.id or v[2]:GetName()).."]\nThe '"..name.."' hook has failed to run.\n"
+							)
 							MsgC(Color(255, 100, 0), tostring(a), "\n")
 
 							hook.Run("OnHookError", name, bGamemode, a)

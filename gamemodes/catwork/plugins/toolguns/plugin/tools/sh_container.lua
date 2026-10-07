@@ -237,38 +237,38 @@ if CLIENT then
 
 		if (mode == 1) then
 			Panel:AddControl("Slider",  {
-					Label = "#tool.containertool.fillscale",
-					Type	= "Interger",
-					Min		= 1,
-					Max		= 5,
-					Command = "containertool_contfillscale",
-					Description = "#tool.containertool.fillscaledesc" })
+				Label = "#tool.containertool.fillscale",
+				Type	= "Interger",
+				Min		= 1,
+				Max		= 5,
+				Command = "containertool_contfillscale",
+				Description = "#tool.containertool.fillscaledesc" })
 
 			Panel:AddControl("TextBox", {
-									 Label = "#tool.containertool.category",
-									 MaxLenth = "20",
-									 Command = "containertool_fillcategory" })
+				Label = "#tool.containertool.category",
+				MaxLenth = "20",
+				Command = "containertool_fillcategory" })
 		end
 
 		if (mode == 2) then
 			Panel:AddControl("TextBox", {
-									 Label = "#tool.containertool.message",
-									 MaxLenth = "20",
-									 Command = "containertool_contmessage" })
+				Label = "#tool.containertool.message",
+				MaxLenth = "20",
+				Command = "containertool_contmessage" })
 		end
 
 		if (mode == 3) then
 			Panel:AddControl("TextBox", {
-						Label = "#tool.containertool.contname",
-						MaxLenth = "20",
-						Command = "containertool_contname" })
+				Label = "#tool.containertool.contname",
+				MaxLenth = "20",
+				Command = "containertool_contname" })
 		end
 
 		if (mode == 4) then
 			Panel:AddControl("TextBox", {
-									 Label = "#tool.containertool.password",
-									 MaxLenth = "20",
-									 Command = "containertool_contpassword" })
+				Label = "#tool.containertool.password",
+				MaxLenth = "20",
+				Command = "containertool_contpassword" })
 		end
 	end
 

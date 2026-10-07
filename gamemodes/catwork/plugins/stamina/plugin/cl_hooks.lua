@@ -18,6 +18,16 @@ function cwStamina:GetBars(bars)
 	end
 
 	if (self.stamina < 95) then
-		bars:Add("#Bars_Stamina", Color(100, 175, 100, 255), "", self.stamina, 100, self.stamina < 10, nil, 100 - fatigue, "#Bars_Fatigue")
+		bars:Add(
+			"#Bars_Stamina",
+			Color(100, 175, 100, 255),
+			"",
+			self.stamina,
+			100,
+			self.stamina < 10,
+			nil,
+			100 - fatigue,
+			"#Bars_Fatigue"
+		)
 	end
 end

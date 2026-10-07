@@ -12,7 +12,12 @@ ITEM.useText = "#Farming_UseText_Plant"
 ITEM.category = "#Farming_Category_Plants"
 ITEM.weight = 0.01
 ITEM.model = "models/props_lab/box01a.mdl"
-ITEM.useSound = { "player/footsteps/dirt1.wav", "player/footsteps/dirt2.wav", "player/footsteps/dirt3.wav", "player/footsteps/dirt4.wav" }
+ITEM.useSound = {
+	"player/footsteps/dirt1.wav",
+	"player/footsteps/dirt2.wav",
+	"player/footsteps/dirt3.wav",
+	"player/footsteps/dirt4.wav"
+}
 ITEM.PlantModel = "models/props/de_inferno/claypot03_damage_01.mdl"
 ITEM.PlantName = "#Farming_Plant_Default"
 ITEM.GrowTime = { 1200, 1800 }
@@ -35,7 +40,11 @@ function ITEM:OnUse(player, itemEntity)
 			if (check) then
 				local seed = ents.Create("cw_plant")
 				local curTime = CurTime()
-				local growtime = math.random(self.GrowTime[1], self.GrowTime[2]) * math.Clamp(1 - cw.attributes:Fraction(player, ATB_FARM, 0.25), 0.6, 1)
+				local growtime = math.random(self.GrowTime[1], self.GrowTime[2]) * math.Clamp(
+					1 - cw.attributes:Fraction(player, ATB_FARM, 0.25),
+					0.6,
+					1
+				)
 
 				seed:SetPos(trace.HitPos + trace.HitNormal)
 				seed:SetItem(self.uniqueID)

@@ -68,5 +68,8 @@ end
 COMMAND:Register()
 
 if (CLIENT) then
-	cw.quickmenu:AddCommand("#Emotes_animIdle", "#Emotes", COMMAND.name, { { "#Emotes_animIdle_CrossHands", "1" }, { "#Emotes_animIdle_HandsInPockets", "0" } })
+	cw.quickmenu:AddCommand("#Emotes_animIdle", "#Emotes", COMMAND.name, {
+		{ "#Emotes_animIdle_CrossHands", "1" },
+		{ "#Emotes_animIdle_HandsInPockets", "0" }
+	})
 end

@@ -282,7 +282,8 @@ function ENT:ToggleWithChecks(activator)
 			if (curTime > self:GetDTFloat(0)) then
 				self.nextUse = curTime + 3
 
-				if (!Schema:PlayerHasCombineLockAccess(activator, self.access, self.rank) and activator:GetFaction() != FACTION_ADMIN) then
+				if (!Schema:PlayerHasCombineLockAccess(activator, self.access, self.rank)
+				and activator:GetFaction() != FACTION_ADMIN) then
 					self:SetFlashDuration(3)
 				else
 					self:Toggle()

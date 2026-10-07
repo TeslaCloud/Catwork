@@ -17,9 +17,9 @@ ITEM.fatigue = -10
 ITEM.description = "#Item_BeerBad_Description"
 
 function ITEM:OnUse(player, itemEntity)
-		player:SetHealth(math.Clamp(player:Health() + 10, 0, 100))
+	player:SetHealth(math.Clamp(player:Health() + 10, 0, 100))
 
-		player:BoostAttribute(self.name, ATB_AGILITY, 12, 120)
+	player:BoostAttribute(self.name, ATB_AGILITY, 12, 120)
 
-		player:GiveItem("empty_glass_bottle", true)
-	end
+	player:GiveItem("empty_glass_bottle", true)
+end

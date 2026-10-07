@@ -64,7 +64,13 @@ function PANEL:PaintOver(width, height)
 	local w, h = util.GetTextSize("DermaNarrow42", combine_search_engine_name)
 	local sX, sY = self.searchBar:GetPos()
 
-	draw.SimpleText(combine_search_engine_name, "DermaNarrowBold42", width / 2 - w / 2, height / 2 - h - 32, Color(255, 255, 255, (self.alpha or 255)))
+	draw.SimpleText(
+		combine_search_engine_name,
+		"DermaNarrowBold42",
+		width / 2 - w / 2,
+		height / 2 - h - 32,
+		Color(255, 255, 255, (self.alpha or 255))
+	)
 
 	if (IsValid(self.searchBar)) then
 		local val = self.searchBar:GetValue()
@@ -225,7 +231,8 @@ function PANEL:PaintOver(width, height)
 		local color2 = Schema:GetCitizenStatusColor(self.player)
 		local w, h = util.GetTextSize("DermaNarrow15", tier.name)
 		local xPos, yPos, boxW = 10, 250, 140
-		local pointsText = "#LP: "..points.." | #CP: "..Schema:GetCP(self.player).." | #WP: "..Schema:GetWorkPoints(self.player)
+		local pointsText =
+			"#LP: "..points.." | #CP: "..Schema:GetCP(self.player).." | #WP: "..Schema:GetWorkPoints(self.player)
 		local pW, pH = util.GetTextSize("DermaNarrow15", pointsText)
 
 		draw.SimpleText("#Residence: "..Schema:GetResidence(self.player), "DermaNarrow15", 155, 107, Color(255, 255, 255))

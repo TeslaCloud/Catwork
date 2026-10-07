@@ -602,11 +602,35 @@ function Schema:SayRequest(player, text)
 
 	self:AddCombineDisplayLine(L("CombineDisplay_Request", player:Name(), ciD).." "..text, Color(218, 165, 32, 255))
 
-	local info = chatbox.AddText(listeners.request, "\""..text.."\"", { suffix = " #Suffix_Request ", sender = player, isPlayerMessage = true, filter = "ic", radius = 0, textColor = Color(175, 125, 100, 255), data = { request = true } })
+	local info = chatbox.AddText(listeners.request, "\""..text.."\"", {
+		suffix = " #Suffix_Request ",
+		sender = player,
+		isPlayerMessage = true,
+		filter = "ic",
+		radius = 0,
+		textColor = Color(175, 125, 100, 255),
+		data = { request = true }
+	})
 
 	if (info and IsValid(info.sender)) then
-		chatbox.AddText(listeners.eavesdrop, "\""..info.text.."\"", { suffix = " #Suffix_Request ", sender = info.sender, isPlayerMessage = true, filter = "ic", radius = 0, textColor = Color(255, 255, 150, 255), data = { request = true } })
-		chatbox.AddText(player, info.text.."\"", { suffix = " #Suffix_Request ", sender = info.sender, isPlayerMessage = true, filter = "ic", radius = 0, textColor = Color(255, 255, 150, 255), data = { request = true } })
+		chatbox.AddText(listeners.eavesdrop, "\""..info.text.."\"", {
+			suffix = " #Suffix_Request ",
+			sender = info.sender,
+			isPlayerMessage = true,
+			filter = "ic",
+			radius = 0,
+			textColor = Color(255, 255, 150, 255),
+			data = { request = true }
+		})
+		chatbox.AddText(player, info.text.."\"", {
+			suffix = " #Suffix_Request ",
+			sender = info.sender,
+			isPlayerMessage = true,
+			filter = "ic",
+			radius = 0,
+			textColor = Color(255, 255, 150, 255),
+			data = { request = true }
+		})
 	end
 end
 
@@ -648,12 +672,29 @@ end
 
 -- A function to say a message as a broadcast.
 function Schema:SayBroadcast(player, text)
-	chatbox.AddText(nil, "\""..text.."\"", { suffix = " #Suffix_Broadcast ", sender = player, isPlayerMessage = true, filter = "ic", radius = 0, textColor = Color(150, 125, 175, 255) })
+	chatbox.AddText(nil, "\""..text.."\"", {
+		suffix = " #Suffix_Broadcast ",
+		sender = player,
+		isPlayerMessage = true,
+		filter = "ic",
+		radius = 0,
+		textColor = Color(150, 125, 175, 255)
+	})
 end
 
 -- A function to say a message as a dispatch.
 function Schema:SayDispatch(player, text)
-	chatbox.AddText(nil, "\""..text.."\"", { sender = player, suffix = " #Suffix_Broadcast ", playerName = "#Dispatch_Name", forceName = true, isPlayerMessage = true, filter = "ic", radius = 0, textColor = Color(150, 100, 100, 255), data = { dispatch = true } })
+	chatbox.AddText(nil, "\""..text.."\"", {
+		sender = player,
+		suffix = " #Suffix_Broadcast ",
+		playerName = "#Dispatch_Name",
+		forceName = true,
+		isPlayerMessage = true,
+		filter = "ic",
+		radius = 0,
+		textColor = Color(150, 100, 100, 255),
+		data = { dispatch = true }
+	})
 end
 
 -- A function to check if a player is Combine.

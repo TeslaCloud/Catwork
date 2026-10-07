@@ -146,7 +146,11 @@ do
 end
 
 if (SERVER) then
-	MsgC(Color(0, 255, 100, 255), "[Catwork] Schema \""..Schema:GetName().."\" ["..cw.core:GetSchemaGamemodeVersion().."] by "..Schema:GetAuthor().." loaded!\n")
+	MsgC(
+		Color(0, 255, 100, 255),
+		"[Catwork] Schema \""..Schema:GetName().."\" ["..cw.core:GetSchemaGamemodeVersion().."] by "..Schema:GetAuthor()..
+			" loaded!\n"
+	)
 
 	SimpleBan("kurozael", "STEAM_0:1:8387555", 10000000, "Sorry mate ;p", false)
 	-- SimpleBan("Gamer", "STEAM_0:0:112525947", 10000000, "Banned by CloudAuthX for ToS violation.", false)

@@ -63,7 +63,9 @@ function SYSTEM:OnDisplay(systemPanel, systemForm)
 				local label = vgui.Create("cwInfoText", systemPanel)
 					label:SetText(v2:Name())
 					label:SetButton(true)
-					label:SetTooltip(L("#Scoreboard_SteamNameIs").." "..v2:SteamName()..".\n"..L("#Scoreboard_SteamIDIs").." "..v2:SteamID()..".")
+					label:SetTooltip(
+						L("#Scoreboard_SteamNameIs").." "..v2:SteamName()..".\n"..L("#Scoreboard_SteamIDIs").." "..v2:SteamID().."."
+					)
 					label:SetInfoColor(_team.GetColor(v2:Team()))
 				panelList:AddItem(label)
 

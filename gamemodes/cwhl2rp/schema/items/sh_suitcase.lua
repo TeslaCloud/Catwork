@@ -34,7 +34,7 @@ end
 function ITEM:OnDrop(player, position) end
 
 if (SERVER) then
-function ITEM:OnCustomFunction(player, name)
+	function ITEM:OnCustomFunction(player, name)
 		if (name == "Unpack") then
 			local clothes = {
 				"blue_beanie",

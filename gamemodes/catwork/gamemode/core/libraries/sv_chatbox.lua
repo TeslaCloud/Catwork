@@ -4,7 +4,8 @@
 --]]
 
 library.New("chatbox", _G)
-chatbox.prefixes = chatbox.prefixes or {} // Chatbox prefixes for serverside processing. Will be networked to clients for message styling.
+// Chatbox prefixes for serverside processing. Will be networked to clients for message styling.
+chatbox.prefixes = chatbox.prefixes or {}
 chatbox.filters = chatbox.filters or {}
 
 function chatbox.AddPrefix(prefix, callback)
@@ -49,7 +50,8 @@ function chatbox.CanHear(listener, position, radius)
 		if (radius == 0) then return true end
 		if (radius < 0) then return false end
 
-		if (cw.player:GetRealTrace(listener).HitPos:Distance(position) <= (radius / 2) or position:Distance(listener:GetPos()) <= radius) then
+		if (cw.player:GetRealTrace(listener).HitPos:Distance(position) <= (radius / 2)
+		or position:Distance(listener:GetPos()) <= radius) then
 			return true
 		end
 	end
@@ -324,7 +326,13 @@ function chatbox.AddText(listeners, ...)
 end
 
 function chatbox.SayAsPlayer(player, radius, text)
-	chatbox.AddText(nil, "\""..text.."\"", { sender = player, isPlayerMessage = true, filter = "ic", radius = radius, textColor = Color(255, 255, 200, 255) })
+	chatbox.AddText(nil, "\""..text.."\"", {
+		sender = player,
+		isPlayerMessage = true,
+		filter = "ic",
+		radius = radius,
+		textColor = Color(255, 255, 200, 255)
+	})
 end
 
 function chatbox.SetClientMode(isclient)

@@ -288,7 +288,7 @@ end
 
 if (CLIENT) then
 	function CLASS_TABLE:FreezeMovement()
-			return false
+		return false
 	end
 
 	function CLASS_TABLE:DrawHUD()
@@ -362,6 +362,9 @@ function cw.tool:Register(tool)
 
 		stored[tool.UniqueID] = tool
 	else
-		MsgC(Color(255, 100, 0, 255), "[CW:Tool] The "..tool.Name.." tool does not have a UniqueID, it will not function without one!\n")
+		MsgC(
+			Color(255, 100, 0, 255),
+			"[CW:Tool] The "..tool.Name.." tool does not have a UniqueID, it will not function without one!\n"
+		)
 	end
 end

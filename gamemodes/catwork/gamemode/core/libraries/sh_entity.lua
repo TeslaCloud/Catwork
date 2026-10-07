@@ -58,7 +58,8 @@ end
 
 --[[
 	@codebase Shared
-	@details A function to check if an entity is a door or not by seeing if its name includes "door" or if the entity is one of the following classes: "func_door", "func_door_rotating", "prop_door_rotating", "func_movelinear"
+	@details A function to check if an entity is a door or not by seeing if its name includes "door" or if the entity is
+	one of the following classes: "func_door", "func_door_rotating", "prop_door_rotating", "func_movelinear"
 	@param Entity The entity being check as a door.
 	@returns Bool Whether the entity is a door or not.
 --]]
@@ -187,7 +188,8 @@ end
 function cw.entity:CanSeePosition(entity, position, iAllowance, tIgnoreEnts)
 	local trace = {}
 
-	trace.mask = CONTENTS_SOLID + CONTENTS_MOVEABLE + CONTENTS_OPAQUE + CONTENTS_DEBRIS + CONTENTS_HITBOX + CONTENTS_MONSTER
+	trace.mask =
+		CONTENTS_SOLID + CONTENTS_MOVEABLE + CONTENTS_OPAQUE + CONTENTS_DEBRIS + CONTENTS_HITBOX + CONTENTS_MONSTER
 	trace.start = entity:LocalToWorld(entity:OBBCenter())
 	trace.endpos = position
 	trace.filter = { entity }
@@ -220,7 +222,8 @@ end
 function cw.entity:CanSeeNPC(entity, target, iAllowance, tIgnoreEnts)
 	local trace = {}
 
-	trace.mask = CONTENTS_SOLID + CONTENTS_MOVEABLE + CONTENTS_OPAQUE + CONTENTS_DEBRIS + CONTENTS_HITBOX + CONTENTS_MONSTER
+	trace.mask =
+		CONTENTS_SOLID + CONTENTS_MOVEABLE + CONTENTS_OPAQUE + CONTENTS_DEBRIS + CONTENTS_HITBOX + CONTENTS_MONSTER
 	trace.start = entity:LocalToWorld(entity:OBBCenter())
 	trace.endpos = target:GetShootPos()
 	trace.filter = { entity, target }
@@ -256,7 +259,8 @@ function cw.entity:CanSeePlayer(entity, target, iAllowance, tIgnoreEnts)
 	else
 		local trace = {}
 
-		trace.mask = CONTENTS_SOLID + CONTENTS_MOVEABLE + CONTENTS_OPAQUE + CONTENTS_DEBRIS + CONTENTS_HITBOX + CONTENTS_MONSTER
+		trace.mask =
+			CONTENTS_SOLID + CONTENTS_MOVEABLE + CONTENTS_OPAQUE + CONTENTS_DEBRIS + CONTENTS_HITBOX + CONTENTS_MONSTER
 		trace.start = entity:LocalToWorld(entity:OBBCenter())
 		trace.endpos = target:GetShootPos()
 		trace.filter = { entity, target }
@@ -289,7 +293,8 @@ end
 
 function cw.entity:CanSeeEntity(entity, target, iAllowance, tIgnoreEnts)
 	local trace = {}
-	trace.mask = CONTENTS_SOLID + CONTENTS_MOVEABLE + CONTENTS_OPAQUE + CONTENTS_DEBRIS + CONTENTS_HITBOX + CONTENTS_MONSTER
+	trace.mask =
+		CONTENTS_SOLID + CONTENTS_MOVEABLE + CONTENTS_OPAQUE + CONTENTS_DEBRIS + CONTENTS_HITBOX + CONTENTS_MONSTER
 	trace.start = entity:LocalToWorld(entity:OBBCenter())
 	trace.endpos = target:LocalToWorld(target:OBBCenter())
 	trace.filter = { entity, target }
@@ -1140,7 +1145,7 @@ if (SERVER) then
 			if (sharedText) then
 				for k, v in pairs(self:GetDoorChildren(entity)) do
 					if (IsValid(v)) then
-						 self:SetDoorText(v, self:GetDoorText(entity))
+						self:SetDoorText(v, self:GetDoorText(entity))
 					end
 				end
 			end
@@ -1182,7 +1187,7 @@ if (SERVER) then
 				if (self:DoorHasSharedText(entity)) then
 					for k, v in pairs(self:GetDoorChildren(entity)) do
 						if (IsValid(v)) then
-							 self:SetDoorText(v, text)
+							self:SetDoorText(v, text)
 						end
 					end
 				end

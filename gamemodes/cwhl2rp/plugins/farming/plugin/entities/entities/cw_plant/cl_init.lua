@@ -14,7 +14,8 @@ function ENT:HUDPaintTargetID(x, y, alpha)
 	y = cw.core:DrawInfo(itemTable.PlantName, x, y, colorTargetID, alpha)
 
 	if (cw.attributes:Fraction(ATB_FARM, 100) > 25) then
-		local GrowthPercent = math.Clamp(math.Round((CurTime() - self:GetSpawnTime()) / (self:GetGrowTime() - self:GetSpawnTime()) * 100), 0, 100)
+		local GrowthPercent =
+			math.Clamp(math.Round((CurTime() - self:GetSpawnTime()) / (self:GetGrowTime() - self:GetSpawnTime()) * 100), 0, 100)
 		y = cw.core:DrawInfo(L("#Farming_Maturity:"..GrowthPercent..";"), x, y, Color(255, 255, 255), alpha)
 	end
 end

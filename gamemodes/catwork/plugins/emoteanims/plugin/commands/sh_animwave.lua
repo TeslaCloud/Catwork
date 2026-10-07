@@ -49,5 +49,8 @@ end
 COMMAND:Register()
 
 if (CLIENT) then
-	cw.quickmenu:AddCommand("#Emotes_animWave", "#Emotes", COMMAND.name, { "#Emotes_animWave_Close", "#Emotes_animWave_Normal" })
+	cw.quickmenu:AddCommand("#Emotes_animWave", "#Emotes", COMMAND.name, {
+		"#Emotes_animWave_Close",
+		"#Emotes_animWave_Normal"
+	})
 end

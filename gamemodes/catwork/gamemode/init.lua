@@ -98,7 +98,10 @@ do
 	else
 		local version = cw.core:GetVersionBuild()
 
-		MsgC(Color(0, 255, 100, 255), "[Catwork] Framework version ["..version.."] loading took "..GetTimeSinceBoot().." second(s)\n")
+		MsgC(
+			Color(0, 255, 100, 255),
+			"[Catwork] Framework version ["..version.."] loading took "..GetTimeSinceBoot().." second(s)\n"
+		)
 
 		-- For benchmarking.
 		cw.LastBootTime = startTime

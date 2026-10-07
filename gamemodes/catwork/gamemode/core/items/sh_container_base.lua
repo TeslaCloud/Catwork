@@ -34,7 +34,7 @@ function ITEM:OnLoaded()
 end
 
 if (SERVER) then
-function ITEM:GetInventory()
+	function ITEM:GetInventory()
 		local inventory = self:GetData("Inventory")
 
 		if (inventory == nil) then
@@ -44,7 +44,7 @@ function ITEM:GetInventory()
 		return inventory
 	end
 
-function ITEM:HasItem(itemTable)
+	function ITEM:HasItem(itemTable)
 		if (isstring(itemTable)) then
 			cw.inventory:HasItemByID(self:GetInventory(), itemTable)
 		else
@@ -52,7 +52,7 @@ function ITEM:HasItem(itemTable)
 		end
 	end
 
-function ITEM:RemoveFromInventory(itemTable)
+	function ITEM:RemoveFromInventory(itemTable)
 		if (isstring(itemTable)) then
 			cw.inventory:RemoveUniqueID(self:GetInventory(), itemTable)
 		else
@@ -60,15 +60,15 @@ function ITEM:RemoveFromInventory(itemTable)
 		end
 	end
 
-function ITEM:InventoryAsItemsList()
+	function ITEM:InventoryAsItemsList()
 		return cw.inventory:GetAsItemsList(self:GetInventory())
 	end
 
-function ITEM:AddToInventory(itemTable)
+	function ITEM:AddToInventory(itemTable)
 		cw.inventory:AddInstance(self:GetInventory(), itemTable)
 	end
 
-function ITEM:GetCash()
+	function ITEM:GetCash()
 		return (self.data and self.data.Cash) or self.Cash
 	end
 end

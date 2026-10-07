@@ -55,7 +55,10 @@ end
 
 cw.option:SetKey("default_date", { month = 1, year = 2010, day = 1 })
 cw.option:SetKey("default_time", { minute = 0, hour = 0, day = 1 })
-cw.option:SetKey("default_days", { "#Monday", "#Tuesday", "#Wednesday", "#Thursday", "#Friday", "#Saturday", "#Sunday" })
+cw.option:SetKey(
+	"default_days",
+	{ "#Monday", "#Tuesday", "#Wednesday", "#Thursday", "#Friday", "#Saturday", "#Sunday" }
+)
 cw.option:SetKey("description_business", "#BusinessDesc")
 cw.option:SetKey("description_inventory", "#InventoryDesc")
 cw.option:SetKey("description_directory", "#DirectoryDesc")

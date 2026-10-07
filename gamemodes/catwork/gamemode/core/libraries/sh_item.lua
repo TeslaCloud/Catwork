@@ -240,7 +240,10 @@ if (SERVER) then
 
 		if (self.batch > 1) then
 			cw.player:GiveCash(player, -(self.cost * self.batch), self.batch.." "..cw.core:Pluralize(self.PrintName))
-			cw.core:PrintLog(LOGTYPE_MINOR, player:Name().." has ordered "..self.batch.." "..cw.core:Pluralize(self.PrintName)..".")
+			cw.core:PrintLog(
+				LOGTYPE_MINOR,
+				player:Name().." has ordered "..self.batch.." "..cw.core:Pluralize(self.PrintName).."."
+			)
 		else
 			cw.player:GiveCash(player, -(self.cost * self.batch), self.batch.." "..self.PrintName)
 			cw.core:PrintLog(LOGTYPE_MINOR, player:Name().." has ordered "..self.batch.." "..self.PrintName..".")
@@ -348,7 +351,8 @@ end
 
 -- A function to register a new item.
 function item.Register(itemTable)
-	itemTable.uniqueID = string.lower(string.gsub(itemTable.uniqueID or string.gsub(itemTable.name, "%s", "_"), "['%.]", ""))
+	itemTable.uniqueID =
+		string.lower(string.gsub(itemTable.uniqueID or string.gsub(itemTable.name, "%s", "_"), "['%.]", ""))
 	itemTable.index = cw.core:GetShortCRC(itemTable.uniqueID)
 	itemTable.PrintName = itemTable.PrintName or itemTable.name or "#Item_UnknownItem"
 
@@ -532,7 +536,8 @@ function item.FindByID(identifier, bShouldValidate)
 		for k, v in pairs(stored) do
 			local itemName = v.name
 
-			if (string.find(string.utf8lower(itemName), lowerName) and (!itemTable or string.utf8len(itemName) < string.utf8len(itemTable.name))) then
+			if (string.find(string.utf8lower(itemName), lowerName)
+			and (!itemTable or string.utf8len(itemName) < string.utf8len(itemTable.name))) then
 				itemTable = v
 			end
 

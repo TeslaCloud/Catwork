@@ -29,7 +29,7 @@ end
 function ITEM:OnDrop(player, position) end
 
 if (SERVER) then
-function ITEM:OnCustomFunction(player, name)
+	function ITEM:OnCustomFunction(player, name)
 		if (name == "Give") then
 			cw.player:RunClockworkCommand(player, "CharHeal", "bandage")
 		end

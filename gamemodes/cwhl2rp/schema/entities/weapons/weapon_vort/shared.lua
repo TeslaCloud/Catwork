@@ -101,8 +101,13 @@ function SWEP:DispatchEffect(EFFECTSTR)
 	if CLIENT then view = GetViewEntity() else view = pPlayer:GetViewEntity() end
 
 	if (!pPlayer:IsNPC() and view:IsPlayer()) then
-		ParticleEffectAttach(EFFECTSTR, PATTACH_POINT_FOLLOW, pPlayer:GetViewModel(), pPlayer:GetViewModel():LookupAttachment("muzzle"))
-		else
+		ParticleEffectAttach(
+			EFFECTSTR,
+			PATTACH_POINT_FOLLOW,
+			pPlayer:GetViewModel(),
+			pPlayer:GetViewModel():LookupAttachment("muzzle")
+		)
+	else
 		ParticleEffectAttach(EFFECTSTR, PATTACH_POINT_FOLLOW, pPlayer, pPlayer:LookupAttachment("rightclaw"))
 	end
 end
@@ -115,9 +120,23 @@ function SWEP:ShootEffect(EFFECTSTR, startpos, endpos)
 	if CLIENT then view = GetViewEntity() else view = pPlayer:GetViewEntity() end
 
 	if (!pPlayer:IsNPC() and view:IsPlayer()) then
-		util.ParticleTracerEx(EFFECTSTR, self.Weapon:GetAttachment(self.Weapon:LookupAttachment("muzzle")).Pos, endpos, true, pPlayer:GetViewModel():EntIndex(), pPlayer:GetViewModel():LookupAttachment("muzzle"))
-		else
-		util.ParticleTracerEx(EFFECTSTR, pPlayer:GetAttachment(pPlayer:LookupAttachment("rightclaw")).Pos, endpos, true, pPlayer:EntIndex(), pPlayer:LookupAttachment("rightclaw"))
+		util.ParticleTracerEx(
+			EFFECTSTR,
+			self.Weapon:GetAttachment(self.Weapon:LookupAttachment("muzzle")).Pos,
+			endpos,
+			true,
+			pPlayer:GetViewModel():EntIndex(),
+			pPlayer:GetViewModel():LookupAttachment("muzzle")
+		)
+	else
+		util.ParticleTracerEx(
+			EFFECTSTR,
+			pPlayer:GetAttachment(pPlayer:LookupAttachment("rightclaw")).Pos,
+			endpos,
+			true,
+			pPlayer:EntIndex(),
+			pPlayer:LookupAttachment("rightclaw")
+		)
 	end
 end
 
@@ -239,7 +258,11 @@ function SWEP:Think()
 		if self.Owner:GetAmmoCount(self.Primary.Ammo) >= self.AmmoPerUse then -- check always if we have ammo
 			self.Weapon:SendWeaponAnim(ACT_VM_SECONDARYATTACK)
 			self:DispatchEffect("vortigaunt_charge_token") -- this effect lags a lot,but we see it for 0.75 seconds,who cares
-			timer.Simple(0.75, function()if !IsValid(self.Owner) or self.Owner:GetActiveWeapon() != self or !IsValid(self) then return end self.Weapon:SendWeaponAnim(ACT_VM_IDLE)end)
+			timer.Simple(0.75, function()
+				if !IsValid(self.Owner) or self.Owner:GetActiveWeapon() != self or !IsValid(self) then return end
+
+				self.Weapon:SendWeaponAnim(ACT_VM_IDLE)
+			end)
 		end
 
 		self.attack = true
@@ -315,7 +338,7 @@ function SWEP:GiveHealth()
 
 	if plarm <= (self.HealthLimit - arm) then
 		healety:SetHealth(plarm + arm)
-		else
+	else
 		healety:SetHealth(self.HealthLimit)
 	end
 end
@@ -352,7 +375,8 @@ function SWEP:SecondaryAttack()
 
 	local trace = util.QuickTrace(self.Owner:EyePos(), self.Owner:GetAimVector() * 50, self.Owner)
 
-	if ((IsValid(trace.Entity) and trace.Entity:IsPlayer() and trace.Entity:Health() < self.HealthLimit) or self.Owner:Health() < self.HealthLimit) then
+	if ((IsValid(trace.Entity) and trace.Entity:IsPlayer() and trace.Entity:Health() < self.HealthLimit)
+	or self.Owner:Health() < self.HealthLimit) then
 		if self.Owner:GetAmmoCount(self.Primary.Ammo) < self.AmmoPerUse then
 			self.Weapon:EmitSound(self.Deny)
 			self.Weapon:SetNextPrimaryFire(CurTime() + SoundDuration(self.Deny))

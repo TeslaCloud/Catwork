@@ -23,12 +23,12 @@ function PANEL:Init()
 	self:SetKeyboardInputEnabled(true)
 
 	self.scrollList = vgui.Create("DScrollPanel", self)
- 	self.scrollList:SizeToContents()
+	self.scrollList:SizeToContents()
 
 	self.panelList = vgui.Create("cwPanelList", self.scrollList)
- 	self.panelList:SetPadding(2)
- 	self.panelList:SetSpacing(3)
- 	self.panelList:SizeToContents()
+	self.panelList:SetPadding(2)
+	self.panelList:SetSpacing(3)
+	self.panelList:SizeToContents()
 
 	self.disconnectButton = vgui.Create("cwLabelButton", self)
 	self.disconnectButton:SetFont(smallTextFont)

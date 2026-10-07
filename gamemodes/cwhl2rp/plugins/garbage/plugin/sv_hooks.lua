@@ -38,7 +38,9 @@ function cwGarbage:CanSpawnGarbage(position)
 end
 
 function cwGarbage:GetGarbageTime(player)
-	return config.GetVal("garbage_pickup_time") - math.Round((cw.attributes:Get(player, ATB_SCAVENGER, nil, true) or 0) / 10)
+	return config.GetVal("garbage_pickup_time") - math.Round(
+		(cw.attributes:Get(player, ATB_SCAVENGER, nil, true) or 0) / 10
+	)
 end
 
 function cwGarbage:PlayerTakeGarbage(player, entity)

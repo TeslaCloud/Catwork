@@ -31,7 +31,16 @@ function COMMAND:OnRun(player, arguments)
 		return
 	end
 
-	chatbox.AddText(nil, text, { isPlayerMessage = true, sender = player, noStyling = true, fakeName = true, position = player:GetPos(), textColor = Color("#89D235"), filter = "player_events", icon = false })
+	chatbox.AddText(nil, text, {
+		isPlayerMessage = true,
+		sender = player,
+		noStyling = true,
+		fakeName = true,
+		position = player:GetPos(),
+		textColor = Color("#89D235"),
+		filter = "player_events",
+		icon = false
+	})
 end
 
 COMMAND:Register()

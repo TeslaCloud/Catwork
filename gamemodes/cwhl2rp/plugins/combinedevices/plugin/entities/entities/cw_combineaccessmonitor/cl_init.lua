@@ -99,61 +99,61 @@ function ENT:DrawTranslucent()
 	render.PushRenderTarget(self.RT)
 		render.Clear(0, 0, 0, 255)
 		cam.Start2D()
-			surface.SetDrawColor(255, 255, 255, 255)
-			surface.SetMaterial(Material("props/combine_monitor_access"))
-			surface.DrawTexturedRect(0, 0, 256, 256)
+		surface.SetDrawColor(255, 255, 255, 255)
+		surface.SetMaterial(Material("props/combine_monitor_access"))
+		surface.DrawTexturedRect(0, 0, 256, 256)
 
-			if self:GetDTInt(5) == 2 then
-				if self.error then
-					surface.SetTextColor(255, 0, 0)
-					surface.SetFont("_CMB_FONT_4")
-					surface.SetTextPos(30, 50)
-					surface.DrawText("ERROR")
-				end
-
-				if CurTime() >= self.errorFlash then
-					self.error = !self.error
-					self.errorFlash = CurTime() + 0.4
-				end
-
-				if LocalPlayer():GetPos():Distance(self:GetPos()) < 300 then
-					surface.SetTextColor(255, 255, 255)
-					surface.SetFont("_CMB_FONT_5")
-					surface.SetTextPos(20, 140)
-					surface.DrawText("1E"..bitkek(13))
-					surface.SetTextPos(20, 155)
-					surface.DrawText(bitkek(6).."cmb_ACCESS")
-					surface.SetTextPos(20, 180)
-					surface.DrawText(bitkek(2)..util.CRC(self:EntIndex())..bitkek(2).."CP_cmb"..bitkek(4))
-				end
-
-				surface.SetDrawColor(255, 0, 0, 255)
-				surface.SetMaterial(errorc)
-				surface.DrawTexturedRect(0, 0, 256, 256)
-			else
-				surface.SetTextColor(0, 0, 114)
-				surface.SetFont("_CMB_FONT_1")
-				surface.SetTextPos(24, 33)
-				surface.DrawText(self:GetDTString(0))
-				surface.SetTextPos(24, 33 + 25)
-				surface.DrawText(self:GetDTString(1))
-				surface.SetTextPos(24, 33 + 25 + 25)
-				surface.DrawText(self:GetDTString(2))
-
-				surface.SetFont("_CMB_FONT_2")
-				surface.SetTextPos(24, 256 - 128 + 8)
-				surface.DrawText("ACCESS")
-				surface.SetTextPos(24, 256 - 128 + 38 + 8)
-				surface.DrawText("LEVEL:")
-				surface.SetDrawColor(255, 0, 0, 128)
-				surface.SetMaterial(Material("gui/gradient_up"))
-				surface.DrawTexturedRect(256 - 256 / 3.5 - 56 / 2, 256 - 256 / 3.5 - 56 / 2, 56, 56)
-
+		if self:GetDTInt(5) == 2 then
+			if self.error then
 				surface.SetTextColor(255, 0, 0)
-				surface.SetFont("_CMB_FONT_3")
-				surface.SetTextPos(256 - 256 / 4 - 24, 256 - 128 + 21)
-				surface.DrawText(self:GetDTString(3) == "" and "0" or self:GetDTString(3))
+				surface.SetFont("_CMB_FONT_4")
+				surface.SetTextPos(30, 50)
+				surface.DrawText("ERROR")
 			end
+
+			if CurTime() >= self.errorFlash then
+				self.error = !self.error
+				self.errorFlash = CurTime() + 0.4
+			end
+
+			if LocalPlayer():GetPos():Distance(self:GetPos()) < 300 then
+				surface.SetTextColor(255, 255, 255)
+				surface.SetFont("_CMB_FONT_5")
+				surface.SetTextPos(20, 140)
+				surface.DrawText("1E"..bitkek(13))
+				surface.SetTextPos(20, 155)
+				surface.DrawText(bitkek(6).."cmb_ACCESS")
+				surface.SetTextPos(20, 180)
+				surface.DrawText(bitkek(2)..util.CRC(self:EntIndex())..bitkek(2).."CP_cmb"..bitkek(4))
+			end
+
+			surface.SetDrawColor(255, 0, 0, 255)
+			surface.SetMaterial(errorc)
+			surface.DrawTexturedRect(0, 0, 256, 256)
+		else
+			surface.SetTextColor(0, 0, 114)
+			surface.SetFont("_CMB_FONT_1")
+			surface.SetTextPos(24, 33)
+			surface.DrawText(self:GetDTString(0))
+			surface.SetTextPos(24, 33 + 25)
+			surface.DrawText(self:GetDTString(1))
+			surface.SetTextPos(24, 33 + 25 + 25)
+			surface.DrawText(self:GetDTString(2))
+
+			surface.SetFont("_CMB_FONT_2")
+			surface.SetTextPos(24, 256 - 128 + 8)
+			surface.DrawText("ACCESS")
+			surface.SetTextPos(24, 256 - 128 + 38 + 8)
+			surface.DrawText("LEVEL:")
+			surface.SetDrawColor(255, 0, 0, 128)
+			surface.SetMaterial(Material("gui/gradient_up"))
+			surface.DrawTexturedRect(256 - 256 / 3.5 - 56 / 2, 256 - 256 / 3.5 - 56 / 2, 56, 56)
+
+			surface.SetTextColor(255, 0, 0)
+			surface.SetFont("_CMB_FONT_3")
+			surface.SetTextPos(256 - 256 / 4 - 24, 256 - 128 + 21)
+			surface.DrawText(self:GetDTString(3) == "" and "0" or self:GetDTString(3))
+		end
 
 		cam.End2D()
 	render.PopRenderTarget()

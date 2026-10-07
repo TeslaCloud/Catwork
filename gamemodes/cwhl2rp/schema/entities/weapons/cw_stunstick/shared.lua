@@ -285,7 +285,9 @@ function SWEP:PrimaryAttack()
 
 					if (!player or player:Health() > 10) then
 						if (!player) then
-							trace.Entity:TakeDamageInfo(cw.core:FakeDamageInfo(5 + (strength * 2), self, self.Owner, trace.HitPos, DMG_CLUB, 2))
+							trace.Entity:TakeDamageInfo(
+								cw.core:FakeDamageInfo(5 + (strength * 2), self, self.Owner, trace.HitPos, DMG_CLUB, 2)
+							)
 						else
 							trace.Entity:TakeDamageInfo(cw.core:FakeDamageInfo(1 + strength, self, self.Owner, trace.HitPos, DMG_CLUB, 2))
 						end

@@ -46,7 +46,10 @@ function PANEL:Init()
 			self.titleLabel:SetVisible(false)
 			self.titleLabel:SetSize(512, 256)
 			self.titleLabel:SetPos((scrW / 2) - (self.titleLabel:GetWide() / 2), scrH * 0.4 - 128)
-			self.subLabel:SetPos(self.titleLabel.x + (self.titleLabel:GetWide() / 2) - (self.subLabel:GetWide() / 2), self.titleLabel.y + self.titleLabel:GetTall() + 8)
+			self.subLabel:SetPos(
+				self.titleLabel.x + (self.titleLabel:GetWide() / 2) - (self.subLabel:GetWide() / 2),
+				self.titleLabel.y + self.titleLabel:GetTall() + 8
+			)
 		end
 
 		self.authorLabel = vgui.Create("cwLabelButton", self)
@@ -54,14 +57,20 @@ function PANEL:Init()
 		self.authorLabel:SetFont(tinyTextFont)
 		self.authorLabel:SetText("#MainMenu_DevelopedBy:"..string.upper(Schema:GetAuthor())..";")
 		self.authorLabel:SizeToContents()
-		self.authorLabel:SetPos(self.subLabel.x + (self.subLabel:GetWide() - self.authorLabel:GetWide()), self.subLabel.y + self.subLabel:GetTall() + 4)
+		self.authorLabel:SetPos(
+			self.subLabel.x + (self.subLabel:GetWide() - self.authorLabel:GetWide()),
+			self.subLabel.y + self.subLabel:GetTall() + 4
+		)
 
 		self.lmaoCopyright = vgui.Create("cwLabelButton", self)
 		self.lmaoCopyright:SetDisabled(true)
 		self.lmaoCopyright:SetFont(tinyTextFont)
 		self.lmaoCopyright:SetText("CATWORK "..cw.KernelVersion:upper())
 		self.lmaoCopyright:SizeToContents()
-		self.lmaoCopyright:SetPos(self.authorLabel.x + (self.authorLabel:GetWide() - self.lmaoCopyright:GetWide()), self.authorLabel.y + self.authorLabel:GetTall() + 4)
+		self.lmaoCopyright:SetPos(
+			self.authorLabel.x + (self.authorLabel:GetWide() - self.lmaoCopyright:GetWide()),
+			self.authorLabel.y + self.authorLabel:GetTall() + 4
+		)
 
 		self.createButton = vgui.Create("cwLabelButton", self)
 		self.createButton:SetFont(smallTextFont)
@@ -729,7 +738,11 @@ function PANEL:Think()
 		for k, v in pairs(self.characterPanels) do
 			if (k > self.selectedIdx) then
 				v:SetActive(false)
-					self:ManageTargets(v, rightX, (255 / ((#self.characterPanels + 1) - self.selectedIdx)) * ((#self.characterPanels + 1) - k))
+					self:ManageTargets(
+						v,
+						rightX,
+						(255 / ((#self.characterPanels + 1) - self.selectedIdx)) * ((#self.characterPanels + 1) - k)
+					)
 				rightX = v.x + v:GetWide() + 16
 			end
 		end
@@ -1256,7 +1269,8 @@ function PANEL:Init()
 	-- Called when the panel should be painted.
 	function self.pointsUsed.Paint(pointsUsed)
 		local color = Color(100, 100, 100, 255)
-		local width = math.Clamp((pointsUsed:GetWide() / self.attributeTable.maximum) * self.totalPoints, 0, pointsUsed:GetWide())
+		local width =
+			math.Clamp((pointsUsed:GetWide() / self.attributeTable.maximum) * self.totalPoints, 0, pointsUsed:GetWide())
 
 		if (color) then
 			color.r = math.min(color.r - 25, 255)
@@ -1278,7 +1292,10 @@ end
 function PANEL:Think()
 	self.pointsUsed:SetSize(self:GetWide() - (self.pointsUsed.x * 2), 16)
 	self.pointsLabel:SetText(self.attributeTable.name)
-	self.pointsLabel:SetPos(self:GetWide() / 2 - self.pointsLabel:GetWide() / 2, self:GetTall() / 2 - self.pointsLabel:GetTall() / 2)
+	self.pointsLabel:SetPos(
+		self:GetWide() / 2 - self.pointsLabel:GetWide() / 2,
+		self:GetTall() / 2 - self.pointsLabel:GetTall() / 2
+	)
 	self.pointsLabel:SizeToContents()
 	self.addButton:SetPos(self.pointsUsed.x + self.pointsUsed:GetWide() + 8, 0)
 
@@ -1370,8 +1387,8 @@ function PANEL:Init()
 	self.attributesForm:SetPadding(4)
 
 	self.categoryList = vgui.Create("DCategoryList", self)
- 	self.categoryList:SetPadding(2)
- 	self.categoryList:SizeToContents()
+	self.categoryList:SetPadding(2)
+	self.categoryList:SizeToContents()
 
 	for k, v in pairs(cw.attribute:GetAll()) do
 		attributes[#attributes + 1] = v
@@ -1510,8 +1527,8 @@ function PANEL:Init()
 	self.classesForm:SetPadding(4)
 
 	self.categoryList = vgui.Create("DCategoryList", self)
- 	self.categoryList:SetPadding(2)
- 	self.categoryList:SizeToContents()
+	self.categoryList:SetPadding(2)
+	self.categoryList:SizeToContents()
 
 	for k, v in pairs(cw.class:GetAll()) do
 		if (v.isOnCharScreen and (v.factions and table.HasValue(v.factions, self.info.faction))) then
@@ -1626,8 +1643,8 @@ function PANEL:Init()
 	local panel = cw.character:GetPanel()
 
 	self.categoryList = vgui.Create("DCategoryList", self)
- 	self.categoryList:SetPadding(2)
- 	self.categoryList:SizeToContents()
+	self.categoryList:SetPadding(2)
+	self.categoryList:SizeToContents()
 
 	self.overrideModel = nil
 	self.bSelectModel = nil
@@ -1906,8 +1923,8 @@ function PANEL:Init()
 	self.info = cw.character:GetCreationInfo()
 
 	self.categoryList = vgui.Create("DCategoryList", self)
- 	self.categoryList:SetPadding(2)
- 	self.categoryList:SizeToContents()
+	self.categoryList:SetPadding(2)
+	self.categoryList:SizeToContents()
 
 	self.settingsForm = vgui.Create("DForm")
 	self.settingsForm:SetName("#CharCreation_Persuasion")

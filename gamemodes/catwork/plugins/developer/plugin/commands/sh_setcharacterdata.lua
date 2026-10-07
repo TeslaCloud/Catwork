@@ -39,9 +39,16 @@ function COMMAND:OnRun(player, arguments)
 						return
 					end
 
-					cw.player:Notify(player, L("Developer_ModifiedKey").." '"..key.."', "..L("Developer_Value").." "..tostring(val).." ("..type(val).."). "..L("Developer_OriginalType").." "..dataType)
+					cw.player:Notify(
+						player,
+						L("Developer_ModifiedKey").." '"..key.."', "..L("Developer_Value").." "..tostring(val).." ("..type(val).."). "..
+							L("Developer_OriginalType").." "..dataType
+					)
 				else
-					cw.player:Notify(player, L("Developer_CreatedKey").." '"..key.."', "..L("Developer_Value").." "..tostring(val).." ("..type(val)..")")
+					cw.player:Notify(
+						player,
+						L("Developer_CreatedKey").." '"..key.."', "..L("Developer_Value").." "..tostring(val).." ("..type(val)..")"
+					)
 				end
 
 				target:SetCharacterData(key, val)
