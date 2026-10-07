@@ -21,6 +21,7 @@ cw.directory.tips = cw.directory.tips or {}
 	A good idea for the master formatting, is to ensure the existance of default CSS classes.
 	You can still customize them for use, though.
 --]]
+-- proofreader-disable Layout/LineLength -- embedded CSS
 local MASTER_FORMATTING = [[
 	<head>
 		<style type="text/css">
@@ -38,6 +39,7 @@ local MASTER_FORMATTING = [[
 		[information]
 	</body>
 ]]
+-- proofreader-enable Layout/LineLength
 
 --[[ Set up the default formatting for directory pages. --]]
 local DEFAULT_FORMATTING = [[

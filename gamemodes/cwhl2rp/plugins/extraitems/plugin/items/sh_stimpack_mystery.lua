@@ -39,6 +39,7 @@ local ru = cw.lang:GetTable("ru")
 
 eng["#ITEM_Mystery"] = "Mysterious Serum"
 eng["#ITEM_Mystery_Desc"] = "A syringe filled with blue glowing liquid. It's not labeled."
+-- proofreader-disable-next-line Layout/LineLength -- translation string
 eng["#ITEM_Mystery_Effect"] = "You keep standing here, not feeling much, when suddenly you feel a strong rush of energy filling your very essence. You feel indestructible!"
 
 ru["#ITEM_Mystery"] = "Загадочная сыворотка"
