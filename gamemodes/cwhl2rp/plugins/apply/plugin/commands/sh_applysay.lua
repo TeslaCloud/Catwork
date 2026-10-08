@@ -8,7 +8,7 @@ COMMAND.tip = '#Command_Applysay_Description'
 COMMAND.flags = CMD_DEFAULT
 COMMAND.cooldown = 2
 
---- Says a full Russian sentence with the player's name and citizen ID and makes nearby players recognise them.
+--- Says a full sentence with the player's name and citizen ID and makes nearby players recognise them.
 --
 -- Combine and characters without a citizen ID are told they have none instead. Recognition only happens
 -- when `apply_recognise_enable` is on, for players within `talk_radius`.
@@ -21,9 +21,10 @@ function COMMAND:OnRun(player)
 
   local radius = config.Get('talk_radius'):Get()
 
-  chatbox.AddText(nil, '"Меня зовут '..player:Name()..', мой CID - #'..citizenID..'."', {
+  chatbox.AddText(nil, '"'..L('Apply_Say_NameCID', player:Name(), citizenID)..'"', {
     sender = player,
     isPlayerMessage = true,
+    forceTranslate = true,
     filter = 'ic',
     radius = radius,
     textColor = Color(255, 255, 200, 255)

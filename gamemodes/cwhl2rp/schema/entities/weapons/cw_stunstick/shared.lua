@@ -3,7 +3,7 @@
 -- Primary fire strikes a player or prop within 96 units for club damage that scales with the owner's strength
 -- attribute and runs the `PlayerStunEntity` hook. Secondary fire knocks on a door (`PlayerCanKnockOnDoor`,
 -- `PlayerKnockOnDoor`) or pushes whatever is aimed at. The client draws a pulsing glow on the baton while it is
--- raised, and the print name and instructions are hard-coded in Russian.
+-- raised.
 
 if SERVER then
   AddCSLuaFile('shared.lua')
@@ -24,12 +24,12 @@ if CLIENT then
   SWEP.Slot = 0
   SWEP.SlotPos = 5
   SWEP.DrawAmmo = false
-  SWEP.PrintName = 'Парализующая\n дубинка'
+  SWEP.PrintName = '#SWEPS_Stunstick'
   SWEP.DrawCrosshair = true
 end
 
-SWEP.Instructions = 'ЛКМ: Удар.\nПКМ: Толкать\n Стучать.'
-SWEP.Purpose = 'Этим можно избивать жалких людишек. Можно засунуть ее куда-нибудь.'
+SWEP.Instructions = '#SWEPS_Stunstick_Instructions'
+SWEP.Purpose = '#SWEPS_Stunstick_Purpose'
 SWEP.Contact = ''
 SWEP.Author = 'kurozael'
 

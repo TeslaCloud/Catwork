@@ -3,7 +3,7 @@
 --
 -- `Schema:RegisterVoiceGroups` and `Schema:RegisterVoices` are run by `cw.voices` when it builds its tables. Each line
 -- has a chat command, a phrase and a Half-Life 2 sound, human lines also have a female sound, and the Dispatch phrases
--- are written in Russian.
+-- are language phrases.
 
 --- Called when voice groups should be registered.
 --
@@ -30,38 +30,38 @@ end
 -- phrase and Half-Life 2 sound; human lines also have a female sound.
 -- @param voices [Map The `cw.voices` library]
 function Schema:RegisterVoices(voices)
-  voices:Add('Dispatch', 'anticitizen1', 'Внимание. Неопознанное лицо. Немедленно подтвердить статус в отделе Гражданской Обороны.', 'npc/overwatch/cityvoice/f_confirmcivilstatus_1_spkr.wav')
-  voices:Add('Dispatch', 'anticitizen2', 'Вниманию наземных сил. В сообществе найден нарушитель. Код: ОКРУЖИТЬ, КЛЕЙМИТЬ, УСМИРИТЬ.', 'npc/overwatch/cityvoice/f_anticitizenreport_spkr.wav')
-  voices:Add('Dispatch', 'anticitizen3', 'Внимание. Уклонистское поведение. Неподчинение обвиняемого. Наземным силам ГО, тревога. Код: ИЗОЛИРОВАТЬ, ОГЛАСИТЬ, ИСПОЛНИТЬ.', 'npc/overwatch/cityvoice/f_evasionbehavior_2_spkr.wav')
+  voices:Add('Dispatch', 'anticitizen1', '#Voice_Dispatch_AntiCitizen1', 'npc/overwatch/cityvoice/f_confirmcivilstatus_1_spkr.wav')
+  voices:Add('Dispatch', 'anticitizen2', '#Voice_Dispatch_AntiCitizen2', 'npc/overwatch/cityvoice/f_anticitizenreport_spkr.wav')
+  voices:Add('Dispatch', 'anticitizen3', '#Voice_Dispatch_AntiCitizen3', 'npc/overwatch/cityvoice/f_evasionbehavior_2_spkr.wav')
 
-  voices:Add('Dispatch', 'level5', 'Гражданин, теперь вы угроза обществу пятого уровня. Немедленно прекратить уклонение и выслушать приговор.', 'npc/overwatch/cityvoice/f_ceaseevasionlevelfive_spkr.wav')
-  voices:Add('Dispatch', 'level4', 'Гражданин, вы обвиняетесь во множественных нарушениях. Гражданство отозвано. Статус: ЗЛОСТНЫЙ НАРУШИТЕЛЬ.', 'npc/overwatch/cityvoice/f_citizenshiprevoked_6_spkr.wav')
-  voices:Add('Dispatch', 'level3', 'Гражданин, вы обвиняетесь в тяжком несоответствии. Асоциальный статус подтвержден.', 'npc/overwatch/cityvoice/f_capitalmalcompliance_spkr.wav')
-  voices:Add('Dispatch', 'level2', 'Гражданин, вы обвиняетесь в несоответствии второго уровня и антиобщественной деятельности первого уровня. Силам ГО, обвинительный код: ДОЛГ, МЕЧ. Выполнять.', 'npc/overwatch/cityvoice/f_anticivil1_5_spkr.wav')
-  voices:Add('Dispatch', 'level1', 'Гражданин, вы угроза обществу первого уровня. Подразделениям ГО, код пресечения: ДОЛГ, МЕЧ, ПОЛНОЧЬ.', 'npc/overwatch/cityvoice/f_sociolevel1_4_spkr.wav')
+  voices:Add('Dispatch', 'level5', '#Voice_Dispatch_Level5', 'npc/overwatch/cityvoice/f_ceaseevasionlevelfive_spkr.wav')
+  voices:Add('Dispatch', 'level4', '#Voice_Dispatch_Level4', 'npc/overwatch/cityvoice/f_citizenshiprevoked_6_spkr.wav')
+  voices:Add('Dispatch', 'level3', '#Voice_Dispatch_Level3', 'npc/overwatch/cityvoice/f_capitalmalcompliance_spkr.wav')
+  voices:Add('Dispatch', 'level2', '#Voice_Dispatch_Level2', 'npc/overwatch/cityvoice/f_anticivil1_5_spkr.wav')
+  voices:Add('Dispatch', 'level1', '#Voice_Dispatch_Level1', 'npc/overwatch/cityvoice/f_sociolevel1_4_spkr.wav')
 
-  voices:Add('Dispatch', 'area1', 'Вниманию граждан. Производится проверка идентификации. Занять назначенные для инспекции места.', 'npc/overwatch/cityvoice/f_trainstation_assemble_spkr.wav')
-  voices:Add('Dispatch', 'area2', 'Внимание. Всем гражданам жилого квартала. Занять места для инспекции.', 'npc/overwatch/cityvoice/f_trainstation_assumepositions_spkr.wav')
-  voices:Add('Dispatch', 'area3', 'Вниманию отрядам Гражданской Обороны. Обнаружено уклонение от надзора. ОТРЕАГИРОВАТЬ, ИЗОЛИРОВАТЬ, ДОПРОСИТЬ.', 'npc/overwatch/cityvoice/f_protectionresponse_1_spkr.wav')
-  voices:Add('Dispatch', 'area4', 'Вниманию жителей. Ваш квартал обвиняется в недоносительстве. Штраф пять пищевых единиц.', 'npc/overwatch/cityvoice/f_rationunitsdeduct_3_spkr.wav')
+  voices:Add('Dispatch', 'area1', '#Voice_Dispatch_Area1', 'npc/overwatch/cityvoice/f_trainstation_assemble_spkr.wav')
+  voices:Add('Dispatch', 'area2', '#Voice_Dispatch_Area2', 'npc/overwatch/cityvoice/f_trainstation_assumepositions_spkr.wav')
+  voices:Add('Dispatch', 'area3', '#Voice_Dispatch_Area3', 'npc/overwatch/cityvoice/f_protectionresponse_1_spkr.wav')
+  voices:Add('Dispatch', 'area4', '#Voice_Dispatch_Area4', 'npc/overwatch/cityvoice/f_rationunitsdeduct_3_spkr.wav')
 
-  voices:Add('Dispatch', 'coop1', 'Граждане, бездействие преступно. О противоправном поведении немедленно доложить силам ГО.', 'npc/overwatch/cityvoice/f_innactionisconspiracy_spkr.wav')
-  voices:Add('Dispatch', 'coop2', 'Вниманию жителей. Замечено отклонение численности. Сотрудничество с отрядом ГО награждается полным пищевым рационом.', 'npc/overwatch/cityvoice/f_trainstation_cooperation_spkr.wav')
-  voices:Add('Dispatch', 'coop3', 'Граждане, отказ в сотрудничестве будет наказан выселением в нежилое пространство.', 'npc/overwatch/cityvoice/f_trainstation_offworldrelocation_spkr.wav')
-  voices:Add('Dispatch', 'coop4', 'Внимание. В квартале потенциальный источник вреда обществу. ДОНЕСТИ, СОДЕЙСТВОВАТЬ, СОБРАТЬ.', 'npc/overwatch/cityvoice/f_trainstation_inform_spkr.wav')
+  voices:Add('Dispatch', 'coop1', '#Voice_Dispatch_Coop1', 'npc/overwatch/cityvoice/f_innactionisconspiracy_spkr.wav')
+  voices:Add('Dispatch', 'coop2', '#Voice_Dispatch_Coop2', 'npc/overwatch/cityvoice/f_trainstation_cooperation_spkr.wav')
+  voices:Add('Dispatch', 'coop3', '#Voice_Dispatch_Coop3', 'npc/overwatch/cityvoice/f_trainstation_offworldrelocation_spkr.wav')
+  voices:Add('Dispatch', 'coop4', '#Voice_Dispatch_Coop4', 'npc/overwatch/cityvoice/f_trainstation_inform_spkr.wav')
 
-  voices:Add('Dispatch', 'unrest1', 'Отрядам Гражданской Обороны. Признаки антиобщественной деятельности. Код: СОБРАТЬ, ОКРУЖИТЬ, ЗАДЕРЖАТЬ.', 'npc/overwatch/cityvoice/f_anticivilevidence_3_spkr.wav')
-  voices:Add('Dispatch', 'unrest2', 'Тревога. Подразделениям Гражданской Обороны. Обнаружены локальные беспорядки. СОБРАТЬ, ИСПОЛНИТЬ, УСМИРИТЬ.', 'npc/overwatch/cityvoice/f_localunrest_spkr.wav')
-  voices:Add('Dispatch', 'unrest3', 'Граждане, введен код действия при беспорядках. Код: ОБЕЗВРЕДИТЬ, ЗАЩИТИТЬ, УСМИРИТЬ. Код: ПОДАВИТЬ, МЕЧ, СТЕРИЛИЗОВАТЬ.', 'npc/overwatch/cityvoice/f_unrestprocedure1_spkr.wav')
-  voices:Add('Dispatch', 'unrest4', 'Вниманию наземного отряда ГО. Задействовано осуждение на месте. Приговор выносить по усмотрению. Код: ОТСЕЧЬ, ОБНУЛИТЬ, ПОДТВЕРДИТЬ.', 'npc/overwatch/cityvoice/f_protectionresponse_4_spkr.wav')
-  voices:Add('Dispatch', 'unrest5', 'Вниманию всех наземных сил. Судебное разбирательство отменено. Смертная казнь по усмотрению.', 'npc/overwatch/cityvoice/f_protectionresponse_5_spkr.wav')
+  voices:Add('Dispatch', 'unrest1', '#Voice_Dispatch_Unrest1', 'npc/overwatch/cityvoice/f_anticivilevidence_3_spkr.wav')
+  voices:Add('Dispatch', 'unrest2', '#Voice_Dispatch_Unrest2', 'npc/overwatch/cityvoice/f_localunrest_spkr.wav')
+  voices:Add('Dispatch', 'unrest3', '#Voice_Dispatch_Unrest3', 'npc/overwatch/cityvoice/f_unrestprocedure1_spkr.wav')
+  voices:Add('Dispatch', 'unrest4', '#Voice_Dispatch_Unrest4', 'npc/overwatch/cityvoice/f_protectionresponse_4_spkr.wav')
+  voices:Add('Dispatch', 'unrest5', '#Voice_Dispatch_Unrest5', 'npc/overwatch/cityvoice/f_protectionresponse_5_spkr.wav')
 
-  voices:Add('Dispatch', 'out1', 'Тревога. Обнаружена аномальная внешняя активность. Следовать процедуре сдерживания и докладывать.', 'npc/overwatch/cityvoice/fprison_nonstandardexogen.wav')
-  voices:Add('Dispatch', 'out2', 'Внимание. Отключены системы наблюдения и обнаружения. Оставшимся сотрудникам охраны доложить о вторжении.', 'npc/overwatch/cityvoice/fprison_detectionsystemsout.wav')
-  voices:Add('Dispatch', 'out3', 'Патруль подтверждает вторжение извне. Вызваны вспомогательные воздушные силы. Ожидать поддержки.', 'npc/overwatch/cityvoice/fprison_airwatchdispatched.wav')
-  voices:Add('Dispatch', 'out4', 'Особое внимание. Отключены ограничители периметра. Всем сотрудникам охраны немедленно принять участие в сдерживании.', 'npc/overwatch/cityvoice/fprison_restrictorsdisengaged.wav')
-  voices:Add('Dispatch', 'out5', 'Директива номер два. Задействовать резерв. Сдерживать вторжение извне.', 'npc/overwatch/cityvoice/fprison_containexogens.wav')
-  voices:Add('Dispatch', 'out6', 'Внимание наземным силам. Провал миссии влечет выселение в нежилое пространство. Напоминаю код: ПОЖЕРТВОВАТЬ, ОСТАНОВИТЬ, УСТРАНИТЬ.', 'npc/overwatch/cityvoice/fprison_missionfailurereminder.wav')
+  voices:Add('Dispatch', 'out1', '#Voice_Dispatch_Out1', 'npc/overwatch/cityvoice/fprison_nonstandardexogen.wav')
+  voices:Add('Dispatch', 'out2', '#Voice_Dispatch_Out2', 'npc/overwatch/cityvoice/fprison_detectionsystemsout.wav')
+  voices:Add('Dispatch', 'out3', '#Voice_Dispatch_Out3', 'npc/overwatch/cityvoice/fprison_airwatchdispatched.wav')
+  voices:Add('Dispatch', 'out4', '#Voice_Dispatch_Out4', 'npc/overwatch/cityvoice/fprison_restrictorsdisengaged.wav')
+  voices:Add('Dispatch', 'out5', '#Voice_Dispatch_Out5', 'npc/overwatch/cityvoice/fprison_containexogens.wav')
+  voices:Add('Dispatch', 'out6', '#Voice_Dispatch_Out6', 'npc/overwatch/cityvoice/fprison_missionfailurereminder.wav')
 
   voices:Add('Combine', 'Sweeping', 'Sweeping for suspect.', 'npc/metropolice/hiding02.wav')
   voices:Add('Combine', 'Isolate', 'Isolate!', 'npc/metropolice/hiding05.wav')

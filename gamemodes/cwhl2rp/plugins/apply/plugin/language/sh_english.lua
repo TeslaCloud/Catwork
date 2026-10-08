@@ -11,6 +11,12 @@ lang['#Apply_RecogniseEnableDesc'] = 'Whether or not players should recognise ot
 lang['#Apply_NoCIDSorry'] = 'Sorry, but you do not have a CID. Use /Name instead!'
 lang['#Apply_NoCID'] = 'You do not appear to have a CID. Use /Name instead!'
 
+-- What the character says. #1 is the name, #2 the citizen ID.
+lang['#Apply_Say_Unit'] = 'Unit #1.'
+lang['#Apply_Say_Name'] = 'My name is #1.'
+lang['#Apply_Say_NameUnit'] = 'I am unit #1.'
+lang['#Apply_Say_NameCID'] = 'My name is #1, my CID is ##2.'
+
 -- Commands.
 lang['#Command_Apply_Description'] = 'Says your name and CID.'
 lang['#Command_Applysay_Description'] = 'Says your name and CID informally.'

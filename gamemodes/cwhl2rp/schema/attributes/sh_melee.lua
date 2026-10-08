@@ -4,10 +4,10 @@
 
 --[[
 local ATTRIBUTE = cw.attribute:New()
-  ATTRIBUTE.name = "Ближний бой"
+  ATTRIBUTE.name = '#Attribute_Melee'
   ATTRIBUTE.maximum = 100
   ATTRIBUTE.uniqueID = "melee"
-  ATTRIBUTE.description = "Определяет, как хорошо Вы владеете холодным оружием и рукопашным боем."
+  ATTRIBUTE.description = '#Attribute_Melee_Desc'
   ATTRIBUTE.isOnCharScreen = false
   ATTRIBUTE.category = "#AttributeCategory_Skills"
 ATB_MELEE = cw.attribute:Register(ATTRIBUTE)

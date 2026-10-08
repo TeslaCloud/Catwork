@@ -109,6 +109,12 @@ lang['#Attribute_Dexterity_Desc'] = 'Affects your overall dexterity, e.g: how fa
 lang['#Attribute_Agility_Desc'] = 'Affects your overall speed, e.g: how fast you run.'
 lang['#Attribute_Stamina_Desc'] = 'Affects your overall stamina, e.g: how long you can run for.'
 
+-- Disabled attributes (attributes/sh_melee.lua, attributes/sh_shoot.lua)
+lang['#Attribute_Melee'] = 'Melee'
+lang['#Attribute_Melee_Desc'] = 'Affects how well you handle melee weapons and unarmed combat.'
+lang['#Attribute_Shoot'] = 'Shooting'
+lang['#Attribute_Shoot_Desc'] = 'Affects how well you handle firearms.'
+
 -- HL2RP Items.
 lang['#ITEM_Magnum_Bullets'] = '.357 Magnum Bullets'
 lang['#ITEM_Pulse-Rifle_Energy'] = 'Pulse-Rifle Energy'
@@ -464,6 +470,19 @@ lang['#GarbageRecycler_Status_Recycling'] = 'RECYCLING...'
 lang['#GarbageRecycler_Status_Stopped'] = 'STOPPED'
 lang['#GarbageRecycler_Status_NotEnough'] = 'NOT ENOUGH GARBAGE'
 lang['#GarbageRecycler_Status_Ready'] = 'READY'
+lang['#GarbageRecycler_PrintName_Metal'] = 'Recycling: Metal'
+lang['#GarbageRecycler_PrintName_Paper'] = 'Recycling: Paper'
+lang['#GarbageRecycler_PrintName_Plastic'] = 'Recycling: Plastic'
+lang['#GarbageRecycler_Category'] = 'HL2RP: Recycling'
+
+-- Schema weapons
+lang['#SWEPS_Pushbroom'] = 'Push Broom'
+lang['#SWEPS_Pushbroom_Instructions'] = 'Primary Fire: Sweep.'
+lang['#SWEPS_Pushbroom_Purpose'] = 'Sweeping up rubbish.'
+lang['#SWEPS_Stunstick'] = 'Stunstick'
+lang['#SWEPS_Stunstick_Instructions'] = 'Primary Fire: Hit.\nSecondary Fire: Push/Knock.'
+lang['#SWEPS_Stunstick_Purpose'] = 'Beating pathetic little people. Can also be shoved somewhere.'
+lang['#SWEPS_Vort_Instructions'] = 'Primary Fire: Attack.\nSecondary Fire: Heal.'
 
 -- schema-main: storage names
 lang['#Storage_Corpse'] = 'Corpse'
@@ -485,6 +504,40 @@ lang['#Suffix_StationaryRadio'] = 'radios:'
 lang['#Suffix_Request'] = 'requests:'
 lang['#Suffix_Broadcast'] = 'broadcasts:'
 lang['#Dispatch_Name'] = 'Dispatch'
+
+-- Dispatch voice lines (libraries/sh_voices.lua)
+lang['#Voice_Dispatch_AntiCitizen1'] = 'Attention please. Unidentified person of interest, confirm your civil status with local protection team immediately.'
+lang['#Voice_Dispatch_AntiCitizen2'] = 'Attention ground units. Anti-citizen reported in this community. Code: LOCK, CAUTERIZE, STABILIZE.'
+lang['#Voice_Dispatch_AntiCitizen3'] = 'Attention please. Evasion behavior consistent with malcompliant defendant. Ground protection team, alert. Code: ISOLATE, EXPOSE, ADMINISTER.'
+
+lang['#Voice_Dispatch_Level5'] = 'Individual. You are now charged with socio-endangerment level five. Cease evasion immediately, receive your verdict.'
+lang['#Voice_Dispatch_Level4'] = 'Individual. You are convicted of multi anti-civil violations. Implicit citizenship revoked. Status: MALIGNANT.'
+lang['#Voice_Dispatch_Level3'] = 'Individual. You are charged with capital malcompliance, anti-citizen status approved.'
+lang['#Voice_Dispatch_Level2'] = 'Individual. You are charged with anti-civil activity level one. Protection units, prosecution code: DUTY, SWORD, OPERATE.'
+lang['#Voice_Dispatch_Level1'] = 'Individual. You are charged with socio-endangerment level one. Protection units, prosecution code: DUTY, SWORD, MIDNIGHT.'
+
+lang['#Voice_Dispatch_Area1'] = 'Citizen notice. Priority identification check in progress. Please assemble in your designated inspection positions.'
+lang['#Voice_Dispatch_Area2'] = 'Attention please. All citizens in local residential block, assume your inspection positions.'
+lang['#Voice_Dispatch_Area3'] = 'Attention protection team. Status evasion in progress in this community. RESPOND, ISOLATE, ENQUIRE.'
+lang['#Voice_Dispatch_Area4'] = 'Attention occupants. Your block is now charged with permissive inactive coercion. Five ration units deducted.'
+
+lang['#Voice_Dispatch_Coop1'] = 'Citizen reminder. Inaction is conspiracy. Report counter-behavior to a Civil Protection team immediately.'
+lang['#Voice_Dispatch_Coop2'] = 'Attention residents. Miscount detected in your block. Cooperation with your Civil Protection team permits full ration reward.'
+lang['#Voice_Dispatch_Coop3'] = 'Citizen notice. Failure to cooperate will result in permanent off-world relocation.'
+lang['#Voice_Dispatch_Coop4'] = 'Attention residents. This block contains potential civil infection. INFORM, COOPERATE, ASSEMBLE.'
+
+lang['#Voice_Dispatch_Unrest1'] = 'Protection team alert. Evidence of anti-civil activity in this community. Code: ASSEMBLE, CLAMP, CONTAIN.'
+lang['#Voice_Dispatch_Unrest2'] = 'Alert community ground protection units, local unrest structure detected. ASSEMBLE, ADMINISTER, PACIFY.'
+lang['#Voice_Dispatch_Unrest3'] = 'Attention community. Unrest procedure code is now in effect. INOCULATE, SHIELD, PACIFY. Code: PRESSURE, SWORD, STERILIZE.'
+lang['#Voice_Dispatch_Unrest4'] = 'Attention all ground protection teams. Autonomous judgment is now in effect. Sentencing is now discretionary. Code: AMPUTATE, ZERO, CONFIRM.'
+lang['#Voice_Dispatch_Unrest5'] = 'Attention all ground protection teams. Judgment waiver now in effect. Capital prosecution is discretionary.'
+
+lang['#Voice_Dispatch_Out1'] = 'Alert. Non-standard exogen activity detected. Execute containment procedure and report.'
+lang['#Voice_Dispatch_Out2'] = 'Attention. Surveillance and detection systems inactive. Remaining security personnel, report intruder contact.'
+lang['#Voice_Dispatch_Out3'] = 'Overwatch acknowledges critical exogen breach. Airwatch augmentation force dispatched and inbound. Hold for reinforcements.'
+lang['#Voice_Dispatch_Out4'] = 'Priority warning. Perimeter restrictors disengaged. All security personnel, report to containment immediately.'
+lang['#Voice_Dispatch_Out5'] = 'Directive number two. Engage reserves. Contain exogen incursion.'
+lang['#Voice_Dispatch_Out6'] = 'Attention ground units. Mission failure will result in permanent off-world assignment. Code reminder: SACRIFICE, COAGULATE, CLAMP.'
 
 -- schema-main: generic errors
 lang['#Err_NoPermissionRightNow'] = "You don't have permission to do this right now!"

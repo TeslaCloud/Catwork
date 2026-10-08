@@ -2,7 +2,7 @@
 -- in the owner's hand instead.
 --
 -- While it is raised the server forces the owner's sweeping, idle or walking broom animation, and primary fire plays a
--- two second sweep. Its print name and instructions are hard-coded in Russian.
+-- two second sweep.
 
 if SERVER then
   AddCSLuaFile('shared.lua')
@@ -12,13 +12,13 @@ if CLIENT then
   SWEP.Slot = 0
   SWEP.SlotPos = 7
   SWEP.DrawAmmo = false
-  SWEP.PrintName = 'Швабра'
+  SWEP.PrintName = '#SWEPS_Pushbroom'
   SWEP.DrawCrosshair = true
 end
 
 SWEP.Author = 'NA'
-SWEP.Instructions = 'ЛКМ - Подметать'
-SWEP.Purpose = 'Подметает мусор.'
+SWEP.Instructions = '#SWEPS_Pushbroom_Instructions'
+SWEP.Purpose = '#SWEPS_Pushbroom_Purpose'
 SWEP.Contact = ''
 
 SWEP.AdminSpawnable = false

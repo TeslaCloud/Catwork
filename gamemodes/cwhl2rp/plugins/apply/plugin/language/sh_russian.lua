@@ -11,6 +11,12 @@ lang['#Apply_RecogniseEnableDesc'] = 'Должны ли игроки узнав�
 lang['#Apply_NoCIDSorry'] = 'Извините, но у Вас нет CID. Используйте /Name!'
 lang['#Apply_NoCID'] = 'Похоже, у Вас нет CID. Используйте /Name!'
 
+-- What the character says. #1 is the name, #2 the citizen ID.
+lang['#Apply_Say_Unit'] = 'Юнит #1.'
+lang['#Apply_Say_Name'] = 'Меня зовут #1.'
+lang['#Apply_Say_NameUnit'] = 'Я - юнит #1.'
+lang['#Apply_Say_NameCID'] = 'Меня зовут #1, мой CID - ##2.'
+
 -- Commands.
 lang['#Command_Apply_Description'] = 'Назвать своё имя и CID.'
 lang['#Command_Applysay_Description'] = 'Назвать своё имя и CID в неформальной манере.'

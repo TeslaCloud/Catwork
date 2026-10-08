@@ -134,12 +134,12 @@ function PLUGIN:DrawWeaponInformation(itemTable, weapon, x, y, alpha)
 
     if weapon.Instructions != '' then
       text = text..titleColor..cw.lang:TranslateText('#SWEPS_Instructions'):utf8upper()..'</color>\n'..textColor..
-        weapon.Instructions..'</color>\n'
+        cw.lang:TranslateText(weapon.Instructions)..'</color>\n'
     end
 
     if weapon.Purpose != '' then
       text = text..titleColor..cw.lang:TranslateText('#SWEPS_Purpose'):utf8upper()..'</color>\n'..textColor..
-        weapon.Purpose..'</color>\n'
+        cw.lang:TranslateText(weapon.Purpose)..'</color>\n'
     end
 
     if weapon.Contact != '' then

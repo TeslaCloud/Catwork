@@ -126,7 +126,7 @@ function cw.voices:ClockworkInitialized()
 
           cw.directory:AddCode(k, [[
 						<div class="cwTitleSeperator">]]..string.upper(v2.command)..[[</div>
-						<div class="cwContentText">]]..v2.phrase..[[</div>
+						<div class="cwContentText">]]..cw.lang:TranslateText(v2.phrase)..[[</div>
 						<br>
 					]], true)
         end
@@ -179,6 +179,11 @@ function cw.voices:ChatboxAdjustMessageInfo(info)
               end
             else
               info.text = voiceData.phrase
+
+              -- A voice line written as a language phrase is translated by whoever hears it.
+              if string.sub(info.text, 1, 1) == '#' then
+                info.forceTranslate = true
+              end
 
               if info.data and
                  (info.data.radio or info.data.dispatch or info.data.broadcast or info.data.overwatch) then

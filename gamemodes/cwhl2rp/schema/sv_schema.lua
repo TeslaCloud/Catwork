@@ -748,6 +748,7 @@ function Schema:SayRequest(player, text)
       suffix = ' #Suffix_Request ',
       sender = info.sender,
       isPlayerMessage = true,
+      forceTranslate = info.forceTranslate,
       filter = 'ic',
       radius = 0,
       textColor = Color(255, 255, 150, 255),

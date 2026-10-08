@@ -812,7 +812,7 @@ end
 function Schema:ChatBoxAdjustInfo(info)
   if IsValid(info.speaker) then
     if info.data.anon then
-      info.name = 'Кто-то'
+      info.name = L('#Chat_Someone')
     end
 
     if self:PlayerIsCombine(info.speaker) then

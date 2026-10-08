@@ -1991,6 +1991,7 @@ function cw.player:SayRadio(player, text, check, noEavesdrop)
         suffix = ' #Suffix_Radio ',
         sender = player,
         isPlayerMessage = true,
+        forceTranslate = info.forceTranslate,
         filter = 'ic',
         radius = 0,
         textColor = Color(255, 255, 200, 255),
@@ -2401,8 +2402,8 @@ end
 --- Returns the player's physical description.
 --
 -- Falls back to the class's `defaultPhysDesc`, then the `default_physdesc`
--- config, then a built-in text. `GetPlayerPhysDescOverride` may replace the
--- result.
+-- config, then the English `#PhysDesc_MatchesModel` phrase.
+-- `GetPlayerPhysDescOverride` may replace the result.
 -- @param player [Player The player]
 -- @return [String The physical description]
 function cw.player:GetPhysDesc(player)
@@ -2418,7 +2419,8 @@ function cw.player:GetPhysDesc(player)
   end
 
   if !physDesc or physDesc == '' then
-    physDesc = 'Описание соответствует модели.'
+    -- Returned text is put into other messages, so it cannot be left for clients to translate.
+    physDesc = cw.lang:GetString('en', '#PhysDesc_MatchesModel')
   else
     physDesc = cw.core:ModifyPhysDesc(physDesc)
   end

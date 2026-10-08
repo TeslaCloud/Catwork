@@ -2,8 +2,7 @@
 --
 -- Primary fire charges for `SWEP.BeamChargeTime` seconds and then fires a shock beam for `SWEP.BeamDamage` damage;
 -- secondary fire heals the player in front of the owner, or the owner, by 12 to 18 health after `SWEP.HealDelay`
--- seconds. Both are advanced in `SWEP:Think` with looping sounds and particle effects, and the instructions are
--- hard-coded in Russian.
+-- seconds. Both are advanced in `SWEP:Think` with looping sounds and particle effects.
 
 if SERVER then
   AddCSLuaFile('shared.lua')
@@ -20,7 +19,7 @@ if CLIENT then
   SWEP.ViewModelFOV = 54
   -- SWEP.Contact		= "chajecraft@hotmail.com"
   -- SWEP.Purpose		= "Wooooooooooosh 'Thanks buddy'!"
-  SWEP.Instructions = 'ЛКМ - Атака.\nПКМ - Лечение.'
+  SWEP.Instructions = '#SWEPS_Vort_Instructions'
 end
 
 SWEP.Category = 'HL2'

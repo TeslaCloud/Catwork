@@ -5,7 +5,7 @@ DEFINE_BASECLASS('base_gmodentity')
 
 ENT.Type = 'anim'
 ENT.Author = 'AleXXX_007'
-ENT.PrintName = 'Растение'
+ENT.PrintName = '#Farming_Plant_Default'
 ENT.Spawnable = false
 ENT.AdminSpawnable = false
 ENT.PhysgunDisabled = false

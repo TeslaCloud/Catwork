@@ -472,32 +472,12 @@ cable.receive('ChatboxAddText', function(player, ...)
 end)
 
 local adminNames = {
-  'Console', 'kurozael', 'alexgrist',
-  'John Smith', 'John Doe', 'Jane Doe',
+  'Console', 'John Smith', 'John Doe', 'Jane Doe',
   'Ivan', 'Admin', 'An Admin', 'Administrator',
-  'Gabe Newell', 'Tim Cook', 'Vladimir Putin',
-  'Bill Gates', 'Donald Trump', 'Barack Obama',
-  'Russian Hackers', 'Ukrainians', 'Ponis', 'A',
   'Wheatley', 'GLaDOS', 'Chell', 'Mel', 'Gordon Freeman',
   'Wallace Breen', 'Robots', 'Machines', 'Heavy', 'Scout',
-  'Spy', 'Medic', 'Pyro', 'Soldier', 'Eye of Harmony',
-  'Eye of Chaos', 'Garry Newman', 'Robotboy665', 'D}|{et',
-  'NightAngel', 'Mr. Meow', 'Zig', 'DarkMind187', 'Matew',
-  'Fixxer', 'RJ', 'duck', 'Gurrazor', '$30', 'CloudAuthX',
-  'CloudAuth', "kuro's backdoors", "kurozael's backdoors",
-  'Microsoft', 'Apple', 'John Cena', 'BOT Gabe', 'BOT Ivan',
-  'You', 'Schwarz Kruppzo', 'The Combine', 'Universal Union',
-  'OTA', 'Rebels'
-}
-
-local slanderPhrases = {
-  ['сервер говно'] = true, ['сервер гавно'] = true, ['сирвир говно'] = true,
-  ['сирвир гавно'] = true, ['этот сервер говно'] = true, ['ваш сервер говно'] = true,
-  ['блоубек говно'] = true, ['мяу лох'] = true, ['этот сервер гавно'] = true,
-  ['ваш сервер гавно'] = true, ['блоубек гавно'] = true, ['blowback говно'] = true,
-  ['сервер параша'] = true, ['ваш сервер параша'] = true, ['этот сервер параша'] = true,
-  ['сервер дерьмо'] = true, ['этот сервер дерьмо'] = true, ['ваш сервер дерьмо'] = true,
-  ['пони для девочек'] = true, ['пони для долбоебов'] = true
+  'Spy', 'Medic', 'Pyro', 'Soldier', 'You', 'The Combine', 
+  'Universal Union', 'OTA', 'Rebels'
 }
 
 cable.receive('ChatboxTextEntered', function(player, msgText)
@@ -531,22 +511,6 @@ cable.receive('ChatboxTextEntered', function(player, msgText)
   lowerText = lowerText:Replace('[[', '')
   lowerText = lowerText:Replace('/y', '')
   lowerText = lowerText:Replace('/w', '')
-
-  if slanderPhrases[lowerText] then
-    cw.player:NotifyAll(L('Chat_SlanderKick', player:Name()))
-
-    if lowerText:find('пони для девочек') then
-      player:Kick('Сам ты для девочек.')
-    elseif lowerText:find('пони для долбоебов') then
-      player:Kick('Сам ты для долбоебов.')
-    elseif lowerText:find('лох') then
-      player:Kick('Сам ты лох.')
-    else
-      player:Kick('Сам ты говно.')
-    end
-
-    return
-  end
 
   local message = {
     text = msgText, -- text of the message

@@ -8,15 +8,17 @@
 -- ends them with a period.
 --
 -- `ChatboxAdjustMessageInfo` changes `info.text` in place, keeps leading and trailing quotes and adds no period after
--- a period, exclamation mark or question mark.
+-- a period, exclamation mark or question mark. Messages with `forceTranslate` set are language phrases and are left
+-- alone.
 
 --- Called before a chat message is sent; capitalises in-character messages and ends them with a period.
 --
--- Leading and trailing quotes are kept, and no period is added after `.`, `!` or `?`.
+-- Leading and trailing quotes are kept, and no period is added after `.`, `!` or `?`. Messages made of language
+-- phrases (`info.forceTranslate`) are not changed.
 -- @param info [Map The message info; `info.text` is changed in place for the `ic` filter]
 -- @param listeners [List<Player> The players who will receive the message; may also be a single player or `nil`]
 function PLUGIN:ChatboxAdjustMessageInfo(info, listeners)
-  if info.filter == 'ic' then
+  if info.filter == 'ic' and !info.forceTranslate then
     local len = info.text:utf8len()
 
     // Add capital

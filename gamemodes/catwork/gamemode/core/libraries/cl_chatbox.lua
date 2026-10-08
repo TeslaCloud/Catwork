@@ -217,7 +217,8 @@ end
     isPlayerMessage = bool, -- was this message sent by a valid player?
     sizeOverride = int, -- font size override
     rich = bool, -- force the bbcode parser on/off
-    translate = bool -- whether or not to translate the message using #phrases system
+    translate = bool, -- whether or not to translate the message using #phrases system
+    forceTranslate = bool -- translate even in the 'ic' filter, for speech the server wrote as #phrases
   }
 
   display table prototype:
@@ -274,7 +275,8 @@ do
     messageData.isPlayerMessage = true
     messageData.icon = ''
     messageData.rich = false
-    messageData.translate = false
+    -- What a player typed is shown as written; speech the server wrote as phrases asks to be translated.
+    messageData.translate = messageData.forceTranslate == true
     messageData.type = 'ic'
   end)
 

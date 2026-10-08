@@ -1,6 +1,5 @@
---- Shared definition of the `cw_factory_garbage_plastic` entity (Russian print name meaning Recycling: Plastic), a
--- spawnable garbage recycler that turns plastic junk items into `plastic` items, with its settings, network vars and
--- think logic.
+--- Shared definition of the `cw_factory_garbage_plastic` entity, a spawnable garbage recycler that turns plastic junk
+-- items into `plastic` items, with its settings, network vars and think logic.
 --
 -- `ENT.GARBAGE_ITEMS` lists the accepted items (`empty_tin_can`, `empty_plastic_bottle` and `empty_jug`),
 -- `ENT.METAL_GARBAGE_COUNT_START` (8) is the garbage needed for a cycle and `ENT.WORK_TIME` (20) its length in
@@ -11,8 +10,8 @@
 ENT.Base = 'base_gmodentity'
 ENT.Type = 'anim'
 
-ENT.PrintName = 'Переработка: Пластик'
-ENT.Category = 'HL2RP: Переработка'
+ENT.PrintName = '#GarbageRecycler_PrintName_Plastic'
+ENT.Category = '#GarbageRecycler_Category'
 ENT.Author = 'AleXXX_007'
 
 ENT.Contact			= ''

@@ -1,6 +1,5 @@
---- Shared definition of the `cw_factory_garbage_metal` entity (Russian print name meaning Recycling: Metal), a
--- spawnable garbage recycler that turns metal junk items into `scrap_metal` items, with its settings, network vars and
--- think logic.
+--- Shared definition of the `cw_factory_garbage_metal` entity, a spawnable garbage recycler that turns metal junk items
+-- into `scrap_metal` items, with its settings, network vars and think logic.
 --
 -- `ENT.GARBAGE_ITEMS` lists the accepted items (empty cans and melee weapons), `ENT.METAL_GARBAGE_COUNT_START` (10) is
 -- the garbage needed for a cycle and `ENT.WORK_TIME` (30) its length in seconds. `ENT:Think` absorbs accepted
@@ -11,8 +10,8 @@
 ENT.Base = 'base_gmodentity'
 ENT.Type = 'anim'
 
-ENT.PrintName = 'Переработка: Металл'
-ENT.Category = 'HL2RP: Переработка'
+ENT.PrintName = '#GarbageRecycler_PrintName_Metal'
+ENT.Category = '#GarbageRecycler_Category'
 ENT.Author = 'AleXXX_007'
 
 ENT.Contact			= ''

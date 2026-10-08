@@ -13,15 +13,17 @@ COMMAND.cooldown = 2
 -- Recognition only happens when `apply_recognise_enable` is on, for players within `talk_radius`.
 function COMMAND:OnRun(player)
   local radius = config.Get('talk_radius'):Get()
+  local isCombine = player:IsCombine()
   local text = '"'..player:Name()..'."'
 
-  if player:IsCombine() then
-    text = '"Юнит '..player:Name()..'."'
+  if isCombine then
+    text = '"'..L('Apply_Say_Unit', player:Name())..'"'
   end
 
   chatbox.AddText(nil, text, {
     sender = player,
     isPlayerMessage = true,
+    forceTranslate = isCombine,
     filter = 'ic',
     radius = radius,
     textColor = Color(255, 255, 200, 255)

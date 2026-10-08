@@ -3421,7 +3421,8 @@ end
 
 --- Returns the weapon's print name, using its item's name when it belongs to an item.
 --
--- Weapons without an item use the engine method, kept as `Weapon:OldGetPrintName`.
+-- Weapons without an item use the engine method, kept as `Weapon:OldGetPrintName`. A print name
+-- that is a language phrase is translated either way.
 -- @return [String The print name]
 function weaponMeta:GetPrintName()
   local itemTable = item.GetByWeapon(self)
@@ -3429,7 +3430,7 @@ function weaponMeta:GetPrintName()
   if itemTable then
     return cw.lang:TranslateText(itemTable.PrintName or itemTable.name)
   else
-    return self:OldGetPrintName()
+    return cw.lang:TranslateText(self:OldGetPrintName())
   end
 end
 
