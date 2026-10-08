@@ -51,7 +51,6 @@ function cw.bars:Add(uniqueID, color, text, value, maximum, flash, priority, max
     priority = priority or 0,
     maximum = maximum,
     color = color,
-    class = class,
     value = value,
     maxValue = maxValue,
     limitText = limitText,
@@ -64,8 +63,9 @@ end
 -- @param uniqueID [String Unique ID the bar was added with]
 -- @see cw.bars:Add
 function cw.bars:Destroy(uniqueID)
-  for k, v in ipairs(self.stored) do
-    if v.uniqueID == uniqueID then
+  -- Backwards, so that removing an entry does not skip the one after it.
+  for k = #self.stored, 1, -1 do
+    if self.stored[k].uniqueID == uniqueID then
       table.remove(self.stored, k)
     end
   end

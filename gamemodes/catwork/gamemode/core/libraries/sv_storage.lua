@@ -7,6 +7,22 @@
 
 library.New('storage', cw)
 
+-- A function to check that a player's open storage may still be used, closing it if not.
+-- Storages are otherwise only checked when the player thinks, which leaves a gap to move away in, and nothing else
+-- notices a searched player switching to a character with a different inventory.
+local function CheckStillUsable(player, storageTable)
+  local entity = storageTable.entity
+
+  if (entity and !IsValid(entity)) or hook.Run('PlayerStorageShouldClose', player, storageTable)
+  or (entity and entity != player and entity:IsPlayer() and entity:GetInventory() != storageTable.inventory) then
+    cw.storage:Close(player)
+
+    return false
+  end
+
+  return true
+end
+
 --- Returns the entity whose storage the player has open.
 -- @param player [Player The player]
 -- @return [Entity The storage entity, or `nil` if no storage is open or the entity is no longer valid]
@@ -373,8 +389,6 @@ function cw.storage:SyncItem(player, itemTable)
   local inventory = player:GetInventory()
 
   if itemTable then
-    local definition = item.GetDefinition(itemTable, true)
-      definition.index = nil
     local players = {}
 
     for k, v in ipairs(_player.GetAll()) do
@@ -383,7 +397,13 @@ function cw.storage:SyncItem(player, itemTable)
       end
     end
 
+    -- This runs for every item given or taken; usually nobody is watching.
+    if #players == 0 then return end
+
     if player:HasItemInstance(itemTable) then
+      local definition = item.GetDefinition(itemTable, true)
+        definition.index = nil
+
       netstream.Start(players, 'StorageGive', { index = itemTable.index, itemList = { definition } })
     else
       netstream.Start(players, 'StorageTake', item.GetSignature(itemTable))
@@ -393,10 +413,12 @@ end
 
 --- Moves an item from the player's inventory into their open storage.
 --
--- Fails if the storage does not allow the item (`cw.storage:CanGiveTo`), the
--- player does not have it, the `PlayerCanGiveToStorage` hook does not return
--- `true`, a non-player storage would exceed its weight or space, or the
--- item's `CanGiveStorage` or the storage's `CanGiveItem` returns `false`.
+-- Fails if the storage can no longer be used (it is closed in that case), the
+-- storage does not allow the item (`cw.storage:CanGiveTo`), the item is the
+-- container whose contents are open, the player does not have it, the
+-- `PlayerCanGiveToStorage` hook does not return `true`, a non-player storage
+-- would exceed its weight or space, or the item's `CanGiveStorage` or the
+-- storage's `CanGiveItem` returns `false`.
 -- Fires `PlayerGiveToStorage` before and `PostPlayerGiveToStorage` after the
 -- move, and updates everyone viewing the same inventory. The storage closes if
 -- `OnGiveItem` or the item's `OnStorageGive` returns `true`.
@@ -406,11 +428,16 @@ end
 -- @see cw.storage:TakeFrom
 function cw.storage:GiveTo(player, itemTable)
   local storageTable = player:GetStorageTable()
-  if !storageTable then return false end
+  if !storageTable or !CheckStillUsable(player, storageTable) then return false end
 
   local inventory = self:Query(player, 'inventory')
 
   if !self:CanGiveTo(player, itemTable) then
+    return false
+  end
+
+  -- A container put into its own inventory would be lost along with everything in it.
+  if itemTable.isContainer and itemTable.data and itemTable.data.Inventory == inventory then
     return false
   end
 
@@ -478,7 +505,8 @@ end
 
 --- Moves an item from the player's open storage into their inventory.
 --
--- Fails if the storage does not allow it (`cw.storage:CanTakeFrom`), the
+-- Fails if the storage can no longer be used (it is closed in that case), the
+-- storage does not allow it (`cw.storage:CanTakeFrom`), the
 -- `PlayerCanTakeFromStorage` hook does not return `true`, the storage does not
 -- contain the item, or the item's `CanTakeStorage` or the storage's
 -- `CanTakeItem` returns `false`. If the player cannot carry the item, they are
@@ -493,7 +521,7 @@ end
 -- @see cw.storage:GiveTo
 function cw.storage:TakeFrom(player, itemTable)
   local storageTable = player:GetStorageTable()
-  if !storageTable then return false end
+  if !storageTable or !CheckStillUsable(player, storageTable) then return false end
 
   local inventory = self:Query(player, 'inventory')
   local players = {}
@@ -538,7 +566,7 @@ function cw.storage:TakeFrom(player, itemTable)
       self:Close(player)
     end
 
-    if itemTable.OnStorageTake and itemTable:OnStorageTake(player, itemTable) then
+    if itemTable.OnStorageTake and itemTable:OnStorageTake(player, storageTable) then
       self:Close(player)
     end
 

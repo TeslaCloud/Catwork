@@ -14,11 +14,13 @@ COMMAND.alias = { 'SetFatigue', 'SetSleep', 'CharSetSleep' }
 --- Sets a character's fatigue to the given amount, 100 by default.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
-  local amount = arguments[2]
+  local amount = tonumber(arguments[2])
 
-  if !amount then
+  if !amount or amount != amount then
     amount = 100
   end
+
+  amount = math.Clamp(amount, 0, 100)
 
   if target then
     target:SetCharacterData('Fatigue', amount)

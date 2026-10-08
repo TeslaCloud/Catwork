@@ -2,7 +2,8 @@
 --
 -- Sets the `cwCraft` global alias and defines `cwCraft:PlayerCanCraft` with its checks for materials, tools,
 -- attributes, custom requirements and a one second cooldown. The `Craft::CraftItem` netstream looks the blueprint up
--- by ID in `cw.blueprints`, runs the checks and crafts it.
+-- by ID in `cw.blueprints`, makes sure the player is able to act and still stands at a station of the blueprint's
+-- `craftplace` class, runs the checks and crafts it.
 
 PLUGIN:SetGlobalAlias('cwCraft')
 
@@ -49,9 +50,9 @@ function cwCraft:PlayerHasMaterials(player, bpTable)
   local materials = bpTable['recipe']
 
   if materials then
-    for k, v in pairs(materials) do
-      local inventory = player:GetInventory()
+    local inventory = player:GetInventory()
 
+    for k, v in pairs(materials) do
       if cw.inventory:GetItemCountByID(inventory, v[1]) < v[2] then
         return false
       end
@@ -72,9 +73,9 @@ function cwCraft:PlayerHasTools(player, bpTable)
   local tools = bpTable['required']
 
   if tools then
-    for k, v in pairs(tools) do
-      local inventory = player:GetInventory()
+    local inventory = player:GetInventory()
 
+    for k, v in pairs(tools) do
       if cw.inventory:GetItemCountByID(inventory, v[1]) < v[2] then
         return false
       end
@@ -93,7 +94,7 @@ function cwCraft:PlayerHasAttributes(player, bpTable)
 
   if attributes then
     for k, v in pairs(attributes) do
-      if cw.attributes:Get(player, v[1], nil, true) < v[2] then
+      if (cw.attributes:Get(player, v[1], nil, true) or 0) < v[2] then
         return false
       end
     end
@@ -116,9 +117,7 @@ function cwCraft:PlayerMeetsRequirements(player, bpTable)
   if requirements then
     for k, v in pairs(requirements) do
       if v then
-        local bSucc, text = v(player)
-
-        if !bSucc then
+        if !v(player) then
           return false
         end
       end
@@ -128,28 +127,51 @@ function cwCraft:PlayerMeetsRequirements(player, bpTable)
   return true
 end
 
-netstream.Hook('Craft::CraftItem', function(player, bpTable)
-  -- Never trust a blueprint sent by the client: it only names the blueprint, the recipe is ours.
-  local uniqueID = istable(bpTable) and bpTable.uniqueID or bpTable
+if SERVER then
+  netstream.Hook('Craft::CraftItem', function(player, bpTable)
+    local curTime = CurTime()
 
-  bpTable = isstring(uniqueID) and cw.blueprints:GetAll()[uniqueID]
+    if player.cwNextCraftAttempt and player.cwNextCraftAttempt > curTime then return end
 
-  if !bpTable then return end
+    player.cwNextCraftAttempt = curTime + 0.25
 
-  local bSucc, err = cwCraft:PlayerCanCraft(player, bpTable)
+    -- Never trust a blueprint sent by the client: it only names the blueprint, the recipe is ours.
+    local uniqueID = istable(bpTable) and bpTable.uniqueID or bpTable
 
-  if !bSucc then
-    cw.player:Notify(player, err)
+    bpTable = isstring(uniqueID) and cw.blueprints:GetAll()[uniqueID]
 
-    return false
-  end
+    if !bpTable then return end
 
-  cw.core:PrintLog(LOGTYPE_MINOR, player:Name()..' has crafted a '..bpTable['name']..'.')
-  cwCraft:PlayerCraftItem(player, bpTable)
-  player:EmitSound('plats/elevator_stop.wav')
-  player.cwNextCraftTime = CurTime() + 1
+    if !player:HasInitialized() or !player:Alive() or player:IsRagdolled() or player:GetNetVar('tied') != 0 then
+      return
+    end
 
-  if bpTable.OnCraft then
-    bpTable:OnCraft(player, bpTable)
-  end
-end)
+    -- The menu stays open when its station is left behind, so the station is checked on every craft.
+    local station = player.cwCraftStation
+    local shootPos = player:GetShootPos()
+
+    if !IsValid(station) or station:GetClass() != bpTable.craftplace
+    or station:NearestPoint(shootPos):Distance(shootPos) > 128 then
+      cw.player:Notify(player, '#Craft_Error_NoStation')
+
+      return
+    end
+
+    local bSucc, err = cwCraft:PlayerCanCraft(player, bpTable)
+
+    if !bSucc then
+      cw.player:Notify(player, err)
+
+      return
+    end
+
+    cw.core:PrintLog(LOGTYPE_MINOR, player:Name()..' has crafted a '..bpTable['name']..'.')
+    cwCraft:PlayerCraftItem(player, bpTable)
+    player:EmitSound('plats/elevator_stop.wav')
+    player.cwNextCraftTime = curTime + 1
+
+    if bpTable.OnCraft then
+      bpTable:OnCraft(player, bpTable)
+    end
+  end)
+end

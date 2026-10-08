@@ -10,12 +10,14 @@ COMMAND.arguments = 1
 
 --- Sets the caller's voicemail reply for private messages; the argument is the text, or `none` to remove it.
 function COMMAND:OnRun(player, arguments)
-  if arguments[1] == 'none' then
+  local text = table.concat(arguments, ' ')
+
+  if text == 'none' then
     player:SetCharacterData('Voicemail', nil)
     cw.player:Notify(player, L('VoicemailRemoved'))
   else
-    player:SetCharacterData('Voicemail', arguments[1])
-    cw.player:Notify(player, L('VoicemailSet', arguments[1]))
+    player:SetCharacterData('Voicemail', text)
+    cw.player:Notify(player, L('VoicemailSet', text))
   end
 end
 

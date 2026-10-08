@@ -270,7 +270,7 @@ function PANEL:Init()
 end
 
 --- Updates the icon's tooltip with the item's price, shipment size and remaining stock.
-function PANEL:Think()
+function PANEL:UpdateToolTip()
   local function DisplayCallback(displayInfo)
     local priceScale = 1
     local amount = 0
@@ -327,7 +327,18 @@ function PANEL:Think()
   self.spawnIcon:SetMarkupToolTip(
     item.GetMarkupToolTip(self.itemTable, true, DisplayCallback)
   )
-  self.spawnIcon:SetColor(self.itemTable.color)
+end
+
+--- Refreshes the icon's color, and its tooltip while it is hovered.
+function PANEL:Think()
+  local spawnIcon = self.spawnIcon
+
+  -- The tooltip is only drawn for the hovered panel, so the others keep the one they were built with.
+  if cw.core:GetActiveMarkupToolTip() == spawnIcon or !spawnIcon:GetMarkupToolTip() then
+    self:UpdateToolTip()
+  end
+
+  spawnIcon:SetColor(self.itemTable.color)
 end
 
 vgui.Register('cwSalesmenuItem', PANEL, 'DPanel')

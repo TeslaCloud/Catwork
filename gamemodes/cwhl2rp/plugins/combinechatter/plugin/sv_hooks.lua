@@ -1,8 +1,8 @@
 --- Server-side hooks of the Combine Chatter plugin that play a random Overwatch radio voice line from a Combine player
 -- every 30 to 50 seconds.
 --
--- `OneSecond` runs a single timer shared by all Combine players, so only one of them chatters per interval, and
--- `PLUGIN:EmitRandomChatter` picks the sound from the local `randomSounds` list.
+-- `OneSecond` runs a single timer shared by all Combine players and picks one living Combine player at random per
+-- interval, and `PLUGIN:EmitRandomChatter` picks the sound from the local `randomSounds` list.
 
 local PLUGIN = PLUGIN
 
@@ -40,21 +40,28 @@ end
 
 --- Called every second; plays random radio chatter from a Combine player every 30 to 50 seconds.
 --
--- A single timer is shared by all Combine players, so only one of them chatters per interval.
+-- A single timer is shared by all Combine players, and one living Combine player is picked at random
+-- each time it runs out.
 function PLUGIN:OneSecond()
+  local curTime = CurTime()
+
+  if !self.nextChatterEmit then
+    self.nextChatterEmit = curTime + math.random(30, 50)
+  end
+
+  if curTime < self.nextChatterEmit then return end
+
+  self.nextChatterEmit = nil
+
+  local combine = {}
+
   for k, v in ipairs(_player.GetAll()) do
-    if Schema:PlayerIsCombine(v) then
-      local curTime = CurTime()
-
-      if !self.nextChatterEmit then
-        self.nextChatterEmit = curTime + math.random(30, 50)
-      end
-
-      if curTime >= self.nextChatterEmit then
-        self.nextChatterEmit = nil
-
-        PLUGIN:EmitRandomChatter(v)
-      end
+    if v:Alive() and Schema:PlayerIsCombine(v) then
+      combine[#combine + 1] = v
     end
+  end
+
+  if #combine > 0 then
+    self:EmitRandomChatter(combine[math.random(#combine)])
   end
 end

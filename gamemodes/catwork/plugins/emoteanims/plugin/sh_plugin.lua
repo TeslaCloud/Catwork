@@ -22,7 +22,9 @@ util.Include('sv_hooks.lua')
 -- @param player [Player The player to check]
 -- @return [Boolean Whether the player is in a stance]
 function cwEmoteAnims:IsPlayerInStance(player)
-  return player:GetNetVar('StancePos') != Vector(0, 0, 0)
+  local stancePos = player:GetNetVar('StancePos')
+
+  return stancePos != nil and stancePos != vector_origin
 end
 
 --- Called when a player's movement is processed; locks the player's angles to the `StanceAng` net var

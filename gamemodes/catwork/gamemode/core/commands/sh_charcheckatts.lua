@@ -16,7 +16,7 @@ function COMMAND:OnRun(player, arguments)
     cw.player:Notify(player, L('Command_Charcheckatts_Header', target:GetName()))
 
     for k, v in pairs(cw.attribute:GetAll()) do
-      cw.player:Notify(player, v.name..': '..cw.attributes:Get(target, k, nil, true))
+      cw.player:Notify(player, v.name..': '..(cw.attributes:Get(target, k, nil, true) or 0))
     end
   else
     cw.player:Notify(player, L(player, 'NotValidCharacter', arguments[1]))

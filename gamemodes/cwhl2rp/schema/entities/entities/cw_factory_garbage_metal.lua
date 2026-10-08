@@ -2,7 +2,7 @@
 -- that turns metal junk items into `scrap_metal` items.
 --
 -- An idle recycler absorbs `empty_soda_can` and `empty_can` item entities placed on top of it, and the Factories
--- plugin's entity menu options call `ENT:StartWork` to run a 30 second cycle once the garbage count is 10,
+-- plugin's entity menu options call `ENT:StartWork` to run a 30 second cycle once the garbage count hits 10,
 -- `ENT:StopWork` to pause it and `ENT:Eject` to move the collected garbage into the linked storage entity. The client
 -- draws a status screen with the garbage count and cycle progress on the model, using the `_GR_CMB_FONT_1` to
 -- `_GR_CMB_FONT_4` fonts that this file creates for all three recyclers. The same class is also defined by the
@@ -79,7 +79,7 @@ function ENT:Initialize()
     self:SetMaterial('models/props_combine/tprotato2_sheet')
     local phys = self:GetPhysicsObject()
 
-    if phys then
+    if IsValid(phys) then
       phys:SetMass(120)
       phys:Wake()
     end
@@ -95,7 +95,7 @@ function ENT:Initialize()
     self.StopWorkTime = nil
   else
     self.RT = GetRenderTargetEx(
-      '_cmb_FIndicatorRT'..self:EntIndex()..CurTime(),
+      '_cmb_FIndicatorRT'..self:EntIndex(),
       128,
       85,
       RT_SIZE_DEFAULT,
@@ -104,7 +104,7 @@ function ENT:Initialize()
       CREATERENDERTARGETFLAGS_UNFILTERABLE_OK,
       IMAGE_FORMAT_DEFAULT
     )
-    self.RTMat = CreateMaterial('_cmb_FIndicatorRTMAT'..self:EntIndex()..CurTime(), 'UnlitTwoTexture', {
+    self.RTMat = CreateMaterial('_cmb_FIndicatorRTMAT'..self:EntIndex(), 'UnlitTwoTexture', {
       ['$selfilium'] = '1',
       ['$texture2'] = 'dev/dev_scanline',
       ['Proxies'] =
@@ -155,21 +155,25 @@ if SERVER then
   end
 
   --- Returns the corners of the box above the recycler that garbage is collected from.
-  -- @return [List<Vector> The two opposite corners, as passed to `ents.FindInBox`]
+  -- @return [List<Vector> The minimum and maximum corners, as passed to `ents.FindInBox`]
   function ENT:GetSearchPos()
     local up, right, forward = self:GetUp(), self:GetRight(), self:GetForward()
     local pos1 = self:GetPos() + (up * 23) + (right * 18) + (forward * 22)
     local pos2 = self:GetPos() + (up * -0.5) + (right * -18) + (forward * 6)
+
+    -- ents.FindInBox needs the corners sorted, whichever way the recycler is turned.
+    OrderVectors(pos1, pos2)
+
     return { pos1, pos2 }
   end
 
   --- Starts a recycling cycle, or resumes a stopped one where it left off.
   --
-  -- A new cycle only starts once the garbage count is exactly `METAL_GARBAGE_COUNT_START`
+  -- A new cycle only starts once the garbage count has reached `METAL_GARBAGE_COUNT_START`
   -- and lasts `WORK_TIME` seconds.
   function ENT:StartWork()
     if self:GetStopWorkTime() <= 0 then
-      if self:GetGarbageCount() != METAL_GARBAGE_COUNT_START then
+      if self:GetGarbageCount() < METAL_GARBAGE_COUNT_START then
         return
       end
 
@@ -179,6 +183,7 @@ if SERVER then
       local i = WORK_TIME - self:GetStopWorkTime()
       self:SetStartWorkTime(CurTime() - i)
       self:SetNextWorkTime((CurTime() + WORK_TIME) - i)
+      self.NextGarbageDecrease = CurTime() + (self:GetStopWorkTime() - 5) / METAL_GARBAGE_COUNT_START
     end
 
     self:SetIsWorking(true)
@@ -189,11 +194,12 @@ if SERVER then
   --- Moves the collected garbage into the eject storage entity and empties the recycler.
   --
   -- The storage is found by the creation ID set with `SetEjectStorage`. Does nothing while working or
-  -- paused, or when the storage does not exist. Items that would push a known container over its weight
-  -- limit are dropped on top of it instead.
+  -- paused, when the storage does not exist or without the Storage plugin. Items that would push a known
+  -- container over its weight limit are dropped on top of it instead.
   function ENT:Eject()
     if self:GetIsWorking() then return end
     if self:GetStopWorkTime() > 0 then return end
+    if !cwStorage then return end
 
     local id = self:GetEjectStorage()
     local ent = nil
@@ -213,18 +219,18 @@ if SERVER then
       ent.cwInventory = {}
     end
 
+    local container = cwStorage.containerList[string.lower(ent:GetModel() or '')]
+
     for k, v in pairs(self.Garbages) do
       local itemTable = item.FindByID(v)
 
-      local weight = itemTable.storageWeight or itemTable.weight
-      local space = itemTable.storageSpace or itemTable.space
+      -- Saved garbage may name an item that is no longer registered.
+      if !itemTable then continue end
 
-      local model = string.lower(ent:GetModel())
+      if container then
+        local weight = itemTable.storageWeight or itemTable.weight
 
-      if cwStorage.containerList[model] then
-        local containerWeight = cwStorage.containerList[model][1]
-
-        if cw.inventory:CalculateWeight(ent.cwInventory) + math.max(weight, 0) > containerWeight then
+        if cw.inventory:CalculateWeight(ent.cwInventory) + math.max(weight, 0) > container[1] then
           cw.entity:CreateItem(nil, v, ent:GetPos() + ent:GetUp() * 20)
           continue
         end
@@ -239,22 +245,36 @@ if SERVER then
 
   --- Pauses the current cycle, remembering the time left, and stops the work sounds.
   function ENT:StopWork()
-    self:SetStopWorkTime(self:GetNextWorkTime() - CurTime())
+    -- A time left above zero is what marks the recycler as paused.
+    self:SetStopWorkTime(math.max(self:GetNextWorkTime() - CurTime(), 0.01))
     self:SetIsWorking(false)
-    self.WorkSound:Stop()
+
+    if self.WorkSound then
+      self.WorkSound:Stop()
+    end
+
     self:EmitSound('plats/elevator_large_stop1.wav')
+    self.NextWorkSound = nil
     self.NextRandomSound = nil
     self.NextGarbageDecrease = nil
   end
 
-  --- Finishes the cycle, stops the work sounds and spawns a `scrap_metal` item at the product position.
+  --- Finishes the cycle: stops the work sounds, uses up the collected garbage and spawns a `scrap_metal` item at the
+  -- product position.
   function ENT:EndWork()
     self:SetIsWorking(false)
-    self.WorkSound:Stop()
+
+    if self.WorkSound then
+      self.WorkSound:Stop()
+    end
+
     self:EmitSound('plats/elevator_large_stop1.wav')
+    self.NextWorkSound = nil
     self.NextRandomSound = nil
     self.NextGarbageDecrease = nil
     self:SetStopWorkTime(0)
+    self:SetGarbageCount(0)
+    self.Garbages = {}
 
     cw.entity:CreateItem(nil, WORK_ITEM, self:GetProductPos())
   end
@@ -276,7 +296,6 @@ end
 --
 -- Garbage `cw_item` entities inside `ENT:GetSearchPos` are taken while the recycler is idle and not full.
 -- During a cycle the garbage count drains step by step and `ENT:EndWork` runs when the time is up.
--- While paused, the cycle times are pushed forward so the time left stays the same.
 function ENT:Think()
   if SERVER then
     if !self:GetIsWorking() then
@@ -284,14 +303,20 @@ function ENT:Think()
         local pos = self:GetSearchPos()
 
         for k, v in pairs(ents.FindInBox(pos[1], pos[2])) do
-          if self:GetGarbageCount() != METAL_GARBAGE_COUNT_START then
-            if v:GetClass() != 'cw_item' then continue end
-            if !self:CanGarbageUsed(v:GetItemTable()) then continue end
+          if self:GetGarbageCount() >= METAL_GARBAGE_COUNT_START then break end
 
-            v:Remove()
-            self:SetGarbageCount(self:GetGarbageCount() + (GARBAGE_ITEMS[v:GetItemTable()('uniqueID')] or 1))
-            self.Garbages[#self.Garbages + 1] = v:GetItemTable()('uniqueID')
-          end
+          -- An item that was picked up this tick is still around until the tick ends.
+          if v:GetClass() != 'cw_item' or v:IsMarkedForDeletion() then continue end
+
+          local itemTable = v:GetItemTable()
+
+          if !itemTable or !self:CanGarbageUsed(itemTable) then continue end
+
+          local uniqueID = itemTable('uniqueID')
+
+          v:Remove()
+          self:SetGarbageCount(self:GetGarbageCount() + (GARBAGE_ITEMS[uniqueID] or 1))
+          self.Garbages[#self.Garbages + 1] = uniqueID
         end
       end
     end
@@ -324,18 +349,8 @@ function ENT:Think()
       if CurTime() > self:GetNextWorkTime() then
         self:EndWork()
       end
-    else
-      if self.WorkSound and self.WorkSound:IsPlaying() then
-        self.WorkSound:Stop()
-      end
-
-      if self:GetStopWorkTime() > 0 then
-        local i = WORK_TIME - self:GetStopWorkTime()
-        self:SetStartWorkTime(CurTime() - i)
-        self:SetNextWorkTime((CurTime() + WORK_TIME) - i)
-        self.NextGarbageDecrease =
-          CurTime() + ((self:GetNextWorkTime() - (self:GetStartWorkTime() + i)) - 5) / METAL_GARBAGE_COUNT_START
-      end
+    elseif self.WorkSound and self.WorkSound:IsPlaying() then
+      self.WorkSound:Stop()
     end
   end
 
@@ -354,24 +369,27 @@ if CLIENT then
         render.DrawLine(
           self:GetProductPos() - self:GetForward() * 12,
           self:GetProductPos() + self:GetForward() * 12,
-          Color(255, 255, 255),
+          color_white,
           true
         )
         render.DrawLine(
           self:GetProductPos() - self:GetRight() * 12,
           self:GetProductPos() + self:GetRight() * 12,
-          Color(255, 255, 255),
+          color_white,
           true
         )
         render.DrawLine(
           self:GetProductPos() - self:GetUp() * 12,
           self:GetProductPos() + self:GetUp() * 12,
-          Color(255, 255, 255),
+          color_white,
           true
         )
-        render.DrawLine(self:GetProductPos(), self:GetPos(), Color(255, 255, 255), true)
+        render.DrawLine(self:GetProductPos(), self:GetPos(), color_white, true)
       end
     end
+
+    -- The client does not always run Initialize for entities it receives while still loading.
+    if !self.RT then self:Initialize() end
 
     local pos = self:GetPos()
     local ang = self:GetAngles()
@@ -396,16 +414,15 @@ if CLIENT then
 
       local isWorking = self:GetIsWorking()
       local stopped = self:GetStopWorkTime() > 0
-      local hasMaterial = self:GetGarbageCount() != METAL_GARBAGE_COUNT_START
+      local notEnough = self:GetGarbageCount() < METAL_GARBAGE_COUNT_START
 
       local text = isWorking and '#GarbageRecycler_Status_Recycling'
         or (stopped and '#GarbageRecycler_Status_Stopped'
-        or (hasMaterial and '#GarbageRecycler_Status_NotEnough' or '#GarbageRecycler_Status_Ready'))
-      local red = isWorking and 0 or (stopped and 255 or (hasMaterial and 255 or 0))
-      local green = isWorking and 255 or (stopped and 0 or (hasMaterial and 0 or 255))
+        or (notEnough and '#GarbageRecycler_Status_NotEnough' or '#GarbageRecycler_Status_Ready'))
+      local red = isWorking and 0 or (stopped and 255 or (notEnough and 255 or 0))
+      local green = isWorking and 255 or (stopped and 0 or (notEnough and 0 or 255))
       surface.SetTextColor(red, green, 0, math.abs(math.cos(RealTime() * 2) * 255))
       surface.SetFont('_GR_CMB_FONT_3')
-      local w, h = surface.GetTextSize(text)
       surface.SetTextPos(6, 31)
       surface.DrawText(text)
 
@@ -425,9 +442,9 @@ if CLIENT then
         end
       end
 
-      surface.SetDrawColor(Color(65, 65, 65, 255))
+      surface.SetDrawColor(65, 65, 65, 255)
       surface.DrawRect(128 / 2 - 114 / 2, 100 / 2 - 16 / 2, 114, 16)
-      surface.SetDrawColor(Color(50, 120, 230, 255))
+      surface.SetDrawColor(50, 120, 230, 255)
       local bar = math.Clamp((var * 114) - 2, 0, 114)
       surface.DrawRect(128 / 2 - 114 / 2 + 1, 100 / 2 - 16 / 2 + 1, bar, 16 - 2)
 
@@ -438,9 +455,9 @@ if CLIENT then
       surface.SetTextPos(128 / 2 - w / 2, 100 / 2 - h / 2)
       surface.DrawText(text)
 
-      surface.SetDrawColor(Color(65, 65, 65, 255))
+      surface.SetDrawColor(65, 65, 65, 255)
       surface.DrawRect(128 / 2 - 114 / 2, 100 / 2 - 16 / 2 + 20, 114, 16)
-      surface.SetDrawColor(Color(50, 240, 50, 255))
+      surface.SetDrawColor(50, 240, 50, 255)
       local bar = math.Clamp((var2 * 114) - 2, 0, 114)
       surface.DrawRect(128 / 2 - 114 / 2 + 1, 100 / 2 - 16 / 2 + 1 + 20, bar, 16 - 2)
 
@@ -468,35 +485,3 @@ if CLIENT then
     cam.End3D2D()
   end
 end
-
-hook.Add('PostDrawOpaqueRenderables', 'Factories', function()
-  if IsValid(LocalPlayer():GetActiveWeapon()) then
-    if LocalPlayer():GetActiveWeapon():GetClass() == 'gmod_tool' then
-      for k, self in pairs(ents.GetAll()) do
-        if self:GetClass() != 'cw_factory_garbage_metal' or
-        self:GetClass() != 'cw_factory_garbage_paper' or
-        self:GetClass() != 'cw_factory_garbage_plastic' then continue end
-
-        render.DrawLine(
-          self:GetProductPos() - self:GetForward() * 12,
-          self:GetProductPos() + self:GetForward() * 12,
-          Color(255, 255, 255),
-          true
-        )
-        render.DrawLine(
-          self:GetProductPos() - self:GetRight() * 12,
-          self:GetProductPos() + self:GetRight() * 12,
-          Color(255, 255, 255),
-          true
-        )
-        render.DrawLine(
-          self:GetProductPos() - self:GetUp() * 12,
-          self:GetProductPos() + self:GetUp() * 12,
-          Color(255, 255, 255),
-          true
-        )
-        render.DrawLine(self:GetProductPos(), self:GetPos(), Color(255, 255, 255), true)
-      end
-    end
-  end
-end)

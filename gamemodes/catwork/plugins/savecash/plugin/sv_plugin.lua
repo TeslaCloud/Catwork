@@ -11,7 +11,8 @@ function cwSaveCash:LoadCash()
   local cash = cw.core:RestoreSchemaData('plugins/cash/'..game.GetMap())
 
   for k, v in pairs(cash) do
-    local entity = cw.entity:CreateCash({ key = v.key, uniqueID = v.uniqueID }, v.amount, v.position, v.angles)
+    local entity = istable(v) and isnumber(v.amount) and isvector(v.position)
+      and cw.entity:CreateCash({ key = v.key, uniqueID = v.uniqueID }, v.amount, v.position, v.angles)
 
     if IsValid(entity) and !v.isMoveable then
       local physicsObject = entity:GetPhysicsObject()
@@ -37,14 +38,16 @@ function cwSaveCash:SaveCash()
       bMoveable = physicsObject:IsMoveable()
     end
 
-    cash[#cash + 1] = {
-      key = cw.entity:QueryProperty(v, 'key'),
-      angles = v:GetAngles(),
-      amount = v.cwAmount,
-      uniqueID = cw.entity:QueryProperty(v, 'uniqueID'),
-      position = v:GetPos(),
-      isMoveable = bMoveable
-    }
+    if v.cwAmount then
+      cash[#cash + 1] = {
+        key = cw.entity:QueryProperty(v, 'key'),
+        angles = v:GetAngles(),
+        amount = v.cwAmount,
+        uniqueID = cw.entity:QueryProperty(v, 'uniqueID'),
+        position = v:GetPos(),
+        isMoveable = bMoveable
+      }
+    end
   end
 
   cw.core:SaveSchemaData('plugins/cash/'..game.GetMap(), cash)

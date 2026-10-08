@@ -2,11 +2,6 @@
 --
 -- A tab is a text, a panel class, a tooltip and icon data, added with `cw.menuitems:Add`.
 
---[[
-  @codebase Client
-  @details Provides an interface to the Menu Items.
-  @field stored A table containing a list of stored menu items.
---]]
 library.New('menuitems', cw)
 cw.menuitems.stored = cw.menuitems.stored or {}
 
@@ -46,8 +41,9 @@ end
 -- Call this from the `MenuItemsDestroy` hook.
 -- @param text [String Text of the tab]
 function cw.menuitems:Destroy(text)
-  for k, v in pairs(self.stored) do
-    if v.text == text then
+  -- Backwards, so that removing an entry does not skip the one after it.
+  for k = #self.stored, 1, -1 do
+    if self.stored[k].text == text then
       table.remove(self.stored, k)
     end
   end

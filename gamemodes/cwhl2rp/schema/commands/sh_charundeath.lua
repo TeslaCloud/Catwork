@@ -1,7 +1,7 @@
 --- Registers `/CharUnDeath`, an admin command that undoes the permakill of a character by name.
 --
 -- A character of an online player has its `permakilled` data cleared in memory; otherwise the flag is rewritten in the
--- `_Data` column of the `characters` database table.
+-- `_Data` column of the characters database table (the `mysql_characters_table` config).
 
 local COMMAND = cw.command:New('CharUnDeath')
 COMMAND.tip = '#Command_Charundeath_Description'
@@ -21,6 +21,7 @@ function COMMAND:OnRun(player, arguments)
       if string.lower(v:Name()) == charName then
         cw.player:NotifyAll(L('PermaKill_Undone', player:Name(), arguments[1]))
         v:SetCharacterData('permakilled', false)
+        v:SetNetVar('permaKilled', false)
 
         return
       else
@@ -37,8 +38,9 @@ function COMMAND:OnRun(player, arguments)
     end
   end
 
-  local charactersTable = 'characters'
-  local charName = arguments[1]
+  local charactersTable = config.Get('mysql_characters_table'):Get()
+
+  charName = arguments[1]
 
   local queryObj = cw.database:Select(charactersTable)
     queryObj:Where('_Name', charName)

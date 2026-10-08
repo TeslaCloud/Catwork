@@ -13,6 +13,8 @@ lang['#ExtraCommands_IconSet'] = "You have set #1's chat icon to:"
 lang['#ExtraCommands_NotPng'] = 'is not a .png file!'
 lang['#ExtraCommands_AttributeSet'] = "You have set #1's #2 [#3] attribute to #4."
 lang['#ExtraCommands_NotValidAttribute'] = '#1 is not a valid attribute!'
+lang['#ExtraCommands_NotValidBodyGroup'] = "This player's model does not have that bodygroup or bodygroup value!"
+lang['#ExtraCommands_NotValidSkin'] = "This player's model does not have that skin!"
 
 -- Commands.
 lang['#Command_Overwatch_Description'] = 'Sends a message to all Civil Protection units.'

@@ -7,6 +7,7 @@ lang['#DynamicAdverts_Added'] = 'Вы добавили динамическую 
 lang['#DynamicAdverts_RemovedOne'] = 'Вы удалили #1 динамическую рекламу.'
 lang['#DynamicAdverts_RemovedMany'] = 'Вы удалили динамическую рекламу (#1 шт.).'
 lang['#DynamicAdverts_NoneNear'] = 'Рядом с этим местом нет динамической рекламы.'
+lang['#DynamicAdverts_InvalidURL'] = 'Адрес должен вести на изображение png или jpg.'
 
 -- Commands
 lang['#Command_Advertadd_Description'] = 'Добавить динамическую рекламу.'

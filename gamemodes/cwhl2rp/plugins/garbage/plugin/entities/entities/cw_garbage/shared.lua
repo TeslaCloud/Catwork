@@ -1,10 +1,6 @@
---- Shared definition of the `cw_garbage` entity: its entity fields, the `TYPE_WATERCAN` and `TYPE_SUPPLIES` globals and
--- its networked `index` variable.
+--- Shared definition of the `cw_garbage` entity: its entity fields and its networked `index` variable.
 
 DEFINE_BASECLASS('base_gmodentity')
-
-TYPE_WATERCAN = 0
-TYPE_SUPPLIES = 1
 
 ENT.Type = 'anim'
 ENT.Author = 'Mr. Meow'

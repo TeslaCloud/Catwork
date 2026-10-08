@@ -1,10 +1,11 @@
 --- Defines the client-side half of the global `chatbox` library and the `cwChatBox` and `cwChatTextEntry` panels that
 -- replace the default chat box.
 --
--- Received messages are kept in `chatbox.history` and turned into wrapped lines by `chatbox.ParseText`; filters
--- (`chatbox.AddFilter`), message types (`chatbox.AddType`) and BB-codes (`chatbox.AddBBCode`) decide how each one is
--- drawn. `chat.AddText` is replaced to go through `chatbox.AddText`, typed text is sent to the server over the
--- `ChatboxTextEntered` netstream, and the `cw_resetchat` console command rebuilds the panels.
+-- The last `chatbox.maxHistory` received messages are kept in `chatbox.history` and turned into wrapped lines by
+-- `chatbox.ParseText`; filters (`chatbox.AddFilter`), message types (`chatbox.AddType`) and BB-codes
+-- (`chatbox.AddBBCode`) decide how each one is drawn. `chat.AddText` is replaced to go through `chatbox.AddText`,
+-- typed text is sent to the server over the `ChatboxTextEntered` netstream, and the `cw_resetchat` console command
+-- rebuilds the panels.
 
 if chatbox then return end
 
@@ -53,7 +54,7 @@ local types = chatbox.types or {}
 local emotes = chatbox.emotes or {}
 local codes = chatbox.codes or {}
 
-chatbox.history 	= history -- Entire chat history. Last X meesages, configurable.
+chatbox.history 	= history -- Chat history; the last `chatbox.maxHistory` messages.
 chatbox.display		= display -- Pre-parsed lines that are currently being drawn.
 chatbox.filters 	= filters -- Table that stores filter data.
 chatbox.types = types -- Table that stores message types data.
@@ -93,6 +94,7 @@ chatbox.height = chatbox.height or 430
 chatbox.x = chatbox.x or 4
 chatbox.y = ScrH() - chatbox.height - 36
 chatbox.maxLength = chatbox.maxLength or 512
+chatbox.maxHistory = chatbox.maxHistory or 1000
 chatbox.curAlpha = chatbox.curAlpha or 255
 chatbox.moveDuration = chatbox.moveDuration or 0.25
 
@@ -229,12 +231,13 @@ chatbox.display[1] = {
 do
   chatbox.AddFilter('default', function(messageData)
     messageData.drawAvatar = messageData.drawAvatar or false
-    messageData.drawTime = messageData.drawTime or true
     messageData.drawModel = messageData.drawModel or false
     messageData.isPlayerMessage = messageData.isPlayerMessage or false
-    messageData.rich = messageData.rich or true
-    messageData.translate = messageData.translate or true
     messageData.type = messageData.type or 'default'
+
+    if messageData.drawTime == nil then messageData.drawTime = true end
+    if messageData.rich == nil then messageData.rich = true end
+    if messageData.translate == nil then messageData.translate = true end
   end)
 
   chatbox.AddFilter('system', function(messageData)
@@ -288,15 +291,18 @@ do
 
   chatbox.AddFilter('player_events', function(messageData)
     messageData.drawAvatar = false
-    messageData.drawTime = messageData.drawTime or true
     messageData.drawModel = false
+
+    if messageData.drawTime == nil then messageData.drawTime = true end
 
     if messageData.icon == nil then
       messageData.icon = 'icon16/lightning.png'
     end
 
     messageData.rich = true
-    messageData.translate = messageData.translate or true
+
+    if messageData.translate == nil then messageData.translate = true end
+
     messageData.type = 'player_events'
   end)
 end
@@ -333,7 +339,6 @@ do
 
   chatbox.AddType('player_events', function(messageData)
     messageData.textColor = messageData.textColor or Color('#EE4343')
-    messageData.prefix = messageData.prefix or nil
     messageData.prefixColor = messageData.prefixColor or Color(255, 20, 20)
   end)
 
@@ -369,7 +374,7 @@ function chatbox.AddBBCode(id, callback, requireRich)
 
   codes[id] = codes[id] or {}
   codes[id].Callback = callback
-  codes[id].requireRich = requireRich or true
+  codes[id].requireRich = (requireRich != false)
 end
 
 --- Returns the callback of a BB-code tag.
@@ -385,9 +390,9 @@ chatbox.LastBBCode = chatbox.LastBBCode or nil
 
 --- Replaces the BB-code tags in a line of text with the objects their callbacks return.
 --
--- Changes `line` in place, splitting each string around its tags. The result of the
--- last tag is stored in `chatbox.LastBBCode` and inserted at the start of the next
--- parsed line, so a color carries over wrapped lines.
+-- Changes `line` in place, splitting each string around its tags; tags that are not registered stay in
+-- the text. The result of the last tag is stored in `chatbox.LastBBCode` and inserted at the start of
+-- the next parsed line, so a color carries over wrapped lines.
 -- @param line [List Strings and other objects making up a line]
 -- @param rich [Boolean Whether tags that require rich messages are parsed]
 function chatbox.ParseBBCodes(line, rich)
@@ -395,116 +400,92 @@ function chatbox.ParseBBCodes(line, rich)
     table.insert(line, 1, chatbox.LastBBCode)
   end
 
+  local parsed = {}
+
   for k, v in ipairs(line) do
     if isstring(v) then
-      local whole = v
-      local length = whole:utf8len()
-      local hits = string.FindAll(v, '%b[]')
-      local rm = false
-      local nextInsert = 0
-      local prevOffset = 0
+      -- The brackets are single bytes, so cutting the text at them never splits a UTF-8 character.
+      local textStart = 1
+      local searchStart = 1
 
-      if #hits > 0 then
-        for i, hit in ipairs(hits) do
-          local text = hit[1]
-          local wS, wE = hit[2], hit[3]
-          local eq = text:find('=')
-          local code = ''
-          local eqWhat = ''
-          local textValue = ''
+      while true do
+        local tagStart, tagEnd = v:find('%b[]', searchStart)
 
-          wS = wS - prevOffset
-          wE = wE - prevOffset
+        if !tagStart then break end
 
-          if eq then
-            code = text:utf8sub(2, eq - 1)
-            eqWhat = text:utf8sub(eq + 1, text:utf8len() - 1)
+        local tag = v:sub(tagStart + 1, tagEnd - 1)
+        local eq = tag:find('=', 1, true)
+        local codeTable = codes[eq and tag:sub(1, eq - 1) or tag]
+
+        if codeTable and (!codeTable.requireRich or rich) then
+          local nextTag = v:find('[', tagEnd + 1, true)
+          local textEnd = nextTag and nextTag - 1 or #v
+          local result, newText = codeTable.Callback(eq and tag:sub(eq + 1) or '', v:sub(tagEnd + 1, textEnd))
+
+          if tagStart > textStart then
+            parsed[#parsed + 1] = v:sub(textStart, tagStart - 1)
+          end
+
+          parsed[#parsed + 1] = result
+          chatbox.LastBBCode = result
+
+          if isstring(newText) then
+            parsed[#parsed + 1] = newText
+            textStart = textEnd + 1
           else
-            code = text:utf8sub(2, text:utf8len() - 1)
+            textStart = tagEnd + 1
           end
 
-          if codes[code] then
-            if !codes[code].requireRich or rich then
-              if !rm then
-                table.remove(line, k)
-                nextInsert = k
-                rm = true
-              end
-
-              local closure = { whole:find('%[', wE + 1) }
-              local closurePos = closure[1]
-              local oldTextLength = 0
-
-              if closurePos then
-                textValue = whole:utf8sub(wE + 1, closure[1] - 1)
-              else
-                textValue = whole:utf8sub(wE + 1, length)
-                closurePos = length
-              end
-
-              oldTextLength = textValue:utf8len()
-
-              local result, newTextValue = chatbox.GetBBCode(code)(eqWhat, textValue)
-
-              if isstring(newTextValue) then
-                textValue = newTextValue
-              end
-
-              chatbox.LastBBCode = result
-
-              if !whole:StartsWith('[') then
-                table.insert(line, nextInsert, whole:utf8sub(1, wS - 1))
-                nextInsert = nextInsert + 1
-              end
-
-              if newTextValue then
-                length = length + (textValue:utf8len() - oldTextLength)
-                wS = wS + (textValue:utf8len() - oldTextLength)
-                wE = wE + (textValue:utf8len() - oldTextLength)
-              end
-
-              if closurePos != length then
-                whole = textValue..whole:utf8sub(closurePos, length)
-              else
-                whole = textValue
-              end
-
-              table.insert(line, nextInsert, result)
-              nextInsert = nextInsert + 1
-
-              if i == #hits then
-                table.insert(line, nextInsert, whole)
-                nextInsert = nextInsert + 1
-                break
-              end
-            end
-          end
-
-          prevOffset = wE
+          searchStart = textStart
+        else
+          -- Not a tag: look again from the next byte, as a real tag may be nested in the brackets.
+          searchStart = tagStart + 1
         end
       end
+
+      if textStart <= #v then
+        parsed[#parsed + 1] = v:sub(textStart)
+      end
+    else
+      parsed[#parsed + 1] = v
     end
+  end
+
+  for k = 1, math.max(#line, #parsed) do
+    line[k] = parsed[k]
   end
 end
 
 do
-  chatbox.AddBBCode('color', function(code, text)
-    local exploded = string.Explode(',', code)
+  -- Turns one component of a `[color=r,g,b,a]` tag into a number from 0 to 255.
+  local function ToColorComponent(value)
+    value = tonumber(value)
 
-    for k, v in ipairs(exploded) do
-      exploded[k] = v:Replace(' ', '')
+    if !value or value != value then
+      return 255
     end
 
-    if !exploded[2] then
-      local code = exploded[1]
+    return math.Clamp(value, 0, 255)
+  end
 
-      return Color(code)
+  chatbox.AddBBCode('color', function(code, text)
+    local exploded = string.Explode(',', code:Replace(' ', ''))
+
+    if !exploded[2] then
+      local name = exploded[1]
+
+      -- Players write these tags, so only well-formed hex colors reach the hex parser.
+      if name:StartsWith('#') and !name:find('^#%x%x%x%x%x%x$') and !name:find('^#%x%x%x%x%x%x%x%x$') then
+        return Color(255, 255, 255)
+      end
+
+      return Color(name)
     else
       return Color(
-        (tonumber(exploded[1]) or 255),
-        (tonumber(exploded[2]) or 255),
-        (tonumber(exploded[3]) or 255),
-        (tonumber(exploded[4]) or 255)
+        ToColorComponent(exploded[1]),
+        ToColorComponent(exploded[2]),
+        ToColorComponent(exploded[3]),
+        ToColorComponent(exploded[4])
       )
     end
   end)
@@ -552,7 +533,7 @@ function chatbox.WrapText(msgData, maxWidth, initWidth)
       local exploded = string.Explode(' ', val)
 
       for k, v in ipairs(exploded) do
-        local w, h = util.GetTextSize(font, v)
+        local w = util.GetTextSize(font, v)
 
         -- if word's width is less than the remaining width
         if (w + spaceWidth) < (maxWidth - curWidth) then
@@ -569,20 +550,20 @@ function chatbox.WrapText(msgData, maxWidth, initWidth)
         else
           -- if the word doesn't fit in a single line
           if w > maxWidth then
-            local characters = string.Explode('', v)
             local curWord = ''
             local wordWide = 0
 
-            for k2, v2 in ipairs(characters) do
-              local w, h = util.GetTextSize(font, v2)
+            -- Go through the word one UTF-8 character at a time, never byte by byte.
+            for char in v:gmatch('[%z\1-\127\194-\244][\128-\191]*') do
+              local charWide = util.GetTextSize(font, char)
 
               -- if we don't have enough characters to fill in the entire line
-              if (wordWide + w + dashWidth) < (maxWidth - curWidth) then
-                curWord = curWord..v2
-                wordWide = wordWide + w
+              if (wordWide + charWide + dashWidth) < (maxWidth - curWidth) then
+                curWord = curWord..char
+                wordWide = wordWide + charWide
               -- if we do
               else
-                curWord = curWord..v2..'-'
+                curWord = curWord..char..'-'
                 curText = curText..curWord
                 table.insert(wrapped, curText)
                 table.insert(wrapped, 'std::endl')
@@ -594,7 +575,8 @@ function chatbox.WrapText(msgData, maxWidth, initWidth)
             end
 
             if curWord != '' then
-              curText = curWord..' '
+              curText = curText..curWord..' '
+              curWidth = curWidth + wordWide + spaceWidth
             end
 
           -- if it does
@@ -614,27 +596,31 @@ function chatbox.WrapText(msgData, maxWidth, initWidth)
     end
   end
 
-  -- insert the leftover text.
-  if curText != '' then
-    table.insert(wrapped, 'std::endl')
-    table.insert(wrapped, curText)
-  end
-
   return wrapped
 end
 
 g_DisplayY = g_DisplayY or 0
+
+-- Appends a marker string (send time, icon or avatar) to a parsed line and remembers its position in
+-- `line.markers`. Only the strings added here are drawn as markers; message text that merely looks like
+-- one, which a player can type, stays text.
+local function AddMarker(line, marker)
+  line[#line + 1] = marker
+  line.markers = line.markers or {}
+  line.markers[#line] = true
+end
 
 --- Turns a message into the lines drawn by the chat box.
 --
 -- Applies the message's filter (`'ooc'` when unset) and type, then builds the time,
 -- icon, avatar, prefix and sender name parts and wraps the text. Runs the
 -- `ChatboxPreProcess` and `PreChatboxParse` hooks with the message data and
--- `PostChatboxParse` with the result. The message type must be registered with
--- `chatbox.AddType`, or the call errors.
+-- `PostChatboxParse` with the result. A filter or type that is not registered falls
+-- back to `'default'`.
 -- @param messageData [Map The message data received from the server]
 -- @return [List<List> The lines; each starts with its vertical offset, followed by the sender,
--- `Color`s, strings and marker strings such as `'[SenderAvatar]'`]
+-- `Color`s, strings and marker strings such as `'[SenderAvatar]'`. The positions of the marker
+-- strings are the keys of the line's `markers` field]
 function chatbox.ParseText(messageData)
   local parsed = {}
   local msgWidth = 0
@@ -643,8 +629,11 @@ function chatbox.ParseText(messageData)
 
   hook.Run('ChatboxPreProcess', messageData)
 
-  chatbox.GetFilter(messageData.filter)(messageData)
-  chatbox.GetType(messageData.type)(messageData)
+  local filterCallback = chatbox.GetFilter(messageData.filter) or filters['default']
+  filterCallback(messageData)
+
+  local typeCallback = chatbox.GetType(messageData.type) or types['default']
+  typeCallback(messageData)
 
   hook.Run('PreChatboxParse', messageData)
 
@@ -662,19 +651,19 @@ function chatbox.ParseText(messageData)
     -- [ERROR] gamemodes/clockwork/framework/libraries/client/cl_chatbox.lua:474: wrong number of arguments to 'insert'
     local color = Color(255, 255, 255)
     table.insert(parsed[1], color) -- this was line 474 from the error btw.
-    table.insert(parsed[1], '[SendTime:'..messageData.time..']')
+    AddMarker(parsed[1], '[SendTime:'..(tonumber(messageData.time) or os.time())..']')
     table.insert(parsed[1], ' - ')
     msgWidth = msgWidth + 50
   end
 
-  if messageData.icon and messageData.icon != '' then
-    table.insert(parsed[1], '[icon:'..messageData.icon..']')
+  if isstring(messageData.icon) and messageData.icon != '' then
+    AddMarker(parsed[1], '[icon:'..messageData.icon..']')
     msgWidth = msgWidth + 20
   end
 
   if messageData.drawAvatar and IsValid(messageData.sender) then
     -- The avatar itself is an engine AvatarImage painted by the chat box panel (see GetAvatarPanel).
-    table.insert(parsed[1], '[SenderAvatar]')
+    AddMarker(parsed[1], '[SenderAvatar]')
     msgWidth = msgWidth + 20
   end
 
@@ -743,35 +732,32 @@ function chatbox.ParseText(messageData)
 
   if messageData.text then
     local wrapped = chatbox.WrapText(messageData, chatbox.width - 8, msgWidth)
-    local curLine = 1
-    local bIsNew = true
+    local curLine = parsed[1]
+    local curColor = messageData.textColor
+    local bHasText = false
+
+    table.insert(curLine, curColor)
 
     for k, v in ipairs(wrapped) do
-      parsed[curLine] = parsed[curLine] or {}
-
-      if curLine > 1 then
-        table.insert(parsed[curLine], g_DisplayY)
-      end
-
-      if bIsNew then
-        table.insert(parsed[curLine], messageData.textColor)
-        bIsNew = false
-      end
-
-      if isstring(v) then
-        if v == 'std::endl' then
-          curLine = curLine + 1
-
-          parsed[curLine] = parsed[curLine] or {}
-
-          bIsNew = true
-          v = ''
+      if v == 'std::endl' then
+        -- A new line starts with its offset and the color the previous one ended in.
+        curLine = { g_DisplayY, curColor }
+        parsed[#parsed + 1] = curLine
+        bHasText = false
+      elseif v != '' then
+        if isstring(v) then
+          bHasText = true
+        elseif istable(v) then
+          curColor = v
         end
-      end
 
-      if v != '' then
-        table.insert(parsed[curLine], v)
+        table.insert(curLine, v)
       end
+    end
+
+    -- Drop the empty line left behind when the text ends exactly at a line break.
+    if #parsed > 1 and !bHasText then
+      parsed[#parsed] = nil
     end
   end
 
@@ -808,9 +794,10 @@ function PANEL:Init()
   end
 
   self.scrollBar.OnMouseWheeled = function(sb, delta)
-    -- prettiest code contest 2k16 lmao
-    self.scrollOffset =
-      math.Clamp(self.scrollOffset + delta, 0, math.Clamp(chatbox.GetLineCount() - 19, 0, chatbox.GetLineCount()))
+    -- The offset counts messages, so it stops at the oldest one however many lines they take.
+    local maxOffset = math.Clamp(chatbox.GetLineCount() - 19, 0, math.max(#history - 1, 0))
+
+    self.scrollOffset = math.Clamp(self.scrollOffset + delta, 0, maxOffset)
     chatbox.UpdateDisplay()
   end
 end
@@ -820,30 +807,6 @@ end
 function PANEL:SetChatOpen(bIsOpen)
   self.isOpen = bIsOpen
   self.startTime = CurTime()
-end
-
-local function IsIcon(text)
-  return (text:StartsWith('[icon:') and text:EndsWith('.png]'))
-end
-
-local function IsAvatar(text)
-  return (text == '[SenderAvatar]')
-end
-
-local function IsTime(text)
-  return (text:StartsWith('[SendTime:'))
-end
-
-local function SendTime(text)
-  if IsTime(text) then
-    return tonumber(text:utf8sub(11, text:find(']') - 1))
-  end
-end
-
-local function ToIcon(text)
-  if IsIcon(text) then
-    return text:utf8sub(7, text:find(']') - 1)
-  end
 end
 
 -- Sender avatars are engine AvatarImage panels, one per player, painted manually from PANEL:Paint.
@@ -876,6 +839,157 @@ local function CleanAvatarPanels()
   end
 end
 
+local colorWhite = Color(255, 255, 255)
+
+-- Builds the draw operations of a display line: what goes where, in which color. chatbox.UpdateDisplay
+-- calls this once per line, so that painting the line every frame measures and translates nothing.
+local function CompileLine(line)
+  local meta = line._METADATA
+  local fontSize = chatFontSize * ((meta.data and meta.data.sizeMultiplier) or 1)
+  local font = cw.fonts:GetSize('cwChatBoxFont', fontSize)
+  local GetTextSize = surface.OldGetTextSize or surface.GetTextSize
+  local markers = line.markers
+  local ops = {}
+  local curColor = colorWhite
+  local curSender = nil
+  local offX = 4
+  local offY = 0
+
+  surface.SetFont(font)
+
+  for k, v in ipairs(line) do
+    if isstring(v) then
+      if !markers or !markers[k] then
+        -- Phrases are translated here; the text is then drawn as it is.
+        local text = cw.lang:TranslateText(v)
+
+        ops[#ops + 1] = { text = text, x = offX, y = math.ceil(offY), color = curColor }
+        offX = offX + GetTextSize(text)
+      elseif v == '[SenderAvatar]' then
+        if IsValid(curSender) then
+          ops[#ops + 1] = { avatar = curSender, x = offX, y = offY }
+          offX = offX + 18
+        end
+      elseif v:StartsWith('[icon:') then
+        ops[#ops + 1] = { material = cw.core:GetMaterial(v:sub(7, -2)), x = offX, y = offY }
+        offX = offX + 18
+      else
+        local text = os.date('%H:%M', tonumber(v:match('^%[SendTime:(.-)%]$'))) or ''
+
+        ops[#ops + 1] = { text = text, x = offX, y = math.ceil(offY), color = curColor }
+        offX = offX + GetTextSize(text) + 2
+      end
+    elseif isnumber(v) then
+      offY = v
+      offX = 4
+    elseif istable(v) then
+      if v.r and v.g and v.b then
+        curColor = v
+      end
+    elseif isentity(v) then
+      curSender = v
+    end
+  end
+
+  meta.font = font
+  meta.ops = ops
+end
+
+-- Draws text in the current font with a one pixel outline, as draw.SimpleTextOutlined does, without
+-- measuring the text or looking for phrases in it on every one of its ten passes.
+local function DrawOutlinedText(text, x, y, color, alpha, outline)
+  local DrawText = surface.OldDrawText or surface.DrawText
+
+  surface.SetTextColor(outline, outline, outline, alpha)
+
+  for offX = -1, 1 do
+    for offY = -1, 1 do
+      surface.SetTextPos(x + offX, y + offY)
+      DrawText(text)
+    end
+  end
+
+  surface.SetTextColor(color.r, color.g, color.b, alpha)
+  surface.SetTextPos(x, y)
+  DrawText(text)
+end
+
+-- Finds up to eight commands the local player may use that match the command being typed, and prepares
+-- the texts of their hints. Returns nil when no hints are to be shown at all.
+local function FindCommandHints(curText)
+  local isSilentCmd = curText:StartsWith('/?')
+
+  if isSilentCmd and !cw.client:IsAdmin() then return end
+
+  local splitTable = string.Explode(' ', string.utf8sub(curText, (isSilentCmd and 3) or 2))
+  local command = splitTable[1]
+
+  if !command or command == '' then return end
+
+  command = string.lower(command)
+
+  local commandLen = string.utf8len(command)
+  local commands = {}
+  local found = {}
+
+  for k, v in pairs(cw.command:GetAlias()) do
+    if string.utf8sub(k, 1, commandLen) == command and (!splitTable[2] or command == k) then
+      local cmdTable = cw.command:FindByAlias(v)
+
+      -- It can so happen that multiple alias for the same command begin with the same string.
+      -- We don't want to display the same command multiple times, so we check for that.
+      if cmdTable and !found[cmdTable]
+      and (cw.player:HasFlags(cw.client, cmdTable.access) or cw.client:HasPermission(cmdTable.uniqueID)) then
+        found[cmdTable] = true
+        commands[#commands + 1] = cmdTable
+      end
+    end
+
+    if #commands == 8 then
+      break
+    end
+  end
+
+  local hints = {}
+
+  for k, v in ipairs(commands) do
+    local hint = {
+      name = cw.lang:TranslateText('/'..v.name),
+      tip = cw.lang:TranslateText(v.tip or '')
+    }
+
+    hint.nameWidth = util.GetTextSize('cwChatBoxSyntax', hint.name)
+
+    -- A single match also shows its aliases and syntax.
+    if #commands == 1 then
+      if istable(v.alias) and v.alias[1] then
+        local text = '#CMDDesc_Aliases '
+
+        if #v.alias > 1 then
+          for i, a in ipairs(v.alias) do
+            text = text..tostring(a)..'; '
+          end
+        else
+          text = text..tostring(v.alias[1])
+        end
+
+        hint.aliases = cw.lang:TranslateText(text)
+      end
+
+      hint.usage = cw.lang:TranslateText('#CMDDesc_Usage '..'/'..v.name..' '..v.text)
+    end
+
+    hints[k] = hint
+  end
+
+  return hints
+end
+
+local backColor = Color(38, 38, 38, 225)
+local backDrawColor = Color(38, 38, 38, 0)
+local hintNameColor = Color(240, 240, 240)
+local hintTipColor = Color(206, 206, 206)
+
 --- Draws the background, the visible messages and, while a command is typed, the matching commands.
 --
 -- Messages stay visible for 12 seconds while the chat box is closed. The
@@ -883,8 +997,6 @@ end
 -- Draws nothing while the player is choosing a character.
 function PANEL:Paint(w, h)
   if cw.core:IsChoosingCharacter() then return end
-
-  local backColor = Color(38, 38, 38, 225)
 
   if self.startTime then
     local fraction = (CurTime() - self.startTime) / fadeDuration
@@ -898,230 +1010,94 @@ function PANEL:Paint(w, h)
     end
   end
 
-  if !hook.Run('PaintChatboxBackground', 0, 0, w, h, self.alpha) then
-    draw.RoundedBox(2, 0, 0, w, h, ColorAlpha(backColor, self.alpha))
+  if !hook.Run('PaintChatboxBackground', 0, 0, w, h, self.alpha) and self.alpha > 0 then
+    backDrawColor.a = self.alpha
+    draw.RoundedBox(2, 0, 0, w, h, backDrawColor)
   end
 
-  local curColor = Color(255, 255, 255)
-  local offX = 4
-  local offY = 0
-  local curSender = nil
+  local alpha = chatbox.curAlpha or 255
+  local curTime = CurTime()
+  local isOpen = self.isOpen
   local msgVisible = false
 
   for k, v in ipairs(display) do
-    local fontSize = chatFontSize * ((v._METADATA.data and v._METADATA.data.sizeMultiplier) or 1)
-    local font = cw.fonts:GetSize('cwChatBoxFont', fontSize)
+    local meta = v._METADATA
 
-    if (CurTime() - v._METADATA.sendTime) < 12 or self.isOpen then
-      if !self.isOpen then
+    if isOpen or (curTime - meta.sendTime) < 12 then
+      if !isOpen then
         msgVisible = true
       end
 
-      for k2, v2 in pairs(v) do
-        if istable(v2) then
-          if k2 != '_METADATA' then
-            v2.a = chatbox.curAlpha or v2.a or 255
-            curColor = v2
-          end
-        elseif isstring(v2) then
-          if IsTime(v2) then
-            local time = os.date('%H:%M', SendTime(v2))
+      for k2, op in ipairs(meta.ops) do
+        if op.text then
+          surface.SetFont(meta.font)
+          DrawOutlinedText(op.text, op.x, op.y, op.color, alpha, 60)
+        elseif op.material then
+          surface.SetDrawColor(255, 255, 255, alpha)
+          surface.SetMaterial(op.material)
+          surface.DrawTexturedRect(op.x, op.y, 16, 16)
+        elseif IsValid(op.avatar) then
+          local avatar = GetAvatarPanel(self, op.avatar)
 
-            draw.SimpleTextOutlined(
-              time,
-              font,
-              offX,
-              offY,
-              curColor,
-              TEXT_ALIGN_LEFT,
-              TEXT_ALIGN_TOP,
-              1,
-              Color(60, 60, 60, chatbox.curAlpha)
-            )
-
-            local width = util.GetTextSize(font, time)
-            offX = offX + width + 2
-          elseif IsIcon(v2) then
-            local matPath = ToIcon(v2)
-            local material = cw.core:GetMaterial(matPath)
-
-            surface.SetDrawColor(255, 255, 255, chatbox.curAlpha)
-            surface.SetMaterial(material)
-            surface.DrawTexturedRect(offX, offY, 16, 16)
-
-            offX = offX + 18
-          elseif IsAvatar(v2) then
-            if IsValid(curSender) then
-              local avatar = GetAvatarPanel(self, curSender)
-
-              avatar:SetPos(offX, offY)
-              avatar:SetAlpha(chatbox.curAlpha or 255)
-              avatar:PaintManual()
-
-              offX = offX + 18
-            end
-          else
-            draw.SimpleTextOutlined(
-              v2,
-              font,
-              offX,
-              offY,
-              curColor,
-              TEXT_ALIGN_LEFT,
-              TEXT_ALIGN_TOP,
-              1,
-              Color(60, 60, 60, chatbox.curAlpha)
-            )
-
-            local width = util.GetTextSize(font, v2)
-            offX = offX + width
-          end
-        elseif isnumber(v2) then
-          offY = v2
-          offX = 4
-        elseif typeof(v2) == 'player' then
-          curSender = v2
-        else
-          print(v2)
+          avatar:SetPos(op.x, op.y)
+          avatar:SetAlpha(alpha)
+          avatar:PaintManual()
         end
       end
     end
-
-    self.drawTransparentBackground = msgVisible
   end
 
-  if chatbox.IsTypingCommand() then
-    local curText = chatbox.GetCurrentText()
-    local isSilentCmd = curText:StartsWith('/?')
+  self.drawTransparentBackground = msgVisible
 
-    if isSilentCmd and !cw.client:IsAdmin() then
-      return
-    end
-
-    local splitTable = string.Explode(' ', string.utf8sub(curText, (isSilentCmd and 3) or 2))
-    local commands = {}
-    local command = splitTable[1]
-    local cX, cY = 4, chatbox.y / 4 + 38
-
-    if command and command != '' then
-      chatbox.curAlpha = 50
-
-      for k, v in pairs(cw.command:GetAlias()) do
-        local commandLen = string.utf8len(command)
-
-        if commandLen == 0 then
-          commandLen = 1
-        end
-
-        if string.utf8sub(k, 1, commandLen) == string.lower(command)
-        and (!splitTable[2] or string.lower(command) == k) then
-          local cmdTable = cw.command:FindByAlias(v)
-
-          if cmdTable
-          and (cw.player:HasFlags(cw.client, cmdTable.access) or cw.client:HasPermission(cmdTable.uniqueID)) then
-            local bShouldAdd = true
-
-            -- It can so happen that multiple alias for the same command begin with the same string.
-            -- We don't want to display the same command multiple times, so we check for that.
-            for k, v in pairs(commands) do
-              if v == cmdTable then
-                bShouldAdd = false
-              end
-            end
-
-            if bShouldAdd then
-              commands[#commands + 1] = cmdTable
-            end
-          end
-        end
-
-        if #commands == 8 then
-          break
-        end
-      end
-
-      for k, v in ipairs(commands) do
-        cX = 4
-        draw.SimpleTextOutlined(
-          '/'..v.name,
-          'cwChatBoxSyntax',
-          cX,
-          cY,
-          Color(240, 240, 240),
-          TEXT_ALIGN_LEFT,
-          TEXT_ALIGN_TOP,
-          1,
-          Color(0, 0, 0)
-        )
-        local w = util.GetTextSize('cwChatBoxSyntax', '/'..v.name)
-        cX = cX + w + 8
-        draw.SimpleTextOutlined(
-          (v.tip or ''),
-          'cwChatBoxFont',
-          cX,
-          cY + 4,
-          Color(206, 206, 206),
-          TEXT_ALIGN_LEFT,
-          TEXT_ALIGN_TOP,
-          1,
-          Color(0, 0, 0)
-        )
-
-        if #commands == 1 then
-          local offsetX = 24
-
-          if v.alias then
-            local text = '#CMDDesc_Aliases '
-
-            if #v.alias > 1 then
-              for i, a in ipairs(v.alias) do
-                text = text..a..'; '
-              end
-            else
-              text = text..v.alias[1]
-            end
-
-            draw.SimpleTextOutlined(
-              text,
-              'cwChatBoxFont',
-              4,
-              cY + offsetX,
-              Color(240, 240, 240),
-              TEXT_ALIGN_LEFT,
-              TEXT_ALIGN_TOP,
-              1,
-              Color(0, 0, 0)
-            )
-
-            offsetX = offsetX + 20
-          end
-
-          draw.SimpleTextOutlined(
-            '#CMDDesc_Usage '..'/'..v.name..' '..v.text,
-            'cwChatBoxFont',
-            4,
-            cY + offsetX,
-            Color(240, 240, 240),
-            TEXT_ALIGN_LEFT,
-            TEXT_ALIGN_TOP,
-            1,
-            Color(0, 0, 0)
-          )
-        end
-
-        cY = cY + 24
-      end
-    else
-      chatbox.curAlpha = 255
-    end
-  else
+  if !chatbox.IsTypingCommand() then
+    self.hintText = nil
     chatbox.curAlpha = 255
+
+    return
+  end
+
+  local curText = chatbox.GetCurrentText()
+
+  -- The matching commands only change when the typed text does.
+  if curText != self.hintText then
+    self.hintText = curText
+    self.hints = FindCommandHints(curText)
+  end
+
+  if !self.hints then
+    chatbox.curAlpha = 255
+
+    return
+  end
+
+  chatbox.curAlpha = 50
+
+  local cY = math.ceil(chatbox.y / 4 + 38)
+
+  for k, v in ipairs(self.hints) do
+    surface.SetFont('cwChatBoxSyntax')
+    DrawOutlinedText(v.name, 4, cY, hintNameColor, 255, 0)
+
+    surface.SetFont('cwChatBoxFont')
+    DrawOutlinedText(v.tip, 4 + v.nameWidth + 8, cY + 4, hintTipColor, 255, 0)
+
+    local offsetY = 24
+
+    if v.aliases then
+      DrawOutlinedText(v.aliases, 4, cY + offsetY, hintNameColor, 255, 0)
+
+      offsetY = offsetY + 20
+    end
+
+    if v.usage then
+      DrawOutlinedText(v.usage, 4, cY + offsetY, hintNameColor, 255, 0)
+    end
+
+    cY = cY + 24
   end
 end
 
 PANEL.NextAdjust = CurTime()
-
-local lerpDuration = 0.15
 
 --- Runs the `AdjustChatboxInfo` hook eight times a second and closes the chat box when Escape is held.
 function PANEL:Think()
@@ -1147,16 +1123,18 @@ function PANEL:Init()
   self:SetText('')
 end
 
-local entryBack = Color(0, 0, 0, 170)
+local entryBackColor = Color(25, 25, 25)
+local entryTextColor = Color(255, 255, 255, 255)
+local entryHighlightColor = Color(255, 250, 200)
 
 --- Draws the text entry.
 --
 -- The `ChatboxEntryPaint` hook can return `true` to draw it itself.
 function PANEL:Paint(w, h)
   if !hook.Run('ChatboxEntryPaint', self, 0, 0, w, h) then
-    draw.RoundedBox(2, 0, 0, w, h, Color(25, 25, 25))
+    draw.RoundedBox(2, 0, 0, w, h, entryBackColor)
 
-    self:DrawTextEntryText(Color(255, 255, 255, 255), Color(255, 250, 200), Color(255, 255, 255, 255))
+    self:DrawTextEntryText(entryTextColor, entryHighlightColor, entryTextColor)
   end
 end
 
@@ -1179,17 +1157,19 @@ function PANEL:Think()
   self:SetSize(chatbox.width, 24)
   self:SetPos(0, chatbox.height - 24)
 
-  local maxChatLength = config.GetVal('max_chat_length') or 512
   local text = self:GetValue()
 
+  -- The length only needs checking when the text has changed.
+  if text == self.previousText then return end
+
   if text and text != '' then
+    local maxChatLength = config.GetVal('max_chat_length') or 512
+
     if string.utf8len(text) > maxChatLength then
       self:SetValue(string.utf8sub(text, 0, maxChatLength))
       cw.option:PlaySound('tick')
     elseif chatbox.IsOpen() then
-      if text != self.previousText then
-        hook.Run('ChatBoxTextChanged', self.previousText or '', text)
-      end
+      hook.Run('ChatBoxTextChanged', self.previousText or '', text)
     end
   end
 
@@ -1202,13 +1182,7 @@ function PANEL:SetValue(text)
   self:SetText(text)
 
   if text and text != '' then
-    if limit then
-      if self:GetCaretPos() > string.utf8len(text) then
-        self:SetCaretPos(string.utf8len(text))
-      end
-    else
-      self:SetCaretPos(string.utf8len(text))
-    end
+    self:SetCaretPos(string.utf8len(text))
   end
 end
 
@@ -1233,7 +1207,7 @@ vgui.Register('cwChatTextEntry', PANEL, 'DTextEntry')
 
 --- Creates the chat box panel, replacing the existing one.
 function chatbox.CreateChatBox()
-  if chatbox.panel then
+  if IsValid(chatbox.panel) then
     chatbox.panel:Remove()
   end
 
@@ -1253,7 +1227,7 @@ end
 function chatbox.GetCurrentText()
   local textEntry = chatbox.textEntry
 
-  if textEntry and textEntry:IsVisible() and chatbox.IsOpen() then
+  if IsValid(textEntry) and textEntry:IsVisible() and chatbox.IsOpen() then
     return textEntry:GetValue()
   else
     return ''
@@ -1271,21 +1245,13 @@ end
 --- Returns whether the typed text is a command (starts with `/` or `/?` and is not OOC).
 -- @return [Boolean Whether the player is typing a command]
 function chatbox.IsTypingCommand()
-  local text = chatbox.GetCurrentText()
-  local prefix = { '/', '/?' }
-
-  for k, v in pairs(prefix) do
-    if text:StartsWith(v) and !chatbox.IsTypingOOC() then
-      return true
-    end
-  end
-
-  return false
+  -- This also covers the silent command prefix, `/?`.
+  return chatbox.GetCurrentText():StartsWith('/') and !chatbox.IsTypingOOC()
 end
 
 --- Creates the chat text entry inside the chat box, replacing the existing one.
 function chatbox.CreateTextEntry()
-  if chatbox.textEntry then
+  if IsValid(chatbox.textEntry) then
     chatbox.textEntry:Remove()
   end
 
@@ -1306,7 +1272,7 @@ end
 -- @param panel=nil [Panel Panel to parent the chat box to; when `nil` the chat box becomes a popup]
 -- @see chatbox.Hide
 function chatbox.Show(panel)
-  if !chatbox.panel then
+  if !IsValid(chatbox.panel) or !IsValid(chatbox.textEntry) then
     chatbox.CreateDerma()
   end
 
@@ -1330,7 +1296,7 @@ end
 -- Escape closed it, keeps the pause menu from opening.
 -- @see chatbox.Show
 function chatbox.Hide()
-  if !chatbox.textEntry or !chatbox.panel then
+  if !IsValid(chatbox.panel) or !IsValid(chatbox.textEntry) then
     chatbox.CreateDerma()
   end
 
@@ -1360,19 +1326,23 @@ function chatbox.Hide()
   end
 end
 
---- Removes the chat box panels and creates them again.
+--- Removes the chat box panels and creates them again, closed.
 --
 -- Bound to the `cw_resetchat` console command.
 function chatbox.RecreatePanel()
-  chatbox.panel:SetVisible(false)
-  chatbox.textEntry:SetVisible(false)
-  chatbox.textEntry:Remove()
-  chatbox.panel.scrollBar:SetVisible(false)
-  chatbox.panel.scrollBar:Remove()
-  chatbox.panel:Remove()
+  if IsValid(chatbox.panel) then
+    -- The text entry and the scroll overlay are children of the panel and go with it.
+    chatbox.panel:SetVisible(false)
+    chatbox.panel:Remove()
+  end
+
   chatbox.panel = nil
   chatbox.textEntry = nil
   chatbox.CreateDerma()
+  chatbox.Hide()
+
+  -- The new panel is not scrolled, so show the newest messages again.
+  chatbox.UpdateDisplay()
 end
 
 concommand.Add('cw_resetchat', chatbox.RecreatePanel)
@@ -1380,53 +1350,42 @@ concommand.Add('cw_resetchat', chatbox.RecreatePanel)
 --- Rebuilds the drawn lines from the chat history.
 --
 -- Parses up to 19 of the newest messages, skipping as many as the panel is
--- scrolled, and lays them out from the bottom up. Called whenever a message
--- arrives or the history is scrolled.
+-- scrolled, lays them out from the bottom up and prepares them for drawing. Called
+-- whenever a message arrives or the history is scrolled.
 function chatbox.UpdateDisplay()
-  if !chatbox.panel then
+  if !IsValid(chatbox.panel) then
     chatbox.CreateDerma()
   end
 
   CleanAvatarPanels()
 
-  local i = 1
   local maxMessages = 20
+  local newest = #history - math.floor(chatbox.panel.scrollOffset)
 
   g_DisplayY = (maxMessages - 2) * 20 + 20
   display = {}
-  local curMsg = 0
+  chatbox.display = display
 
-  for k, v in SortedPairs(history, true) do
-    if curMsg < chatbox.panel.scrollOffset then
-      -- nothing
-    else
-      if i < maxMessages then
-        local parsed = chatbox.ParseText(history[k])
+  -- Newest first, starting below the messages scrolled past.
+  for k = newest, math.max(newest - (maxMessages - 2), 1), -1 do
+    local messageData = history[k]
+    local parsed = chatbox.ParseText(messageData)
+    local lineCount = #parsed
 
-        for _, line in ipairs(parsed) do
-          line._METADATA = {}
-          line._METADATA.time = v.time or os.time()
-          line._METADATA.sendTime = v.sendTime
-          line._METADATA.index = k
-          line._METADATA.data = v.data
+    messageData.lineCount = lineCount
 
-          if #parsed > 1 then
-            line._METADATA.multiLine = true
-          end
+    for _, line in ipairs(parsed) do
+      line._METADATA = {
+        time = messageData.time or os.time(),
+        sendTime = messageData.sendTime or 0,
+        index = k,
+        data = messageData.data,
+        multiLine = (lineCount > 1),
+        lineCount = lineCount
+      }
 
-          line._METADATA.lineCount = #parsed
-          history[k].lineCount = #parsed
-
-          table.insert(display, line)
-        end
-
-        i = i + 1
-      else
-        break
-      end
+      table.insert(display, line)
     end
-
-    curMsg = curMsg + 1
   end
 
   local lastIdx = 0
@@ -1459,6 +1418,8 @@ function chatbox.UpdateDisplay()
         lastIdx = v._METADATA.index
       end
     end
+
+    CompileLine(v)
   end
 end
 
@@ -1481,7 +1442,8 @@ end
 --]]
 
 hook.Add('PlayerBindPress', 'chatbox.PlayerBindPress', function(player, bind, bPress)
-  if (string.find(bind, 'messagemode') or string.find(bind, 'messagemode2')) and bPress then
+  -- This matches both `messagemode` and `messagemode2`.
+  if bPress and string.find(bind, 'messagemode', 1, true) then
     if cw.client:HasInitialized() then
       chatbox.Show()
     end
@@ -1501,24 +1463,38 @@ hook.Add('OnPauseMenuShow', 'chatbox.OnPauseMenuShow', function()
   end
 end)
 
+-- Adds a received message to the history, echoes it to the console and redraws the chat box.
+local function AddMessage(messageData, sender)
+  if !istable(messageData) then return end
+
+  messageData.text = tostring(messageData.text or '')
+  messageData.filter = tostring(messageData.filter or 'default')
+  messageData.sendTime = tonumber(messageData.sendTime) or CurTime()
+
+  chat.PlaySound()
+
+  if sender then
+    print('['..messageData.filter:upper()..'] '..cw.player:GetName(sender)..': '..messageData.text)
+  else
+    print('['..messageData.filter:upper()..'] '..messageData.text)
+  end
+
+  table.insert(history, messageData)
+
+  -- Scrolled-past messages are counted from the newest, so dropping the oldest moves nothing.
+  while #history > chatbox.maxHistory do
+    table.remove(history, 1)
+  end
+
+  chatbox.UpdateDisplay()
+end
+
 netstream.Hook('ChatboxTextEnter', function(player, messageData)
   if IsValid(player) then
-    chat.PlaySound()
-
-    print('['..messageData.filter:upper()..'] '..cw.player:GetName(player)..': '..messageData.text)
-
-    table.insert(history, messageData)
-
-    chatbox.UpdateDisplay()
+    AddMessage(messageData, player)
   end
 end)
 
 netstream.Hook('ChatboxAddText', function(messageData)
-  chat.PlaySound()
-
-  print('['..messageData.filter:upper()..'] '..messageData.text)
-
-  table.insert(history, messageData)
-
-  chatbox.UpdateDisplay()
+  AddMessage(messageData)
 end)

@@ -91,9 +91,14 @@ end
 
 --- Subtracts the damage from the breach's health and breaches the entity when it reaches 0.
 function ENT:OnTakeDamage(damageInfo)
+  -- Several hits can land in the tick the breach goes off, before it is actually removed.
+  if self.breached then return end
+
   self:SetHealth(math.max(self:Health() - damageInfo:GetDamage(), 0))
 
   if self:Health() <= 0 then
+    self.breached = true
+
     self:CreateDummyBreach()
     self:BreachEntity(damageInfo:GetAttacker())
   end

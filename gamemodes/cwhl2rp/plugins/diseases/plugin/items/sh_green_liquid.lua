@@ -27,17 +27,13 @@ if SERVER then
   -- Returns `false` when no player is looked at.
   function ITEM:OnCustomFunction(player, name)
     if name == 'Inject' then
-      local lookingPly = player:GetEyeTrace().Entity
+      local lookingPly = cwDiseases:FindPatient(player, self)
 
-      if lookingPly:IsPlayer() then
-        lookingPly:SetCharacterData('diseases', 'slow_deathinjection')
-        cw.player:Notify(player, L('Diseases_Injected_Other'))
-        player:TakeItem(player:FindItemByID('green_liqud'))
-      else
-        cw.player:Notify(player, L('Diseases_MustLookAtPerson'))
+      if !lookingPly then return false end
 
-        return false
-      end
+      lookingPly:SetCharacterData('diseases', 'slow_deathinjection')
+      cw.player:Notify(player, L('Diseases_Injected_Other'))
+      player:TakeItem(self)
     end
   end
 end

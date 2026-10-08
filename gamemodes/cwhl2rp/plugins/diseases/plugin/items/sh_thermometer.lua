@@ -16,21 +16,17 @@ ITEM.description = '#Item_Thermometer_Description'
 --
 -- Always returns `false`, so the thermometer is never used up.
 function ITEM:OnUse(player, itemEntity)
-  local lookingPly = player:GetEyeTrace().Entity
+  local lookingPly = cwDiseases:FindPatient(player)
 
-  if lookingPly:IsPlayer() then
-    if lookingPly:GetCharacterData('diseases') == 'fever' then
-      cw.player:Notify(player, L('Diseases_Temperature', math.random(40.1, 43.6)))
-    else
-      cw.player:Notify(player, L('Diseases_Temperature', math.random(36.5, 37.0)))
-    end
+  if !lookingPly then return false end
 
-    return false
+  if lookingPly:GetCharacterData('diseases') == 'fever' then
+    cw.player:Notify(player, L('Diseases_Temperature', math.Round(math.Rand(40.1, 43.6), 1)))
   else
-    cw.player:Notify(player, L('Diseases_MustLookAtPerson'))
-
-    return false
+    cw.player:Notify(player, L('Diseases_Temperature', math.Round(math.Rand(36.5, 37.0), 1)))
   end
+
+  return false
 end
 
 --- Lets the item be dropped, with no extra effect.

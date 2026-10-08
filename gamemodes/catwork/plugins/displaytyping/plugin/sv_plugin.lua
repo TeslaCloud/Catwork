@@ -5,6 +5,8 @@
 
 -- Called when a player starts typing.
 concommand.Add('cwTypingStart', function(player, command, arguments)
+  if !IsValid(player) or !player:HasInitialized() then return end
+
   if player:Alive() and !player:IsRagdolled(RAGDOLL_FALLENOVER) then
     if arguments and arguments[1] then
       hook.Run('PlayerStartTypingDisplay', player, arguments[1])
@@ -28,7 +30,7 @@ end)
 
 -- Called when a player finishes typing.
 concommand.Add('cwTypingFinish', function(player, command, arguments)
-  if IsValid(player) then
+  if IsValid(player) and player:HasInitialized() then
     if arguments and arguments[1] and arguments[1] == '1' then
       hook.Run('PlayerFinishTypingDisplay', player, true)
     else

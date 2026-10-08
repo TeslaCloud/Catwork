@@ -16,23 +16,21 @@ ITEM.description = '#Item_Eyelight_Description'
 --
 -- Always returns `false`, so the penlight is never used up.
 function ITEM:OnUse(player, itemEntity)
-  local lookingPly = player:GetEyeTrace().Entity
+  local lookingPly = cwDiseases:FindPatient(player)
 
-  if lookingPly:IsPlayer() then
-    if lookingPly:GetCharacterData('diseases') == 'blindness' then
-      cw.player:Notify(player, L('Diseases_Eyelight_Blind'))
-    elseif lookingPly:GetCharacterData('diseases') == 'colorblindness' then
-      cw.player:Notify(player, L('Diseases_Eyelight_Colorblind'))
-    else
-      cw.player:Notify(player, L('Diseases_Eyelight_Normal'))
-    end
+  if !lookingPly then return false end
 
-    return false
+  local disease = lookingPly:GetCharacterData('diseases')
+
+  if disease == 'blindness' then
+    cw.player:Notify(player, L('Diseases_Eyelight_Blind'))
+  elseif disease == 'colorblindness' then
+    cw.player:Notify(player, L('Diseases_Eyelight_Colorblind'))
   else
-    cw.player:Notify(player, L('Diseases_MustLookAtPerson'))
-
-    return false
+    cw.player:Notify(player, L('Diseases_Eyelight_Normal'))
   end
+
+  return false
 end
 
 --- Lets the item be dropped, with no extra effect.

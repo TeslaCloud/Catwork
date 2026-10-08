@@ -16,8 +16,9 @@ ITEM.customFunctions = { 'Give' }
 
 --- Cures fever, cough or pneumonia, heals the player and fires `PlayerHealed`.
 function ITEM:OnUse(player, itemEntity)
-  if player:GetCharacterData('diseases') == 'fever' or player:GetCharacterData('diseases') == 'cough'
-  or player:GetCharacterData('diseases') == 'pneumonia' then
+  local disease = player:GetCharacterData('diseases')
+
+  if disease == 'fever' or disease == 'cough' or disease == 'pneumonia' then
     player:SetCharacterData('diseases', 'none')
   end
 
@@ -32,24 +33,23 @@ if SERVER then
   -- Fires `PlayerHealed` with the giver as the healer. Returns `false` when no player is looked at.
   function ITEM:OnCustomFunction(player, name)
     if name == 'Give' then
-      local lookingPly = player:GetEyeTrace().Entity
+      local lookingPly = cwDiseases:FindPatient(player, self)
 
-      if lookingPly:IsPlayer() then
-        if lookingPly:GetCharacterData('diseases') == 'fever' or lookingPly:GetCharacterData('diseases') == 'cough'
-        or lookingPly:GetCharacterData('diseases') == 'pneumonia' then
-          lookingPly:SetCharacterData('diseases', 'none')
-        end
+      if !lookingPly then return false end
 
-        Clockwork.player:Notify(player, L('Diseases_Gave_Antibiotics'))
-        player:TakeItem(player:FindItemByID('antibiotics'))
-        lookingPly:SetHealth(math.Clamp(player:Health() + Schema:GetHealAmount(player, 1.5), 0, player:GetMaxHealth()))
+      local disease = lookingPly:GetCharacterData('diseases')
 
-        hook.Run('PlayerHealed', lookingPly, player, self)
-      else
-        cw.player:Notify(player, L('Diseases_MustLookAtPerson'))
-
-        return false
+      if disease == 'fever' or disease == 'cough' or disease == 'pneumonia' then
+        lookingPly:SetCharacterData('diseases', 'none')
       end
+
+      cw.player:Notify(player, L('Diseases_Gave_Antibiotics'))
+      player:TakeItem(self)
+      lookingPly:SetHealth(
+        math.Clamp(lookingPly:Health() + Schema:GetHealAmount(player, 1.5), 0, lookingPly:GetMaxHealth())
+      )
+
+      hook.Run('PlayerHealed', lookingPly, player, self)
     end
   end
 end

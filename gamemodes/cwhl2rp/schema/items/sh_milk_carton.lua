@@ -13,10 +13,9 @@ ITEM.business = true
 ITEM.description = '#ITEM_Milk_Carton_Desc'
 ITEM.thirst = 25
 
---- Heals 5 health (up to 100), boosts endurance and strength by 1 for two minutes and gives back an empty
--- carton.
+--- Heals 5 health, boosts endurance and strength by 1 for two minutes and gives back an empty carton.
 function ITEM:OnUse(player, itemEntity)
-  player:SetHealth(math.Clamp(player:Health() + 5, 0, 100))
+  player:SetHealth(math.Clamp(player:Health() + 5, 0, player:GetMaxHealth()))
 
   player:BoostAttribute(self.name, ATB_ENDURANCE, 1, 120)
   player:BoostAttribute(self.name, ATB_STRENGTH, 1, 120)

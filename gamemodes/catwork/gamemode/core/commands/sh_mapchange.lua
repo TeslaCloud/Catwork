@@ -14,11 +14,18 @@ COMMAND.alias = { 'Changelevel' }
 -- The delay defaults to five seconds.
 function COMMAND:OnRun(player, arguments)
   local sNewMap = string.lower(arguments[1])
+  local delay = tonumber(arguments[2])
 
-  if file.Exists('maps/'..sNewMap..'.bsp', 'GAME') then
-    cw.player:NotifyAll(L('Command_Mapchange_Changing', player:Name(), sNewMap, tonumber(arguments[2]) or 5))
+  -- tonumber('nan') is NaN.
+  if !delay or delay != delay or delay < 0 then
+    delay = 5
+  end
 
-    timer.Simple(tonumber(arguments[2]) or 5, function()
+  -- The name becomes part of a file path and an argument of the `changelevel` console command.
+  if !string.find(sNewMap, '[/\\%c%s;"]') and file.Exists('maps/'..sNewMap..'.bsp', 'GAME') then
+    cw.player:NotifyAll(L('Command_Mapchange_Changing', player:Name(), sNewMap, delay))
+
+    timer.Simple(delay, function()
       hook.Run('PreSaveData')
         hook.Run('SaveData')
       hook.Run('PostSaveData')

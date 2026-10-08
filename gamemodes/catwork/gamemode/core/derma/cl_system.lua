@@ -65,8 +65,6 @@ function PANEL:Rebuild()
       label:SetInfoColor('blue')
     self.panelList:AddItem(label)
 
-    local totalY = 0
-
     for k, v in pairs(cw.system:GetAll()) do
       self.systemCategoryForm = vgui.Create('DForm', self)
         self.systemCategoryForm:SetPadding(4)
@@ -79,7 +77,7 @@ function PANEL:Rebuild()
       tooltip:SetFont(cw.fonts:GetSize(cw.option:GetFont('menu_text_tiny'), 18))
       tooltip:SetTextColor(cw.option:GetColor('basic_form_color'))
 
-      local systemButton = vgui.Create('cwInfoText', systemPanel)
+      local systemButton = vgui.Create('cwInfoText', self)
         systemButton:SetText('#SystemMenu_Open')
         systemButton:SetTextToLeft(true)
 
@@ -100,10 +98,6 @@ function PANEL:Rebuild()
 
         systemButton:SetShowIcon(false)
       self.systemCategoryForm:AddItem(systemButton)
-
-      -- self.systemCategoryForm:SetPos(0, totalY)
-
-      -- totalY = totalY + 100
     end
   end
 
@@ -124,14 +118,10 @@ end
 function PANEL:OnSelected() self:Rebuild() end
 
 --- Does nothing; the list lays itself out.
-function PANEL:PerformLayout(w, h)
-  -- self.panelList:StretchToParent(4, 4, 4, 4)
-  -- self:SetSize(w, math.min(self.panelList.pnlCanvas:GetTall() + 32, ScrH() * 0.75))
-end
+function PANEL:PerformLayout(w, h) end
 
 --- Draws nothing.
 function PANEL:Paint(w, h)
-  -- DERMA_SLICED_BG:Draw(0, 0, w, h, 8, COLOR_WHITE)
   return true
 end
 

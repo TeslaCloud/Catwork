@@ -16,21 +16,13 @@ function COMMAND:OnRun(player, arguments)
   local removed = 0
 
   for k, v in pairs(cwRadSystem.stored) do
-    if v.pos then
-      if v.pos:Distance(position) <= radius then
-        cwRadSystem.stored[k] = nil
-        removed = removed + 1
-      end
-    elseif v.pos1 then
-      if v.pos1:Distance(position) <= radius then
-        cwRadSystem.stored[k] = nil
-        removed = removed + 1
-      end
-    elseif v.pos2 then
-      if v.pos2:Distance(position) <= radius then
-        cwRadSystem.stored[k] = nil
-        removed = removed + 1
-      end
+    local bNear = (v.pos and v.pos:Distance(position) <= radius)
+      or (v.pos1 and v.pos1:Distance(position) <= radius)
+      or (v.pos2 and v.pos2:Distance(position) <= radius)
+
+    if bNear then
+      cwRadSystem.stored[k] = nil
+      removed = removed + 1
     end
   end
 

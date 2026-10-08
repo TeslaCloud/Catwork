@@ -67,29 +67,22 @@ function PLUGIN:PlayerUseItem(player, itemTable)
     local thirstRefill = itemTable.thirst or config.GetVal('hunger_default_refill') or 25
     local fatigueRefill = itemTable.fatigue or config.GetVal('hunger_default_refill') or 25
 
+    local thirst = tonumber(player:GetCharacterData('Thirst')) or 100
+    local hunger = tonumber(player:GetCharacterData('Hunger')) or 100
+    local fatigue = tonumber(player:GetCharacterData('Fatigue')) or 0
+
     if itemTable.thirst or itemTable.name:utf8lower():find('water') then
       hungerRefill = math.Round(hungerRefill * 0.4)
-      player:SetCharacterData('Thirst', math.Clamp(player:GetCharacterData('Thirst') + thirstRefill, 0, 100))
+      player:SetCharacterData('Thirst', math.Clamp(thirst + thirstRefill, 0, 100))
     end
 
     if itemTable.fatigue then
-      player:SetCharacterData('Fatigue', math.Clamp(player:GetCharacterData('Fatigue') - fatigueRefill, 0, 100))
+      player:SetCharacterData('Fatigue', math.Clamp(fatigue - fatigueRefill, 0, 100))
     end
 
-    player:SetCharacterData(
-      'Hunger',
-      math.Clamp(player:GetCharacterData('Hunger') + math.Clamp(hungerRefill, 0, 100), 0, 100)
-    )
+    player:SetCharacterData('Hunger', math.Clamp(hunger + math.Clamp(hungerRefill, 0, 100), 0, 100))
     player:SaveCharacter()
   end
-end
-
---- Called to check whether a player gets hungry; everyone but the Combine does.
---
--- @param player [Player The player to check]
--- @return [Boolean Whether the player gets hungry]
-function PLUGIN:PlayerHasHunger(player)
-  return !player:IsCombine()
 end
 
 --- Called every player think; jumping and running in the air tire a player with needs and drain thirst.
@@ -100,55 +93,17 @@ end
 -- @param curTime [Number The current time]
 -- @param infoTable [Map The player's info table for this think, with `isJumping` and `isRunning`]
 function PLUGIN:PlayerThink(player, curTime, infoTable)
-  if plugin.Call('PlayerHasNeeds', player) then
-    local scale = config.GetVal('thirst_drain_scale') or 50
-    local decrease = 1 * (scale / 100)
-    local fatdecreace = 0.01
+  if !infoTable.isJumping and (!infoTable.isRunning or player:IsOnGround()) then return end
+  if player:IsNoClipping() or !plugin.Call('PlayerHasNeeds', player) then return end
 
-    if !player:IsNoClipping() then
-      local playerVelocityLength = player:GetVelocity():Length()
+  if infoTable.isJumping or player:GetVelocity():LengthSqr() != 0 then
+    local decrease = (config.GetVal('thirst_drain_scale') or 50) / 100
+    local fatigue = tonumber(player:GetCharacterData('Fatigue')) or 0
+    local thirst = tonumber(player:GetCharacterData('Thirst')) or 100
 
-      if infoTable.isJumping then
-        player:SetCharacterData(
-          'Fatigue', math.Clamp(
-            player:GetCharacterData('Fatigue') + fatdecreace, 0, 100
-          )
-        )
-      end
-
-      if (infoTable.isRunning and !infoTable.isJumping and !player:IsOnGround()) and playerVelocityLength != 0 then
-        player:SetCharacterData(
-          'Fatigue', math.Clamp(
-            player:GetCharacterData('Fatigue') + fatdecreace, 0, 100
-          )
-        )
-      end
-
-      if infoTable.isJumping then
-        player:SetCharacterData(
-          'Thirst', math.Clamp(
-            player:GetCharacterData('Thirst') - decrease, 0, 100
-          )
-        )
-      end
-
-      if (infoTable.isRunning and !infoTable.isJumping and !player:IsOnGround()) and playerVelocityLength != 0 then
-        player:SetCharacterData(
-          'Thirst', math.Clamp(
-            player:GetCharacterData('Thirst') - decrease, 0, 100
-          )
-        )
-      end
-    end
+    player:SetCharacterData('Fatigue', math.Clamp(fatigue + 0.01, 0, 100))
+    player:SetCharacterData('Thirst', math.Clamp(thirst - decrease, 0, 100))
   end
-end
-
---- Called to check whether a player's thirst drains; it does for non-Combine players and Civil Protection.
---
--- @param player [Player The player to check]
--- @return [Boolean Whether thirst drains]
-function PLUGIN:PlayerShouldThirstDrain(player)
-  return !(player:IsCombine()) or player:GetFaction() == FACTION_MPF
 end
 
 --- Called every second for each player; drains the needs of players with needs and applies their effects.
@@ -156,8 +111,8 @@ end
 -- Hunger and thirst fall so that they empty over the `hunger_tick` and `thirst_tick` configs
 -- in seconds, and hunger is never above thirst. Fatigue rises over 20000 seconds. Starving
 -- players slowly lose health down to 50 (below 15 hunger) or 20 (below 5), and players above
--- 85 fatigue fall asleep for 30 seconds. The values are networked as the `Hunger`, `Thirst`
--- and `Fatigue` net vars.
+-- 85 fatigue fall asleep for 30 seconds while alive. The values are networked as the
+-- `Hunger`, `Thirst` and `Fatigue` net vars.
 --
 -- @param player [Player The player]
 -- @param curTime [Number The current time]
@@ -167,14 +122,9 @@ function PLUGIN:OnePlayerSecond(player, curTime, infoTable)
     local thirst = tonumber(player:GetCharacterData('Thirst')) or 0
     local hunger = math.Clamp(tonumber(player:GetCharacterData('Hunger')) or 0, 0, thirst)
     local fatigue = tonumber(player:GetCharacterData('Fatigue')) or 0
-    local stamina = tonumber(player:GetCharacterData('Stamina')) or 0
     local step = 100 / math.Round(tonumber(config.GetVal('hunger_tick')) or 3600)
     local thirstStep = 100 / math.Round(tonumber(config.GetVal('thirst_tick')) or 3600)
     local fatStep = 100 / 20000
-
-    if thirst then
-      player:SetCharacterData('Hunger', hunger)
-    end
 
     player:SetCharacterData('Hunger', math.Clamp(hunger - step, 0, 100))
     player:SetCharacterData('Thirst', math.Clamp(thirst - thirstStep, 0, 100))
@@ -192,7 +142,7 @@ function PLUGIN:OnePlayerSecond(player, curTime, infoTable)
       end
     end
 
-    if fatigue > 85 then
+    if fatigue > 85 and player:Alive() then
       cw.player:SetRagdollState(player, RAGDOLL_KNOCKEDOUT, 30)
       player:SetCharacterData('Fatigue', 0)
     end

@@ -15,20 +15,12 @@ local PLUGIN = PLUGIN
 -- @param option [String The option's display text]
 -- @param arguments [String The option value, `cw_bookView` or `cw_bookTake`]
 function PLUGIN:EntityHandleMenuOption(player, entity, option, arguments)
-  local class = entity:GetClass()
+  if entity:GetClass() != 'cw_book' then return end
 
-  if class == 'cw_book' and arguments == 'cw_bookTake' or arguments == 'cw_bookView' then
-    if arguments == 'cw_bookView' then
-      netstream.Start(player, 'ViewBook', entity)
-    else
-      local success, fault = player:GiveItem(item.CreateInstance(entity.book.uniqueID))
-
-      if !success then
-        cw.player:Notify(player, fault)
-      else
-        entity:Remove()
-      end
-    end
+  if arguments == 'cw_bookView' then
+    netstream.Start(player, 'ViewBook', entity)
+  elseif arguments == 'cw_bookTake' then
+    self:TakeBook(player, entity)
   end
 end
 

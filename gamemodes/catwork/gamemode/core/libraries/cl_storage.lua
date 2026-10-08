@@ -25,7 +25,7 @@ end
 -- @see cw.storage:CanTakeFrom
 function cw.storage:CanGiveTo(itemTable)
   local entity = cw.storage:GetEntity()
-  local isPlayer = (entity and entity:IsPlayer())
+  local isPlayer = (IsValid(entity) and entity:IsPlayer())
 
   if itemTable then
     local bAllowPlayerStorage = (!isPlayer or itemTable.allowPlayerStorage != false)
@@ -33,7 +33,7 @@ function cw.storage:CanGiveTo(itemTable)
     local bAllowPlayerGive = (!isPlayer or itemTable.allowPlayerGive != false)
     local bAllowEntityGive = (isPlayer or itemTable.allowEntityGive != false)
     local bAllowStorage = (itemTable.allowStorage != false)
-    local bIsShipment = (entity and entity:GetClass() == 'cw_shipment')
+    local bIsShipment = (IsValid(entity) and entity:GetClass() == 'cw_shipment')
     local bAllowGive = (itemTable.allowGive != false)
 
     if bIsShipment or (bAllowPlayerStorage and bAllowPlayerGive
@@ -54,7 +54,7 @@ end
 -- @see cw.storage:CanGiveTo
 function cw.storage:CanTakeFrom(itemTable)
   local entity = cw.storage:GetEntity()
-  local isPlayer = (entity and entity:IsPlayer())
+  local isPlayer = (IsValid(entity) and entity:IsPlayer())
 
   if itemTable then
     local bAllowPlayerStorage = (!isPlayer or itemTable.allowPlayerStorage != false)
@@ -62,7 +62,7 @@ function cw.storage:CanTakeFrom(itemTable)
     local bAllowPlayerTake = (!isPlayer or itemTable.allowPlayerTake != false)
     local bAllowEntityTake = (isPlayer or itemTable.allowEntityTake != false)
     local bAllowStorage = (itemTable.allowStorage != false)
-    local bIsShipment = (entity and entity:GetClass() == 'cw_shipment')
+    local bIsShipment = (IsValid(entity) and entity:GetClass() == 'cw_shipment')
     local bAllowTake = (itemTable.allowTake != false)
 
     if bIsShipment or (bAllowPlayerStorage and bAllowPlayerTake

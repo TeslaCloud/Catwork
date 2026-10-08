@@ -2,13 +2,16 @@
 -- and the loot table.
 --
 -- Registers `garbage_respawn_delay`, `garbage_pickup_time` and `garbage_item_percentage`. Spawn points live in
--- `cwGarbage.garbagePoints` and are kept per map in `plugins/garbage/<map>`. `cwGarbage:AddItem` adds an item ID with
--- a chance to `cwGarbage.stored`, and the default loot (junk, seeds, crafting materials, broken weapons) is added at
--- the bottom of the file.
+-- `cwGarbage.garbagePoints` and are kept per map in `plugins/garbage/<map>`; the pile each point last spawned is in
+-- `cwGarbage.piles`. `cwGarbage:AddItem` adds an item ID with a chance to `cwGarbage.stored`, and the default loot
+-- (junk, seeds, crafting materials, broken weapons) is added at the bottom of the file.
 
 config.Add('garbage_respawn_delay', 400)
 config.Add('garbage_pickup_time', 20, true)
 config.Add('garbage_item_percentage', 30)
+
+-- Kept apart from the spawn points, which are saved as they are. Keyed by the point's table.
+cwGarbage.piles = cwGarbage.piles or setmetatable({}, { __mode = 'k' })
 
 --- Saves the garbage spawn points of the current map to the schema data.
 --
@@ -18,29 +21,36 @@ function cwGarbage:SaveGarbageSpawnPoints()
 end
 
 --- Loads the garbage spawn points of the current map and makes each spawn as soon as possible.
+--
+-- The list is rebuilt without the gaps that removed points left in older data.
 function cwGarbage:LoadGarbageSpawnPoints()
-  self.garbagePoints = cw.core:RestoreSchemaData('plugins/garbage/'..game.GetMap())
+  self.garbagePoints = {}
 
-  if !self.garbagePoints then
-    self.garbagePoints = {}
-  end
-
-  for k, v in pairs(self.garbagePoints) do
+  for k, v in pairs(cw.core:RestoreSchemaData('plugins/garbage/'..game.GetMap())) do
     v.nextSpawn = 0
+
+    self.garbagePoints[#self.garbagePoints + 1] = v
   end
 end
 
---- Spawns a garbage pile at a spawn point.
+--- Spawns a garbage pile at a spawn point and remembers it as the point's pile.
 --
 -- @param pointTable [Map The spawn point, with `position` and `angles`]
+-- @return [Entity The pile, or `nil` when it could not be created]
 function cwGarbage:SpawnGarbage(pointTable)
   local entity = ents.Create('cw_garbage')
+
+  if !IsValid(entity) then return end
 
   entity:SetPos(pointTable.position)
   entity:Spawn()
 
   if IsValid(entity) then
     entity:SetAngles(pointTable.angles)
+
+    self.piles[pointTable] = entity
+
+    return entity
   end
 end
 
@@ -64,7 +74,7 @@ do
   cwGarbage:AddItem('breens_water', 80)
   cwGarbage:AddItem('broken_shotgun', 2)
   cwGarbage:AddItem('zip_tie', 10)
-  cwGarbage:AddItem('broken_pistol', 2)
+  cwGarbage:AddItem('broken_uspmatch', 2)
   cwGarbage:AddItem('broken_mp7', 1)
   cwGarbage:AddItem('broken_357', 1)
   cwGarbage:AddItem('broken_m1911', 1)

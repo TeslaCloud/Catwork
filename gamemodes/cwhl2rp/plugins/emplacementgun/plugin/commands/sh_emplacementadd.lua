@@ -11,8 +11,6 @@ function COMMAND:OnRun(player, arguments)
   local trace = player:GetEyeTraceNoCursor()
   if !trace.Hit then return end
 
-  local shouldDissolve = cw.core:ToBool(arguments[1])
-
   local emplacementGun = ents.Create('cw_emplacementgun')
   local entity = emplacementGun:SpawnFunction(player, trace)
   emplacementGun:Remove()

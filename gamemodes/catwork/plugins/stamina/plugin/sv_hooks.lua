@@ -3,16 +3,16 @@
 --
 -- `PlayerThink` runs a drain timer per player while they run and a regeneration timer while they do not, at rates set
 -- by the `stam_drain_scale` and `stam_regen_scale` configs, health and the endurance attribute. Jumping and punching
--- cost stamina too, and the `PlayerShouldStaminaDrain` and `PlayerShouldStaminaRegenerate` hooks let other plugins
--- stop either timer.
+-- cost stamina too, and other plugins can stop either timer by returning `false` from the `PlayerShouldStaminaDrain`
+-- and `PlayerShouldStaminaRegenerate` hooks.
 
---- Called when a player's character data is saved; rounds the `stamina` value.
+--- Called when a player's character data is saved; rounds the `Stamina` value.
 --
 -- @param player [Player The player whose character is saved]
 -- @param data [Map The character data about to be saved]
 function cwStamina:PlayerSaveCharacterData(player, data)
-  if data['stamina'] then
-    data['stamina'] = math.Round(data['stamina'])
+  if data['Stamina'] then
+    data['Stamina'] = math.Round(data['Stamina'])
   end
 end
 
@@ -61,37 +61,20 @@ end
 
 --- Called every second for each player; copies their stamina character data to the `Stamina` net var.
 --
+-- The value is only sent to the player themselves, and only when it has changed.
+--
 -- @param player [Player The player being updated]
 -- @param curTime [Number The current time]
 function cwStamina:OnePlayerSecond(player, curTime)
-  player:SetNetVar('Stamina', math.floor(player:GetCharacterData('Stamina')))
-end
+  local stamina = math.floor(player:GetCharacterData('Stamina'))
 
---- Called to check whether a player's stamina should regenerate when they stop running.
---
--- Always true here; other plugins return false to stop regeneration.
---
--- @param player [Player The player who stopped running]
--- @return [Boolean Whether stamina regenerates]
-function cwStamina:PlayerShouldStaminaRegenerate(player)
-  return true
-end
-
---- Called to check whether a player's stamina should drain when they start running.
---
--- Always true here; other plugins return false to stop the drain.
---
--- @param player [Player The player who started running]
--- @return [Boolean Whether stamina drains]
-function cwStamina:PlayerShouldStaminaDrain(player)
-  return true
+  if player:GetNetVar('Stamina') != stamina then
+    player:SetLocalVar('Stamina', stamina)
+  end
 end
 
 do
   local running = {}
-  local regenScale = 0
-  local drainScale = 0
-  local run_speed = 0
 
   local function IsRunning(player)
     return running[player]
@@ -101,10 +84,6 @@ do
     local steamID = player:SteamID()
     local timerName = 'Stam::Run::'..steamID
 
-    if drainScale == 0 then
-      drainScale = config.GetVal('stam_drain_scale')
-    end
-
     running[player] = true
 
     timer.Pause('Stam::Regen::'..steamID)
@@ -112,6 +91,13 @@ do
     if shouldDrain then
       if !timer.Exists(timerName) then
         timer.Create(timerName, 0.2, 0, function()
+          if !IsValid(player) then
+            timer.Remove(timerName)
+
+            return
+          end
+
+          local drainScale = config.GetVal('stam_drain_scale')
           local attribute = cw.attributes:Fraction(player, ATB_ENDURANCE, 1, 0.25)
           local maxHealth = player:GetMaxHealth()
           local healthScale = (drainScale * (math.Clamp(player:Health(), maxHealth * 0.1, maxHealth) / maxHealth))
@@ -136,10 +122,6 @@ do
     local steamID = player:SteamID()
     local timerName = 'Stam::Regen::'..steamID
 
-    if regenScale == 0 then
-      regenScale = config.GetVal('stam_regen_scale')
-    end
-
     running[player] = false
 
     timer.Pause('Stam::Run::'..steamID)
@@ -147,8 +129,14 @@ do
     if shouldRegen then
       if !timer.Exists(timerName) then
         timer.Create(timerName, 0.5, 0, function()
+          if !IsValid(player) then
+            timer.Remove(timerName)
+
+            return
+          end
+
           local attribute = cw.attributes:Fraction(player, ATB_ENDURANCE, 1, 0.25)
-          local regeneration = regenScale + attribute
+          local regeneration = config.GetVal('stam_regen_scale') + attribute
 
           if player:Crouching() then
             regeneration = regeneration * 2
@@ -172,8 +160,8 @@ do
   --
   -- Jumping costs 2.5 stamina. Starting to run on the ground starts a drain timer, stopping starts a
   -- regeneration timer (twice as fast while crouching, capped at 100 minus the `Fatigue` character data);
-  -- the `PlayerShouldStaminaDrain` and `PlayerShouldStaminaRegenerate` hooks decide whether each timer
-  -- runs. Nothing changes while noclipping. The run speed in `infoTable` is lowered towards the walk speed
+  -- the `PlayerShouldStaminaDrain` and `PlayerShouldStaminaRegenerate` hooks stop a timer from running by
+  -- returning `false`. Nothing changes while noclipping. The run speed in `infoTable` is lowered towards the walk speed
   -- as stamina falls, and capped at the `run_speed` config.
   --
   -- @param player [Player The player being updated]
@@ -194,15 +182,11 @@ do
         player:ProgressAttribute(ATB_ENDURANCE, 0.02, true)
       else
         if !isRunTimerActive and (isRunning and player:IsOnGround()) then
-          StartRunning(player, plugin.Call('PlayerShouldStaminaDrain', player))
+          StartRunning(player, plugin.Call('PlayerShouldStaminaDrain', player) != false)
         elseif (isRunTimerActive) and !(isRunning) then
-          StopRunning(player, plugin.Call('PlayerShouldStaminaRegenerate', player))
+          StopRunning(player, plugin.Call('PlayerShouldStaminaRegenerate', player) != false)
         end
       end
-    end
-
-    if run_speed == 0 then
-      run_speed = config.GetVal('run_speed')
     end
 
     local newRunSpeed = infoTable.runSpeed * 2
@@ -211,7 +195,7 @@ do
     infoTable.runSpeed = math.Clamp(
       newRunSpeed - (diffRunSpeed - ((diffRunSpeed / 100) * player:GetCharacterData('Stamina'))),
       infoTable.walkSpeed,
-      run_speed
+      config.GetVal('run_speed')
     )
   end
 
@@ -224,6 +208,6 @@ do
     timer.Remove('Stam::Run::'..steamID)
     timer.Remove('Stam::Regen::'..steamID)
 
-    running[player] = false
+    running[player] = nil
   end
 end

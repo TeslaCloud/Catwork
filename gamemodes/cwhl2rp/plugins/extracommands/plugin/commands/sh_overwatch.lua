@@ -11,9 +11,9 @@ COMMAND.arguments = 1
 --
 -- Messages shorter than 6 characters are rejected.
 function COMMAND:OnRun(player, arguments)
-  local message = tostring(table.concat(arguments, ' '))
+  local message = table.concat(arguments, ' ')
 
-  if isstring(message) and string.len(message) >= 6 then
+  if string.utf8len(message) >= 6 then
     local listeners = {}
 
     for k, v in ipairs(_player.GetAll()) do

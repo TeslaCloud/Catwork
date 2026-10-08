@@ -10,33 +10,38 @@ COMMAND.cooldown = 5
 --- Puts some of the caller's cash into the open storage; the argument is the amount.
 --
 -- For a player storage the cash goes to that player. Respects the storage's weight and space and its
--- `CanGiveCash`/`OnGiveCash` callbacks.
+-- `CanGiveCash`/`OnGiveCash` callbacks, and refuses one-sided storages.
 function COMMAND:OnRun(player, arguments)
   local storageTable = player:GetStorageTable()
 
   if storageTable then
     local target = storageTable.entity
-    local cash = math.floor(tonumber(arguments[1]))
+    local cash = math.floor(tonumber(arguments[1]) or 0)
 
     if (target and !IsValid(target)) or !config.GetVal('cash_enabled') then
       return
     end
 
-    if cash and cash > 1 and cw.player:CanAfford(player, cash) then
+    if storageTable.isOneSided then
+      cw.player:Notify(player, L('StorageCannotGive'))
+      return
+    end
+
+    if cash >= 1 and cw.player:CanAfford(player, cash) then
       if !storageTable.CanGiveCash
       or (storageTable.CanGiveCash(player, storageTable, cash) != false) then
         if !target or !target:IsPlayer() then
-          local cashWeight = config.GetVal('cash_weight')
-          local myWeight = cw.storage:GetWeight(player)
+          local cashWeight = (storageTable.noCashWeight and 0) or config.GetVal('cash_weight')
+          local cashSpace = (storageTable.noCashSpace and 0) or config.GetVal('cash_space')
 
-          local cashSpace = config.GetVal('cash_space')
-          local mySpace = cw.storage:GetSpace(player)
-
-          if cw.storage:GetWeight(player) + (config.GetVal('cash_weight') * cash) <= storageTable.weight
-          and mySpace + (cashSpace * cash) <= storageTable.space then
-            cw.player:GiveCash(player, -cash, nil, true)
-            cw.storage:UpdateCash(player, storageTable.cash + cash)
+          -- The callback below stores the cash, so it must not run for cash that did not fit.
+          if cw.storage:GetWeight(player) + (cashWeight * cash) > storageTable.weight
+          or cw.storage:GetSpace(player) + (cashSpace * cash) > storageTable.space then
+            return
           end
+
+          cw.player:GiveCash(player, -cash, nil, true)
+          cw.storage:UpdateCash(player, storageTable.cash + cash)
         else
           cw.player:GiveCash(player, -cash, nil, true)
           cw.player:GiveCash(target, cash, nil, true)

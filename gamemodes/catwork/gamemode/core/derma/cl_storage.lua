@@ -6,6 +6,9 @@
 -- `StorageWeight`, `StorageSpace`, `StorageTake`, `StorageGive` and `StorageClose` hooks keep `cw.storage` and the
 -- window in sync with the server.
 
+local barBackgroundColor = Color(75, 75, 75, 255)
+local barUsedColor = Color(139, 215, 113, 255)
+
 local PANEL = {}
 
 --- Builds the storage window with a container list and, unless the storage is one-sided, the player's
@@ -74,31 +77,29 @@ function PANEL:RebuildPanel(storagePanel, storageType, usedWeight, weight, usedS
   local modelIcon = vgui.Create('DModelPanel', storagePanel)
   modelIcon:SetSize(100, 250)
 
-  local sequence
+  local modelSource = cw.client
 
   if storageType == 'Container' then
-    local ent = cw.storage:GetEntity()
+    modelSource = cw.storage:GetEntity()
+  end
 
-    if IsValid(ent) then
-      modelIcon:SetModel(ent:GetModel())
-      sequence = ent:GetSequence()
+  if IsValid(modelSource) then
+    modelIcon:SetModel(modelSource:GetModel())
+  end
+
+  local modelEntity = modelIcon:GetEntity()
+
+  if IsValid(modelEntity) then
+    local bone = modelEntity:LookupBone('ValveBiped.Bip01_Head1')
+    local position = Vector(0, 0, 10)
+
+    if bone then
+      position = modelEntity:GetBonePosition(bone)
     end
-  else
-    local player = cw.client
 
-    modelIcon:SetModel(player:GetModel())
-    sequence = player:GetSequence()
+    modelIcon:SetLookAt(position - Vector(0, 0, 15))
+    modelEntity:SetSequence(modelSource:GetSequence())
   end
-
-  local bone = modelIcon:GetEntity():LookupBone('ValveBiped.Bip01_Head1')
-  local position = Vector(0, 0, 10)
-
-  if bone then
-    position = modelIcon:GetEntity():GetBonePosition(bone)
-  end
-
-  modelIcon:SetLookAt(position - Vector(0, 0, 15))
-  modelIcon:GetEntity():SetSequence(sequence)
 
   function modelIcon:LayoutEntity(entity) return self:RunAnimation() end
 
@@ -170,18 +171,22 @@ function PANEL:RebuildPanel(storagePanel, storageType, usedWeight, weight, usedS
 
     -- Called when the button is clicked.
     function button.DoClick(button)
-      local cashName = cw.option:GetKey('name_cash')
+      local amount = math.min(math.floor(tonumber(numberWang:GetValue()) or 0), storagePanel.cash)
+
+      if amount < 1 then
+        return
+      end
 
       if storageType == 'Inventory' then
-        cw.core:RunCommand('StorageGiveCash', numberWang:GetValue())
+        cw.core:RunCommand('StorageGiveCash', amount)
       else
-        cw.core:RunCommand('StorageTakeCash', numberWang:GetValue())
+        cw.core:RunCommand('StorageTakeCash', amount)
       end
     end
 
     numberWang.Stretch = true
     numberWang:SetDecimals(0)
-    numberWang:SetMinMax(0, storagePanel.cash)
+    numberWang:SetMinMax(1, storagePanel.cash)
     numberWang:SetValue(storagePanel.cash)
     numberWang:SizeToContents()
 
@@ -196,8 +201,8 @@ function PANEL:RebuildPanel(storagePanel, storageType, usedWeight, weight, usedS
     informationForm:SetName(L'Weight')
 
     local storageWeight = vgui.Create('cwStorageWeight', storagePanel)
-    storageWeight:SetWeight(weight)
-    storageWeight:SetUsedWeight(usedWeight)
+    storageWeight:SetWeight(storagePanel.weight)
+    storageWeight:SetUsedWeight(storagePanel.usedWeight)
 
     informationForm:AddItem(storageWeight)
   storagePanel:AddItem(informationForm)
@@ -208,8 +213,8 @@ function PANEL:RebuildPanel(storagePanel, storageType, usedWeight, weight, usedS
       informationForm:SetName(L'#Space')
 
       local storageSpace = vgui.Create('cwStorageSpace', storagePanel)
-      storageSpace:SetSpace(space)
-      storageSpace:SetUsedSpace(usedSpace)
+      storageSpace:SetSpace(storagePanel.space)
+      storageSpace:SetUsedSpace(storagePanel.usedSpace)
 
       informationForm:AddItem(storageSpace)
     storagePanel:AddItem(informationForm)
@@ -253,6 +258,8 @@ end
 --- Rebuilds the container side from `cw.storage` and, unless the storage is one-sided, the player's
 -- inventory side.
 function PANEL:Rebuild()
+  self.bRebuildQueued = nil
+
   self:RebuildPanel(self.containerPanel, 'Container', nil,
     cw.storage:GetWeight(),
     nil, cw.storage:GetSpace(),
@@ -274,15 +281,28 @@ function PANEL:Rebuild()
   end
 end
 
---- Keeps the window centred and rebuilds it when the player's cash changes.
+--- Rebuilds the window on the next frame.
+--
+-- The server sends an update for the cash, the limits and each item type when a storage is opened, so
+-- queueing them rebuilds the window once instead of once per message.
+function PANEL:QueueRebuild()
+  self.bRebuildQueued = true
+end
+
+--- Keeps the window centred and rebuilds it when a rebuild is queued or the player's cash changes.
 function PANEL:Think()
   self:SetSize(ScrW() * 0.5, ScrH() * 0.75)
   self:SetPos((ScrW() / 2) - (self:GetWide() / 2), (ScrH() / 2) - (self:GetTall() / 2))
 
-  if IsValid(self.inventoryPanel)
-  and cw.player:GetCash() != self.inventoryPanel.cash then
+  if self.bRebuildQueued
+  or (IsValid(self.inventoryPanel) and cw.player:GetCash() != self.inventoryPanel.cash) then
     self:Rebuild()
   end
+end
+
+--- Removes the window's background blur along with it.
+function PANEL:OnRemove()
+  cw.core:RemoveBackgroundBlur(self)
 end
 
 --- Lays out the frame with the container list on the left half and the inventory list on the right.
@@ -337,10 +357,17 @@ function PANEL:Init()
   self.cachedInfo = { model = model, skin = skin }
 end
 
---- Refreshes the storage item's tooltip and color, and its model when the item's icon changes.
+--- Refreshes the storage item's color, its model when the item's icon changes, and its tooltip while it is
+-- hovered.
 function PANEL:Think()
-  self.spawnIcon:SetMarkupToolTip(item.GetMarkupToolTip(self.itemTable))
-  self.spawnIcon:SetColor(self.itemTable.color)
+  local spawnIcon = self.spawnIcon
+
+  -- The tooltip is only drawn for the hovered panel, so the others keep the one they were built with.
+  if cw.core:GetActiveMarkupToolTip() == spawnIcon or !spawnIcon:GetMarkupToolTip() then
+    spawnIcon:SetMarkupToolTip(item.GetMarkupToolTip(self.itemTable))
+  end
+
+  spawnIcon:SetColor(self.itemTable.color)
 
   --[[ Check if the model or skin has changed and update the spawn icon. --]]
   local model, skin = item.GetIconInfo(self.itemTable)
@@ -398,30 +425,31 @@ function PANEL:Init()
   function self.spaceUsed.Paint(spaceUsed)
     local maximumWeight = math.floor(self:GetWeight())
     local usedWeight = math.floor(self:GetUsedWeight())
-    local color = Color(100, 100, 100, 255)
     local width = math.Clamp((spaceUsed:GetWide() / maximumWeight) * usedWeight, 0, spaceUsed:GetWide())
-    local red = math.Clamp((255 / maximumWeight) * usedWeight, 0, 255)
 
-    if color then
-      color.r = math.min(color.r - 25, 255)
-      color.g = math.min(color.g - 25, 255)
-      color.b = math.min(color.b - 25, 255)
-    end
-
-    cw.core:DrawSimpleGradientBox(0, 0, 0, spaceUsed:GetWide(), spaceUsed:GetTall(), color)
-    cw.core:DrawSimpleGradientBox(0, 0, 0, width, spaceUsed:GetTall(), Color(139, 215, 113, 255))
+    cw.core:DrawSimpleGradientBox(0, 0, 0, spaceUsed:GetWide(), spaceUsed:GetTall(), barBackgroundColor)
+    cw.core:DrawSimpleGradientBox(0, 0, 0, width, spaceUsed:GetTall(), barUsedColor)
   end
 end
 
---- Updates the weight bar's label with the used and maximum weight.
+--- Lays out the weight bar and updates its label when the used or maximum weight changes.
 function PANEL:Think()
+  local usedWeight = math.floor(self:GetUsedWeight())
+  local maximumWeight = math.floor(self:GetWeight())
+
+  if usedWeight != self.shownUsedWeight or maximumWeight != self.shownWeight then
+    self.shownUsedWeight = usedWeight
+    self.shownWeight = maximumWeight
+
+    self.weightLabel:SetText(usedWeight..'/'..maximumWeight..L('#Unit_Kilograms'))
+    self.weightLabel:SizeToContents()
+  end
+
   self.spaceUsed:SetSize(self:GetWide() - 2, self:GetTall() - 2)
-  self.weightLabel:SetText(math.floor(self:GetUsedWeight())..'/'..math.floor(self:GetWeight())..L('#Unit_Kilograms'))
   self.weightLabel:SetPos(
     self:GetWide() / 2 - self.weightLabel:GetWide() / 2,
     self:GetTall() / 2 - self.weightLabel:GetTall() / 2
   )
-  self.weightLabel:SizeToContents()
 end
 
 vgui.Register('cwStorageWeight', PANEL, 'DPanel')
@@ -470,28 +498,28 @@ function PANEL:Init()
   function self.spaceUsed.Paint(spaceUsed)
     local maximumSpace = math.floor(self:GetSpace())
     local usedSpace = math.floor(self:GetUsedSpace())
-
-    local color = Color(100, 100, 100, 255)
     local width = math.Clamp((spaceUsed:GetWide() / maximumSpace) * usedSpace, 0, spaceUsed:GetWide())
-    local red = math.Clamp((255 / maximumSpace) * usedSpace, 0, 255)
 
-    if color then
-      color.r = math.min(color.r - 25, 255)
-      color.g = math.min(color.g - 25, 255)
-      color.b = math.min(color.b - 25, 255)
-    end
-
-    cw.core:DrawSimpleGradientBox(0, 0, 0, spaceUsed:GetWide(), spaceUsed:GetTall(), color)
-    cw.core:DrawSimpleGradientBox(0, 0, 0, width, spaceUsed:GetTall(), Color(139, 215, 113, 255))
+    cw.core:DrawSimpleGradientBox(0, 0, 0, spaceUsed:GetWide(), spaceUsed:GetTall(), barBackgroundColor)
+    cw.core:DrawSimpleGradientBox(0, 0, 0, width, spaceUsed:GetTall(), barUsedColor)
   end
 end
 
---- Updates the space bar's label with the used and maximum space.
+--- Lays out the space bar and updates its label when the used or maximum space changes.
 function PANEL:Think()
+  local usedSpace = math.floor(self:GetUsedSpace())
+  local maximumSpace = math.floor(self:GetSpace())
+
+  if usedSpace != self.shownUsedSpace or maximumSpace != self.shownSpace then
+    self.shownUsedSpace = usedSpace
+    self.shownSpace = maximumSpace
+
+    self.space:SetText(usedSpace..'/'..maximumSpace..L('#Unit_Litres'))
+    self.space:SizeToContents()
+  end
+
   self.spaceUsed:SetSize(self:GetWide() - 2, self:GetTall() - 2)
-  self.space:SetText(math.floor(self:GetUsedSpace())..'/'..math.floor(self:GetSpace())..L('#Unit_Litres'))
   self.space:SetPos(self:GetWide() / 2 - self.space:GetWide() / 2, self:GetTall() / 2 - self.space:GetTall() / 2)
-  self.space:SizeToContents()
 end
 
 vgui.Register('cwStorageSpace', PANEL, 'DPanel')
@@ -525,21 +553,21 @@ end)
 netstream.Hook('StorageCash', function(data)
   if cw.storage:IsStorageOpen() then
     cw.storage.cash = data
-    cw.storage:GetPanel():Rebuild()
+    cw.storage:GetPanel():QueueRebuild()
   end
 end)
 
 netstream.Hook('StorageWeight', function(data)
   if cw.storage:IsStorageOpen() then
     cw.storage.weight = data
-    cw.storage:GetPanel():Rebuild()
+    cw.storage:GetPanel():QueueRebuild()
   end
 end)
 
 netstream.Hook('StorageSpace', function(data)
   if cw.storage:IsStorageOpen() then
     cw.storage.space = data
-    cw.storage:GetPanel():Rebuild()
+    cw.storage:GetPanel():QueueRebuild()
   end
 end)
 
@@ -568,7 +596,7 @@ netstream.Hook('StorageTake', function(data)
       cw.storage.inventory, data.uniqueID, data.itemID
     )
 
-    cw.storage:GetPanel():Rebuild()
+    cw.storage:GetPanel():QueueRebuild()
   end
 end)
 
@@ -584,7 +612,7 @@ netstream.Hook('StorageGive', function(data)
         )
       end
 
-      cw.storage:GetPanel():Rebuild()
+      cw.storage:GetPanel():QueueRebuild()
     end
   end
 end)

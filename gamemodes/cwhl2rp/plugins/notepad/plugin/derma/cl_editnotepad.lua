@@ -56,8 +56,6 @@ end
 --
 -- @param notepad [String The notepad's current text]
 function PANEL:Populate(notepad)
-  -- self.panelList:Clear();
-
   local textEntry = vgui.Create('DTextEntry')
   local button = vgui.Create('DButton')
 
@@ -77,7 +75,8 @@ function PANEL:Populate(notepad)
   function textEntry:Think()
     local text = self:GetValue()
 
-    if string.utf8len(text) > 64000 then
+    -- The byte length is never below the character count and costs nothing to check every frame.
+    if #text > 64000 and string.utf8len(text) > 64000 then
       self:SetRealValue(string.utf8sub(text, 0, 64000))
 
       surface.PlaySound('common/talk.wav')

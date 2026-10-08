@@ -15,6 +15,13 @@ COMMAND.arguments = 2
 -- The arguments are the target's name and a boolean.
 function COMMAND:OnRun(player, arguments)
   local ply = _player.Find(arguments[1])
+
+  if !IsValid(ply) then
+    cw.player:Notify(player, L('NotValidCharacter', arguments[1]))
+
+    return
+  end
+
   local bEnable = cw.core:ToBool(arguments[2])
   local result = cwCTO:SetPlayerBiosignal(ply, bEnable)
 

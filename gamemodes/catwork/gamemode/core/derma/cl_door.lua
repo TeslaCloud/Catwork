@@ -103,7 +103,6 @@ function PANEL:Init()
 
     if !cw.door:IsUnsellable() then
       local doorCost = config.GetVal('door_cost')
-      local doorText = 'Sell'
       local button = nil
 
       if doorCost > 0 then
@@ -114,25 +113,24 @@ function PANEL:Init()
 
       -- Called when the button is clicked.
       function button.DoClick(button)
+        local query, title = '#DoorMenu_UnownQuery', '#DoorMenu_UnownTitle'
+
         if doorCost > 0 then
-          Derma_Query(L('#DoorMenu_SellQuery'), L('#DoorMenu_SellTitle'), L('Yes'), function()
-            netstream.Start('DoorManagement', { cw.door:GetEntity(), 'Sell' })
-
-            gui.EnableScreenClicker(false)
-            self:Close() self:Remove()
-          end, L('No'), function()
-            gui.EnableScreenClicker(false)
-          end)
-        else
-          Derma_Query(L('#DoorMenu_UnownQuery'), L('#DoorMenu_UnownTitle'), L('Yes'), function()
-            netstream.Start('DoorManagement', { cw.door:GetEntity(), 'Sell' })
-
-            gui.EnableScreenClicker(false)
-            self:Close() self:Remove()
-          end, L('No'), function()
-            gui.EnableScreenClicker(false)
-          end)
+          query, title = '#DoorMenu_SellQuery', '#DoorMenu_SellTitle'
         end
+
+        Derma_Query(L(query), L(title), L('Yes'), function()
+          gui.EnableScreenClicker(false)
+
+          -- The window closes itself when the player walks away from the door while the query is open.
+          if IsValid(self) then
+            netstream.Start('DoorManagement', { cw.door:GetEntity(), 'Sell' })
+
+            self:Close() self:Remove()
+          end
+        end, L('No'), function()
+          gui.EnableScreenClicker(false)
+        end)
 
         gui.EnableScreenClicker(true)
       end
@@ -200,8 +198,11 @@ function PANEL:Rebuild()
     end
   end
 
-  if table.Count(categories) > 0 then
-    for k, v in pairs(categories) do
+  -- In order: complete access, basic access, no access.
+  for k = 1, 3 do
+    local v = categories[k]
+
+    if v then
       local collapsibleCategory = vgui.Create('DCollapsibleCategory', self.playersPanel)
       local panelList = vgui.Create('DPanelList', self.playersPanel)
 
@@ -310,29 +311,20 @@ vgui.Register('cwDoor', PANEL, 'DFrame')
 
 netstream.Hook('PurchaseDoor', function(data)
   local doorCost = config.GetVal('door_cost')
+  local query, title = '#DoorMenu_OwnQuery', '#DoorMenu_OwnTitle'
 
   if doorCost > 0 then
-    Derma_Query(
-      L('#DoorMenu_PurchaseQuery:'..cw.core:FormatCash(config.GetVal('door_cost'), nil, true)..';'),
-      L('#DoorMenu_PurchaseTitle'),
-      L('Yes'),
-      function()
-        netstream.Start('DoorManagement', { data, 'Purchase' })
-
-        gui.EnableScreenClicker(false)
-      end, L('No'), function()
-        gui.EnableScreenClicker(false)
-      end
-    )
-  else
-    Derma_Query(L('#DoorMenu_OwnQuery'), L('#DoorMenu_OwnTitle'), L('Yes'), function()
-      netstream.Start('DoorManagement', { data, 'Purchase' })
-
-      gui.EnableScreenClicker(false)
-    end, L('No'), function()
-      gui.EnableScreenClicker(false)
-    end)
+    query = '#DoorMenu_PurchaseQuery:'..cw.core:FormatCash(doorCost, nil, true)..';'
+    title = '#DoorMenu_PurchaseTitle'
   end
+
+  Derma_Query(L(query), L(title), L('Yes'), function()
+    netstream.Start('DoorManagement', { data, 'Purchase' })
+
+    gui.EnableScreenClicker(false)
+  end, L('No'), function()
+    gui.EnableScreenClicker(false)
+  end)
 
   gui.EnableScreenClicker(true)
 end)

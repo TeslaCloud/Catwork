@@ -34,9 +34,11 @@ function ITEM:OnUse(player, itemEntity)
     if (trace.MatType == MAT_DIRT or trace.MatType == MAT_GRASS) and !IsValid(trace.Entity) then
       local check = true
 
-      for k, v in pairs(ents.FindInSphere(trace.HitPos, 10)) do
+      for k, v in ipairs(ents.FindInSphere(trace.HitPos, 10)) do
         if v:GetClass() == 'cw_plant' then
           check = false
+
+          break
         end
       end
 
@@ -44,7 +46,7 @@ function ITEM:OnUse(player, itemEntity)
         local seed = ents.Create('cw_plant')
         local curTime = CurTime()
         local growtime = math.random(self.GrowTime[1], self.GrowTime[2]) * math.Clamp(
-          1 - cw.attributes:Fraction(player, ATB_FARM, 0.25),
+          1 - (cw.attributes:Fraction(player, ATB_FARM, 0.25) or 0),
           0.6,
           1
         )

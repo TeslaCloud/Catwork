@@ -22,9 +22,12 @@ function COMMAND:OnRun(player, arguments)
 
   if IsValid(entity) then
     entity:SetAngles(Angle(90, player:EyeAngles().yaw + 180, 0))
-    entity:SetSpawnType(arguments[1] - 1)
+    -- Anything but 1 gives the second type, as it did when the entity ignored a type it did not know.
+    local spawnType = (tonumber(arguments[1]) == 1 and TYPE_WATERCAN) or TYPE_SUPPLIES
 
-    cw.player:Notify(player, L('Factory_DispenserAdded', arguments[1]))
+    entity:SetSpawnType(spawnType)
+
+    cw.player:Notify(player, L('Factory_DispenserAdded', spawnType + 1))
   end
 end
 

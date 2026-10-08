@@ -13,7 +13,7 @@ function COMMAND:OnRun(player, arguments)
   local trace = player:GetEyeTraceNoCursor()
   local target = trace.Entity
 
-  if target and target:IsNPC() then
+  if IsValid(target) and target:IsNPC() then
     if trace.HitPos:Distance(player:GetShootPos()) <= 192 then
       target:SetNWString('cw_Name', arguments[1])
       target:SetNWString('cw_Title', arguments[2])

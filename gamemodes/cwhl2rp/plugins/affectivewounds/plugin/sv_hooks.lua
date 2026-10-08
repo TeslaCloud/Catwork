@@ -1,7 +1,7 @@
 --- Server-side hooks of the Affective wounds plugin that count the hits a player takes to the legs and arms and apply
 -- their effects.
 --
--- `PlayerTraceAttack` keeps the counts in the `legshotamount` and `armshotamount` net vars. When the leg count reaches
+-- `PlayerTraceAttack` keeps the counts on the player as `cwLegShots` and `cwArmShots`. When the leg count reaches
 -- `affectivewounds_legshotlimit` the player falls over for 5 seconds, and when the arm count reaches
 -- `affectivewounds_armshotlimit` the active weapon is dropped as an item unless its class is in the local
 -- `NoStripWeps` list. `PlayerCharacterLoaded` resets the counters, starting Overwatch and Civil Protection characters
@@ -19,22 +19,29 @@ local NoStripWeps = {
   ['cw_stunstick'] = true
 }
 
---- Called after a player's character has loaded; resets the leg and arm hit counters.
+--- Returns the hit count a player's limbs start from.
 --
 -- OTA and MPF characters start below zero by their faction's `affectivewounds_additionalhits*`
 -- config value when the plugin affects that faction, so they take extra hits.
+-- @param ply [Player The player]
+-- @return [Number Zero, or minus the additional hits]
+local function StartingHits(ply)
+  local faction = ply:GetFaction()
+
+  if faction == FACTION_OTA and config.Get('affectivewounds_affectota'):Get() then
+    return -config.Get('affectivewounds_additionalhitsota'):Get()
+  elseif faction == FACTION_MPF and config.Get('affectivewounds_affectmpf'):Get() then
+    return -config.Get('affectivewounds_additionalhitsmpf'):Get()
+  end
+
+  return 0
+end
+
+--- Called after a player's character has loaded; resets the leg and arm hit counters.
 -- @param ply [Player The player whose character loaded]
 function PLUGIN:PlayerCharacterLoaded(ply)
-  if ply:GetFaction() == FACTION_OTA and config.Get('affectivewounds_affectota'):Get() then
-    ply:SetNetVar('legshotamount', 0 - config.Get('affectivewounds_additionalhitsota'):Get())
-    ply:SetNetVar('armshotamount', 0 - config.Get('affectivewounds_additionalhitsota'):Get())
-  elseif ply:GetFaction() == FACTION_MPF and config.Get('affectivewounds_affectmpf'):Get() then
-    ply:SetNetVar('legshotamount', 0 - config.Get('affectivewounds_additionalhitsmpf'):Get())
-    ply:SetNetVar('armshotamount', 0 - config.Get('affectivewounds_additionalhitsmpf'):Get())
-  else
-    ply:SetNetVar('legshotamount', 0)
-    ply:SetNetVar('armshotamount', 0)
-  end
+  ply.cwLegShots = StartingHits(ply)
+  ply.cwArmShots = ply.cwLegShots
 end
 
 --- Called when a player is hit by a traced attack; counts limb hits and applies their effects.
@@ -48,58 +55,51 @@ end
 -- @param dir [Vector Direction of the attack]
 -- @param trace [Map Trace result; `HitGroup` decides which limb was hit]
 function PLUGIN:PlayerTraceAttack(ply, dmginfo, dir, trace)
-  if config.Get('affectivewounds_enabled'):Get() then
-    if ply:GetFaction() == FACTION_OTA and !config.Get('affectivewounds_affectota'):Get() then return end
-    if ply:GetFaction() == FACTION_MPF and !config.Get('affectivewounds_affectmpf'):Get() then return end
+  if !config.Get('affectivewounds_enabled'):Get() or !ply:HasInitialized() then return end
 
-    if !ply:InVehicle() and !cw.player:IsNoClipping(ply) then
-      if trace.HitGroup == HITGROUP_LEFTLEG or trace.HitGroup == HITGROUP_RIGHTLEG then
-        if !ply:IsRagdolled() then
-          if ply:GetNetVar('legshotamount') < config.Get('affectivewounds_legshotlimit'):Get() - 1 then
-            ply:SetNetVar('legshotamount', ply:GetNetVar('legshotamount') + 1)
-          else
-            if ply:GetFaction() == FACTION_MPF then
-              ply:SetNetVar('legshotamount', 0 - config.Get('affectivewounds_additionalhitsmpf'):Get())
-            elseif ply:GetFaction() == FACTION_OTA then
-              ply:SetNetVar('legshotamount', 0 - config.Get('affectivewounds_additionalhitsota'):Get())
-            else
-              ply:SetNetVar('legshotamount', 0)
-            end
+  local faction = ply:GetFaction()
 
-            cw.player:SetRagdollState(ply, RAGDOLL_FALLENOVER, 5)
-          end
-        end
-      end
+  if faction == FACTION_OTA and !config.Get('affectivewounds_affectota'):Get() then return end
+  if faction == FACTION_MPF and !config.Get('affectivewounds_affectmpf'):Get() then return end
+  if ply:InVehicle() or cw.player:IsNoClipping(ply) then return end
 
-      if trace.HitGroup == HITGROUP_LEFTARM or trace.HitGroup == HITGROUP_RIGHTARM then
-        if ply:GetNetVar('armshotamount') < config.Get('affectivewounds_armshotlimit'):Get() - 1 then
-          ply:SetNetVar('armshotamount', ply:GetNetVar('armshotamount') + 1)
-        else
-          if ply:GetFaction() == FACTION_MPF then
-            ply:SetNetVar('armshotamount', 0 - config.Get('affectivewounds_additionalhitsmpf'):Get())
-          elseif ply:GetFaction() == FACTION_OTA then
-            ply:SetNetVar('armshotamount', 0 - config.Get('affectivewounds_additionalhitsota'):Get())
-          else
-            ply:SetNetVar('armshotamount', 0)
-          end
+  local hitGroup = trace.HitGroup
 
-          local activeWep = ply:GetActiveWeapon()
-          local wepClass = IsValid(activeWep) and activeWep:GetClass()
+  if hitGroup == HITGROUP_LEFTLEG or hitGroup == HITGROUP_RIGHTLEG then
+    if ply:IsRagdolled() then return end
 
-          if wepClass and !NoStripWeps[wepClass] then
-            if IsValid(activeWep) then
-              local dropPos = ply:GetPos() + Vector(0, 0, 35) + ply:GetAngles():Forward() * 4
-              local itemTable = item.GetByWeapon(activeWep)
-              local entity = cw.entity:CreateItem(ply, itemTable, dropPos)
+    local hits = (ply.cwLegShots or 0) + 1
 
-              if IsValid(entity) then
-                ply:TakeItem(itemTable, true)
-                ply:SelectWeapon('cw_hands')
-                ply:StripWeapon(wepClass)
-              end
-            end
-          end
-        end
+    if hits < config.Get('affectivewounds_legshotlimit'):Get() then
+      ply.cwLegShots = hits
+    else
+      ply.cwLegShots = StartingHits(ply)
+
+      cw.player:SetRagdollState(ply, RAGDOLL_FALLENOVER, 5)
+    end
+  elseif hitGroup == HITGROUP_LEFTARM or hitGroup == HITGROUP_RIGHTARM then
+    local hits = (ply.cwArmShots or 0) + 1
+
+    if hits < config.Get('affectivewounds_armshotlimit'):Get() then
+      ply.cwArmShots = hits
+
+      return
+    end
+
+    ply.cwArmShots = StartingHits(ply)
+
+    local activeWep = ply:GetActiveWeapon()
+    local wepClass = IsValid(activeWep) and activeWep:GetClass()
+
+    if wepClass and !NoStripWeps[wepClass] then
+      local dropPos = ply:GetPos() + Vector(0, 0, 35) + ply:GetAngles():Forward() * 4
+      local itemTable = item.GetByWeapon(activeWep)
+      local entity = cw.entity:CreateItem(ply, itemTable, dropPos)
+
+      if IsValid(entity) then
+        ply:TakeItem(itemTable)
+        ply:SelectWeapon('cw_hands')
+        ply:StripWeapon(wepClass)
       end
     end
   end

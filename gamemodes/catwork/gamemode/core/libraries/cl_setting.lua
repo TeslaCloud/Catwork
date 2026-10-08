@@ -27,7 +27,6 @@ cw.setting.stored = cw.setting.stored or {}
 -- @param Condition=nil [Function Returns whether the setting is shown; shown always when `nil`]
 -- @return [String Index of the setting, which is `conVar`]
 function cw.setting:AddNumberSlider(category, text, conVar, minimum, maximum, decimals, toolTip, Condition)
-//	local index = string.lower(string.gsub(category.."|"..text, " ", "_"))
   local index = conVar
 
   self.stored[index] = {
@@ -54,7 +53,6 @@ end
 -- @param Condition=nil [Function Returns whether the setting is shown; shown always when `nil`]
 -- @return [String Index of the setting, which is `conVar`]
 function cw.setting:AddMultiChoice(category, text, conVar, options, toolTip, Condition)
-//	local index = string.lower(string.gsub(category.."|"..text, " ", "_"))
   local index = conVar
 
   if options then
@@ -87,7 +85,6 @@ end
 -- @param Condition=nil [Function Returns whether the setting is shown; shown always when `nil`]
 -- @return [String Index of the setting, which is `conVar`]
 function cw.setting:AddNumberWang(category, text, conVar, minimum, maximum, decimals, toolTip, Condition)
-//	local index = string.lower(string.gsub(category.."|"..text, " ", "_"))
   local index = conVar
 
   self.stored[index] = {
@@ -113,7 +110,6 @@ end
 -- @param Condition=nil [Function Returns whether the setting is shown; shown always when `nil`]
 -- @return [String Index of the setting, which is `conVar`]
 function cw.setting:AddTextEntry(category, text, conVar, toolTip, Condition)
-//	local index = string.lower(string.gsub(category.."|"..text, " ", "_"))
   local index = conVar
 
   self.stored[index] = {
@@ -143,7 +139,6 @@ end
 -- @param Condition=nil [Function Returns whether the setting is shown; shown always when `nil`]
 -- @return [String Index of the setting, which is `conVar`]
 function cw.setting:AddCheckBox(category, text, conVar, toolTip, Condition)
-//	local index = string.lower(string.gsub(category.."|"..text, " ", "_"))
   local index = conVar
 
   self.stored[index] = {
@@ -169,7 +164,6 @@ end
 -- @param Condition=nil [Function Returns whether the setting is shown; shown always when `nil`]
 -- @return [String Index of the setting, which is `conVar`]
 function cw.setting:AddColorMixer(category, text, conVar, toolTip, Condition)
-//	local index = string.lower(string.gsub(category.."|"..text, " ", "_"))
   local index = conVar
 
   self.stored[index] = {
@@ -254,11 +248,11 @@ function cw.setting:AddSettings()
   cw.setting:AddMultiChoice(frameworkStr, '#Language', 'cwLanguage', langTable, '#LangDesc')
   cw.setting:AddCheckBox(frameworkStr, '#EnableVignette', 'cwShowVignette', '#EnableVignetteDesc')
 
-  cw.setting:AddMultiChoice(themeStr, themeStr, 'cwActiveTheme', themeTable, '#ThemeDesc', function ()
+  cw.setting:AddMultiChoice(themeStr, themeStr, 'cwActiveTheme', themeTable, '#ThemeDesc', function()
     return (config.Get('modify_themes'):GetBoolean())
   end)
 
-  // Schemas can re-add the stuff that was here.
+  -- Schemas can re-add the stuff that was here.
 
   cw.setting:AddCheckBox(adminESP, '#EnableAdminESP', 'cwAdminESP', '#EnableAdminESPDesc', function()
     return cw.player:IsAdmin(cw.client)

@@ -108,7 +108,7 @@ function Schema:EntityHandleMenuOption(player, entity, option, arguments)
         return false
       end
     })
-  elseif entity:GetClass() == 'cw_breach' then
+  elseif entity:GetClass() == 'cw_breach' and arguments == 'cw_breachCharge' then
     entity:CreateDummyBreach()
     entity:BreachEntity(player)
   elseif entity:GetClass() == 'cw_radio' then
@@ -267,14 +267,6 @@ function Schema:GetPlayerDefaultInventory(player, character, inventory)
     cw.inventory:AddInstance(
       inventory, item.CreateInstance('cw_stunstick')
     )
-    /*cw.inventory:AddInstance(
-      inventory, item.CreateInstance("weapon_pistol")
-    )
-    for i = 1, 2 do
-      cw.inventory:AddInstance(
-        inventory, item.CreateInstance("ammo_pistol")
-      )
-    end*/
   elseif character.faction == FACTION_OTA then
     cw.inventory:AddInstance(
       inventory, item.CreateInstance('handheld_radio')
@@ -412,7 +404,7 @@ end
 function Schema:PlayerStorageShouldClose(player, storage)
   local entity = player:GetStorageEntity()
 
-  if player.searching and entity:IsPlayer() and entity:GetNetVar('tied') == 0 then
+  if player.searching and IsValid(entity) and entity:IsPlayer() and entity:GetNetVar('tied') == 0 then
     return true
   end
 end
@@ -644,14 +636,13 @@ end
 --- Called when a player presses a key.
 --
 -- Use starts untying the tied player being looked at. Scanner players play a scanner sound with the
--- attack keys, take a photo with reload that stuns facing non-Combine players nearby, and follow the
--- player they look at with walk (see the `CharFollow` command).
+-- attack keys, take a photo with reload (every two seconds at most) that stuns facing non-Combine players
+-- nearby, and follow the player they look at with walk (see the `CharFollow` command).
 -- @param player [Player The player]
 -- @param key [Number The `IN_*` key]
 function Schema:KeyPress(player, key)
   if key == IN_USE then
     if !self.scanners[player] then
-      local untieTime = Schema:GetDexterityTime(player)
       local target = player:GetEyeTraceNoCursor().Entity
       local entity = target
 
@@ -661,6 +652,8 @@ function Schema:KeyPress(player, key)
         if target and player:GetNetVar('tied') == 0 then
           if target:GetShootPos():Distance(player:GetShootPos()) <= 192 then
             if target:GetNetVar('tied') != 0 then
+              local untieTime = self:GetDexterityTime(player)
+
               cw.player:SetAction(player, 'untie', untieTime)
 
               cw.player:EntityConditionTimer(player, target, entity, untieTime, 192, function()
@@ -695,8 +688,11 @@ function Schema:KeyPress(player, key)
       local curTime = CurTime()
       local marker = self.scanners[player][2]
 
-      if IsValid(scanner) then
+      -- Every photo traces to and stuns the players around the scanner, so it cannot be spammed.
+      if IsValid(scanner) and (!player.nextScannerPhoto or curTime >= player.nextScannerPhoto) then
         local position = scanner:GetPos()
+
+        player.nextScannerPhoto = curTime + 2
 
         for k, v in ipairs(ents.FindInSphere(position, 384)) do
           if v:IsPlayer() and v:HasInitialized() and !self:PlayerIsCombine(v) then
@@ -736,9 +732,12 @@ end
 
 --- Called every tick.
 --
--- Moves each scanner's follow marker while its player holds forward (slower with sprint) and removes the
--- scanners of players who left.
+-- Moves each scanner's follow marker while its player holds forward (slower with sprint), replaces a
+-- scanner whose class no longer matches its player's `SYNTH` rank and removes the scanners of players who
+-- left.
 function Schema:Tick()
+  local outdated
+
   for k, v in pairs(self.scanners) do
     local scanner = v[1]
     local marker = v[2]
@@ -763,10 +762,11 @@ function Schema:Tick()
           scanner:Fire('SetFollowTarget', 'marker_'..k:SteamID64(), 0)
         end
 
-        if scannerClass == 'npc_cscanner' and self:IsPlayerCombineRank(k, 'SYNTH') then
-          self:MakePlayerScanner(k, true)
-        elseif scannerClass == 'npc_clawscanner' and !self:IsPlayerCombineRank(k, 'SYNTH') then
-          self:MakePlayerScanner(k, true)
+        local isSynth = (self:IsPlayerCombineRank(k, 'SYNTH') and true or false)
+
+        if isSynth != (scanner:GetClass() == 'npc_clawscanner') then
+          outdated = outdated or {}
+          outdated[#outdated + 1] = k
         end
       else
         self:ResetPlayerScanner(k)
@@ -781,6 +781,13 @@ function Schema:Tick()
       end
 
       self.scanners[k] = nil
+    end
+  end
+
+  -- Replaced after the loop, because this adds to the table being iterated.
+  if outdated then
+    for k, v in ipairs(outdated) do
+      self:MakePlayerScanner(v, true)
     end
   end
 end
@@ -851,20 +858,12 @@ end
 -- @param character [Character The character]
 -- @param info [Map The entry: `name`, `faction`, and `details`, `model` and `customClass`, which may be set]
 function Schema:PlayerAdjustCharacterScreenInfo(player, character, info)
-  if character.data['permakilled'] then
-    info.details = L('CharScreen_PermaKilled')
-  end
-
   if info.faction == FACTION_OTA then
     if self:IsStringCombineRank(info.name, 'EOW') then
       info.model = 'models/combine_super_soldier.mdl'
     end
 
-  --	if self.OTACanUse then
     info.details = L('CharScreen_OTAAvailable')
-  --	else
-  --		info.details = "Overwatch Transhuman Arms в данный момент в стазисе."
-  --	end
   elseif self:IsCombineFaction(info.faction) then
     if !self:CanUseCP(player) and self:GetPlayerCombineRank(player) < 6 then
       info.details = L('CharScreen_TooManyCP')
@@ -876,20 +875,12 @@ function Schema:PlayerAdjustCharacterScreenInfo(player, character, info)
       else
         info.model = 'models/combine_scanner.mdl'
       end
-
-    -- elseif (self:IsStringCombineRank(info.name, "SeC")) then
-    -- 	info.model = "models/metropolice/c08.mdl"
-    -- elseif (self:IsStringCombineRank(info.name, "DvL")) then
-    -- 	info.model = "models/metropolice/c08.mdl"
-    -- elseif (self:IsStringCombineRank(info.name, "EpU")) then
-    -- 	info.model = "models/metropolice/c08.mdl"
-    -- elseif (self:IsStringCombineRank(info.name, "OfC")) then
-    -- 	info.model = "models/metropolice/c08.mdl"
-    -- end
-
-    -- if (self:IsStringCombineRank(info.name, "GHOST")) then
-    -- 	info.model = "models/metropolice/c08.mdl"
     end
+  end
+
+  -- Set last, so the faction details above do not hide that the character is dead.
+  if character.data['permakilled'] then
+    info.details = L('CharScreen_PermaKilled')
   end
 
   if character.data['customclass'] then
@@ -900,34 +891,48 @@ end
 --- Called after a player has used the radio.
 --
 -- Sends the message to players near switched-on stationary radios tuned to the player's frequency, within
--- twice the talk radius.
+-- twice the talk radius, unless they heard or overheard it already.
 -- @param player [Player The player]
 -- @param text [String The message]
--- @param listeners [Map<Player> The players who heard the message]
--- @param eavesdroppers [Map<Player> The players who overheard it]
+-- @param listeners [List<Player> The players who heard the message]
+-- @param eavesdroppers [List<Player> The players who overheard it]
 function Schema:PlayerRadioUsed(player, text, listeners, eavesdroppers)
-  local newEavesdroppers = {}
-  local talkRadius = config.Get('talk_radius'):Get() * 2
   local frequency = player:GetCharacterData('frequency')
 
-  for k, v in ipairs(ents.FindByClass('cw_radio')) do
-    local radioPosition = v:GetPos()
-    local radioFrequency = v:GetFrequency()
+  if !frequency then return end
 
-    if !v:IsOff() and radioFrequency == frequency then
-      for k2, v2 in ipairs(_player.GetAll()) do
-        if v2:HasInitialized() and !listeners[v2] and !eavesdroppers[v2] then
-          if v2:GetPos():Distance(radioPosition) <= talkRadius then
-            newEavesdroppers[v2] = v2
-          end
+  local newEavesdroppers = {}
+  local talkRadius = (config.Get('talk_radius'):Get() * 2) ^ 2
+  local players
+  local heard
+
+  for k, v in ipairs(ents.FindByClass('cw_radio')) do
+    if !v:IsOff() and v:GetFrequency() == frequency then
+      local radioPosition = v:GetPos()
+
+      if !heard then
+        players = _player.GetAll()
+        heard = {}
+
+        for k2, v2 in ipairs(listeners) do
+          heard[v2] = true
         end
 
-        break
+        for k2, v2 in ipairs(eavesdroppers) do
+          heard[v2] = true
+        end
+      end
+
+      for k2, v2 in ipairs(players) do
+        if !heard[v2] and v2:HasInitialized() and v2:GetPos():DistToSqr(radioPosition) <= talkRadius then
+          newEavesdroppers[#newEavesdroppers + 1] = v2
+          heard[v2] = true
+        end
       end
     end
   end
 
-  if table.Count(newEavesdroppers) > 0 then
+  if #newEavesdroppers > 0 then
     chatbox.AddText(newEavesdroppers, text, {
       suffix = ' #Suffix_StationaryRadio ',
       sender = player,
@@ -941,19 +946,20 @@ end
 
 --- Called when a player's radio message info should be adjusted.
 --
--- Combine players reach every Combine player; everyone else reaches untied players with a handheld radio
--- on the same frequency.
+-- Combine players reach every Combine player; a player with a frequency also reaches untied players with
+-- a handheld radio on the same frequency.
 -- @param player [Player The player sending the message]
 -- @param info [Map The radio info; players are added to its `listeners`]
 function Schema:PlayerAdjustRadioInfo(player, info)
   local isCombine = player:IsCombine()
+  local frequency = player:GetCharacterData('frequency')
 
   for k, v in ipairs(_player.GetAll()) do
     if v:HasInitialized() then
-      if isCombine and Schema:PlayerIsCombine(v) then
+      if isCombine and v:IsCombine() then
         info.listeners[v] = v
-      elseif v:HasItemByID('handheld_radio')
-      and v:GetCharacterData('frequency') == player:GetCharacterData('frequency') then
+      -- A Combine player may have no frequency, which must not match radios that were never tuned.
+      elseif frequency and v:HasItemByID('handheld_radio') and v:GetCharacterData('frequency') == frequency then
         if v:GetNetVar('tied') == 0 then
           info.listeners[v] = v
         end
@@ -1191,9 +1197,6 @@ end
 function Schema:PlayerCanUseCharacter(player, character)
   if character.data['permakilled'] then
     return L('CharIsPermaKilled', character.name)
-  -- elseif (character.faction == FACTION_OTA) and !self:IsStringCombineRank(character.name, "GUARD")
-  -- and !self.OTACanUse then
-  --	return "Overwatch Transhuman Arms сейчас в стазисе!"
   elseif character.faction == FACTION_MPF then
     if !self:CanUseCP(player) and self:GetPlayerCombineRank(player) < 6 then
       return L('TooManyCPOnline')
@@ -1217,6 +1220,14 @@ function Schema:PlayerCanUseCharacter(player, character)
   end
 end
 
+local tiedBlacklist = {
+  OrderShipment = true,
+  Broadcast = true,
+  Dispatch = true,
+  Request = true,
+  Radio = true
+}
+
 --- Called when a player attempts to use a command.
 --
 -- Tied players cannot order shipments, broadcast, dispatch, request or use the radio.
@@ -1225,20 +1236,10 @@ end
 -- @param arguments [List<String> The command's arguments]
 -- @return [Boolean `false` to block the command]
 function Schema:PlayerCanUseCommand(player, commandTable, arguments)
-  if player:GetNetVar('tied') != 0 then
-    local blacklisted = {
-      'OrderShipment',
-      'Broadcast',
-      'Dispatch',
-      'Request',
-      'Radio'
-    }
+  if player:GetNetVar('tied') != 0 and tiedBlacklist[commandTable.name] then
+    cw.player:Notify(player, L('CantUseCommandWhenTied'))
 
-    if table.HasValue(blacklisted, commandTable.name) then
-      cw.player:Notify(player, L('CantUseCommandWhenTied'))
-
-      return false
-    end
+    return false
   end
 end
 
@@ -1532,59 +1533,70 @@ function Schema:PlayerCanEarnGeneratorCash(player, info, cash)
   end
 end
 
---- Called when a player's death sound should be played.
---
--- For Combine players whose biosignal is still active, every such Combine player hears the lost
--- biosignal announcement with the last three digits of the dead unit's name.
--- @param player [Player The player]
--- @param gender [String The player's gender]
--- @return [String A Civil Protection death sound, or `nil` for the default]
-function Schema:PlayerPlayDeathSound(player, gender)
-  if self:PlayerIsCombine(player) and !player:GetSharedVar('IsBiosignalGone') then
-    local Digits = string.Right(player:Name(), 3)
-    local sound = 'npc/metropolice/die'..math.random(1, 4)..'.wav'
+do
+  local digitSounds = {
+    [0] = 'zero',
+    [1] = 'one',
+    [2] = 'two',
+    [3] = 'three',
+    [4] = 'four',
+    [5] = 'five',
+    [6] = 'six',
+    [7] = 'seven',
+    [8] = 'eight',
+    [9] = 'nine'
+  }
+
+  local function EmitToUnits(units, sound)
+    for k, v in ipairs(units) do
+      if IsValid(v) then
+        v:EmitSound(sound)
+      end
+    end
+  end
+
+  --- Called when a player's death sound should be played.
+  --
+  -- For Combine players whose biosignal is still active, every such Combine player hears the lost
+  -- biosignal announcement with the digits among the last three characters of the dead unit's name.
+  -- @param player [Player The player]
+  -- @param gender [String The player's gender]
+  -- @return [String A Civil Protection death sound, or `nil` for the default]
+  function Schema:PlayerPlayDeathSound(player, gender)
+    if !self:PlayerIsCombine(player) or player:GetSharedVar('IsBiosignalGone') then return end
+
+    local digits = string.Right(player:Name(), 3)
+    local units = {}
 
     for k, v in ipairs(_player.GetAll()) do
-      if v:HasInitialized() then
-        if self:PlayerIsCombine(v) and !v:GetSharedVar('IsBiosignalGone') then
-          v:EmitSound('npc/overwatch/radiovoice/lostbiosignalforunit.wav')
-
-          timer.Simple(2.3, function()
-            for i = 1, #Digits do
-              timer.Simple((i - 1) / 3, function()
-                local DigitToString = {
-                  [1] = 'one',
-                  [2] = 'two',
-                  [3] = 'three',
-                  [4] = 'four',
-                  [5] = 'five',
-                  [6] = 'six',
-                  [7] = 'seven',
-                  [8] = 'eight',
-                  [9] = 'nine',
-                  [0] = 'zero'
-                }
-
-                local Digit = tonumber(string.sub(Digits, i, i))
-
-                v:EmitSound('npc/overwatch/radiovoice/'..DigitToString[Digit]..'.wav')
-
-                if i == #Digits then
-                  timer.Simple(0.5, function()
-                    v:EmitSound('npc/overwatch/radiovoice/remainingunitscontain.wav')
-                    timer.Simple(1.4, function()
-                      v:EmitSound('npc/metropolice/vo/off'..math.random(1, 4)..'.wav')
-                    end)
-                  end)
-                end
-              end)
-            end
-          end)
-        end
+      if v:HasInitialized() and v:IsCombine() and !v:GetSharedVar('IsBiosignalGone') then
+        units[#units + 1] = v
       end
     end
 
-    return sound
+    EmitToUnits(units, 'npc/overwatch/radiovoice/lostbiosignalforunit.wav')
+
+    for i = 1, #digits do
+      local digitSound = digitSounds[tonumber(string.sub(digits, i, i))]
+
+      if digitSound then
+        timer.Simple(2.3 + (i - 1) / 3, function()
+          EmitToUnits(units, 'npc/overwatch/radiovoice/'..digitSound..'.wav')
+        end)
+      end
+    end
+
+    local finish = 2.3 + (#digits - 1) / 3 + 0.5
+
+    timer.Simple(finish, function()
+      EmitToUnits(units, 'npc/overwatch/radiovoice/remainingunitscontain.wav')
+    end)
+
+    timer.Simple(finish + 1.4, function()
+      EmitToUnits(units, 'npc/metropolice/vo/off'..math.random(1, 4)..'.wav')
+    end)
+
+    return 'npc/metropolice/die'..math.random(1, 4)..'.wav'
   end
 end
 
@@ -1598,34 +1610,6 @@ function Schema:PlayerPlayPainSound(player, gender, damageInfo, hitGroup)
   if self:PlayerIsCombine(player) then
     return 'npc/metropolice/pain'..math.random(1, 4)..'.wav'
   end
-end
-
-local function SplitVoiceCodes(str)
-  local chars = string.Explode('', str)
-  local exploded = {}
-  local curPhrase = ''
-  local prevChar = ''
-  local curDelay = 0
-
-  for k, v in ipairs(chars) do
-    if v == '|' then
-      curDelay = curDelay + 1
-    elseif v != '|' and prevChar == '|' then
-      table.insert(exploded, { curPhrase, curDelay })
-      curDelay = 0
-      curPhrase = v
-    else
-      curPhrase = curPhrase..v
-    end
-
-    prevChar = v
-  end
-
-  if curPhrase != '' then
-    table.insert(exploded, { curPhrase, 0 })
-  end
-
-  return exploded
 end
 
 --- Called when a chat message's info should be adjusted.
@@ -1705,9 +1689,7 @@ end
 -- @param damageInfo [CTakeDamageInfo The damage, or `true` when the player's scanner was destroyed]
 function Schema:PlayerDeath(player, inflictor, attacker, damageInfo)
   if self:PlayerIsCombine(player) then
-    local location = self:PlayerGetLocation(player)
-
-    if !player:GetSharedVar('IsBiosignalGone') then
+    if cwCTO and !player:GetSharedVar('IsBiosignalGone') then
       cwCTO:DoPostBiosignalLoss(player)
     end
 
@@ -1736,7 +1718,8 @@ function Schema:PlayerDeath(player, inflictor, attacker, damageInfo)
   end
 
   if (attacker:IsPlayer() or attacker:IsNPC()) and damageInfo then
-    if config.Get('enable_permakill'):Get() and !player:GetCharacterData('permakilled')
+    -- A destroyed scanner passes `true` instead of the damage, which cannot be checked for its type.
+    if damageInfo != true and config.Get('enable_permakill'):Get() and !player:GetCharacterData('permakilled')
     and !cw.player:HasFlags(player, 'd') then
       local miscellaneousDamage =
         damageInfo:IsBulletDamage() or damageInfo:IsFallDamage() or damageInfo:IsExplosionDamage()
@@ -1810,13 +1793,6 @@ function Schema:PostPlayerSpawn(player, lightSpawn, changeClass, firstSpawn)
         player:SetArmor(50)
       end
     end
-
-    /*if (self:PlayerIsCombine(player) and player:GetAmmoCount("pistol") == 0) then
-      if (!player:HasItemByID("ammo_pistol")) then
-        player:GiveItem(item.CreateInstance("ammo_pistol"), true)
-        player:GiveItem(item.CreateInstance("ammo_pistol"), true)
-      end
-    end*/
   end
 
   if self:IsPlayerCombineRank(player, 'SCN') then
@@ -1825,8 +1801,10 @@ function Schema:PostPlayerSpawn(player, lightSpawn, changeClass, firstSpawn)
     self:ResetPlayerScanner(player)
   end
 
-  if player:GetNetVar('tied') != 0 then
-    self:TiePlayer(player, true)
+  local tied = player:GetNetVar('tied')
+
+  if tied != 0 then
+    self:TiePlayer(player, true, nil, tied == 2)
   end
 
   if clothes then
@@ -1907,8 +1885,6 @@ end
 -- @param hitGroup [Number The `HITGROUP_*` hit]
 -- @param damageInfo [CTakeDamageInfo The damage]
 function Schema:PlayerTakeDamage(player, inflictor, attacker, hitGroup, damageInfo)
-  local curTime = CurTime()
-
   if player:Armor() <= 0 then
     netstream.Start(player, 'Stunned', 0.5)
   else
@@ -1976,13 +1952,11 @@ function Schema:PlayerScaleDamageByHitGroup(player, attacker, hitGroup, damageIn
 
   damageInfo:ScaleDamage(1.5 - endurance)
 
-  if damageInfo:IsBulletDamage() then
-    if clothes and damageInfo:IsBulletDamage() then
-      local itemTable = item.FindByID(clothes)
+  if clothes and damageInfo:IsBulletDamage() then
+    local itemTable = item.FindByID(clothes)
 
-      if itemTable and itemTable.protection then
-        damageInfo:ScaleDamage(1 - itemTable.protection)
-      end
+    if itemTable and itemTable.protection then
+      damageInfo:ScaleDamage(1 - itemTable.protection)
     end
   end
 end
@@ -1997,15 +1971,13 @@ end
 function Schema:EntityTakeDamage(entity, damageInfo)
   local player = cw.entity:GetPlayer(entity)
   local attacker = damageInfo:GetAttacker()
-  local inflictor = damageInfo:GetInflictor()
-  local damage = damageInfo:GetDamage()
   local curTime = CurTime()
   local doDoorDamage = nil
 
   if player then
-    if !player.nextEnduranceTime or CurTime() > player.nextEnduranceTime then
+    if !player.nextEnduranceTime or curTime > player.nextEnduranceTime then
       player:ProgressAttribute(ATB_ENDURANCE, math.Clamp(damageInfo:GetDamage(), 0, 75) / 10, true)
-      player.nextEnduranceTime = CurTime() + 2
+      player.nextEnduranceTime = curTime + 2
     end
 
     if self.scanners[player] then
@@ -2019,15 +1991,13 @@ function Schema:EntityTakeDamage(entity, damageInfo)
     end
 
     if attacker:IsPlayer() and self:PlayerIsCombine(player) then
-      if attacker != player then
-        local location = Schema:PlayerGetLocation(player)
+      if attacker != player and (!player.nextUnderFire or curTime >= player.nextUnderFire) then
+        local location = self:PlayerGetLocation(player)
 
-        if !player.nextUnderFire or curTime >= player.nextUnderFire then
-          player.nextUnderFire = curTime + 15
+        player.nextUnderFire = curTime + 15
 
-          Schema:AddCombineDisplayLine(L('CombineDisplay_TraumaData'), Color(255, 255, 255, 255), nil, player)
-          Schema:AddCombineDisplayLine(L('CombineDisplay_UnitTrauma', location), Color(255, 0, 0, 255), nil, player)
-        end
+        self:AddCombineDisplayLine(L('CombineDisplay_TraumaData'), Color(255, 255, 255, 255), nil, player)
+        self:AddCombineDisplayLine(L('CombineDisplay_UnitTrauma', location), Color(255, 0, 0, 255), nil, player)
       end
     end
   end
@@ -2175,11 +2145,15 @@ do
       local faction = player:GetFaction()
 
       if faction == FACTION_MPF then
-        player:EmitSound(table.Random(ccaSounds[foot + 1]), volume * 130)
+        local sounds = ccaSounds[foot + 1]
+
+        player:EmitSound(sounds[math.random(#sounds)], volume * 130)
 
         return true
       elseif faction == FACTION_OTA then
-        player:EmitSound(table.Random(otaSounds[foot + 1]), volume * 100)
+        local sounds = otaSounds[foot + 1]
+
+        player:EmitSound(sounds[math.random(#sounds)], volume * 100)
 
         return true
       end

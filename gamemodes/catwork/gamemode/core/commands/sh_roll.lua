@@ -10,7 +10,14 @@ COMMAND.cooldown = 2
 --
 -- When the caller looks at a player, both roll against each other. The `AdjustRollNumber` hook can add to either roll.
 function COMMAND:OnRun(player, arguments)
-  local number = math.Clamp(math.floor(tonumber(arguments[1]) or 100), 0, 1000000000)
+  local number = tonumber(arguments[1])
+
+  -- tonumber('nan') is NaN, which no clamp fixes.
+  if !number or number != number then
+    number = 100
+  end
+
+  number = math.Clamp(math.floor(number), 0, 1000000000)
   local roll = math.random(0, number)
   local target = player:GetEyeTraceNoCursor().Entity
   local PVPMode = false

@@ -25,9 +25,12 @@ function COMMAND:OnRun(player, arguments)
       local position = player:GetEyeTraceNoCursor().HitPos
       local removed = 0
 
-      for k, v in pairs(cwSpawnPoints.spawnPoints[name]) do
-        if v.position:Distance(position) <= 256 then
-          cwSpawnPoints.spawnPoints[name][k] = nil
+      local spawnPoints = cwSpawnPoints.spawnPoints[name]
+
+      -- Removed backwards so that the list stays free of gaps, which `#` and a random pick rely on.
+      for k = #spawnPoints, 1, -1 do
+        if spawnPoints[k].position:Distance(position) <= 256 then
+          table.remove(spawnPoints, k)
 
           removed = removed + 1
         end
@@ -52,9 +55,11 @@ function COMMAND:OnRun(player, arguments)
       local position = player:GetEyeTraceNoCursor().HitPos
       local removed = 0
 
-      for k, v in pairs(cwSpawnPoints.spawnPoints['default']) do
-        if v.position:Distance(position) <= 256 then
-          cwSpawnPoints.spawnPoints['default'][k] = nil
+      local spawnPoints = cwSpawnPoints.spawnPoints['default']
+
+      for k = #spawnPoints, 1, -1 do
+        if spawnPoints[k].position:Distance(position) <= 256 then
+          table.remove(spawnPoints, k)
 
           removed = removed + 1
         end

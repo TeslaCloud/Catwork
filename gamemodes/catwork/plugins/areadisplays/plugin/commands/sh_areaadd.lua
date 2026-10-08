@@ -9,6 +9,12 @@ COMMAND.access = 's'
 COMMAND.arguments = 1
 COMMAND.optionalArguments = 3
 
+local classes = {
+  ['scrolling'] = 'Scrolling',
+  ['cinematic'] = 'Cinematic',
+  ['3d'] = '3D'
+}
+
 --- Adds an area in steps, using the point the player is looking at each time.
 --
 -- The first run with a name sets the box's minimum corner, the second its maximum, and for `3D`
@@ -23,7 +29,7 @@ function COMMAND:OnRun(player, arguments)
   if !areaPointData or areaPointData.name != name then
     player.cwAreaData = {
       name = name,
-      class = (arguments[4] != '' and arguments[4] or 'Scrolling'),
+      class = classes[string.lower(arguments[4] or '')] or 'Scrolling',
       scale = tonumber(arguments[2]),
       minimum = trace.HitPos
     }
@@ -45,9 +51,11 @@ function COMMAND:OnRun(player, arguments)
 
   local data = {
     name = areaPointData.name,
+    class = areaPointData.class,
     scale = areaPointData.scale,
     angles = trace.HitNormal:Angle(),
     expires = areaPointData.doesExpire,
+    doesExpire = areaPointData.doesExpire,
     minimum = areaPointData.minimum,
     maximum = areaPointData.maximum,
     position = trace.HitPos + (trace.HitNormal * 1.25)

@@ -10,6 +10,8 @@ function cwKarma:GetPlayerInfoText(playerInfoText)
 end
 
 local mat_karma = Material('materials/catwork/karma_bar.png')
+local colorBlack = Color(0, 0, 0)
+local colorWhite = Color(255, 255, 255)
 
 --- Called while the info menu is painted; draws the karma bar with a slider at the local player's karma.
 -- @param info [Map Drawing area with `x`, `y`, `width` and `height`; `info:Adjust(n)` moves it down by `n`]
@@ -27,7 +29,7 @@ function cwKarma:PaintInfoMenuExtras(info)
 
   y = y + adjust
 
-  draw.RoundedBox(4, x, y, w, 64, Color(0, 0, 0))
+  draw.RoundedBox(4, x, y, w, 64, colorBlack)
 
   local barWidth = w - 32
 
@@ -36,7 +38,7 @@ function cwKarma:PaintInfoMenuExtras(info)
   local centerPos = x + 16 + (barWidth / 2 - 2)
   local sliderPos = centerPos + ((barWidth / 2) * normal)
 
-  draw.RoundedBox(0, sliderPos, y + 14, 4, 36, Color(255, 255, 255))
+  draw.RoundedBox(0, sliderPos, y + 14, 4, 36, colorWhite)
 
   adjust = adjust + 70
 

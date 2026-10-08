@@ -5,6 +5,8 @@
 -- count and runs the `SetClass` command when clicked. `cwClassesItem` is reused by the class step of character
 -- creation.
 
+local backgroundColor = Color(200, 200, 200)
+
 local PANEL = {}
 
 --- Sizes the classes menu tab to the menu, creates its list and builds it.
@@ -42,7 +44,6 @@ function PANEL:Rebuild()
   self.panelList:Clear(true)
   self.classTable = nil
 
-  local available = nil
   local classes = {}
 
   for k, v in pairs(cw.class:GetStored()) do
@@ -97,9 +98,9 @@ function PANEL:OnSelected() self:Rebuild() end
 --- Does nothing; the list lays itself out.
 function PANEL:PerformLayout(w, h) end
 
---- Draws the white panel background.
+--- Draws the light grey panel background.
 function PANEL:Paint(w, h)
-  cdraw.DrawBox(0, 0, w, h, COLOR_WHITE)
+  cdraw.DrawBox(0, 0, w, h, backgroundColor)
 
   return true
 end
@@ -129,7 +130,6 @@ local PANEL = {}
 -- `Callback` runs with the class table on click instead of the `SetClass` command. The model can be
 -- changed through the `PlayerAdjustClassModelInfo` hook.
 function PANEL:Init()
-  local colorWhite = Color(0, 0, 0, 200)
   local parent = self:GetParent()
 
   self.classTable = parent.classTable
@@ -189,14 +189,19 @@ function PANEL:Init()
   end
 end
 
---- Refreshes the class entry's player count and keeps its icon in place.
+--- Refreshes the class entry's player count when it changes and keeps its icon in place.
 function PANEL:Think()
   if self.classTable and !self.overrideData.information then
-    self.information:SetText(
-      '#ClassesMenu_CurrentPlayers:'.._team.NumPlayers(self.classTable.index)..','..
-        cw.class:GetLimit(self.classTable.name)..';'
-    )
-    self.information:SizeToContents()
+    local players = _team.NumPlayers(self.classTable.index)
+    local limit = cw.class:GetLimit(self.classTable.name)
+
+    if players != self.shownPlayers or limit != self.shownLimit then
+      self.shownPlayers = players
+      self.shownLimit = limit
+
+      self.information:SetText('#ClassesMenu_CurrentPlayers:'..players..','..limit..';')
+      self.information:SizeToContents()
+    end
   end
 
   self.spawnIcon:SetPos(1, 1)

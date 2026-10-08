@@ -22,11 +22,9 @@ function ITEM:OnUse(player, itemEntity)
   if player:GetCharacterData('diseases') == 'insomnia' then
     player:SetCharacterData('diseases', 'none')
 
-    timer.Simple(360, function()
-      if math.random(1, 2) == 1 then
-        player:SetCharacterData('diseases', 'insomnia')
-      end
-    end)
+    if math.random(1, 2) == 1 then
+      cwDiseases:SetDiseaseDelayed(player, 360, 'none', 'insomnia')
+    end
   end
 
   player:SetCharacterData('Fatigue', 100)
@@ -40,29 +38,23 @@ if SERVER then
   -- Fires `PlayerHealed` with the giver as the healer. Returns `false` when no player is looked at.
   function ITEM:OnCustomFunction(player, name)
     if name == 'Give' then
-      local lookingPly = player:GetEyeTrace().Entity
+      local lookingPly = cwDiseases:FindPatient(player, self)
 
-      if lookingPly:IsPlayer() then
-        if lookingPly:GetCharacterData('diseases') == 'insomnia' then
-          lookingPly:SetCharacterData('diseases', 'none')
+      if !lookingPly then return false end
 
-          timer.Simple(360, function()
-            if math.random(1, 2) == 1 then
-              lookingPly:SetCharacterData('diseases', 'insomnia')
-            end
-          end)
+      if lookingPly:GetCharacterData('diseases') == 'insomnia' then
+        lookingPly:SetCharacterData('diseases', 'none')
+
+        if math.random(1, 2) == 1 then
+          cwDiseases:SetDiseaseDelayed(lookingPly, 360, 'none', 'insomnia')
         end
-
-        lookingPly:SetCharacterData('Fatigue', 100)
-        cw.player:Notify(player, L('Diseases_Gave_SleepingPills'))
-        player:TakeItem(player:FindItemByID('snotbad'))
-
-        hook.Run('PlayerHealed', lookingPly, player, self)
-      else
-        cw.player:Notify(player, L('Diseases_MustLookAtPerson'))
-
-        return false
       end
+
+      lookingPly:SetCharacterData('Fatigue', 100)
+      cw.player:Notify(player, L('Diseases_Gave_SleepingPills'))
+      player:TakeItem(self)
+
+      hook.Run('PlayerHealed', lookingPly, player, self)
     end
   end
 end

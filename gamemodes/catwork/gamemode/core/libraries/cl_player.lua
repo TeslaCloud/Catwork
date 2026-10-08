@@ -9,6 +9,10 @@ if !cw.player then
   include('sh_player.lua')
 end
 
+-- What a line of sight trace is stopped by.
+local SIGHT_MASK =
+  CONTENTS_SOLID + CONTENTS_MOVEABLE + CONTENTS_OPAQUE + CONTENTS_DEBRIS + CONTENTS_HITBOX + CONTENTS_MONSTER
+
 --- Returns whether the local player's inventory can take some more weight.
 -- @param weight [Number Weight to add]
 -- @return [Boolean Whether the total stays within `cw.player:GetMaxWeight`]
@@ -233,16 +237,18 @@ function cw.player:GetRealTrace(player, useFilterTrace)
     filter = player
   })
 
-  local newTrace = util.TraceLine({
-    endpos = eyePos + angles,
-    filter = player,
-    start = eyePos,
-    mask = CONTENTS_SOLID + CONTENTS_MOVEABLE + CONTENTS_OPAQUE + CONTENTS_DEBRIS + CONTENTS_HITBOX + CONTENTS_MONSTER
-  })
+  -- The hitbox trace can only replace the plain one in these cases, so it is not run otherwise.
+  if useFilterTrace or !IsValid(trace.Entity) or string.find(trace.Entity:GetClass(), 'vehicle') then
+    local newTrace = util.TraceLine({
+      endpos = eyePos + angles,
+      filter = player,
+      start = eyePos,
+      mask = SIGHT_MASK
+    })
 
-  if (IsValid(newTrace.Entity) and !newTrace.HitWorld and (!IsValid(trace.Entity)
-  or string.find(trace.Entity:GetClass(), 'vehicle'))) or useFilterTrace then
-    trace = newTrace
+    if useFilterTrace or (IsValid(newTrace.Entity) and !newTrace.HitWorld) then
+      trace = newTrace
+    end
   end
 
   return trace
@@ -345,8 +351,7 @@ function cw.player:CanSeeNPC(player, target, allowance, ignoreEnts)
   else
     local trace = {}
 
-    trace.mask =
-      CONTENTS_SOLID + CONTENTS_MOVEABLE + CONTENTS_OPAQUE + CONTENTS_DEBRIS + CONTENTS_HITBOX + CONTENTS_MONSTER
+    trace.mask = SIGHT_MASK
     trace.start = player:GetShootPos()
     trace.endpos = target:GetShootPos()
     trace.filter = { player, target }
@@ -384,8 +389,7 @@ function cw.player:CanSeePlayer(player, target, allowance, ignoreEnts)
   else
     local trace = {}
 
-    trace.mask =
-      CONTENTS_SOLID + CONTENTS_MOVEABLE + CONTENTS_OPAQUE + CONTENTS_DEBRIS + CONTENTS_HITBOX + CONTENTS_MONSTER
+    trace.mask = SIGHT_MASK
     trace.start = player:GetShootPos()
     trace.endpos = target:GetShootPos()
     trace.filter = { player, target }
@@ -421,8 +425,7 @@ function cw.player:CanSeeEntity(player, target, allowance, ignoreEnts)
   else
     local trace = {}
 
-    trace.mask =
-      CONTENTS_SOLID + CONTENTS_MOVEABLE + CONTENTS_OPAQUE + CONTENTS_DEBRIS + CONTENTS_HITBOX + CONTENTS_MONSTER
+    trace.mask = SIGHT_MASK
     trace.start = player:GetShootPos()
     trace.endpos = target:LocalToWorld(target:OBBCenter())
     trace.filter = { player, target }
@@ -452,11 +455,10 @@ end
 function cw.player:CanSeePosition(player, position, allowance, ignoreEnts)
   local trace = {}
 
-  trace.mask =
-    CONTENTS_SOLID + CONTENTS_MOVEABLE + CONTENTS_OPAQUE + CONTENTS_DEBRIS + CONTENTS_HITBOX + CONTENTS_MONSTER
+  trace.mask = SIGHT_MASK
   trace.start = player:GetShootPos()
   trace.endpos = position
-  trace.filter = player
+  trace.filter = { player }
 
   if ignoreEnts then
     if type(ignoreEnts) == 'table' then
@@ -713,7 +715,9 @@ function cw.player:HasFlags(player, flags, bByDefault, bIsStrict)
     end
 
     if !bIsStrict then
-      for k, v in ipairs(string.Explode('', flags)) do
+      for i = 1, #flags do
+        local v = string.sub(flags, i, i)
+
         if !bByDefault then
           local hasFlag = hook.Run('PlayerDoesHaveFlag', player, v)
 

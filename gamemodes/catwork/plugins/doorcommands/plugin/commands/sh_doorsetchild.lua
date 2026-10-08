@@ -18,11 +18,7 @@ function COMMAND:OnRun(player, arguments)
 
           cw.entity:SetDoorParent(door, player.cwParentDoor)
           cw.player:Notify(player, L('DoorCmds_ChildAdded'))
-
-          cwDoorCmds.infoTable = cwDoorCmds.infoTable or {}
-          table.insert(cwDoorCmds.infoTable, door)
-
-          netstream.Start(player, 'doorParentESP', cwDoorCmds.infoTable)
+          cwDoorCmds:SendParentESP(player)
         else
           cw.player:Notify(player, L('DoorCmds_CannotParentToItself'))
         end

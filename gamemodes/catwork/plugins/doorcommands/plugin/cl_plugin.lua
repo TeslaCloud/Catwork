@@ -6,6 +6,9 @@
 config.AddToSystem('#DoorsDefaultHidden', 'default_doors_hidden', '#DoorsDefaultHiddenDesc')
 config.AddToSystem('#DoorsSaveState', 'doors_save_state', '#DoorsSaveStateDesc')
 
+local colorChild = Color(0, 170, 170, 255)
+local colorParent = Color(255, 100, 0, 255)
+
 -- Called to sync the ESP data.
 netstream.Hook('doorParentESP', function(data)
   cwDoorCmds.doorHalos = data
@@ -15,17 +18,23 @@ end)
 --
 -- The doors come from the `doorParentESP` netstream message sent by the door parenting commands.
 function cwDoorCmds:PreDrawHalos()
-  self.doorHalos = self.doorHalos or {}
+  local doorHalos = self.doorHalos
 
-  for k, door in pairs(self.doorHalos) do
+  if !doorHalos or next(doorHalos) == nil then return end
+
+  local children = {}
+
+  for k, door in pairs(doorHalos) do
     if IsValid(door) then
-      local color = Color(0, 170, 170, 255)
-
       if k == 'Parent' then
-        color = Color(255, 100, 0, 255)
+        halo.Add({ door }, colorParent, 1, 1, 1, true, true)
+      else
+        children[#children + 1] = door
       end
-
-      halo.Add({ door }, color, 1, 1, 1, true, true)
     end
+  end
+
+  if #children > 0 then
+    halo.Add(children, colorChild, 1, 1, 1, true, true)
   end
 end

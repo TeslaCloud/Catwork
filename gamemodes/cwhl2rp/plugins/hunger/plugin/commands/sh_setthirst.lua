@@ -1,6 +1,5 @@
---- Registers the admin command `/CharSetThirst` of the Hunger plugin, which sets the target character's `Thirst`
--- character data to the given amount, 100 by default; its aliases `/SetFatigue`, `/SetSleep` and `/CharSetSleep` are
--- the same as those of `/CharSetFatigue`.
+--- Registers the admin command `/CharSetThirst` (alias `/SetThirst`) of the Hunger plugin, which sets the target
+-- character's `Thirst` character data to the given amount, 100 by default.
 
 local PLUGIN = PLUGIN
 
@@ -10,16 +9,18 @@ COMMAND.text = '#Command_Charsetthirst_Syntax'
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = 'a'
 COMMAND.arguments = 2
-COMMAND.alias = { 'SetFatigue', 'SetSleep', 'CharSetSleep' }
+COMMAND.alias = { 'SetThirst' }
 
 --- Sets a character's thirst to the given amount, 100 by default.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
-  local amount = arguments[2]
+  local amount = tonumber(arguments[2])
 
-  if !amount then
+  if !amount or amount != amount then
     amount = 100
   end
+
+  amount = math.Clamp(amount, 0, 100)
 
   if target then
     target:SetCharacterData('Thirst', amount)

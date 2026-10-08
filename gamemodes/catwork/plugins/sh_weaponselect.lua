@@ -23,6 +23,8 @@ end
 
 if SERVER then
   concommand.Add('selectweapon', function(player, command, arguments)
+    if !IsValid(player) then return end
+
     local weapon = FixTable(player:GetWeapons())[tonumber(arguments[1]) or 1]
 
     if IsValid(weapon) then
@@ -43,6 +45,11 @@ PLUGIN.ForcedDir = nil
 PLUGIN.ForcedIndex = nil
 
 local function RelativeClamp(n, min, max)
+  -- An empty range would never be reached by wrapping around.
+  if max < min then
+    return min
+  end
+
   if n > max then
     return RelativeClamp(n - max, min, max)
   elseif n < min then
@@ -146,8 +153,13 @@ function PLUGIN:DrawWeaponInformation(itemTable, weapon, x, y, alpha)
         '</color>\n'
     end
 
-    weapon.InfoMarkup = markup.Parse(text..'</font>', 248)
-    cw.core:OverrideMarkupDraw(weapon.InfoMarkup)
+    -- Parsing markup is slow, and this runs every frame while the selector is open.
+    if weapon.cwInfoMarkupText != text then
+      weapon.cwInfoMarkupText = text
+      weapon.InfoMarkup = markup.Parse(text..'</font>', 248)
+
+      cw.core:OverrideMarkupDraw(weapon.InfoMarkup)
+    end
 
     local weaponMarkupHeight = weapon.InfoMarkup:GetHeight()
     local realY = y - (weaponMarkupHeight / 2)

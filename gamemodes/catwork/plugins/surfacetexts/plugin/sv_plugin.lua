@@ -63,7 +63,7 @@ function cwSurfaceTexts:Remove(player)
 end
 
 netstream.Hook('cw3DText_Remove', function(player, idx)
-  if player:IsAdmin() then
+  if player:IsAdmin() and idx != nil and cwSurfaceTexts.stored[idx] then
     cwSurfaceTexts.stored[idx] = nil
     cwSurfaceTexts:Save()
 

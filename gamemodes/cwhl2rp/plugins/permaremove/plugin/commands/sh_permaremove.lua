@@ -16,13 +16,10 @@ function COMMAND:OnRun(player, arguments)
   local ent = player:GetEyeTraceNoCursor().Entity
 
   if IsValid(ent) and !ent:IsPlayer() and !ent:IsWorld() then
-    local data = {
+    PLUGIN.removeData[#PLUGIN.removeData + 1] = {
       class = ent:GetClass(),
-      position = ent:GetPos(),
-      entity = ent
+      position = ent:GetPos()
     }
-
-    PLUGIN.removeData[#PLUGIN.removeData + 1] = data
     PLUGIN:SaveRemoves()
     ent:Remove()
 

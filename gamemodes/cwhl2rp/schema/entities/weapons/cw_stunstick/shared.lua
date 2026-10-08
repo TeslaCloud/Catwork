@@ -64,6 +64,14 @@ if CLIENT then
   SWEP.ThirdPersonGlowSprite = Material('sprites/light_glow02_add')
 end
 
+-- The view model's spark attachments: `spark1a` to `spark9a`, then `spark1b` to `spark9b`.
+local sparkAttachments = {}
+
+for i = 1, 9 do
+  sparkAttachments[i] = 'spark'..i..'a'
+  sparkAttachments[i + 9] = 'spark'..i..'b'
+end
+
 --- Plays the draw animation.
 -- @return [Boolean Always `true` to allow the deploy]
 function SWEP:Deploy()
@@ -171,7 +179,7 @@ end
 function SWEP:DrawWorldModel()
   self:DrawModel()
 
-  if self.Owner:IsWeaponRaised() then
+  if IsValid(self.Owner) and self.Owner:IsWeaponRaised() then
     local attachment = self:GetAttachment(1)
     local curTime = CurTime()
     local scale = math.abs(math.sin(curTime) * 4)
@@ -182,7 +190,7 @@ function SWEP:DrawWorldModel()
     if attachment and attachment.Pos then
       cam.Start3D(EyePos(), EyeAngles())
         render.SetMaterial(self.ThirdPersonGlowSprite)
-        render.DrawSprite(attachment.Pos, 8 + scale, 8 + scale, Color(255, 255, 255, 255))
+        render.DrawSprite(attachment.Pos, 8 + scale, 8 + scale, color_white)
       cam.End3D()
     end
   end
@@ -199,7 +207,6 @@ function SWEP:ViewModelDrawn()
         local curTime = CurTime()
         local scale = math.abs(math.sin(curTime) * 4)
         local alpha = math.abs(math.sin(curTime) / 4)
-        -- local i
 
         self.FirstPersonGlowSprite:SetFloat('$alpha', 0.7 + alpha)
         self.ThirdPersonGlowSprite:SetFloat('$alpha', 0.5 + alpha)
@@ -207,38 +214,25 @@ function SWEP:ViewModelDrawn()
         if attachment and attachment.Pos then
           cam.Start3D(EyePos(), EyeAngles())
             render.SetMaterial(self.ThirdPersonGlowSprite)
-            render.DrawSprite(attachment.Pos, 8 + scale, 8 + scale, Color(255, 255, 255, 255))
+            render.DrawSprite(attachment.Pos, 8 + scale, 8 + scale, color_white)
 
             self.FirstPersonGlowSprite:SetFloat('$alpha', 0.5 + alpha)
 
-            for i = 1, 9 do
-              local attachment = viewModel:GetAttachment(viewModel:LookupAttachment('spark'..i..'a'))
+            for k, v in ipairs(sparkAttachments) do
+              local spark = viewModel:GetAttachment(viewModel:LookupAttachment(v))
 
-              if attachment.Pos then
+              if spark and spark.Pos then
+                local i = (k - 1) % 9 + 1
+
                 if i == 1 or i == 2 or i == 9 then
                   render.SetMaterial(self.ThirdPersonGlowSprite)
                 else
                   render.SetMaterial(self.FirstPersonGlowSprite)
                 end
 
-                render.DrawSprite(attachment.Pos, 1, 1, Color(255, 255, 255, 255))
+                render.DrawSprite(spark.Pos, 1, 1, color_white)
               end
             end
-
-            for i = 1, 9 do
-              local attachment = viewModel:GetAttachment(viewModel:LookupAttachment('spark'..i..'b'))
-
-              if attachment.Pos then
-                if i == 1 or i == 2 or i == 9 then
-                  render.SetMaterial(self.ThirdPersonGlowSprite)
-                else
-                  render.SetMaterial(self.FirstPersonGlowSprite)
-                end
-
-                render.DrawSprite(attachment.Pos, 1, 1, Color(255, 255, 255, 255))
-              end
-            end
-
           cam.End3D()
         end
       end
@@ -271,9 +265,6 @@ function SWEP:PrimaryAttack()
     end
 
     local trace = self.Owner:GetEyeTraceNoCursor()
-    local bounds = Vector(0, 0, 0)
-    local startPosition = self.Owner:GetShootPos()
-    local finishPosition = startPosition + (self.Owner:GetAimVector() * 96)
 
     if self.Owner:GetShootPos():Distance(trace.HitPos) <= 96 then
       if IsValid(trace.Entity) then

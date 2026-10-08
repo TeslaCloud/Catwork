@@ -35,114 +35,65 @@ if SERVER then
     end
   end
 
+  -- The garbage recycler classes, by the name of the folder their data is saved in.
+  local recyclerClasses = {
+    metal = 'cw_factory_garbage_metal',
+    plastic = 'cw_factory_garbage_plastic',
+    paper = 'cw_factory_garbage_paper'
+  }
+
   --- Saves every metal, plastic and paper garbage recycler on the map to the schema data.
   --
   -- Each factory's angles, position, product position, garbage count, eject storage and stored
   -- garbage are written to `plugins/factories/<type>/<map>`.
   -- @see cwFactories:LoadFactories
   function cwFactories:SaveFactories()
-    local garbageRecyclerMetal = {}
-    local garbageRecyclerPlastic = {}
-    local garbageRecyclerPaper = {}
+    for name, class in pairs(recyclerClasses) do
+      local recyclers = {}
 
-    for k, v in pairs(ents.FindByClass('cw_factory_garbage_metal')) do
-      garbageRecyclerMetal[#garbageRecyclerMetal + 1] = {
-        angles = v:GetAngles(),
-        position = v:GetPos(),
-        productpos = v:GetProductPos(),
-        garbagecount = v:GetGarbageCount(),
-        ejectstorage = v:GetEjectStorage(),
-        garbage = v.Garbages
-      }
+      for k, v in ipairs(ents.FindByClass(class)) do
+        recyclers[#recyclers + 1] = {
+          angles = v:GetAngles(),
+          position = v:GetPos(),
+          productpos = v:GetProductPos(),
+          garbagecount = v:GetGarbageCount(),
+          ejectstorage = v:GetEjectStorage(),
+          garbage = v.Garbages
+        }
+      end
+
+      cw.core:SaveSchemaData('plugins/factories/'..name..'/'..game.GetMap(), recyclers)
     end
-
-    for k, v in pairs(ents.FindByClass('cw_factory_garbage_plastic')) do
-      garbageRecyclerPlastic[#garbageRecyclerPlastic + 1] = {
-        angles = v:GetAngles(),
-        position = v:GetPos(),
-        productpos = v:GetProductPos(),
-        garbagecount = v:GetGarbageCount(),
-        ejectstorage = v:GetEjectStorage(),
-        garbage = v.Garbages
-      }
-    end
-
-    for k, v in pairs(ents.FindByClass('cw_factory_garbage_paper')) do
-      garbageRecyclerPaper[#garbageRecyclerPaper + 1] = {
-        angles = v:GetAngles(),
-        position = v:GetPos(),
-        productpos = v:GetProductPos(),
-        garbagecount = v:GetGarbageCount(),
-        ejectstorage = v:GetEjectStorage(),
-        garbage = v.Garbages
-      }
-    end
-
-    cw.core:SaveSchemaData('plugins/factories/metal/'..game.GetMap(), garbageRecyclerMetal)
-    cw.core:SaveSchemaData('plugins/factories/plastic/'..game.GetMap(), garbageRecyclerPlastic)
-    cw.core:SaveSchemaData('plugins/factories/paper/'..game.GetMap(), garbageRecyclerPaper)
   end
 
   --- Spawns the garbage recyclers saved for the current map, frozen in place, and restores their contents.
   -- @see cwFactories:SaveFactories
   function cwFactories:LoadFactories()
-    local garbageRecyclerMetal = cw.core:RestoreSchemaData('plugins/factories/metal/'..game.GetMap())
-    local garbageRecyclerPaper = cw.core:RestoreSchemaData('plugins/factories/paper/'..game.GetMap())
-    local garbageRecyclerPlastic = cw.core:RestoreSchemaData('plugins/factories/plastic/'..game.GetMap())
+    for name, class in pairs(recyclerClasses) do
+      local recyclers = cw.core:RestoreSchemaData('plugins/factories/'..name..'/'..game.GetMap())
 
-    for k, v in pairs(garbageRecyclerMetal) do
-      local device = ents.Create('cw_factory_garbage_metal')
+      for k, v in pairs(recyclers) do
+        local device = ents.Create(class)
 
-      if device then
-        device:SetPos(v.position)
-        device:SetAngles(v.angles)
-        device:Spawn()
-        device:GetPhysicsObject():EnableMotion(false)
-        device:SetProductPos(v.productpos)
-        device:SetGarbageCount(v.garbagecount)
-        device:SetEjectStorage(v.ejectstorage)
-        device.Garbages = {}
+        if IsValid(device) then
+          device:SetPos(v.position)
+          device:SetAngles(v.angles)
+          device:Spawn()
 
-        for z, x in pairs(v.garbage) do
-          device.Garbages[z] = x
-        end
-      end
-    end
+          local physicsObject = device:GetPhysicsObject()
 
-    for k, v in pairs(garbageRecyclerPaper) do
-      local device = ents.Create('cw_factory_garbage_paper')
+          if IsValid(physicsObject) then
+            physicsObject:EnableMotion(false)
+          end
 
-      if device then
-        device:SetPos(v.position)
-        device:SetAngles(v.angles)
-        device:Spawn()
-        device:GetPhysicsObject():EnableMotion(false)
-        device:SetProductPos(v.productpos)
-        device:SetGarbageCount(v.garbagecount)
-        device:SetEjectStorage(v.ejectstorage)
-        device.Garbages = {}
+          device:SetProductPos(v.productpos)
+          device:SetGarbageCount(v.garbagecount)
+          device:SetEjectStorage(v.ejectstorage)
+          device.Garbages = {}
 
-        for z, x in pairs(v.garbage) do
-          device.Garbages[z] = x
-        end
-      end
-    end
-
-    for k, v in pairs(garbageRecyclerPlastic) do
-      local device = ents.Create('cw_factory_garbage_plastic')
-
-      if device then
-        device:SetPos(v.position)
-        device:SetAngles(v.angles)
-        device:Spawn()
-        device:GetPhysicsObject():EnableMotion(false)
-        device:SetProductPos(v.productpos)
-        device:SetGarbageCount(v.garbagecount)
-        device:SetEjectStorage(v.ejectstorage)
-        device.Garbages = {}
-
-        for z, x in pairs(v.garbage) do
-          device.Garbages[z] = x
+          for z, x in pairs(v.garbage or {}) do
+            device.Garbages[z] = x
+          end
         end
       end
     end

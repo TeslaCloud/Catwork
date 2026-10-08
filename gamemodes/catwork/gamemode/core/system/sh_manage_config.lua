@@ -2,7 +2,7 @@
 --
 -- The page is shown to players with access to `/CfgSetVar`. Keys and values are requested over the `SystemCfgKeys` and
 -- `SystemCfgValue` netstreams, with private values masked, and `SystemCfgSet` applies a change on the server,
--- optionally for a single map.
+-- optionally for a single map. The server answers all three only for players with that access.
 
 if CLIENT then
   local SYSTEM = cw.system:New('Manage Config')
@@ -71,6 +71,10 @@ if CLIENT then
   -- Shows the key's help text, a map entry and a text entry, slider or checkbox depending on the value's type;
   -- the okay button sends the new value to the server with the `SystemCfgSet` netstream.
   function SYSTEM:PopulateConfigBox()
+    if !IsValid(self.editForm) then
+      return
+    end
+
     self.editForm:Clear(true)
 
     if self.activeKey then
@@ -79,7 +83,7 @@ if CLIENT then
       self.infoText:SetText('#System_ManageConfig_InfoEditing')
     end
 
-    if self.editForm and !self.editForm:IsVisible() then
+    if !self.editForm:IsVisible() then
       self.editForm:SetVisible(true)
     end
 
@@ -148,6 +152,10 @@ if CLIENT then
   --
   -- Keys without system data in `config.GetFromSystem` are skipped.
   function SYSTEM:PopulateComboBox()
+    if !IsValid(self.listView) then
+      return
+    end
+
     self.listView:Clear(true)
 
     if self.configKeys then
@@ -195,74 +203,112 @@ if CLIENT then
     end
   end)
 else
-  netstream.Hook('SystemCfgSet', function(player, data)
+  --- Returns whether a player may read and change config values through the Manage Config system.
+  -- @param player [Player The player who sent the request]
+  -- @return [Boolean Whether the player has the `CfgSetVar` command's access flags]
+  local function CanManageConfig(player)
     local commandTable = cw.command:FindByID('CfgSetVar')
 
     if commandTable and cw.player:HasFlags(player, commandTable.access) then
-      local configObject = config.Get(data.key)
+      return true
+    end
 
-      if configObject:IsValid() then
-        local keyPrefix = ''
-        local useMap = data.useMap
+    return false
+  end
 
-        if useMap == '' then
-          useMap = nil
-        end
+  --- Sends a config key's pending or current value to a player, masking private strings.
+  -- @param player [Player The player to send the value to]
+  -- @param key [String The config key]
+  -- @param configObject [Config The key's config object]
+  local function SendConfigValue(player, key, configObject)
+    local value = configObject:GetNext(configObject:Get())
 
-        if useMap then
-          useMap = string.lower(cw.core:Replace(useMap, '.bsp', ''))
-          keyPrefix = '('..useMap..') '
+    if isstring(value) and configObject('isPrivate') then
+      value = '****'
+    end
 
-          if !file.Exists('maps/'..useMap..'.bsp', 'GAME') then
-            cw.player:Notify(player, L('NotValidMap', useMap))
+    netstream.Start(player, 'SystemCfgValue', { key, value })
+  end
 
-            return
-          end
-        end
+  netstream.Hook('SystemCfgSet', function(player, data)
+    if !istable(data) or !isstring(data.key) or !CanManageConfig(player) then
+      return
+    end
 
-        if !configObject('isStatic') then
-          value = configObject:Set(data.value, useMap)
+    local key = data.key
+    local value = data.value
+    local configObject = config.Get(key)
 
-          if value != nil then
-            local printValue = tostring(value)
+    if !configObject:IsValid() then
+      cw.player:Notify(player, L('ConfigKeyNotValid', key))
 
-            if configObject('isPrivate') then
-              if configObject('needsRestart') then
-                cw.player:NotifyAll(
-                  L('Config_ValueSetRestart', player:Name(), keyPrefix..data.key).." '"..string.rep('*', string.utf8len(
-                    printValue
-                  )).."'"
-                )
-              else
-                cw.player:NotifyAll(
-                  L('Config_ValueSet', player:Name(), keyPrefix..data.key).." '"..string.rep('*', string.utf8len(
-                    printValue
-                  ))..
-                    "'"
-                )
-              end
-            elseif configObject('needsRestart') then
-              cw.player:NotifyAll(
-                L('Config_ValueSetRestart', player:Name(), keyPrefix..data.key).." '"..printValue.."'"
-              )
-            else
-              cw.player:NotifyAll(L('Config_ValueSet', player:Name(), keyPrefix..data.key).." '"..printValue.."'")
-            end
+      return
+    end
 
-            netstream.Start(player, 'SystemCfgValue', { data.key, configObject:Get() })
-          else
-            cw.player:Notify(player, L('ConfigUnableToSet', data.key))
-          end
-        else
-          cw.player:Notify(player, L('ConfigIsStaticKey', data.key))
-        end
-      else
-        cw.player:Notify(player, L('ConfigKeyNotValid', data.key))
+    local keyPrefix = ''
+    local useMap = data.useMap
+
+    if !isstring(useMap) or useMap == '' then
+      useMap = nil
+    end
+
+    if useMap then
+      useMap = string.lower(cw.core:Replace(useMap, '.bsp', ''))
+      keyPrefix = '('..useMap..') '
+
+      -- The map name becomes part of a data file path, so it must not be able to leave its folder.
+      if string.find(useMap, '[/\\:]') or string.find(useMap, '..', 1, true)
+      or !file.Exists('maps/'..useMap..'.bsp', 'GAME') then
+        cw.player:Notify(player, L('NotValidMap', useMap))
+
+        return
       end
     end
+
+    if configObject('isStatic') then
+      cw.player:Notify(player, L('ConfigIsStaticKey', key))
+
+      return
+    end
+
+    -- NaN and infinity would be saved and networked as they are, and '****' is only the mask the
+    -- client was sent for a private value.
+    if (isnumber(value) and (value != value or math.abs(value) == math.huge))
+    or (value == '****' and configObject('isPrivate')) then
+      cw.player:Notify(player, L('ConfigUnableToSet', key))
+
+      return
+    end
+
+    value = configObject:Set(value, useMap)
+
+    if value == nil then
+      cw.player:Notify(player, L('ConfigUnableToSet', key))
+
+      return
+    end
+
+    local printValue = tostring(value)
+    local phrase = 'Config_ValueSet'
+
+    if configObject('isPrivate') then
+      printValue = string.rep('*', string.utf8len(printValue))
+    end
+
+    if configObject('needsRestart') then
+      phrase = 'Config_ValueSetRestart'
+    end
+
+    cw.player:NotifyAll(L(phrase, player:Name(), keyPrefix..key).." '"..printValue.."'")
+
+    SendConfigValue(player, key, configObject)
   end)
 
   netstream.Hook('SystemCfgKeys', function(player, data)
+    if !CanManageConfig(player) then
+      return
+    end
+
     local configKeys = {}
 
     for k, v in pairs(config.GetStored()) do
@@ -271,24 +317,20 @@ else
       end
     end
 
-    table.sort(configKeys, function(a, b)
-      return a < b
-    end)
+    table.sort(configKeys)
 
     netstream.Start(player, 'SystemCfgKeys', configKeys)
   end)
 
   netstream.Hook('SystemCfgValue', function(player, data)
+    if !isstring(data) or !CanManageConfig(player) then
+      return
+    end
+
     local configObject = config.Get(data)
 
     if configObject:IsValid() then
-      if type(configObject:Get()) == 'string' and configObject('isPrivate') then
-        netstream.Start(player, 'SystemCfgValue', { data, '****' })
-      else
-        netstream.Start(player, 'SystemCfgValue', {
-          data, configObject:GetNext(configObject:Get())
-        })
-      end
+      SendConfigValue(player, data, configObject)
     end
   end)
 end

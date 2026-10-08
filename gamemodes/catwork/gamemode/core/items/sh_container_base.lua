@@ -36,28 +36,27 @@ end
 
 if SERVER then
   --- Returns the container's inventory, creating an empty one in the item data if it has none.
-  --
-  -- On the call that creates the inventory the return value is still `nil`.
   -- @return [Inventory The items stored in the container]
   function ITEM:GetInventory()
-    local inventory = self:GetData('Inventory')
+    local inventory = self.data.Inventory
 
     if inventory == nil then
-      self:SetData('Inventory', {})
+      -- `CItem:SetData` does not set fields that are still `nil`, as this one is until first used.
+      inventory = {}
+      self.data.Inventory = inventory
     end
 
     return inventory
   end
 
-  --- Checks whether the container holds an item.
-  --
-  -- The result of the check is not returned, so the function always returns `nil`.
+  --- Returns whether the container holds an item.
   -- @param itemTable [Item The item instance, or an item unique ID string to match any instance]
+  -- @return [Boolean Whether the item is in the container]
   function ITEM:HasItem(itemTable)
     if isstring(itemTable) then
-      cw.inventory:HasItemByID(self:GetInventory(), itemTable)
+      return cw.inventory:HasItemByID(self:GetInventory(), itemTable)
     else
-      cw.inventory:HasItemInstance(self:GetInventory(), itemTable)
+      return cw.inventory:HasItemInstance(self:GetInventory(), itemTable)
     end
   end
 

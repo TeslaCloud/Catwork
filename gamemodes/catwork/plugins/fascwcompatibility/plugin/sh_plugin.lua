@@ -56,12 +56,10 @@ end
 --
 -- @param player [Player The weapon's owner]
 -- @param weapon [Weapon The weapon to toggle]
--- @return [Boolean False while the weapon is busy, true otherwise]
+-- @return [Boolean False while the weapon is busy, otherwise nil]
 function PLUGIN:CanWeaponBeToggled(player, weapon)
   if ((weapon.IsFAS2Weapon or weapon.IsSXBASEWeapon) and weapon.dt.Status != FAS_STAT_IDLE)
   or (weapon.CW20Weapon and weapon.dt.State != CW_IDLE) then
     return false
   end
-
-  return true
 end

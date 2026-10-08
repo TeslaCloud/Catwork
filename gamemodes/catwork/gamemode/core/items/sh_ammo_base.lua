@@ -28,18 +28,17 @@ end
 --- Gives `ammoAmount` rounds of `ammoClass` if the player carries a weapon that uses it, consuming the item.
 -- @return [Boolean `false` (keeping the item) when no carried weapon uses this ammo, otherwise `nil`]
 function ITEM:OnUse(player, itemEntity)
-  local secondaryAmmoClass = self.secondaryAmmoClass
-  local primaryAmmoClass = self.primaryAmmoClass
   local ammoAmount = self.ammoAmount
   local ammoClass = string.lower(self.ammoClass)
 
   for k, v in pairs(player:GetWeapons()) do
     local itemTable = item.GetByWeapon(v)
 
+    -- Engine weapons have no `Primary` and `Secondary` tables.
     if itemTable and (string.lower(tostring(itemTable.primaryAmmoClass)) == ammoClass
     or string.lower(tostring(itemTable.secondaryAmmoClass)) == ammoClass
-    or string.lower(tostring(v.Primary.Ammo)) == ammoClass
-    or string.lower(tostring(v.Secondary.Ammo)) == ammoClass) then
+    or (v.Primary and string.lower(tostring(v.Primary.Ammo)) == ammoClass)
+    or (v.Secondary and string.lower(tostring(v.Secondary.Ammo)) == ammoClass)) then
       player:GiveAmmo(ammoAmount, ammoClass)
 
       return

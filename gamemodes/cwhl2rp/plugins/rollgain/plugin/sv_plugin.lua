@@ -79,7 +79,7 @@ function PLUGIN:AdjustRollNumber(player, roll, max, target)
         local rankPos, endRankPos = playerName:find('.0')
 
         if rankPos then
-          local num = tonumber(playerName:utf8sub(endRankPos, endRankPos + 1))
+          local num = tonumber(playerName:sub(endRankPos, endRankPos + 1))
 
           if num then
             return AdjustInCombineFavor(player, target, math.abs(12 - (num * 2)), -5)

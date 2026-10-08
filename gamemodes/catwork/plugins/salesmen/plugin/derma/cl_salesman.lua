@@ -6,6 +6,7 @@
 -- `SalesmanAdd` netstream message.
 
 local PANEL = {}
+local colorSettings = Color(200, 200, 200)
 
 --- Builds the salesman editor: the sells, buys, items and settings tabs, filled from `cw.salesman`.
 --
@@ -82,7 +83,7 @@ function PANEL:Init()
   self.settingsPanel:SizeToContents()
   self.settingsPanel:EnableVerticalScrollbar()
   self.settingsPanel.Paint = function(sp, w, h)
-    draw.RoundedBox(0, 0, 0, w, h, Color(200, 200, 200))
+    draw.RoundedBox(0, 0, 0, w, h, colorSettings)
   end
 
   self.settingsForm = vgui.Create('cwForm')
@@ -473,7 +474,7 @@ function PANEL:Init()
 end
 
 --- Updates the icon's tooltip with the item's price, shipment size and stock.
-function PANEL:Think()
+function PANEL:UpdateToolTip()
   local function DisplayCallback(displayInfo)
     local priceScale = 1
     local amount = 0
@@ -524,7 +525,18 @@ function PANEL:Think()
   self.spawnIcon:SetMarkupToolTip(
     item.GetMarkupToolTip(self.itemTable, true, DisplayCallback)
   )
-  self.spawnIcon:SetColor(self.itemTable.color)
+end
+
+--- Refreshes the icon's color, and its tooltip while it is hovered.
+function PANEL:Think()
+  local spawnIcon = self.spawnIcon
+
+  -- The tooltip is only drawn for the hovered panel, so the others keep the one they were built with.
+  if cw.core:GetActiveMarkupToolTip() == spawnIcon or !spawnIcon:GetMarkupToolTip() then
+    self:UpdateToolTip()
+  end
+
+  spawnIcon:SetColor(self.itemTable.color)
 end
 
 vgui.Register('cwSalesmanItem', PANEL, 'DPanel')

@@ -3,7 +3,7 @@
 -- Derived items set `bodyGroup` and `bodyGroupVal`, and optionally `protection` (percent of damage absorbed),
 -- `isCombine` (Combine players can only wear items marked with it) and `requiredBG` (a bodygroup that must already be
 -- worn). Wearing goes through `Player:SetBodygroupClothes`, the item stays in the inventory, and it is taken off when
--- dropped, sold, stored or unequipped.
+-- dropped, sold, stored, unequipped or taken from the inventory in any other way.
 --
 -- Originally written for the Global Cooldown community.
 
@@ -52,8 +52,10 @@ end
 
 --- Wears the item with `Player:SetBodygroupClothes` and keeps it in the inventory.
 --
--- Fails when the item's `requiredBG` bodygroup is not worn, and Combine players can only
--- wear items marked `isCombine`.
+-- Fails when the item's `requiredBG` bodygroup is not worn or the player is dead or
+-- ragdolled, and Combine players can only wear items marked `isCombine`.
+--
+-- @return [Boolean `true` when worn, `false` otherwise; either way the item is kept]
 function ITEM:OnUse(player, itemEntity)
   local clothesData = player.bgClothesData or {}
 
@@ -67,17 +69,21 @@ function ITEM:OnUse(player, itemEntity)
     end
   end
 
-  if (!player:IsCombine() or self.isCombine) and self.bodyGroup != -1 then
-    if player:Alive() and !player:IsRagdolled() then
-      player:SetBodygroupClothes(self)
-
-      return true
-    end
-  else
+  if (player:IsCombine() and !self.isCombine) or self.bodyGroup == -1 then
     cw.player:Notify(player, '#ITEM_ErrCantWear')
 
-    return true
+    return false
   end
+
+  if !player:Alive() or player:IsRagdolled() then
+    cw.player:Notify(player, '#CantDoThisNow')
+
+    return false
+  end
+
+  player:SetBodygroupClothes(self)
+
+  return true
 end
 
 --- Takes the item off when it is dropped while worn.
@@ -149,4 +155,11 @@ end
 --- Takes the item off when the player unequips it.
 function ITEM:OnPlayerUnequipped(player, extraData)
   player:SetBodygroupClothes(self, true)
+end
+
+--- Takes the item off when it is taken from the player's inventory while worn.
+function ITEM:OnTakeFromPlayer(player)
+  if self:HasPlayerEquipped(player) then
+    player:SetBodygroupClothes(self, true)
+  end
 end

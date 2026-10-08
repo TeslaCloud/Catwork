@@ -744,7 +744,7 @@ end
 
 --- Paints a menu spacer as a dark translucent line.
 function THEME.skin:PaintMenuSpacer(panel, w, h)
-  surface.SetDrawColor(Color(0, 0, 0, 100))
+  surface.SetDrawColor(0, 0, 0, 100)
   surface.DrawRect(0, 0, w, h)
 end
 
@@ -806,12 +806,14 @@ end
   Button
 -----------------------------------------------------------]]
 
+local colorDisabledButton = Color(255, 255, 255, 50)
+
 --- Paints a frame's close button in its disabled, pressed, hovered or normal state.
 function THEME.skin:PaintWindowCloseButton(panel, w, h)
   if !panel.m_bBackground then return end
 
   if panel:GetDisabled() then
-    return self.tex.Window.Close(0, 0, w, h, Color(255, 255, 255, 50))
+    return self.tex.Window.Close(0, 0, w, h, colorDisabledButton)
   end
 
   if panel.Depressed or panel:IsSelected() then
@@ -830,7 +832,7 @@ function THEME.skin:PaintWindowMinimizeButton(panel, w, h)
   if !panel.m_bBackground then return end
 
   if panel:GetDisabled() then
-    return self.tex.Window.Mini(0, 0, w, h, Color(255, 255, 255, 50))
+    return self.tex.Window.Mini(0, 0, w, h, colorDisabledButton)
   end
 
   if panel.Depressed or panel:IsSelected() then
@@ -849,7 +851,7 @@ function THEME.skin:PaintWindowMaximizeButton(panel, w, h)
   if !panel.m_bBackground then return end
 
   if panel:GetDisabled() then
-    return self.tex.Window.Maxi(0, 0, w, h, Color(255, 255, 255, 50))
+    return self.tex.Window.Maxi(0, 0, w, h, colorDisabledButton)
   end
 
   if panel.Depressed or panel:IsSelected() then
@@ -906,7 +908,7 @@ function THEME.skin:PaintButtonDown(panel, w, h)
   end
 
   if panel:GetDisabled() then
-    return self.tex.Scroller.DownButton_Dead(0, 0, w, h)
+    return self.tex.Scroller.DownButton_Disabled(0, 0, w, h)
   end
 
   if panel.Hovered then
@@ -929,7 +931,7 @@ function THEME.skin:PaintButtonUp(panel, w, h)
   end
 
   if panel:GetDisabled() then
-    return self.tex.Scroller.UpButton_Dead(0, 0, w, h)
+    return self.tex.Scroller.UpButton_Disabled(0, 0, w, h)
   end
 
   if panel.Hovered then
@@ -952,7 +954,7 @@ function THEME.skin:PaintButtonLeft(panel, w, h)
   end
 
   if panel:GetDisabled() then
-    return self.tex.Scroller.LeftButton_Dead(0, 0, w, h)
+    return self.tex.Scroller.LeftButton_Disabled(0, 0, w, h)
   end
 
   if panel.Hovered then
@@ -975,7 +977,7 @@ function THEME.skin:PaintButtonRight(panel, w, h)
   end
 
   if panel:GetDisabled() then
-    return self.tex.Scroller.RightButton_Dead(0, 0, w, h)
+    return self.tex.Scroller.RightButton_Disabled(0, 0, w, h)
   end
 
   if panel.Hovered then
@@ -1137,7 +1139,7 @@ end
 
 --- Paints a number slider's line and its notches.
 function THEME.skin:PaintNumSlider(panel, w, h)
-  surface.SetDrawColor(Color(0, 0, 0, 100))
+  surface.SetDrawColor(0, 0, 0, 100)
   surface.DrawRect(8, h / 2 - 1, w - 15, 1)
   PaintNotches(8, h / 2 - 1, w - 16, 1, panel.m_iNotches)
 end

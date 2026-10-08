@@ -19,6 +19,9 @@ local playerMeta = FindMetaTable('Player')
 local stored = {}
 local globals = {}
 
+-- Keys set with Player:SetLocalVar, by player; these must not be sent to anyone else.
+local localKeys = {}
+
 -- Check if there is an attempt to send a function. Can't send those.
 local function CheckBadType(name, object)
   local objectType = type(object)
@@ -39,16 +42,16 @@ end
 
 --- Sets a global networked variable and sends it to clients.
 --
--- Does nothing if the value is unchanged or contains a function (which prints
--- an error). Players who join later receive it through `Player:SyncVars`.
+-- Does nothing if a non-table value is unchanged, or if the value contains a
+-- function (which prints an error). Players who join later receive it through
+-- `Player:SyncVars`.
 -- @param key [String Name of the variable]
 -- @param value [Any The new value; must not be or contain a function]
 -- @param receiver=nil [Player A player or list of players to send the change to; `nil` sends it to everyone]
 -- @see netvars.GetNetVar
 function netvars.SetNetVar(key, value, receiver)
   if CheckBadType(key, value) then return end
-  if netvars.GetNetVar(key) == value then return end
-  if globals[key] == value then return end
+  if !istable(value) and globals[key] == value then return end
 
   globals[key] = value
   netstream.Start(receiver, 'gVar', key, value)
@@ -69,12 +72,18 @@ function netvars.AreEqual(old, new)
 end
 
 --- Sends every entity and global networked variable to the player.
+--
+-- Variables set with `Player:SetLocalVar` are only sent to the player they belong to.
 -- @warning [Internal] Called from the `PlayerInitialSpawn` hook.
 function playerMeta:SyncVars()
   for entity, data in pairs(stored) do
     if IsValid(entity) then
+      local entityLocalKeys = entity != self and localKeys[entity]
+
       for k, v in pairs(data) do
-        netstream.Start(self, 'nVar', entity:EntIndex(), k, v)
+        if !entityLocalKeys or !entityLocalKeys[k] then
+          netstream.Start(self, 'nVar', entity:EntIndex(), k, v)
+        end
       end
     end
   end
@@ -88,7 +97,14 @@ end
 -- @param key [String Name of the variable]
 -- @param receiver=nil [Player A player or list of players to send it to; `nil` sends it to everyone]
 function entityMeta:SendNetVar(key, receiver)
-  netstream.Heavy(receiver, 'nVar', self:EntIndex(), key, stored[self] and stored[self][key])
+  local value = stored[self] and stored[self][key]
+
+  -- Only tables can outgrow a single net message; everything else skips the chunking of netstream.Heavy.
+  if istable(value) then
+    netstream.Heavy(receiver, 'nVar', self:EntIndex(), key, value)
+  else
+    netstream.Start(receiver, 'nVar', self:EntIndex(), key, value)
+  end
 end
 
 --- Removes all networked variables of the entity on the server and on clients.
@@ -97,6 +113,7 @@ end
 -- @param receiver=nil [Player A player or list of players to tell; `nil` tells everyone]
 function entityMeta:ClearNetVars(receiver)
   stored[self] = nil
+  localKeys[self] = nil
   netstream.Start(receiver, 'nDel', self:EntIndex())
 end
 
@@ -119,6 +136,10 @@ function entityMeta:SetNetVar(key, value, receiver)
 
   stored[self] = stored[self] or {}
   stored[self][key] = value
+
+  if localKeys[self] then
+    localKeys[self][key] = nil
+  end
 
   self:SendNetVar(key, receiver)
 end
@@ -151,6 +172,9 @@ function playerMeta:SetLocalVar(key, value)
   stored[self] = stored[self] or {}
   stored[self][key] = value
 
+  localKeys[self] = localKeys[self] or {}
+  localKeys[self][key] = true
+
   netstream.Start(self, 'nLcl', key, value)
 end
 
@@ -168,7 +192,10 @@ function netvars.GetNetVar(key, default)
 end
 
 hook.Add('EntityRemoved', 'nCleanUp', function(entity)
-  entity:ClearNetVars()
+  -- Most entities never get a net var, and clients have nothing to forget about those.
+  if stored[entity] then
+    entity:ClearNetVars()
+  end
 end)
 
 hook.Add('PlayerInitialSpawn', 'nSync', function(client)

@@ -14,9 +14,9 @@ ITEM.thirst = 15
 ITEM.fatigue = -10
 ITEM.description = '#Item_BeerBad_Description'
 
---- Heals 10 health (up to 100), boosts agility by 12 for two minutes and gives back an empty glass bottle.
+--- Heals 10 health, boosts agility by 12 for two minutes and gives back an empty glass bottle.
 function ITEM:OnUse(player, itemEntity)
-  player:SetHealth(math.Clamp(player:Health() + 10, 0, 100))
+  player:SetHealth(math.Clamp(player:Health() + 10, 0, player:GetMaxHealth()))
 
   player:BoostAttribute(self.name, ATB_AGILITY, 12, 120)
 

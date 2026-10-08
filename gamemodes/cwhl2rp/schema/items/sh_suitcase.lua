@@ -34,7 +34,7 @@ function ITEM:OnDrop(player, position) end
 if SERVER then
   --- Unpacks the suitcase into a random set of clothes, food and drink when Unpack is chosen, then removes it.
   function ITEM:OnCustomFunction(player, name)
-    if name == 'Unpack' then
+    if name == 'Unpack' and player:HasItemInstance(self) then
       local clothes = {
         'blue_beanie',
         'green_beanie',
@@ -68,11 +68,12 @@ if SERVER then
         'large_soda'
       }
 
-      player:GiveItem(table.Random(clothes))
-      player:GiveItem(table.Random(food))
-      player:GiveItem(table.Random(drink))
-      player:EmitSound('physics/cardboard/cardboard_box_break'..math.random(1, 3)..'.wav')
+      -- The contents are forced in once the suitcase is gone; without room for them they would just be lost.
       player:TakeItem(self)
+      player:GiveItem(table.Random(clothes), true)
+      player:GiveItem(table.Random(food), true)
+      player:GiveItem(table.Random(drink), true)
+      player:EmitSound('physics/cardboard/cardboard_box_break'..math.random(1, 3)..'.wav')
     end
   end
 end

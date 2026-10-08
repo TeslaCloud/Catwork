@@ -15,10 +15,10 @@ COMMAND.alias = { 'SetDescription', 'SetDesc' }
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
   local minimumPhysDesc = config.GetVal('minimum_physdesc')
-  local text = arguments[2]
+  local text = table.concat(arguments, ' ', 2)
 
   if target then
-    if text and text != '' then
+    if text != '' then
       if string.utf8len(text) < minimumPhysDesc then
         cw.player:Notify(player, L('CharCreation_Appearance_ErrorMessage7', minimumPhysDesc))
         return

@@ -17,22 +17,20 @@ ITEM.description = '#Item_BlindnessSurgerykit_Description'
 -- The kit is used up even when the patient has neither. Returns `false`, keeping the kit, when no
 -- player is looked at.
 function ITEM:OnUse(player, itemEntity)
-  local lookingPly = player:GetEyeTrace().Entity
+  local lookingPly = cwDiseases:FindPatient(player, nil, 'Diseases_MustLookAtPatient')
 
-  if lookingPly:IsPlayer() then
-    if lookingPly:GetCharacterData('diseases') == 'blindness' then
-      cw.player:Notify(player, L('Diseases_Surgery_Blindness'))
-      lookingPly:SetCharacterData('diseases', 'none')
-    elseif lookingPly:GetCharacterData('diseases') == 'colorblindness' then
-      cw.player:Notify(player, L('Diseases_Surgery_Colorblindness'))
-      lookingPly:SetCharacterData('diseases', 'none')
-    else
-      cw.player:Notify(player, L('Diseases_Surgery_Wasted'))
-    end
+  if !lookingPly then return false end
+
+  local disease = lookingPly:GetCharacterData('diseases')
+
+  if disease == 'blindness' then
+    cw.player:Notify(player, L('Diseases_Surgery_Blindness'))
+    lookingPly:SetCharacterData('diseases', 'none')
+  elseif disease == 'colorblindness' then
+    cw.player:Notify(player, L('Diseases_Surgery_Colorblindness'))
+    lookingPly:SetCharacterData('diseases', 'none')
   else
-    cw.player:Notify(player, L('Diseases_MustLookAtPatient'))
-
-    return false
+    cw.player:Notify(player, L('Diseases_Surgery_Wasted'))
   end
 end
 

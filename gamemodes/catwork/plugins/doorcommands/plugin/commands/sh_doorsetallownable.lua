@@ -9,27 +9,29 @@ COMMAND.arguments = 1
 
 --- Makes every door on the map ownable under the name given by the arguments and saves the door data.
 function COMMAND:OnRun(player, arguments)
-  good_doors = 0
+  local name = table.concat(arguments, ' ')
+  local goodDoors = 0
 
   for k, v in pairs(ents.GetAll()) do
     if IsValid(v) and cw.entity:IsDoor(v) then
-      local data = {
+      cw.entity:SetDoorUnownable(v, false)
+      cw.entity:SetDoorText(v, false)
+      cw.entity:SetDoorName(v, name)
+
+      cwDoorCmds.doorData[v] = {
         customName = true,
         position = v:GetPos(),
         entity = v,
-        name = table.concat(arguments or {}, ' ') or ''
+        name = name
       }
-      cw.entity:SetDoorUnownable(data.entity, false)
-      cw.entity:SetDoorText(data.entity, false)
-      cw.entity:SetDoorName(data.entity, data.name)
 
-      cwDoorCmds.doorData[data.entity] = data
-      cwDoorCmds:SaveDoorData()
-      good_doors = good_doors + 1
+      goodDoors = goodDoors + 1
     end
   end
 
-  cw.player:Notify(player, L('DoorCmds_AllSetOwnable', good_doors))
+  cwDoorCmds:SaveDoorData()
+
+  cw.player:Notify(player, L('DoorCmds_AllSetOwnable', goodDoors))
   cw.player:Notify(player, L('DoorCmds_AllDoorsReminder'))
 end
 

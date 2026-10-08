@@ -49,7 +49,6 @@ function COMMAND:OnRun(player, arguments)
           end
 
           if traceLine.Hit then
-            player:SetNetVar('stance', true)
             player:SetEyeAngles(traceLine.HitNormal:Angle())
             player:SetForcedAnimation(animation, 0, nil, function()
               cwEmoteAnims:MakePlayerExitStance(player)

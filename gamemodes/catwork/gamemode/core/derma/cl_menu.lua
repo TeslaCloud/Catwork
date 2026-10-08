@@ -4,7 +4,6 @@
 -- `MenuItemsAdd` and `MenuItemsDestroy` hooks, keeping the tab panels in `cw.menu.stored`; `OpenPanel` fades between
 -- tabs. The `MenuOpen` netstream opens, closes or creates the menu.
 
-local GRADIENT = surface.GetTextureID('gui/gradient')
 local PANEL = {}
 
 --- Toggles the Close, Characters and every tab button between showing and hiding their text.
@@ -26,7 +25,7 @@ end
 -- buttons are built.
 function PANEL:Init()
   if !cw.theme:Call('PreMainMenuInit', self) then
-    self:SetSize(scrW, scrH)
+    self:SetSize(ScrW(), ScrH())
 
     self.collapse = vgui.Create('cwFAButton', self)
     self.collapse:SetDrawBackground(true)
@@ -40,7 +39,9 @@ function PANEL:Init()
     self.collapse:SetCallback(function(btn)
       if btn.isOpen then
         timer.Simple(0.25, function()
-          self:ToggleAllButtons()
+          if IsValid(self) then
+            self:ToggleAllButtons()
+          end
         end)
 
         btn:SizeTo(220, -1, 0.25)
@@ -111,8 +112,6 @@ function PANEL:Rebuild(change)
 
     local activePanel = cw.menu:GetActivePanel()
     local smallTextFont = cw.option:GetFont('menu_text_small')
-    local scrW = ScrW()
-    local scrH = ScrH()
 
     if IsValid(self.closeMenu) then
       self.closeMenu:Remove()
@@ -164,10 +163,7 @@ function PANEL:Rebuild(change)
       self:MoveTo(self.tabX, self.tabY, 0.4, 0, 4)
     end
 
-    local bIsVisible = false
-    local width = self.characterMenu:GetWide()
     local scrH = ScrH()
-    local scrW = ScrW()
     local y = self.characterMenu.y + self.characterMenu:GetTall() + 16
     local x = 0
 
@@ -187,10 +183,16 @@ function PANEL:Rebuild(change)
 
     for k, v in pairs(cw.menuitems.stored) do
       local button, panel = nil, nil
+      local stored = cw.menu.stored[v.panel]
 
-      if cw.menu.stored[v.panel] and !cw.DebugMode then
-        panel = cw.menu.stored[v.panel].panel
+      if stored and IsValid(stored.panel) and !cw.DebugMode then
+        panel = stored.panel
       else
+        -- Debug mode recreates the tab panels on every rebuild, so drop the old one.
+        if stored and IsValid(stored.panel) then
+          stored.panel:Remove()
+        end
+
         panel = vgui.Create(v.panel, self)
         panel:SetVisible(false)
         panel:SetSize(cw.menu:GetWidth(), panel:GetTall())
@@ -210,12 +212,6 @@ function PANEL:Rebuild(change)
         button:SetPos(x, y)
 
         y = y + button:GetTall() + 6
-
-        bIsVisible = true
-
-        if button:GetWide() > width then
-          width = button:GetWide()
-        end
       end
 
       cw.menu.stored[v.panel] = {
@@ -247,7 +243,6 @@ end
 -- @param panelToOpen [Panel The tab panel to open]
 function PANEL:OpenPanel(panelToOpen)
   if !cw.theme:Call('PreMainMenuOpenPanel', self, panelToOpen) then
-    local height = cw.menu:GetHeight()
     local width = cw.menu:GetWidth()
     local scrW = ScrW()
     local scrH = ScrH()
@@ -278,7 +273,7 @@ function PANEL:OpenPanel(panelToOpen)
     self.activePanel:SetAlpha(0)
     self:FadeIn(0.5, self.activePanel, function()
       timer.Simple(FrameTime() * 0.5, function()
-        if IsValid(self.activePanel) then
+        if IsValid(self) and IsValid(self.activePanel) then
           if self.activePanel.OnSelected then
             self.activePanel:OnSelected()
           end
@@ -298,11 +293,6 @@ end
 -- @param panel [Panel The panel to fade out]
 -- @param Callback=nil [Function Called once the panel is hidden]
 function PANEL:FadeOut(speed, panel, Callback)
-  local height = cw.menu:GetHeight()
-  local width = cw.menu:GetWidth()
-  local scrW = ScrW()
-  local scrH = ScrH()
-
   if panel:GetAlpha() > 0 and (!self.fadeOutAnimation or !self.fadeOutAnimation:Active()) then
     self.fadeOutAnimation = Derma_Anim('Fade Panel', panel, function(panel, animation, delta, data)
       panel:SetAlpha(255 - (delta * 255))
@@ -342,11 +332,6 @@ end
 function PANEL:FadeIn(speed, panel, Callback)
   if panel:GetAlpha() == 0 and (!self.fadeInAnimation or !self.fadeInAnimation:Active()) then
     self.fadeInAnimation = Derma_Anim('Fade Panel', panel, function(panel, animation, delta, data)
-      local height = cw.menu:GetHeight()
-      local width = cw.menu:GetWidth()
-      local scrW = ScrW()
-      local scrH = ScrH()
-
       panel:SetVisible(true)
       panel:SetAlpha(delta * 255)
 
@@ -381,25 +366,6 @@ function PANEL:Paint(w, h)
     cw.theme:Call('PostMainMenuPaint', self)
   end
 
-  /*local x, y = self.tabX - GetConVarNumber("cwBackX"), self.tabY - GetConVarNumber("cwBackY")
-  local w, h = GetConVarNumber("cwBackW"), GetConVarNumber("cwBackH")
-  local scrW, scrH = ScrW(), ScrH()
-
-  if (CW_CONVAR_SHOWGRADIENT:GetInt() == 1) then
-    if (ScreenIsRatio(4, 3)) then
-      cdraw.DrawSimpleBlurBox(0, 0, ScrW() / 5, ScrH(), Color(110, 110, 110, 50))
-    else
-      cdraw.DrawSimpleBlurBox(0, 0, ScrW() / 6, ScrH(), Color(110, 110, 110, 50))
-    end
-  elseif (CW_CONVAR_SHOWMATERIAL:GetInt() == 1) then
-    local material = Material(CW_CONVAR_MATERIAL:GetString());
-
-    surface.SetDrawColor(GetConVarNumber("cwBackColorR"), GetConVarNumber("cwBackColorG"),
-    GetConVarNumber("cwBackColorB"), GetConVarNumber("cwBackColorA"))
-    surface.SetMaterial(material)
-    surface.DrawTexturedRect(x, y, w, h)
-  end*/
-
   return true
 end
 
@@ -413,20 +379,6 @@ function PANEL:Think()
     self:SetVisible(cw.menu:GetOpen())
     self:SetSize(ScrW(), ScrH())
     self:SetPos(0, 0)
-
-    /*if (self.tabX != GetConVarNumber("cwTabPosX") or self.tabY != GetConVarNumber("cwTabPosY")) then
-      self.tabX = GetConVarNumber("cwTabPosX")
-      self.tabY = GetConVarNumber("cwTabPosY")
-      self:Rebuild(true)
-    end*/
-
-//		if (self.closeMenu:GetText() and self.closeMenu:GetText() != CW_CONVAR_CLOSESTRING:GetString()) then
-//			self.closeMenu:SetText(CW_CONVAR_CLOSESTRING:GetString())
-//		end
-
-//		if (self.characterMenu:GetText() and self.characterMenu:GetText() != CW_CONVAR_CHARSTRING:GetString()) then
-//			self.characterMenu:SetText(CW_CONVAR_CHARSTRING:GetString())
-//		end
 
     cw.menu.height = ScrH() * 0.75
     cw.menu.width = math.min(ScrW() * 0.7, 768)

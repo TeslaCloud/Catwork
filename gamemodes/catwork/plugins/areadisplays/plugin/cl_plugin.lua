@@ -43,16 +43,15 @@ end)
 -- position, unless that position is already showing.
 -- @param areaTable [Map The area, with `name`, `class`, `position` and, for 3D displays, `angles` and `scale`]
 function cwAreaDisplays:AddAreaDisplayDisplay(areaTable)
-  areaTable.name = string.Replace(
-    areaTable.name, '%t', cw.time:GetString()
-  )
+  -- The area keeps its own name, which is what entering, leaving and removing it are matched on.
+  local name = string.Replace(areaTable.name, '%t', cw.time:GetString())
 
   if !areaTable.class then
     areaTable.class = 'Scrolling'
   end
 
   if areaTable.class == 'Cinematic' then
-    cw.core:AddCinematicText(areaTable.name)
+    cw.core:AddCinematicText(name)
     return
   end
 
@@ -65,6 +64,7 @@ function cwAreaDisplays:AddAreaDisplayDisplay(areaTable)
       areaTable = areaTable,
       fadeTime = curTime + 4,
       class = areaTable.class,
+      name = name,
       alpha = 0
     }
   end
@@ -129,7 +129,7 @@ function cwAreaDisplays:HandleAreaTable(areaTable, index)
 end
 
 --- Draws a 3D display's name in the world at its position and angles, using the large 3D2D font.
--- @param displayInfo [Map The active display, with `areaTable` and `alpha`]
+-- @param displayInfo [Map The active display, with `areaTable`, `name` and `alpha`]
 function cwAreaDisplays:DrawDisplay3D(displayInfo)
   local large3D2DFont = cw.option:GetFont('large_3d_2d')
   local colorWhite = cw.option:GetColor('white')
@@ -143,7 +143,7 @@ function cwAreaDisplays:DrawDisplay3D(displayInfo)
     local areaTable = displayInfo.areaTable
 
     cam.Start3D2D(areaTable.position, areaTable.angles, (areaTable.scale or 1) * 0.2)
-    cw.core:DrawInfo(areaTable.name, 0, 0, colorWhite, displayInfo.alpha, nil,
+    cw.core:DrawInfo(displayInfo.name or areaTable.name, 0, 0, colorWhite, displayInfo.alpha, nil,
       function(x, y, width, height)
         return x, y - (height / 2)
       end, 3
@@ -156,7 +156,7 @@ end
 
 --- Draws a scrolling display's name, typing it out one character every 0.1 seconds with a sound and
 -- erasing it the same way once it starts fading out.
--- @param displayInfo [Map The active display, with `areaTable` and `alpha`; its scroll state is stored in it]
+-- @param displayInfo [Map The active display, with `areaTable`, `name` and `alpha`; its scroll state is stored in it]
 -- @param info [Map Drawing position with `x` and `y`; `y` is moved below the drawn text]
 function cwAreaDisplays:DrawDisplayScrolling(displayInfo, info)
   local introTinyTextFont = cw.option:GetFont('intro_text_tiny')
@@ -165,7 +165,7 @@ function cwAreaDisplays:DrawDisplayScrolling(displayInfo, info)
   local informationColor = cw.option:GetColor('information')
   local bIsGoingBack = (displayInfo.goBackTime and CurTime() >= displayInfo.goBackTime)
   local colorWhite = cw.option:GetColor('white')
-  local areaTable = displayInfo.areaTable
+  local name = displayInfo.name or displayInfo.areaTable.name
 
   if !displayInfo.scrollInfo then
     displayInfo.scrollInfo = {
@@ -185,21 +185,21 @@ function cwAreaDisplays:DrawDisplayScrolling(displayInfo, info)
 
     if displayInfo.scrollInfo.isGoingBack then
       displayInfo.scrollInfo.text = string.utf8sub(
-        areaTable.name, displayInfo.scrollInfo.index + 1
+        name, displayInfo.scrollInfo.index + 1
       )
     else
       displayInfo.scrollInfo.text = string.utf8sub(
-        areaTable.name, 0, displayInfo.scrollInfo.index
+        name, 0, displayInfo.scrollInfo.index
       )
     end
 
-    if displayInfo.scrollInfo.index < string.utf8len(areaTable.name) then
+    if displayInfo.scrollInfo.index < string.utf8len(name) then
       surface.PlaySound('common/talk.wav')
     end
   end
 
   local defaultWidth, defaultHeight = cw.core:GetCachedTextSize(
-    introTinyTextFont, string.upper(areaTable.name)
+    introTinyTextFont, string.upper(name)
   )
   local scrollWidth, scrollHeight = cw.core:GetCachedTextSize(
     introTinyTextFont, string.upper(displayInfo.scrollInfo.text)
@@ -209,7 +209,7 @@ function cwAreaDisplays:DrawDisplayScrolling(displayInfo, info)
 
   if displayInfo.scrollInfo.isGoingBack then
     sNextCharacter = string.utf8sub(
-      areaTable.name, displayInfo.scrollInfo.index, displayInfo.scrollInfo.index
+      name, displayInfo.scrollInfo.index, displayInfo.scrollInfo.index
     )
 
     local _, textWidth = cw.core:DrawInfo(
@@ -222,7 +222,7 @@ function cwAreaDisplays:DrawDisplayScrolling(displayInfo, info)
     newX = newX + (defaultWidth - scrollWidth)
   else
     sNextCharacter = string.utf8sub(
-      areaTable.name, displayInfo.scrollInfo.index + 1, displayInfo.scrollInfo.index + 1
+      name, displayInfo.scrollInfo.index + 1, displayInfo.scrollInfo.index + 1
     )
   end
 

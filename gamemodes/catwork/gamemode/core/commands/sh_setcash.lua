@@ -10,10 +10,10 @@ COMMAND.arguments = 2
 --- Sets the target player's cash to an exact amount; arguments are the player name and the amount.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
-  local cash = math.floor(tonumber((arguments[2] or 0)))
+  local cash = math.floor(tonumber(arguments[2]) or 0)
 
   if target then
-    if cash and cash >= 1 then
+    if cash >= 1 and cash < math.huge then
       local playerName = player:Name()
       local targetName = target:Name()
       local giveCash = cash - target:GetCash()

@@ -14,14 +14,9 @@ function COMMAND:OnRun(player, arguments)
 
   if IsValid(door) and cw.entity:IsDoor(door) then
     if cw.core:ToBool(arguments[1]) then
-      local data = {
-        position = door:GetPos(),
-        entity = door
-      }
-
       cw.entity:SetDoorFalse(door, true)
 
-      cwDoorCmds.doorData[data.entity] = {
+      cwDoorCmds.doorData[door] = {
         position = door:GetPos(),
         entity = door,
         text = 'hidden',

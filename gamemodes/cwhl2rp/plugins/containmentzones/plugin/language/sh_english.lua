@@ -18,6 +18,7 @@ lang['#Containment_SphereAdded'] = 'You have added a containment area with the s
 lang['#Containment_Removed'] = 'You have removed #1 contamination areas.'
 lang['#Containment_NoneFound'] = 'There were no contaminated areas near this position.'
 lang['#Containment_Saved'] = 'You have saved the containment areas.'
+lang['#Containment_InvalidNumber'] = 'You have to specify a valid number.'
 
 -- Radiation
 lang['#Containment_RadPerSecond'] = 'rad/s'
@@ -26,6 +27,8 @@ lang['#Containment_RadSickness_Stage2'] = 'You feel very tired, the vomiting doe
 lang['#Containment_RadSickness_Stage3'] = 'You are bleeding very heavily. You feel terrible, and your hair is falling out.'
 lang['#Containment_RadSickness_Stage4'] = 'You are bleeding heavily and continuously. You are vomiting blood.'
 lang['#Containment_RadSickness_Stage5'] = 'You are bleeding internally. On top of that, your abdomen is bloated and you are in terrible agony.'
+lang['#Containment_RadKnockout'] = '** You are exhausted and feel very sick. You feel a fever all over your body...'
+lang['#Containment_FilterBar'] = 'FILTER'
 
 -- Items
 lang['#Containment_UseText_ReplaceFilter'] = 'Replace Filter'

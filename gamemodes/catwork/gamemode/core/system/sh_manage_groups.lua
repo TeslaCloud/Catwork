@@ -62,6 +62,7 @@ if CLIENT then
           function groupButton.DoClick(button)
             self.groupPlayers = nil
             self.groupType = k
+            self.groupPage = 1
             self:Rebuild()
           end
 
@@ -185,114 +186,148 @@ if CLIENT then
     end
   end)
 else
+  local GROUP_NAMES = {
+    [GROUP_SUPER] = 'superadmin',
+    [GROUP_ADMIN] = 'admin',
+    [GROUP_OPER] = 'operator'
+  }
+
+  --- Returns whether a Steam ID is listed in the `owner_steamid` config, also when its player is offline.
+  -- @param steamID [String The Steam ID to check]
+  -- @return [Boolean Whether the Steam ID belongs to an owner]
+  local function IsOwnerSteamID(steamID)
+    local ownerSteamID = string.gsub(config.Get('owner_steamid'):GetString(), ' ', '')
+
+    for k, v in ipairs(string.Split(ownerSteamID, ',')) do
+      if v == steamID then
+        return true
+      end
+    end
+
+    return false
+  end
+
   netstream.Hook('SystemGroupDemote', function(player, data)
     local commandTable = cw.command:FindByID('PlyDemote')
 
-    if commandTable and type(data) == 'table'
-    and cw.player:HasFlags(player, commandTable.access) then
-      local target = _player.Find(data[1])
-
-      if target then
-        cw.player:RunClockworkCommand(player, 'PlyDemote', data[1])
-
-        timer.Simple(1, function()
-          if IsValid(player) then
-            netstream.Start(player, 'SystemGroupRebuild', true)
-          end
-        end)
-      else
-        local schemaFolder = cw.core:GetSchemaFolder()
-        local playersTable = config.Get('mysql_players_table'):Get()
-        local cwUserGroup = 'user'
-
-        if data[3] == GROUP_SUPER then
-          cwUserGroup = 'superadmin'
-        elseif data[3] == GROUP_ADMIN then
-          cwUserGroup = 'admin'
-        elseif data[3] == GROUP_OPER then
-          cwUserGroup = 'operator'
-        end
-
-        local queryObj = cw.database:Update(playersTable)
-          queryObj:Update('_UserGroup', 'user')
-          queryObj:Where('_Schema', schemaFolder)
-          queryObj:Where('_SteamID', data[1])
-          queryObj:Callback(function(result)
-            netstream.Start(player, 'SystemGroupRebuild', true)
-          end)
-
-        queryObj:Execute()
-
-        cw.player:NotifyAll(L('Command_Plydemote_Demoted', player:Name(), data[2], cwUserGroup))
-      end
-    end
-  end)
-
-  netstream.Hook('SystemGroupGet', function(player, data)
-    if type(data) != 'table' then
+    if !commandTable or !istable(data) or !isstring(data[1])
+    or !cw.player:HasFlags(player, commandTable.access) then
       return
     end
 
-    local groupType = tonumber(data[1])
+    local steamID = string.upper(data[1])
+
+    if !string.find(steamID, '^STEAM_%d:%d:%d+$') then
+      return
+    end
+
+    if _player.Find(steamID) then
+      cw.player:RunClockworkCommand(player, 'PlyDemote', steamID)
+
+      timer.Simple(1, function()
+        if IsValid(player) then
+          netstream.Start(player, 'SystemGroupRebuild', true)
+        end
+      end)
+
+      return
+    end
+
+    local steamName = steamID
+
+    -- The name is only used for the announcement; utf8sub raises an error on invalid UTF-8.
+    if isstring(data[2]) then
+      local bSuccess, name = pcall(string.utf8sub, data[2], 1, 64)
+
+      if bSuccess and name != '' then
+        steamName = name
+      end
+    end
+
+    if IsOwnerSteamID(steamID) then
+      cw.player:Notify(player, L('Command_PlayerProtected', steamName))
+
+      return
+    end
+
+    local queryObj = cw.database:Update(config.Get('mysql_players_table'):Get())
+      queryObj:Update('_UserGroup', 'user')
+      queryObj:Where('_Schema', cw.core:GetSchemaFolder())
+      queryObj:Where('_SteamID', steamID)
+      queryObj:Callback(function(result)
+        if IsValid(player) then
+          netstream.Start(player, 'SystemGroupRebuild', true)
+        end
+      end)
+    queryObj:Execute()
+
+    cw.player:NotifyAll(
+      L('Command_Plydemote_Demoted', player:Name(), steamName, GROUP_NAMES[data[3]] or 'user')
+    )
+  end)
+
+  netstream.Hook('SystemGroupGet', function(player, data)
+    local commandTable = cw.command:FindByID('PlySetGroup')
+
+    if !commandTable or !istable(data) or !cw.player:HasFlags(player, commandTable.access) then
+      return
+    end
+
+    local groupName = GROUP_NAMES[tonumber(data[1])]
     local groupPage = tonumber(data[2])
 
-    if groupPage then
-      local groupPlayers = {}
-      local sendPlayers = {}
-      local finishIndex = groupPage * 8
-      local startIndex = finishIndex - 7
-      local groupName = 'user'
-      local pageCount = 0
+    -- Only the three staff groups can be listed; 'user' would return every player in the database.
+    if !groupName or !groupPage or groupPage != groupPage then
+      return
+    end
 
-      if groupType == GROUP_SUPER then
-        groupName = 'superadmin'
-      elseif groupType == GROUP_ADMIN then
-        groupName = 'admin'
-      elseif groupType == GROUP_OPER then
-        groupName = 'operator'
-      end
+    groupPage = math.max(math.floor(groupPage), 1)
 
-      local schemaFolder = cw.core:GetSchemaFolder()
-      local playersTable = config.Get('mysql_players_table'):Get()
-      local queryObj = cw.database:Select(playersTable)
-        queryObj:Callback(function(result)
-          if cw.database:IsResult(result) then
-            for k, v in pairs(result) do
-              groupPlayers[#groupPlayers + 1] = {
-                steamName = v._SteamName,
-                steamID = v._SteamID
-              }
-            end
+    local finishIndex = groupPage * 8
+    local startIndex = finishIndex - 7
+
+    local queryObj = cw.database:Select(config.Get('mysql_players_table'):Get())
+      queryObj:Select('_SteamName')
+      queryObj:Select('_SteamID')
+      queryObj:Where('_Schema', cw.core:GetSchemaFolder())
+      queryObj:Where('_UserGroup', groupName)
+      queryObj:Callback(function(result)
+        if !IsValid(player) then
+          return
+        end
+
+        local groupPlayers = {}
+        local sendPlayers = {}
+
+        if cw.database:IsResult(result) then
+          for k, v in pairs(result) do
+            groupPlayers[#groupPlayers + 1] = {
+              steamName = v._SteamName or v._SteamID,
+              steamID = v._SteamID
+            }
           end
+        end
 
-          table.sort(groupPlayers, function(a, b)
-            return a.steamName < b.steamName
-          end)
-
-          pageCount = math.ceil(#groupPlayers / 8)
-
-          for k, v in pairs(groupPlayers) do
-            if k >= startIndex and k <= finishIndex then
-              sendPlayers[#sendPlayers + 1] = v
-            end
-          end
-
-          if #sendPlayers > 0 then
-            netstream.Start(player, 'SystemGroupGet', {
-              pageCount = pageCount,
-              players = sendPlayers,
-              isNext = (groupPlayers[finishIndex + 1] != nil),
-              isBack = (groupPlayers[startIndex - 1] != nil),
-              page = groupPage
-            })
-          else
-            netstream.Start(player, 'SystemGroupGet', false)
-          end
+        table.sort(groupPlayers, function(a, b)
+          return a.steamName < b.steamName
         end)
 
-        queryObj:Where('_Schema', schemaFolder)
-        queryObj:Where('_UserGroup', groupName)
-      queryObj:Execute()
-    end
+        for i = startIndex, math.min(finishIndex, #groupPlayers) do
+          sendPlayers[#sendPlayers + 1] = groupPlayers[i]
+        end
+
+        if #sendPlayers > 0 then
+          netstream.Start(player, 'SystemGroupGet', {
+            pageCount = math.ceil(#groupPlayers / 8),
+            players = sendPlayers,
+            isNext = (groupPlayers[finishIndex + 1] != nil),
+            isBack = (groupPlayers[startIndex - 1] != nil),
+            page = groupPage
+          })
+        else
+          netstream.Start(player, 'SystemGroupGet', false)
+        end
+      end)
+    queryObj:Execute()
   end)
 end

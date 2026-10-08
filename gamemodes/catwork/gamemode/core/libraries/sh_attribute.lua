@@ -12,7 +12,8 @@ cw.attribute.stored = stored
 cw.attribute.buffer = buffer
 
 --[[ Set the __index meta function of the class. --]]
-local CLASS_TABLE = { __index = CLASS_TABLE }
+local CLASS_TABLE = {}
+CLASS_TABLE.__index = CLASS_TABLE
 
 --- Registers the attribute with `cw.attribute:Register`.
 --
@@ -91,7 +92,7 @@ end
 --- Finds an attribute by index, unique ID or part of its name.
 --
 -- Exact index and unique ID matches win. Otherwise the attribute with the shortest name that
--- contains `identifier` (case-insensitive, as a Lua pattern) is returned.
+-- contains `identifier` (case-insensitive, as plain text) is returned.
 --
 -- @param identifier [Any Numeric index, unique ID or part of the name]
 -- @return [Attribute The attribute, or `nil` if none matches]
@@ -104,10 +105,13 @@ function cw.attribute:FindByID(identifier)
     return stored[identifier]
   end
 
+  if !isstring(identifier) then return end
+
   local tAttributeTab = nil
+  local lowerName = string.lower(identifier)
 
   for k, v in pairs(stored) do
-    if string.find(string.lower(v.name), string.lower(identifier)) then
+    if string.find(string.lower(v.name), lowerName, 1, true) then
       if tAttributeTab then
         if string.utf8len(v.name) < string.utf8len(tAttributeTab.name) then
           tAttributeTab = v

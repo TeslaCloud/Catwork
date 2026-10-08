@@ -40,13 +40,7 @@ function ITEM:GetModelName(player, group)
       group = ''
     end
 
-    if SERVER then
-      if player:GetGender() == GENDER_FEMALE then
-        return group..'female_04.mdl'
-      else
-        return group..'male_05.mdl'
-      end
-    elseif player:GetGender() == GENDER_FEMALE then
+    if player:GetGender() == GENDER_FEMALE then
       return group..'female_04.mdl'
     else
       return group..'male_05.mdl'

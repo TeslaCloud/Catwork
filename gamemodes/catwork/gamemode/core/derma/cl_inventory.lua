@@ -4,6 +4,10 @@
 -- `cwInventorySpace` are the weight and space bars. The tab rebuilds from the local player's inventory and equipped
 -- weapons when opened, and `HandleUnequip` asks the server to unequip an item.
 
+local barBackgroundColor = Color(75, 75, 75, 255)
+local weightUsedColor = Color(115, 195, 100, 255)
+local spaceUsedColor = Color(139, 215, 113, 255)
+
 local PANEL = {}
 
 --- Creates the inventory menu tab with Inventory and Equipment sheets, registers itself as
@@ -70,13 +74,6 @@ end
 function PANEL:Rebuild()
   self.equipmentList:Clear()
   self.inventoryList:Clear()
-
-  --[[
-  local label = vgui.Create("cwInfoText", self)
-    label:SetText("To view an item's options, click on its spawn icon.")
-    label:SetInfoColor("blue")
-  self.inventoryList:AddItem(label)
-  --]]
 
   self.weightForm = vgui.Create('cwBasicForm', self)
   self.weightForm:SetPadding(8)
@@ -159,12 +156,6 @@ function PANEL:Rebuild()
 
   if #categories.equipment > 0 then
     for k, v in pairs(categories.equipment) do
-      --[[
-      local collapsibleCategory = cw.core:CreateCustomCategoryPanel(v.category, self.equipmentList)
-        collapsibleCategory:SetCookieName("Equipment"..v.category)
-      self.equipmentList:AddItem(collapsibleCategory)
-      --]]
-
       local categoryForm = vgui.Create('DCollapsibleCategory', self)
       categoryForm:SetLabel(L(v.category))
 
@@ -174,8 +165,6 @@ function PANEL:Rebuild()
         categoryList:SetPadding(4)
         categoryList:SetSpacing(4)
       categoryForm:SetContents(categoryList)
-
-      -- collapsibleCategory:SetContents(categoryList)
 
       table.sort(v.itemsList, function(a, b)
         return a.itemID < b.itemID
@@ -201,12 +190,6 @@ function PANEL:Rebuild()
 
   if #categories.inventory > 0 then
     for k, v in pairs(categories.inventory) do
-      --[[
-      local collapsibleCategory = cw.core:CreateCustomCategoryPanel(v.category, self.inventoryList)
-        collapsibleCategory:SetCookieName("Inventory"..v.category)
-      self.inventoryList:AddItem(collapsibleCategory)
-      --]]
-
       local categoryForm = vgui.Create('DCollapsibleCategory', self)
       categoryForm:SetLabel(L(v.category))
 
@@ -267,9 +250,7 @@ end
 --- Rebuilds the inventory when the player gets a weapon that belongs to an item.
 function PANEL:Think()
   for k, v in pairs(cw.client:GetWeapons()) do
-    local weaponItem = item.GetByWeapon(v)
-
-    if weaponItem and !v.cwIsWeaponItem then
+    if !v.cwIsWeaponItem and item.GetByWeapon(v) then
       cw.inventory:Rebuild()
       v.cwIsWeaponItem = true
     end
@@ -371,10 +352,16 @@ function PANEL:Init()
   self.cachedInfo = { model = model, skin = skin }
 end
 
---- Refreshes the item icon's tooltip and color, and its model when the item's icon changes.
+--- Refreshes the item icon's color, its model when the item's icon changes, and its tooltip while it is hovered.
 function PANEL:Think()
-  self.spawnIcon:SetMarkupToolTip(item.GetMarkupToolTip(self.itemTable))
-  self.spawnIcon:SetColor(self.itemTable.color)
+  local spawnIcon = self.spawnIcon
+
+  -- The tooltip is only drawn for the hovered panel, so the others keep the one they were built with.
+  if cw.core:GetActiveMarkupToolTip() == spawnIcon or !spawnIcon:GetMarkupToolTip() then
+    spawnIcon:SetMarkupToolTip(item.GetMarkupToolTip(self.itemTable))
+  end
+
+  spawnIcon:SetColor(self.itemTable.color)
 
   --[[ Check if the model or skin has changed and update the spawn icon. --]]
   local model, skin = item.GetIconInfo(self.itemTable)
@@ -395,12 +382,12 @@ vgui.Register('cwInventoryItem', PANEL, 'DPanel')
 
 local PANEL = {}
 
-PANEL.invWeight = 0
-
 --- Creates the inventory weight bar (`cwInventoryWeight`) and its label.
 function PANEL:Init()
-  local maximumWeight = cw.player:GetMaxWeight()
   local colorWhite = cw.option:GetColor('white')
+
+  self.invWeight = 0
+  self.maxWeight = cw.player:GetMaxWeight()
 
   self.spaceUsed = vgui.Create('DPanel', self)
   self.spaceUsed:SetPos(1, 1)
@@ -412,27 +399,28 @@ function PANEL:Init()
 
   -- Called when the panel should be painted.
   function self.spaceUsed.Paint(spaceUsed)
-    local inventoryWeight = self.invWeight
-    local maximumWeight = cw.player:GetMaxWeight()
-
-    local width = math.Clamp((spaceUsed:GetWide() / maximumWeight) * inventoryWeight, 0, spaceUsed:GetWide())
-    local red = math.Clamp((255 / maximumWeight) * inventoryWeight, 0, 255)
+    local width = math.Clamp((spaceUsed:GetWide() / self.maxWeight) * self.invWeight, 0, spaceUsed:GetWide())
 
     draw.RoundedBox(2, 0, 0, spaceUsed:GetWide(), spaceUsed:GetTall(), cw.option:GetColor('panel_background'))
-    cw.core:DrawSimpleGradientBox(0, 0, 0, width, spaceUsed:GetTall(), Color(115, 195, 100, 255))
+    cw.core:DrawSimpleGradientBox(0, 0, 0, width, spaceUsed:GetTall(), weightUsedColor)
   end
 end
 
---- Updates the weight bar's carried and maximum weight.
+--- Lays out the weight bar and updates its carried and maximum weight every 0.1 seconds.
 function PANEL:Think()
-  self.invWeight = cw.inventory:CalculateWeight(
-    cw.inventory:GetClient()
-  )
+  local curTime = CurTime()
+
+  if !self.nextUpdateContents or curTime >= self.nextUpdateContents then
+    self.nextUpdateContents = curTime + 0.1
+    self.invWeight = cw.inventory:CalculateWeight(cw.inventory:GetClient())
+    self.maxWeight = cw.player:GetMaxWeight()
+
+    self.weight:SetText(self.invWeight..'/'..self.maxWeight..L('#Unit_Kilograms'))
+    self.weight:SizeToContents()
+  end
 
   self.spaceUsed:SetSize(self:GetWide() - 2, self:GetTall() - 2)
-  self.weight:SetText(self.invWeight..'/'..cw.player:GetMaxWeight()..L('#Unit_Kilograms'))
   self.weight:SetPos(self:GetWide() / 2 - self.weight:GetWide() / 2, self:GetTall() / 2 - self.weight:GetTall() / 2)
-  self.weight:SizeToContents()
 end
 
 vgui.Register('cwInventoryWeight', PANEL, 'DPanel')
@@ -441,8 +429,10 @@ local PANEL = {}
 
 --- Creates the inventory space bar (`cwInventorySpace`) and its label.
 function PANEL:Init()
-  local maximumSpace = cw.player:GetMaxSpace()
   local colorWhite = cw.option:GetColor('white')
+
+  self.invSpace = 0
+  self.maxSpace = cw.player:GetMaxSpace()
 
   self.spaceUsed = vgui.Create('DPanel', self)
   self.spaceUsed:SetPos(1, 1)
@@ -455,46 +445,28 @@ function PANEL:Init()
 
   -- Called when the panel should be painted.
   function self.spaceUsed.Paint(spaceUsed)
-    local inventorySpace = cw.inventory:CalculateSpace(
-      cw.inventory:GetClient()
-    )
-    local maximumSpace = cw.player:GetMaxSpace()
+    local width = math.Clamp((spaceUsed:GetWide() / self.maxSpace) * self.invSpace, 0, spaceUsed:GetWide())
 
-    local color = Color(100, 100, 100, 255)
-    local width = math.Clamp((spaceUsed:GetWide() / maximumSpace) * inventorySpace, 0, spaceUsed:GetWide())
-    local red = math.Clamp((255 / maximumSpace) * inventorySpace, 0, 255)
-
-    if color then
-      color.r = math.min(color.r - 25, 255)
-      color.g = math.min(color.g - 25, 255)
-      color.b = math.min(color.b - 25, 255)
-    end
-
-    cw.core:DrawSimpleGradientBox(0, 0, 0, spaceUsed:GetWide(), spaceUsed:GetTall(), color)
-    cw.core:DrawSimpleGradientBox(0, 0, 0, width, spaceUsed:GetTall(), Color(139, 215, 113, 255))
+    cw.core:DrawSimpleGradientBox(0, 0, 0, spaceUsed:GetWide(), spaceUsed:GetTall(), barBackgroundColor)
+    cw.core:DrawSimpleGradientBox(0, 0, 0, width, spaceUsed:GetTall(), spaceUsedColor)
   end
 end
 
---- Updates the space bar's used and maximum space every 0.1 seconds.
+--- Lays out the space bar and updates its used and maximum space every 0.1 seconds.
 function PANEL:Think()
-  if !self.nextUpdateContents then
-    self.nextUpdateContents = CurTime() + 0.1
+  local curTime = CurTime()
+
+  if !self.nextUpdateContents or curTime >= self.nextUpdateContents then
+    self.nextUpdateContents = curTime + 0.1
+    self.invSpace = cw.inventory:CalculateSpace(cw.inventory:GetClient())
+    self.maxSpace = cw.player:GetMaxSpace()
+
+    self.space:SetText(self.invSpace..'/'..self.maxSpace..L('#Unit_Litres'))
+    self.space:SizeToContents()
   end
-
-  if CurTime() < self.nextUpdateContents then
-    return
-  end
-
-  self.nextUpdateContents = nil
-
-  local inventorySpace = cw.inventory:CalculateSpace(
-    cw.inventory:GetClient()
-  )
 
   self.spaceUsed:SetSize(self:GetWide() - 2, self:GetTall() - 2)
-  self.space:SetText(inventorySpace..'/'..cw.player:GetMaxSpace()..L('#Unit_Litres'))
   self.space:SetPos(self:GetWide() / 2 - self.space:GetWide() / 2, self:GetTall() / 2 - self.space:GetTall() / 2)
-  self.space:SizeToContents()
 end
 
 vgui.Register('cwInventorySpace', PANEL, 'DPanel')

@@ -1,8 +1,6 @@
 --- Registers the `/GiveCash` command (alias `/GiveTokens` and two Russian aliases), which gives some of the caller's
 -- cash to the player they are looking at.
 
-local NAME_CASH = cw.option:GetKey('name_cash')
-
 local COMMAND = cw.command:New('GiveCash', '')
 COMMAND.tip = '#Command_Givecash_Description'
 COMMAND.text = '#Command_Givecash_Syntax'
@@ -16,11 +14,11 @@ COMMAND.cooldown = 5
 -- The target must be within 192 units. Unrecognised players are named by their unrecognised name.
 function COMMAND:OnRun(player, arguments)
   local target = player:GetEyeTraceNoCursor().Entity
-  local cash = math.floor(tonumber((arguments[1] or 0)))
+  local cash = math.floor(tonumber(arguments[1]) or 0)
 
   if target and target:IsPlayer() then
     if target:GetShootPos():Distance(player:GetShootPos()) <= 192 then
-      if cash and cash >= 1 then
+      if cash >= 1 then
         if cw.player:CanAfford(player, cash) then
           local playerName = player:Name()
           local targetName = target:Name()

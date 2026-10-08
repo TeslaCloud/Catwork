@@ -14,10 +14,11 @@ function COMMAND:OnRun(player, arguments)
   local position = player:GetEyeTraceNoCursor().HitPos + Vector(0, 0, 32)
   local pointsCount = 0
 
-  for k, v in pairs(cwGather.nodePoints) do
-    if v.position:Distance(position) <= 50000000 then
+  -- Backwards, so that removing a point does not shift the ones still to be checked.
+  for k = #cwGather.nodePoints, 1, -1 do
+    if cwGather.nodePoints[k].position:Distance(position) <= 50000000 then
       pointsCount = pointsCount + 1
-      cwGather.nodePoints[k] = nil
+      table.remove(cwGather.nodePoints, k)
     end
   end
 

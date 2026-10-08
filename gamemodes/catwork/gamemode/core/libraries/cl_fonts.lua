@@ -21,6 +21,10 @@ library.New('fonts', cw)
 cw.fonts.stored = cw.fonts.stored or {}
 cw.fonts.sizes = cw.fonts.sizes or {}
 
+-- Names of the sized fonts by font name and size. `cw.fonts:GetSize` is called while drawing, and this
+-- saves it from building the name out of a string and a number every time.
+local sizedNames = {}
+
 --- Creates a font and stores its data so other sizes of it can be made.
 --
 -- `extended` is always turned on so the font loads every character. Does nothing
@@ -64,20 +68,32 @@ end
 -- was not added]
 -- @see cw.fonts:GetMultiplied
 function cw.fonts:GetSize(name, size)
+  local sized = sizedNames[name]
+
+  if sized and sized[size] then
+    return sized[size]
+  end
+
   local fontKey = name..size
 
-  if self.sizes[fontKey] then
-    return fontKey
+  if !self.sizes[fontKey] then
+    if !self.stored[name] then
+      return name
+    end
+
+    self.sizes[fontKey] = table.Copy(self.stored[name])
+    self.sizes[fontKey].size = size
+
+    CreateFont(fontKey, self.sizes[fontKey])
   end
 
-  if !self.stored[name] then
-    return name
+  if !sized then
+    sized = {}
+    sizedNames[name] = sized
   end
 
-  self.sizes[fontKey] = table.Copy(self.stored[name])
-  self.sizes[fontKey].size = size
+  sized[size] = fontKey
 
-  CreateFont(fontKey, self.sizes[fontKey])
   return fontKey
 end
 

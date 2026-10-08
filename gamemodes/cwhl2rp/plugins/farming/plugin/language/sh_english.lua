@@ -11,7 +11,7 @@ lang['#Farming_UseText_Peel'] = 'Peel'
 lang['#Farming_Category_Plants'] = 'Plants'
 lang['#Farming_Plant_Default'] = 'Plant'
 lang['#Farming_Maturity'] = 'Maturity: #1%'
-lang['#Farming_ProgressBar_Cleanup'] = 'You are cleaning up the garbage...'
+lang['#Farming_ProgressBar_Harvest'] = 'You are harvesting the crops...'
 
 lang['#Farming_Planted'] = 'You have successfully planted the seeds.'
 lang['#Farming_TooClose'] = 'You cannot plant this close to another plant!'

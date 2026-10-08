@@ -1,5 +1,5 @@
---- Registers the `/SalesmanEdit` superadmin command, which removes the salesman the player is looking at and opens the
--- editor with its settings, so that closing the editor respawns it in place.
+--- Registers the `/SalesmanEdit` superadmin command, which opens the editor with the settings of the salesman the
+-- player is looking at, so that closing the editor replaces it in place.
 
 local COMMAND = cw.command:New('SalesmanEdit')
 COMMAND.tip = '#Command_Salesmanedit_Description'
@@ -8,8 +8,9 @@ COMMAND.flags = CMD_DEFAULT
 COMMAND.access = 's'
 COMMAND.optionalArguments = 1
 
---- Removes the salesman the player is looking at and opens the editor with its settings, so closing
--- the editor respawns it in place.
+--- Opens the editor with the settings of the salesman the player is looking at.
+--
+-- The salesman stays on the map until the editor is closed and its `SalesmanAdd` message replaces it.
 function COMMAND:OnRun(player, arguments)
   local target = player:GetEyeTraceNoCursor().Entity
 
@@ -18,6 +19,7 @@ function COMMAND:OnRun(player, arguments)
       local salesmanTable = cwSalesmen:GetTableFromEntity(target)
 
       player.cwSalesmanSetup = true
+      player.cwSalesmanEdit = target
       player.cwSalesmanAnim = tonumber(arguments[1])
       player.cwSalesmanPos = target:GetPos()
       player.cwSalesmanAng = target:GetAngles()
@@ -32,17 +34,6 @@ function COMMAND:OnRun(player, arguments)
       end
 
       netstream.Start(player, 'SalesmanEdit', salesmanTable)
-
-      for k, v in pairs(cwSalesmen.salesmen) do
-        if target == v then
-          target.cwCash = nil
-          target:Remove()
-          cwSalesmen.salesmen[k] = nil
-          cwSalesmen:SaveSalesmen()
-
-          return
-        end
-      end
     else
       cw.player:Notify(player, L('Salesman_NotSalesman'))
     end

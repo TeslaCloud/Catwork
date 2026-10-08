@@ -10,8 +10,8 @@ cw.event.stored = stored
 
 --- Sets whether an event, or a whole class of events, is allowed to run.
 --
--- With an `eventName`, the class's entry is replaced by a table holding only that event, so
--- earlier per-event settings for the same class are lost. Without one, the whole class is set.
+-- With an `eventName`, only that event of the class is set, replacing a setting made for the
+-- whole class. Without one, the whole class is set and its per-event settings are dropped.
 --
 -- ```
 -- cw.event:Hook('limb_damage', 'stumble', false)
@@ -24,7 +24,10 @@ cw.event.stored = stored
 -- @see cw.event:CanRun
 function cw.event:Hook(eventClass, eventName, isAllowed)
   if eventName then
-    stored[eventClass] = {}
+    if !istable(stored[eventClass]) then
+      stored[eventClass] = {}
+    end
+
     stored[eventClass][eventName] = isAllowed
   else
     stored[eventClass] = isAllowed

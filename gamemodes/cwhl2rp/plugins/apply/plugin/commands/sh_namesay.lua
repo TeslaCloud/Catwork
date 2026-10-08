@@ -2,43 +2,34 @@
 -- character (as a unit for Combine) and, when the `apply_recognise_enable` config is on, makes players within talk
 -- radius recognise them.
 
+local PLUGIN = PLUGIN
+
 local COMMAND = cw.command:New('NameSay')
 COMMAND.tip = '#Command_Namesay_Description'
 COMMAND.flags = CMD_DEFAULT
+COMMAND.cooldown = 2
 
 --- Introduces the player by name in a full Russian sentence and makes nearby players recognise them.
 --
 -- Combine introduce themselves as a unit. Recognition only happens when `apply_recognise_enable`
 -- is on, for players within `talk_radius`.
 function COMMAND:OnRun(player)
-  local name = player:Name()
   local radius = config.Get('talk_radius'):Get()
+  local text = '"Меня зовут '..player:Name()..'."'
 
-  if !player:IsCombine() then
-    chatbox.AddText(nil, '"Меня зовут '..name..'."', {
-      sender = player,
-      isPlayerMessage = true,
-      filter = 'ic',
-      radius = radius,
-      textColor = Color(255, 255, 200, 255)
-    })
-  else
-    chatbox.AddText(nil, '"Я - юнит '..name..'."', {
-      sender = player,
-      isPlayerMessage = true,
-      filter = 'ic',
-      radius = radius,
-      textColor = Color(255, 255, 200, 255)
-    })
+  if player:IsCombine() then
+    text = '"Я - юнит '..player:Name()..'."'
   end
 
-  for k, v in ipairs(_player.GetAll()) do
-    if v:GetPos():Distance(player:GetPos()) <= radius
-    and config.Get('apply_recognise_enable'):Get()
-    and IsValid(v) and v:HasInitialized() then
-      cw.player:SetRecognises(v, player, RECOGNISE_TOTAL)
-    end
-  end
+  chatbox.AddText(nil, text, {
+    sender = player,
+    isPlayerMessage = true,
+    filter = 'ic',
+    radius = radius,
+    textColor = Color(255, 255, 200, 255)
+  })
+
+  PLUGIN:RecogniseNearby(player, radius)
 end
 
 COMMAND:Register()

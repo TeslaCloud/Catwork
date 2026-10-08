@@ -19,7 +19,7 @@ function COMMAND:OnRun(player, arguments)
     target:Kill()
 
     if !isSilent then
-      cw.player:Notify(L('Command_Plyslay_Slain', target:Name(), player:Name()))
+      cw.player:NotifyAll(L('Command_Plyslay_Slain', target:Name(), player:Name()))
     end
   else
     cw.player:Notify(player, L('NotValidPlayer', arguments[1]))

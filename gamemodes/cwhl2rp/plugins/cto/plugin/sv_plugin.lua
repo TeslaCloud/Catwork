@@ -8,7 +8,6 @@
 
 local cwCTO = cwCTO
 
-cwCTO.printServerDebug = false
 cwCTO.cameraData = cwCTO.cameraData or {}
 cwCTO.fixedCameras = cwCTO.fixedCameras or false
 cwCTO.outputEntity = cwCTO.outputEntity or nil
@@ -54,6 +53,8 @@ end
 -- @param combineCamera [Entity The camera that found the player]
 -- @param player [Player The player found]
 function cwCTO:CombineCameraFoundPlayer(combineCamera, player)
+  if !IsValid(player) or !player:IsPlayer() then return end
+
   if self.cameraData[combineCamera] and !cw.player:IsNoClipping(player) then
     if !self.cameraData[combineCamera][player] then
       self.cameraData[combineCamera][player] = {}
@@ -66,7 +67,8 @@ end
 -- An alert camera drops players more than 450 units away or out of sight, and flags
 -- running, jumping, crouching or fallen players that are not Combine with a biosignal; a
 -- flagged player makes the camera angry. The camera data, `0` for idle cameras, is sent to
--- every Combine player with a biosignal with the `UpdateBiosignalCameraData` netstream.
+-- every Combine player with a biosignal with the `UpdateBiosignalCameraData` netstream; nothing
+-- is sent while the map has no cameras.
 function cwCTO:HalfSecond()
   local networkedCameraData = {}
 
@@ -118,6 +120,13 @@ function cwCTO:HalfSecond()
     end
   end
 
+  local bHasCameras = (next(networkedCameraData) != nil)
+
+  -- An empty list still goes out once after the last camera is removed, to clear it from the HUD.
+  if !bHasCameras and !self.networkedCameras then return end
+
+  self.networkedCameras = bHasCameras
+
   local players = {}
 
   for k, v in ipairs(_player.GetAll()) do
@@ -126,7 +135,9 @@ function cwCTO:HalfSecond()
     end
   end
 
-  netstream.Start(players, 'UpdateBiosignalCameraData', networkedCameraData)
+  if #players > 0 then
+    netstream.Start(players, 'UpdateBiosignalCameraData', networkedCameraData)
+  end
 end
 
 --- Marks a Combine player's biosignal as lost and alerts the other units.
@@ -139,14 +150,11 @@ end
 function cwCTO:DoPostBiosignalLoss(player)
   player:SetSharedVar('IsBiosignalGone', true)
 
-  local location = Schema:PlayerGetLocation(player)
-
   local digits = string.match(player:Name(), '%d%d%d%d?%d?') or 0
 
   -- Alert all other units.
   Schema:AddCombineDisplayLine(L('CTO_Display_DownloadingLostBiosignal'), Color(255, 255, 255, 255))
-  -- Schema:AddCombineDisplayLine("WARNING! Biosignal lost for protection team unit "..digits.." at "..location.."...",
-  -- Color(255, 0, 0, 255))
+
   for k, v in ipairs(_player.GetAll()) do
     if Schema:PlayerIsCombine(v) and v != player and !v:GetSharedVar('IsBiosignalGone') then
       v:EmitSound('npc/metropolice/vo/on'..math.random(1, 2)..'.wav')
@@ -185,7 +193,9 @@ function cwCTO:DoPostBiosignalLoss(player)
         if Schema:PlayerIsCombine(v) and v != player and !v:GetSharedVar('IsBiosignalGone') then
           v:EmitSound('npc/overwatch/radiovoice/remainingunitscontain.wav')
           timer.Simple(1.4, function()
-            v:EmitSound('npc/metropolice/vo/off'..math.random(1, 4)..'.wav')
+            if IsValid(v) then
+              v:EmitSound('npc/metropolice/vo/off'..math.random(1, 4)..'.wav')
+            end
           end)
         end
       end
@@ -221,6 +231,8 @@ function cwCTO:SetPlayerBiosignal(player, bEnable)
         player:SetSharedVar('IsBiosignalGone', false)
 
         timer.Simple(0.1, function()
+          if !IsValid(player) then return end
+
           local location = Schema:PlayerGetLocation(player)
 
           -- Alert this unit.
@@ -279,6 +291,8 @@ function cwCTO:PostPlayerSpawn(player, lightSpawn, changeClass, firstSpawn)
 
   if !self.fixedCameras then
     for combineCamera, data in pairs(self.cameraData) do
+      if !IsValid(combineCamera) then continue end
+
       -- This is documented as the "Start Inactive" flag by Valve for combine cameras.
       if !combineCamera:HasSpawnFlags(SF_NPC_WAIT_FOR_SCRIPT) then
         combineCamera:Fire('Enable')

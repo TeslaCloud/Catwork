@@ -1,5 +1,5 @@
---- Defines the Large Soda drink item, which refills stamina, heals 10 health, boosts agility and stamina by 5 for two
--- minutes, leaves an empty plastic bottle and hides its Drink option from Combine players.
+--- Defines the Large Soda drink item, which refills stamina, heals 10 health, boosts agility by 5 for two minutes,
+-- leaves an empty plastic bottle and hides its Drink option from Combine players.
 
 ITEM.name = 'Large Soda'
 ITEM.PrintName = '#ITEM_Large_Soda'
@@ -13,14 +13,13 @@ ITEM.business = true
 ITEM.description = '#ITEM_Large_Soda_Desc'
 ITEM.thirst = 35
 
---- Sets stamina to 100, heals 10 health, boosts agility and stamina by 5 for two minutes and gives back an
--- empty plastic bottle.
+--- Sets stamina to 100, heals 10 health, boosts agility by 5 for two minutes and gives back an empty plastic
+-- bottle.
 function ITEM:OnUse(player, itemEntity)
-  player:SetCharacterData('stamina', 100)
+  player:SetCharacterData('Stamina', 100)
   player:SetHealth(math.Clamp(player:Health() + 10, 0, player:GetMaxHealth()))
 
   player:BoostAttribute(self.name, ATB_AGILITY, 5, 120)
-  player:BoostAttribute(self.name, ATB_STAMINA, 5, 120)
 
   player:GiveItem('empty_plastic_bottle', true)
 end

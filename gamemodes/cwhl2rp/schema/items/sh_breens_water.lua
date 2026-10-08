@@ -17,7 +17,7 @@ ITEM.thirst = 20
 --- Restores 70 stamina and 4 health, boosts agility and endurance by 1 for two minutes and gives back an
 -- empty soda can.
 function ITEM:OnUse(player, itemEntity)
-  player:SetCharacterData('Stamina', math.Clamp(player:GetCharacterData('Stamina') + 70, 0, 100))
+  player:SetCharacterData('Stamina', math.Clamp(player:GetCharacterData('Stamina', 100) + 70, 0, 100))
   player:SetHealth(math.Clamp(player:Health() + 4, 0, player:GetMaxHealth()))
 
   player:BoostAttribute(self.name, ATB_AGILITY, 1, 120)

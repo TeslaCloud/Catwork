@@ -33,6 +33,8 @@ function ENT:Think()
   if !self:IsInWorld() then
     self:Remove()
   end
+
+  return true
 end
 
 --- Always transmits the cash entity to every client.

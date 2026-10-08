@@ -130,8 +130,6 @@ function ENT:ActivateRation(activator, duration, force)
     duration = 26
   end
 
-  if !duration then duration = 24 end
-
   if force or !self.nextActivateRation or curTime >= self.nextActivateRation then
     self.nextActivateRation = curTime + duration + 2
     self:SetDTFloat(0, curTime + duration)
@@ -169,7 +167,7 @@ function ENT:ActivateRation(activator, duration, force)
                             local entity = cw.entity:CreateItem(activator, itemTable, position, angles)
                             local physObj = entity:GetPhysicsObject()
 
-                            if physObj then
+                            if IsValid(physObj) then
                               physObj:EnableMotion(false)
                             end
                           end

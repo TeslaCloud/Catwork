@@ -123,7 +123,7 @@ if CLIENT then
 
   -- A concommand that is called to set the mode of the tool, called from the controls in the tool menu.
   concommand.Add('door_setmode', function(player, tool, args)
-    if cw.client:GetInfoNum('doortool_mode', 2) != args[1] then
+    if cw.client:GetInfoNum('doortool_mode', 2) != tonumber(args[1]) then
       RunConsoleCommand('doortool_mode', args[1])
 
       timer.Simple(0.05, function()

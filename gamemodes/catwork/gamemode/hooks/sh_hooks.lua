@@ -142,30 +142,9 @@ function GM:TranslateActivity(player, act)
   end
 
   if player:InVehicle() then
-    local vehicle = player:GetVehicle()
-    local class = vehicle:GetClass()
+    player.CalcSeqOverride = player:LookupSequence('sitchair1')
 
-    if animations['vehicle'] and animations['vehicle'][class] then
-      local animation = 'sitchair1'
-
-      if isstring(animation) then
-        player.CalcSeqOverride = player:LookupSequence(animation)
-
-        return
-      else
-        return animation
-      end
-    else
-      local animation = 'sitchair1'
-
-      if isstring(animation) then
-        player.CalcSeqOverride = player:LookupSequence(animation)
-
-        return
-      end
-
-      return animation
-    end
+    return
   elseif player:OnGround() then
     local weapon = player:GetActiveWeapon()
     local holdType = 'normal'

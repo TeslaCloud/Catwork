@@ -1,80 +1,145 @@
 --- Server-side functions of the Storage plugin that open containers and pick the random items they are filled with.
 --
 -- `cwStorage:OpenContainer` gives the entity an inventory and cash on first use and opens it with `cw.storage:Open`,
--- and the `ContainerPassword` netstream opens a container when the entered password matches. `GetRandomItem` and
--- `CategoryExists` read `cwStorage.randomItems`. `SaveStorage` and `LoadStorage` are empty stubs, as persistence is
--- left to the Static Entities plugin.
+-- and the `ContainerPassword` netstream opens a container when the entered password matches. `GetRandomItem`,
+-- `CategoryExists` and `FillContainer` work on the list from `cwStorage:GetRandomItems`. `SaveStorage` and
+-- `LoadStorage` are empty stubs, as persistence is left to the Static Entities plugin.
 
 cwStorage.storage = cwStorage.storage or {}
 
 netstream.Hook('ContainerPassword', function(player, data)
+  if !istable(data) then return end
+
   local password = data[1]
   local entity = data[2]
+  local curTime = CurTime()
 
-  if IsValid(entity) and cw.entity:IsPhysicsEntity(entity) then
-    local model = string.lower(entity:GetModel())
+  if !isstring(password) or !isentity(entity) or !IsValid(entity) or !cw.entity:IsPhysicsEntity(entity) then return end
+  if !player:HasInitialized() or !player:Alive() or player:IsRagdolled() then return end
+  if player:GetShootPos():Distance(entity:GetPos()) > 192 then return end
+  if player.cwNextContainerPassword and curTime < player.cwNextContainerPassword then return end
 
-    if cwStorage.containerList[model] then
-      local containerWeight = cwStorage.containerList[model][1]
+  local container = cwStorage.containerList[string.lower(entity:GetModel())]
 
-      if entity.cwPassword == password then
-        cwStorage:OpenContainer(player, entity, containerWeight)
-      else
-        cw.player:Notify(player, L('Container_WrongPassword'))
-      end
-    end
+  if !container then return end
+
+  if entity.cwPassword == password then
+    cwStorage:OpenContainer(player, entity, container[1])
+  else
+    -- Slows down guessing a password by trying one after another.
+    player.cwNextContainerPassword = curTime + 1
+
+    cw.player:Notify(player, L('Container_WrongPassword'))
   end
 end)
 
---- Picks a random entry from `cwStorage.randomItems`, optionally limited to one item category.
+--- Returns the entries random container filling picks from.
 --
--- Entries are `{ uniqueID, weight }` lists. The function keeps drawing until an entry matches, so check
--- the category with `cwStorage:CategoryExists` first.
--- @param uniqueID=nil [String Text the item's category must contain, ignoring case]
--- @return [List The `{ uniqueID, weight }` entry, or `nil` when the list is empty]
-function cwStorage:GetRandomItem(uniqueID)
-  if uniqueID then
-    uniqueID = string.lower(uniqueID)
-  end
+-- The list holds every item that is not a base item and not marked `isRareItem`, and is built the first time
+-- it is needed.
+-- @return [List<List> `{ uniqueID, weight }` entries]
+function cwStorage:GetRandomItems()
+  if !self.randomItems then
+    self.randomItems = {}
 
-  if #self.randomItems <= 0 then
-    return
-  end
-
-  local randomItem = self.randomItems[
-    math.random(1, #self.randomItems)
-  ]
-
-  if randomItem then
-    local itemTable = item.FindByID(randomItem[1])
-
-    if !uniqueID or string.find(string.lower(itemTable.category), uniqueID) then
-      return randomItem
+    for k, v in pairs(item.GetAll()) do
+      if !v.isBaseItem and !v.isRareItem then
+        self.randomItems[#self.randomItems + 1] = { v.uniqueID, v.weight }
+      end
     end
   end
 
-  return self:GetRandomItem(uniqueID, runs)
+  return self.randomItems
 end
 
---- Returns whether any entry of `cwStorage.randomItems` has an item category containing the text.
+--- Returns the random item entries whose item category contains a text.
+-- @param category=nil [String Text the item's category must contain, ignoring case; every entry when `nil` or empty]
+-- @return [List<List> `{ uniqueID, weight }` entries]
+function cwStorage:GetRandomItemsByCategory(category)
+  local randomItems = self:GetRandomItems()
+
+  if !category or category == '' then
+    return randomItems
+  end
+
+  local matching = {}
+
+  category = string.lower(category)
+
+  for k, v in ipairs(randomItems) do
+    local itemTable = item.FindByID(v[1])
+
+    if itemTable and itemTable.category and string.find(string.lower(itemTable.category), category, 1, true) then
+      matching[#matching + 1] = v
+    end
+  end
+
+  return matching
+end
+
+--- Picks a random entry from `cwStorage:GetRandomItems`, optionally limited to one item category.
+-- @param uniqueID=nil [String Text the item's category must contain, ignoring case]
+-- @return [List The `{ uniqueID, weight }` entry, or `nil` when no item matches]
+function cwStorage:GetRandomItem(uniqueID)
+  local randomItems = self:GetRandomItemsByCategory(uniqueID)
+
+  if #randomItems > 0 then
+    return randomItems[math.random(1, #randomItems)]
+  end
+end
+
+--- Returns whether any random item has an item category containing the text.
 -- @param uniqueID [String Text to look for in item categories, ignoring case]
 -- @return [Boolean Whether a matching item exists; `false` when `uniqueID` is `nil`]
 function cwStorage:CategoryExists(uniqueID)
-  if uniqueID then
-    local uniqueID = string.lower(uniqueID)
-
-    for i = 1, #self.randomItems do
-      local itemTable = item.FindByID(self.randomItems[i][1])
-
-      if string.find(string.lower(itemTable.category), uniqueID) then
-        return true
-      end
-    end
-
-    return false
-  else
+  if !uniqueID then
     return false
   end
+
+  return #self:GetRandomItemsByCategory(uniqueID) > 0
+end
+
+--- Adds random items to a container until it weighs at least a share of its capacity.
+--
+-- The target weight is the container's capacity divided by `6 - scale`. A prop without an inventory is made
+-- into storage first.
+-- @param entity [Entity The container, a prop whose model is in `cwStorage.containerList`]
+-- @param scale [Number How full to make it, from 1 (a fifth of the capacity) to 5 (all of it)]
+-- @param category=nil [String Text the items' categories must contain, ignoring case]
+-- @return [Boolean `false` when no item of that category exists, which leaves the container as it was]
+function cwStorage:FillContainer(entity, scale, category)
+  local randomItems = self:GetRandomItemsByCategory(category)
+
+  if #randomItems == 0 then
+    return false
+  end
+
+  if !entity.cwInventory then
+    self.storage[entity] = entity
+
+    entity.cwInventory = {}
+  end
+
+  local capacity = self.containerList[string.lower(entity:GetModel())][1]
+  local containerWeight = capacity / (6 - math.Clamp(math.Round(scale), 1, 5))
+  local weight = cw.inventory:CalculateWeight(entity.cwInventory)
+  local attempts = 0
+
+  -- Weightless items never fill the container, so the number of picks is limited as well.
+  while weight < containerWeight and attempts < 4096 do
+    local randomItem = randomItems[math.random(1, #randomItems)]
+    local itemTable = item.CreateInstance(randomItem[1])
+
+    if itemTable then
+      cw.inventory:AddInstance(entity.cwInventory, itemTable)
+
+      weight = weight + (randomItem[2] or 0)
+    end
+
+    attempts = attempts + 1
+  end
+
+  return true
 end
 
 --- Does nothing; containers are saved by the Static Entities plugin.

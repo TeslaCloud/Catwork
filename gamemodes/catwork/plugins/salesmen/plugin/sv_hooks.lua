@@ -23,26 +23,23 @@ end
 -- @param entity [Entity The `cw_salesman` entity]
 -- @return [Boolean `false` when the player may not trade with the salesman, otherwise `nil`]
 function cwSalesmen:PlayerCanUseSalesman(player, entity)
-  local numFactions = table.Count(entity.cwFactions)
-  local numClasses = table.Count(entity.cwClasses)
-  local flags = entity.cwFlags or ''
-  local realFlags = flags:Replace('-', '')
+  local flags = entity.cwFlags
   local bDisallowed = nil
 
-  if numFactions > 0 then
+  if next(entity.cwFactions) != nil then
     if !entity.cwFactions[player:GetFaction()] then
       bDisallowed = true
     end
   end
 
-  if numClasses > 0 then
+  if next(entity.cwClasses) != nil then
     if !entity.cwClasses[_team.GetName(player:Team())] then
       bDisallowed = true
     end
   end
 
   if isstring(flags) and flags != '' then
-    local hasFlags = cw.player:HasFlags(player, realFlags)
+    local hasFlags = cw.player:HasFlags(player, flags:Replace('-', ''))
 
     if flags:find('-') and !hasFlags then
       bDisallowed = true

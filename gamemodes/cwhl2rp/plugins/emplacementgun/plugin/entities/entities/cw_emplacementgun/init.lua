@@ -31,7 +31,8 @@
 --
 -- `ENT:SpawnFunction` and `ENT:SpawnProp` mount the gun on a barricade prop, `ENT:TakeOver` and `ENT:Abandon` set and
 -- release the controller, and `ENT:Think` fires bullets while the `zar3_attack` console command holds attack. The
--- controller's flashlight key toggles the gun's spotlight instead.
+-- controller's flashlight key toggles the gun's spotlight instead. A gun has one operator at a time: the controller, or
+-- the player it is still starting up for (`PendingController`).
 
 AddCSLuaFile('cl_init.lua')
 AddCSLuaFile('shared.lua')
@@ -43,6 +44,8 @@ util.AddNetworkString('ZAR3_S')
 local MAX_DISTANCE = 6000
 local SPREAD = Vector(0.025, 0.025, 0)
 local SHOT_INTERVAL = 0.05
+-- Seconds between two toggles of the spotlight, which creates and removes entities.
+local FLASHLIGHT_INTERVAL = 0.5
 
 -- Import the function and remove the global.
 local FindAR3At, AR3Position = ZAR3_FindAR3At, ZAR3_AR3Position
@@ -54,7 +57,8 @@ ZAR3_FindAR3At, ZAR3_AR3Position = nil, nil
 function ENT:SpawnProp()
   local ent = ents.Create('prop_physics')
   ent:SetModel('models/props_combine/combine_barricade_short01a.mdl')
-  ent:SetPos(self:GetPos() + Vector(-4.1, 0, -10))
+  -- The reverse of AR3Position, so that the gun sits where it does on a barricade it was spawned on.
+  ent:SetPos(self:GetPos() - self:GetUp() * 10 + self:GetForward() * 4)
   ent:SetAngles(self:GetAngles())
   self:SetParent(ent)
   ent:Spawn()
@@ -158,18 +162,28 @@ function ENT:Initialize()
   self:StartMotionController()
 end
 
---- Fires the gun while its controller holds attack and releases it when they die or walk away.
+--- Fires the gun while its controller holds attack and releases it when they die, fall over, walk away or leave.
 --
 -- Shoots an AR2 tracer bullet for 26 damage every 0.05 seconds, credited to the controller.
 -- Thinks every frame.
 --
 -- @return [Boolean `true`, so the next think time is used]
 function ENT:Think()
-  if IsValid(self.Controller) then
--- ~ 		self:TrackTarget()
-    self:GetPhysicsObject():Wake()
+  local controller = self.Controller
 
-    if !self.Controller:Alive() or (self.Controller:GetPos() - self:GetPos()):LengthSqr() > MAX_DISTANCE then
+  if controller != nil and !IsValid(controller) then
+    -- The controller disconnected; without this the gun would keep its state for the next player.
+    self:Abandon()
+  elseif controller != nil then
+-- ~ 		self:TrackTarget()
+    local phys = self:GetPhysicsObject()
+
+    if IsValid(phys) then
+      phys:Wake()
+    end
+
+    if !controller:Alive() or controller:IsRagdolled()
+    or (controller:GetPos() - self:GetPos()):LengthSqr() > MAX_DISTANCE then
       self:Abandon()
     elseif CurTime() > self.NextShot and self.Shooting then
       local muzzleTach = self:LookupAttachment('muzzle')
@@ -209,13 +223,13 @@ end
 --
 -- Plays the activate sequence, turns the player's flashlight off and tells their client with
 -- the `ZAR3_S` net message to hide the view model and send attacks to the gun. The player
--- becomes the controller once the sequence ends. Does nothing when the gun is in use or the
--- player already controls a gun.
+-- becomes the controller once the sequence ends, and is the gun's `PendingController` until
+-- then. Does nothing when the gun is in use or starting up, or the player already controls a gun.
 --
 -- @param ply [Player The player taking over]
 function ENT:TakeOver(ply)
   -- If we already control one or the new player does, abort.
-  if IsValid(self.Controller) or IsValid(ply.ZAR3) then
+  if IsValid(self.Controller) or IsValid(self.PendingController) or IsValid(ply.ZAR3) then
     return
   end
 
@@ -236,13 +250,23 @@ function ENT:TakeOver(ply)
 
   -- As soon as the sequence is over, set our controller - if he's still here.
   timer.Simple(dur, function()
+    if !IsValid(self) or self.PendingController != ply then
+      return
+    end
+
+    self.PendingController = nil
+
     if IsValid(ply) and ply.ZAR3 == self then
       self.Controller = ply
+    else
+      self:Abandon()
     end
   end)
 
   -- Avoid shooting during boot.
   self.NextShot = CurTime() + dur
+  self.Shooting = false
+  self.PendingController = ply
 
   -- Inform the client.
   net.Start('ZAR3_S')
@@ -261,6 +285,10 @@ end
 --
 -- Non-Combine players are told the gun will not move.
 function ENT:Use(activator, caller)
+  if !IsValid(activator) or !activator:IsPlayer() then
+    return
+  end
+
   -- Too far away? We don't care.
   if (activator:GetPos() - self:GetPos()):LengthSqr() > MAX_DISTANCE then
     return
@@ -285,29 +313,36 @@ function ENT:Use(activator, caller)
   self:TakeOver(activator)
 end
 
---- Releases the gun's controller and retracts the gun.
+--- Releases the gun's controller, or the player it is starting up for, and retracts the gun.
 --
--- Tells the controller's client with `ZAR3_S` to restore their controls, stops shooting and
+-- Tells the player's client with `ZAR3_S` to restore their controls, stops shooting and
 -- centres the barrel.
 function ENT:Abandon()
+  local ply = IsValid(self.Controller) and self.Controller or self.PendingController
+
   self:ResetSequence('retract')
   -- Send the net message to the player to reset his controls.
-  if IsValid(self.Controller) then
+  if IsValid(ply) then
     net.Start('ZAR3_S')
       net.WriteEntity(NULL)
-    net.Send(self.Controller)
+    net.Send(ply)
 
-    self.Controller.ZAR3 = nil
+    ply.ZAR3 = nil
   end
 
   self.Controller = nil
+  self.PendingController = nil
   self.Shooting = false
 
-  self:SetPoseParameter('aim_yaw', '0')
-  self:SetPoseParameter('aim_pitch', '0')
+  self:SetPoseParameter('aim_yaw', 0)
+  self:SetPoseParameter('aim_pitch', 0)
   self.LocAng = Angle(0, 0, 0)
 
-  self:GetPhysicsObject():Sleep()
+  local phys = self:GetPhysicsObject()
+
+  if IsValid(phys) then
+    phys:Sleep()
+  end
 end
 
 --- Turns the gun's spotlight on, creating it and its projected texture if needed.
@@ -677,7 +712,7 @@ function ENT:OnRemove()
   self:DisableFlashlight()
 
   -- Get rid of our controller.
-  if IsValid(self.Controller) then
+  if IsValid(self.Controller) or IsValid(self.PendingController) then
     self:Abandon()
   end
 
@@ -698,8 +733,16 @@ concommand.Add('zar3_attack', Attack)
 
 -- A little something something - we simply override the normal flashlight.
 local function PlayerSwitchFlashlight(ply, on)
-  if IsValid(ply.ZAR3) then
-    ply.ZAR3[(ply.ZAR3.FlashlightOn and 'Disable' or 'Enable')..'Flashlight'](ply.ZAR3)
+  local gun = ply.ZAR3
+
+  if IsValid(gun) then
+    local curTime = CurTime()
+
+    if !gun.NextFlashlight or curTime >= gun.NextFlashlight then
+      gun.NextFlashlight = curTime + FLASHLIGHT_INTERVAL
+      gun[(gun.FlashlightOn and 'Disable' or 'Enable')..'Flashlight'](gun)
+    end
+
     return false
   end
 end

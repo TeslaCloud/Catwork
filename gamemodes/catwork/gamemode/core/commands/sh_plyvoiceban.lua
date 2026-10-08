@@ -19,6 +19,8 @@ function COMMAND:OnRun(player, arguments)
     else
       cw.player:Notify(player, L('Command_Plyvoiceban_AlreadyBanned', target:Name()))
     end
+  else
+    cw.player:Notify(player, L('NotValidPlayer', arguments[1]))
   end
 end
 

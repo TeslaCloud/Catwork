@@ -63,9 +63,12 @@ function ENT:OnTakeDamage(damageInfo)
 end
 
 --- Absorbs a touching `breens_water` or `citizen_supplements` item entity the packet still lacks.
+--
+-- The item is flagged as it is absorbed: it only disappears at the end of the tick, and could fill a second packet
+-- that touches it until then.
 function ENT:Touch(ent)
   if !self:GetDTBool(2) or !self:GetDTBool(1) then
-    if IsValid(ent) and ent:GetClass() == 'cw_item' then
+    if IsValid(ent) and ent:GetClass() == 'cw_item' and !ent.cwFactoryUsed then
       local index = ent:GetDTInt(0)
 
       if index != 0 then
@@ -75,12 +78,14 @@ function ENT:Touch(ent)
           if findedItem == self.citizen_supplements then
             if !self:GetDTBool(2) then
               self:SetDTBool(2, true)
+              ent.cwFactoryUsed = true
               ent:Remove()
               self:EmitSound('items/medshot4.wav')
             end
           else
             if !self:GetDTBool(1) then
               self:SetDTBool(1, true)
+              ent.cwFactoryUsed = true
               ent:Remove()
               self:EmitSound('items/medshot4.wav')
             end

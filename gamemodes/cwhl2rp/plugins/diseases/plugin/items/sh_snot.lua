@@ -27,28 +27,24 @@ function ITEM:OnUse(player, itemEntity)
 end
 
 if SERVER then
-  --- Gives the pills to the player being looked at with "Give", curing insomnia and resetting `Fatigue` to 0.
+  --- Gives the pills to the player being looked at with "Give"; same effect as using them.
   --
   -- Fires `PlayerHealed` with the giver as the healer. Returns `false` when no player is looked at.
   function ITEM:OnCustomFunction(player, name)
     if name == 'Give' then
-      local lookingPly = player:GetEyeTrace().Entity
+      local lookingPly = cwDiseases:FindPatient(player, self)
 
-      if lookingPly:IsPlayer() then
-        if lookingPly:GetCharacterData('diseases') == 'insomnia' then
-          lookingPly:SetCharacterData('diseases', 'none')
-        end
+      if !lookingPly then return false end
 
-        lookingPly:SetCharacterData('Fatigue', 0)
-        cw.player:Notify(player, L('Diseases_Gave_SleepingPills'))
-        player:TakeItem(player:FindItemByID('snot'))
-
-        hook.Run('PlayerHealed', lookingPly, player, self)
-      else
-        cw.player:Notify(player, L('Diseases_MustLookAtPerson'))
-
-        return false
+      if lookingPly:GetCharacterData('diseases') == 'insomnia' then
+        lookingPly:SetCharacterData('diseases', 'none')
       end
+
+      lookingPly:SetCharacterData('Fatigue', 100)
+      cw.player:Notify(player, L('Diseases_Gave_SleepingPills'))
+      player:TakeItem(self)
+
+      hook.Run('PlayerHealed', lookingPly, player, self)
     end
   end
 end

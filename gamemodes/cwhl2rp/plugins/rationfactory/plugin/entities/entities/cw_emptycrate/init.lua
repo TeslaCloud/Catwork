@@ -64,10 +64,12 @@ end
 
 --- Packs a touching full `cw_emptyration` into the crate, at most one per second.
 --
--- At ten rations the crate turns into a shipment of ten `ration_standard` items.
+-- At ten rations the crate turns into a shipment of ten `ration_standard` items. The packet is flagged as it is
+-- packed: it only disappears at the end of the tick, and a second crate that touches it could count it until then.
 function ENT:Touch(ent)
   if IsValid(ent) and ent:GetClass() == 'cw_emptyration' and (self.nextadd or 0) <= CurTime() then
-    if ent:GetDTBool(3) then
+    if ent:GetDTBool(3) and !ent.cwFactoryUsed then
+      ent.cwFactoryUsed = true
       ent:Remove()
       self:EmitSound('items/medshot4.wav')
       self:SetDTInt(1, self:GetDTInt(1) + 1)

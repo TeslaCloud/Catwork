@@ -45,15 +45,13 @@ factionnpc.stored = {
 -- @see factionnpc:IsNPCRebel
 function factionnpc:IsNPCCombine(npc)
   if IsValid(npc) then
-    if npc:HasSpawnFlags(SF_FLOOR_TURRET_CITIZEN) and npc:GetClass() == 'npc_turret_floor' then
+    local class = npc:GetClass()
+
+    if class == 'npc_turret_floor' and npc:HasSpawnFlags(SF_FLOOR_TURRET_CITIZEN) then
       return false
     end
 
-    for k, v in pairs(self.stored) do
-      if k == npc:GetClass() then
-        return v
-      end
-    end
+    return self.stored[class] == true
   end
 
   return false
@@ -68,56 +66,50 @@ end
 -- @see factionnpc:IsNPCCombine
 function factionnpc:IsNPCRebel(npc)
   if IsValid(npc) then
-    if npc:HasSpawnFlags(SF_FLOOR_TURRET_CITIZEN) and npc:GetClass() == 'npc_turret_floor' then
+    local class = npc:GetClass()
+
+    if class == 'npc_turret_floor' and npc:HasSpawnFlags(SF_FLOOR_TURRET_CITIZEN) then
       return true
     end
 
-    for k, v in pairs(self.stored) do
-      if k == npc:GetClass() then
-        return (v == false)
-      end
-    end
+    return self.stored[class] == false
   end
 
   return false
 end
 
+--- Returns how an NPC of one side feels about a player, based on the player's faction.
+-- @param bCombineNPC [Boolean Whether the NPC belongs to the Combine rather than the rebels]
+-- @param ply [Player The player]
+-- @return [Number `D_LI` or `D_HT`]
+local function GetDisposition(bCombineNPC, ply)
+  local faction = ply:GetFaction()
+
+  if faction == FACTION_NECRO or faction == FACTION_ANTLI then
+    return D_HT
+  end
+
+  local bCombinePlayer = (Schema:PlayerIsCombine(ply) or faction == FACTION_ADMIN) and true or false
+
+  return bCombineNPC == bCombinePlayer and D_LI or D_HT
+end
+
 --- Sets how every NPC on the map feels about a player, based on the player's faction.
 --
--- Combine NPCs like Combine players and hate everyone else; rebel NPCs hate Combine and admin
--- faction players and like everyone else. Both hate the necro and antlion factions.
--- Does nothing for an invalid entity or a non-player.
+-- Combine NPCs like Combine and admin faction players and hate everyone else; rebel NPCs
+-- hate Combine and admin faction players and like everyone else. Both hate the necro and
+-- antlion factions. Does nothing for an invalid entity or a non-player.
 -- @param ply [Player The player the relationships are set towards]
 -- @see factionnpc:UpdateNPCRelation
 function factionnpc:UpdateNPCRelations(ply)
-  if ply then
-    if IsValid(ply) then
-      if ply:IsPlayer() then
-        for k, v in pairs(ents.GetAll()) do
-          if !v:IsNPC() then continue end
+  if !IsValid(ply) or !ply:IsPlayer() then return end
 
-          if self:IsNPCCombine(v) then
-            if Schema:PlayerIsCombine(ply) then
-              v:AddEntityRelationship(ply, 3)
-            else
-              v:AddEntityRelationship(ply, 1)
-            end
-
-            if ply:GetFaction() == FACTION_NECRO or ply:GetFaction() == FACTION_ANTLI then
-              v:AddEntityRelationship(ply, 1)
-            end
-          elseif self:IsNPCRebel(v)  then
-            if Schema:PlayerIsCombine(ply) or ply:GetFaction() == FACTION_ADMIN then
-              v:AddEntityRelationship(ply, 1)
-            else
-              v:AddEntityRelationship(ply, 3)
-            end
-
-            if ply:GetFaction() == FACTION_NECRO or ply:GetFaction() == FACTION_ANTLI then
-              v:AddEntityRelationship(ply, 1)
-            end
-          end
-        end
+  for k, v in ipairs(ents.FindByClass('npc_*')) do
+    if v:IsNPC() then
+      if self:IsNPCCombine(v) then
+        v:AddEntityRelationship(ply, GetDisposition(true, ply))
+      elseif self:IsNPCRebel(v) then
+        v:AddEntityRelationship(ply, GetDisposition(false, ply))
       end
     end
   end
@@ -131,33 +123,14 @@ end
 -- @param npc [NPC The NPC whose relationships are set]
 -- @see factionnpc:UpdateNPCRelations
 function factionnpc:UpdateNPCRelation(npc)
-  if !IsValid(npc) then return end
-  if !npc:IsNPC() then return end
+  if !IsValid(npc) or !npc:IsNPC() then return end
 
-  if self:IsNPCCombine(npc) then
-    for k, ply in pairs(player.GetAll()) do
-      if Schema:PlayerIsCombine(ply) or ply:GetFaction() == FACTION_ADMIN then
-        npc:AddEntityRelationship(ply, 3)
-      else
-        npc:AddEntityRelationship(ply, 1)
-      end
+  local bCombineNPC = self:IsNPCCombine(npc)
 
-      if ply:GetFaction() == FACTION_NECRO or ply:GetFaction() == FACTION_ANTLI then
-        npc:AddEntityRelationship(ply, 1)
-      end
-    end
-  elseif self:IsNPCRebel(npc) then
-    for k, ply in pairs(player.GetAll()) do
-      if Schema:PlayerIsCombine(ply) or ply:GetFaction() == FACTION_ADMIN then
-        npc:AddEntityRelationship(ply, 1)
-      else
-        npc:AddEntityRelationship(ply, 3)
-      end
+  if !bCombineNPC and !self:IsNPCRebel(npc) then return end
 
-      if ply:GetFaction() == FACTION_NECRO or ply:GetFaction() == FACTION_ANTLI then
-        npc:AddEntityRelationship(ply, 1)
-      end
-    end
+  for k, ply in ipairs(_player.GetAll()) do
+    npc:AddEntityRelationship(ply, GetDisposition(bCombineNPC, ply))
   end
 end
 

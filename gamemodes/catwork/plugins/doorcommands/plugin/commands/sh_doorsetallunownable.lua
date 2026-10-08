@@ -10,7 +10,7 @@ COMMAND.arguments = 1
 
 --- Makes every door on the map unownable with the given name and text, and saves the door data.
 function COMMAND:OnRun(player, arguments)
-  good_doors = 0
+  local goodDoors = 0
 
   for k, v in pairs(ents.GetAll()) do
     if IsValid(v) and cw.entity:IsDoor(v) then
@@ -26,12 +26,13 @@ function COMMAND:OnRun(player, arguments)
       cw.entity:SetDoorUnownable(data.entity, true)
 
       cwDoorCmds.doorData[data.entity] = data
-      cwDoorCmds:SaveDoorData()
-      good_doors = good_doors + 1
+      goodDoors = goodDoors + 1
     end
   end
 
-  cw.player:Notify(player, L('DoorCmds_AllSetUnownable', good_doors))
+  cwDoorCmds:SaveDoorData()
+
+  cw.player:Notify(player, L('DoorCmds_AllSetUnownable', goodDoors))
   cw.player:Notify(player, L('DoorCmds_AllDoorsReminder'))
 end
 

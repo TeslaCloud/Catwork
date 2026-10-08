@@ -158,58 +158,61 @@ else
   end)
 
   netstream.Hook('SystemUnbanGet', function(player, data)
+    local unbanTable = cw.command:FindByID('PlyUnban')
     local page = tonumber(data)
 
-    if page then
-      local bannedPlayers = {}
-      local sendPlayers = {}
-      local finishIndex = page * 8
-      local startIndex = finishIndex - 7
-      local pageCount = 0
-      local unixTime = os.time()
+    -- The list holds Steam IDs and IP addresses, so it is only sent to players who may lift bans.
+    if !page or page != page or !unbanTable or !cw.player:HasFlags(player, unbanTable.access) then
+      return
+    end
 
-      for k, v in pairs(cw.bans.stored) do
-        local unbanTime = tonumber(v.unbanTime)
+    page = math.max(math.floor(page), 1)
 
-        if unbanTime == 0 or unbanTime > unixTime then
-          local timeLeft = unbanTime - unixTime
+    local bannedPlayers = {}
+    local sendPlayers = {}
+    local finishIndex = page * 8
+    local startIndex = finishIndex - 7
+    local unixTime = os.time()
 
-          if unbanTime == 0 then
-            timeLeft = 0
-          end
+    for k, v in pairs(cw.bans.stored) do
+      if !istable(v) then continue end
 
-          bannedPlayers[#bannedPlayers + 1] = {
-            identifier = k,
-            steamName = v.steamName,
-            timeLeft = timeLeft,
-            reason = v.reason
-          }
+      local unbanTime = tonumber(v.unbanTime) or 0
+
+      if unbanTime == 0 or unbanTime > unixTime then
+        local timeLeft = unbanTime - unixTime
+
+        if unbanTime == 0 then
+          timeLeft = 0
         end
+
+        bannedPlayers[#bannedPlayers + 1] = {
+          identifier = k,
+          steamName = tostring(v.steamName or k),
+          timeLeft = timeLeft,
+          reason = tostring(v.reason or '')
+        }
       end
+    end
 
-      table.sort(bannedPlayers, function(a, b)
-        return a.steamName < b.steamName
-      end)
+    table.sort(bannedPlayers, function(a, b)
+      return a.steamName < b.steamName
+    end)
 
-      pageCount = math.ceil(#bannedPlayers / 8)
+    for i = startIndex, math.min(finishIndex, #bannedPlayers) do
+      sendPlayers[#sendPlayers + 1] = bannedPlayers[i]
+    end
 
-      for k, v in pairs(bannedPlayers) do
-        if k >= startIndex and k <= finishIndex then
-          sendPlayers[#sendPlayers + 1] = v
-        end
-      end
-
-      if #sendPlayers > 0 then
-        netstream.Start(player, 'SystemUnbanGet', {
-          pageCount = pageCount,
-          players = sendPlayers,
-          isNext = (bannedPlayers[finishIndex + 1] != nil),
-          isBack = (bannedPlayers[startIndex - 1] != nil),
-          page = page
-        })
-      else
-        netstream.Start(player, 'SystemUnbanGet', false)
-      end
+    if #sendPlayers > 0 then
+      netstream.Start(player, 'SystemUnbanGet', {
+        pageCount = math.ceil(#bannedPlayers / 8),
+        players = sendPlayers,
+        isNext = (bannedPlayers[finishIndex + 1] != nil),
+        isBack = (bannedPlayers[startIndex - 1] != nil),
+        page = page
+      })
+    else
+      netstream.Start(player, 'SystemUnbanGet', false)
     end
   end)
 end

@@ -3,8 +3,7 @@
 --
 -- `ENT:Initialize` spawns the far post at the nearest wall and builds the collision mesh between the posts; the
 -- networked int 0 holds the mode and the networked entity 0 the far post. The field hums while powered, plays a sound
--- on non-Combine players who touch it and saves all forcefields when its mode changes. `ENT:OnRemove` is defined
--- twice, and the second definition is the one in effect.
+-- on non-Combine players who touch it and saves all forcefields when its mode changes.
 
 include('shared.lua')
 
@@ -37,7 +36,7 @@ end
 --
 -- Unless `noCorrect` is set, snaps the post to the floor first. Starts in mode 1 and switched
 -- on unless `ENT:RestoreMode` set otherwise; mode 4 starts switched off. Saves the
--- forcefields afterwards.
+-- forcefields afterwards, unless the field is one being restored from that save.
 function ENT:Initialize()
   self:SetModel('models/props_combine/combine_fence01b.mdl')
   self:SetSolid(SOLID_VPHYSICS)
@@ -74,11 +73,11 @@ function ENT:Initialize()
     end
   end
 
-  data = {}
+  local data = {}
   data.start = self:GetPos() + Vector(0, 0, 50) + self:GetRight() * -16
   data.endpos = self:GetPos() + Vector(0, 0, 50) + self:GetRight() * -600
   data.filter = self
-  trace = util.TraceLine(data)
+  local trace = util.TraceLine(data)
 
   self.post = ents.Create('prop_physics')
   self.post:SetModel('models/props_combine/combine_fence01a.mdl')
@@ -130,7 +129,10 @@ function ENT:Initialize()
     self:SetCollisionGroup(COLLISION_GROUP_WORLD)
   end
 
-  plugin.Call('SaveForceFields')
+  -- Saving while the saved fields are still being spawned would write an incomplete list.
+  if !self.noCorrect then
+    plugin.Call('SaveForceFields')
+  end
 end
 
 --- Starts the shield touch sound on a non-Combine player touching the powered field.
@@ -164,22 +166,20 @@ function ENT:Touch(ent)
   end
 end
 
---- Fades the touch sound out when a non-Combine player stops touching the powered field.
+--- Fades the touch sound out when a player stops touching the field.
+--
+-- Also when the field has been switched off in the meantime, or the sound would play on.
 function ENT:EndTouch(ent)
-  if !(self.on) then return end
-
-  if ent:IsPlayer() then
-    if !ent:IsCombine() then
-      if ent.ShieldTouch then
-        ent.ShieldTouch:FadeOut(0.5)
-      end
-    end
+  if ent:IsPlayer() and ent.ShieldTouch then
+    ent.ShieldTouch:FadeOut(0.5)
   end
 end
 
---- Plays the shield's humming loop while it is powered and keeps the field frozen.
+--- Plays the shield's humming loop while it is powered and keeps the field frozen, once a second.
+--
+-- @return [Boolean `true`, so the next think time is used]
 function ENT:Think()
-  if IsValid(self) and self.on then
+  if self.on then
     self.ShieldLoop:Play()
     self.ShieldLoop:ChangeVolume(0.4, 0)
   else
@@ -191,15 +191,10 @@ function ENT:Think()
   if IsValid(physObj) then
     physObj:EnableMotion(false)
   end
-end
 
---- Stops the humming loop.
---
--- Overridden by the second `ENT:OnRemove` in this file.
-function ENT:OnRemove()
-  if self.ShieldLoop then
-    self.ShieldLoop:Stop()
-  end
+  self:NextThink(CurTime() + 1)
+
+  return true
 end
 
 --- Sets the field's mode and power state before it spawns, when restoring saved fields.
@@ -216,15 +211,15 @@ end
 -- Mode 4 switches the field off and lets everything through. Tells the player the new
 -- mode and saves the forcefields.
 function ENT:Use(act, call, type, val)
+  if !IsValid(act) or !act:IsPlayer() then return end
+
   local curTime = CurTime()
 
-  if (self.nextUse or 0) < curTime then
-    self.nextUse = curTime + 1
-  else
-    return
-  end
+  if (self.nextUse or 0) >= curTime then return end
 
   if act:IsCombine() then
+    -- Only a use that changes the mode starts the delay; anyone could hold the field busy otherwise.
+    self.nextUse = curTime + 1
     self.mode = (self.mode or 1) + 1
     self:SetDTInt(0, self.mode)
 
@@ -246,6 +241,9 @@ function ENT:Use(act, call, type, val)
       self:EmitSound('shield/activate.wav')
       self:SetCollisionGroup(COLLISION_GROUP_NONE)
     end
+
+    -- The hum follows the new power state on the next tick instead of up to a second later.
+    self:NextThink(curTime)
 
     self:EmitSound('buttons/combine_button5.wav', 140, 100 + (self.mode - 1) * 15)
     cw.player:Notify(act, L('ForceField_ModeChanged')..' '..cwForceField.modes[self.mode])

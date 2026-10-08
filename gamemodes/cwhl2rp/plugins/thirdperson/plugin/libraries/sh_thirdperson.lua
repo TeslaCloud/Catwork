@@ -4,10 +4,9 @@
 --- Defines the `cw.thirdperson` library, the chase camera behind the Third Person plugin.
 --
 -- On the server the `chasecam` console command switches a player's `thirdperson` networked int and view entity through
--- `cw.thirdperson.Enable` and `cw.thirdperson.Disable`. On the client its `CalcView`, `HUDPaint` and `HUDShouldDraw`
--- hooks place the camera behind the player, draw a crosshair at the aim point and hide the default one, tuned by the
--- `chasecam_*` convars and the `chasecam_zoom` command. A shared `UpdateAnimation` hook speeds up the player's
--- animation while sprinting.
+-- `cw.thirdperson.Enable` and `cw.thirdperson.Disable`. On the client its `CalcView` and `HUDPaint` hooks place the
+-- camera behind the player and draw a crosshair at the aim point, tuned by the `chasecam_*` convars and the
+-- `chasecam_zoom` command.
 
 library.New('thirdperson', cw)
 
@@ -20,6 +19,9 @@ if CLIENT then
   local cvUp = CreateClientConVar('chasecam_up', 5, true, false)
   local cvSmooth = CreateClientConVar('chasecam_smooth', 1, true, false)
   local cvSmoothScale = CreateClientConVar('chasecam_smoothscale', 0.2, true, false)
+
+  -- Reused by the traces that run every frame.
+  local traceData = {}
 
   --- Computes the third person camera view; runs as a `CalcView` hook.
   --
@@ -34,10 +36,10 @@ if CLIENT then
   -- @param fov [Number The default field of view]
   -- @return [Map The view table from `GAMEMODE:CalcView`, or `nil` when third person is off]
   function cw.thirdperson.CalcView(player, pos, angles, fov)
-    local smooth = cvSmooth:GetFloat()
-    local smoothscale = cvSmoothScale:GetFloat()
-
     if player:GetNWInt('thirdperson') == 1 then
+      local smooth = cvSmooth:GetFloat()
+      local smoothscale = cvSmoothScale:GetFloat()
+
       angles = player:GetAimVector():Angle()
 
       local targetpos = Vector(0, 0, 60)
@@ -82,27 +84,24 @@ if CLIENT then
 
       -- offset it by the stored amounts, but trace so it stays outside walls
       -- we don't tween this so the camera feels like its tightly following the mouse
-      local offset = Vector(5, 5, 5)
+      local back, right, up = 5, 5, 5
 
       if player:GetVar('thirdperson_zoom') != 1 then
-        offset.x = cvBack:GetFloat()
-        offset.y = cvRight:GetFloat()
-        offset.z = cvUp:GetFloat()
+        back, right, up = cvBack:GetFloat(), cvRight:GetFloat(), cvUp:GetFloat()
       end
 
-      local t = {}
-      t.start = player:GetPos() + pos
-      t.endpos = t.start + angles:Forward() * -offset.x
-      t.endpos = t.endpos + angles:Right() * offset.y
-      t.endpos = t.endpos + angles:Up() * offset.z
-      t.filter = player
+      local start = player:GetPos() + pos
 
-        local tr = util.TraceLine(t)
-        pos = tr.HitPos
+      traceData.start = start
+      traceData.endpos = start + angles:Forward() * -back + angles:Right() * right + angles:Up() * up
+      traceData.filter = player
 
-        if tr.Fraction < 1.0 then
-          pos = pos + tr.HitNormal * 5
-        end
+      local tr = util.TraceLine(traceData)
+      pos = tr.HitPos
+
+      if tr.Fraction < 1.0 then
+        pos = pos + tr.HitNormal * 5
+      end
 
       player:SetVar('thirdperson_viewpos', pos)
 
@@ -137,25 +136,25 @@ if CLIENT then
     end
 
     -- trace from muzzle to hit pos
-    local t = {}
-    t.start = player:GetShootPos()
-    t.endpos = t.start + player:GetAimVector() * 9000
-    t.filter = player
-    local tr = util.TraceLine(t)
-    local pos = tr.HitPos:ToScreen()
-    local fraction = math.min((tr.HitPos - t.start):Length(), 1024) / 1024
+    local start = player:GetShootPos()
+
+    traceData.start = start
+    traceData.endpos = start + player:GetAimVector() * 9000
+    traceData.filter = player
+
+    local tr = util.TraceLine(traceData)
+    local hitPos = tr.HitPos
+    local pos = hitPos:ToScreen()
+    local fraction = math.min(hitPos:Distance(start), 1024) / 1024
     local size = 10 + 20 * (1.0 - fraction)
     local offset = size * 0.5
     local offset2 = offset - (size * 0.1)
 
     -- trace from camera to hit pos, if blocked, red cursor
-    t = {}
-    t.start = player:GetVar('thirdperson_viewpos') or player:GetPos()
-    t.endpos = tr.HitPos + tr.HitNormal * 5
-    t.filter = player
-    local tr = util.TraceLine(t)
+    traceData.start = player:GetVar('thirdperson_viewpos') or player:GetPos()
+    traceData.endpos = hitPos + tr.HitNormal * 5
 
-    if tr.Fraction != 1.0 then
+    if util.TraceLine(traceData).Fraction != 1.0 then
       surface.SetDrawColor(255, 48, 0, 255)
     else
       surface.SetDrawColor(255, 208, 64, 255)
@@ -170,17 +169,6 @@ if CLIENT then
   end
 
   hook.Add('HUDPaint', 'cw.thirdperson.HUDPaint', cw.thirdperson.HUDPaint)
-
-  --- Hides the default crosshair while third person is on; runs as a `HUDShouldDraw` hook.
-  -- @param name [String Name of the HUD element]
-  -- @return [Boolean `false` for `CHudCrosshair` in third person, otherwise `nil`]
-  function cw.thirdperson.HUDShouldDraw(name)
-    if name == 'CHudCrosshair' and LocalPlayer():GetNWInt('thirdperson') == 1 then
-      return false
-    end
-  end
-
-  hook.Add('HUDShouldDraw', 'cw.thirdperson.HUDShouldDraw', cw.thirdperson.HUDShouldDraw)
 
   --- Toggles the close-up third person camera; bound to the `chasecam_zoom` console command.
   -- @param player [Player The local player]
@@ -198,23 +186,44 @@ if CLIENT then
 
   -- Server
 else
+  -- Seconds a player has to wait between two switches to third person through the console command.
+  local enableCooldown = 0.5
+
   --- Handles the `chasecam` console command: `1` enables third person, `0` disables it and no argument toggles it.
+  --
+  -- Switching on is ignored within half a second of the previous switch on, since each one spawns a camera
+  -- entity. Does nothing when run from the server console.
   -- @param player [Player The player who ran the command]
   -- @param command [String The console command name]
   -- @param arguments [List<String> The command arguments]
   -- @see cw.thirdperson.Enable
   -- @see cw.thirdperson.Disable
   function cw.thirdperson.Command(player, command, arguments)
+    if !IsValid(player) then return end
+
+    local bEnabled = player:GetNWInt('thirdperson') == 1
+    local bEnable
+
     if !arguments[1] then
-      if player:GetNWInt('thirdperson') == 1 then
-        cw.thirdperson.Disable(player)
-      else
-        cw.thirdperson.Enable(player)
-      end
+      bEnable = !bEnabled
     elseif arguments[1] == '1' then
-      cw.thirdperson.Enable(player)
+      bEnable = true
     elseif arguments[1] == '0' then
+      bEnable = false
+    else
+      return
+    end
+
+    if !bEnable then
       cw.thirdperson.Disable(player)
+    elseif !bEnabled then
+      local curTime = CurTime()
+
+      if (player.cwNextChaseCam or 0) > curTime then return end
+
+      player.cwNextChaseCam = curTime + enableCooldown
+
+      cw.thirdperson.Enable(player)
     end
   end
 
@@ -222,8 +231,8 @@ else
 
   --- Turns third person off for a player.
   --
-  -- Resets the view entity to the player and removes the camera entity. Does nothing when third
-  -- person is already off.
+  -- Removes the camera entity and gives the view back to the player, unless something else has taken
+  -- the view over since. Does nothing when third person is already off.
   -- @param player [Player The player to switch to first person]
   -- @see cw.thirdperson.Enable
   function cw.thirdperson.Disable(player)
@@ -231,14 +240,23 @@ else
       return
     end
 
-    local entity = player:GetViewEntity()
-    player:SetNWInt('thirdperson', 0)
-    player:SetViewEntity(player)
+    local entity = player.cwChaseCam
 
-    -- The view entity can already be the player again (respawn, another view override); never remove the player.
-    if IsValid(entity) and entity != player then
-      entity:Remove()
+    player.cwChaseCam = nil
+    player:SetNWInt('thirdperson', 0)
+
+    -- Only the camera made by Enable is ours to remove; the view entity may belong to something else by now.
+    if !IsValid(entity) then
+      player:SetViewEntity(player)
+
+      return
     end
+
+    if player:GetViewEntity() == entity then
+      player:SetViewEntity(player)
+    end
+
+    entity:Remove()
   end
 
   --- Turns third person on for a player.
@@ -253,6 +271,9 @@ else
     end
 
     local entity = ents.Create('prop_dynamic')
+
+    if !IsValid(entity) then return end
+
     entity:SetModel('models/error.mdl')
     entity:SetColor(Color(0, 0, 0, 0))
     entity:DrawShadow(false)
@@ -265,16 +286,7 @@ else
     entity:SetSolid(SOLID_NONE)
     player:SetViewEntity(entity)
     player:SetNWInt('thirdperson', 1)
+
+    player.cwChaseCam = entity
   end
 end
-
--- Shared
---- Speeds up the player's animation playback while sprinting; runs as an `UpdateAnimation` hook.
--- @param player [Player The player being animated]
-function cw.thirdperson.UpdateAnimation(player)
-  if player:KeyDown(IN_SPEED) then
-    player:SetPlaybackRate(1.5)
-  end
-end
-
-hook.Add('UpdateAnimation', 'cw.thirdperson.UpdateAnimation', cw.thirdperson.UpdateAnimation)

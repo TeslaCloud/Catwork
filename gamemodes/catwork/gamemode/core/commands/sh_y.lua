@@ -8,6 +8,7 @@ COMMAND.arguments = 1
 
 --- Yells a message to nearby players in character; the arguments are the message.
 function COMMAND:OnRun(player, arguments)
+  local talkRadius = config.GetVal('talk_radius') * 2
   local text = table.concat(arguments, ' ')
 
   if string.Left(text, 2) == 'y ' then

@@ -29,22 +29,18 @@ if SERVER then
   -- Fires `PlayerHealed` with the giver as the healer. Returns `false` when no player is looked at.
   function ITEM:OnCustomFunction(player, name)
     if name == 'Give' then
-      local lookingPly = player:GetEyeTrace().Entity
+      local lookingPly = cwDiseases:FindPatient(player, self)
 
-      if lookingPly:IsPlayer() then
-        if lookingPly:GetCharacterData('diseases') == 'diarrhea' then
-          lookingPly:SetCharacterData('diseases', 'none')
-        end
+      if !lookingPly then return false end
 
-        cw.player:Notify(player, L('Diseases_Gave_Probiotics'))
-        player:TakeItem(player:FindItemByID('probiotics'))
-
-        hook.Run('PlayerHealed', lookingPly, player, self)
-      else
-        cw.player:Notify(player, L('Diseases_MustLookAtPerson'))
-
-        return false
+      if lookingPly:GetCharacterData('diseases') == 'diarrhea' then
+        lookingPly:SetCharacterData('diseases', 'none')
       end
+
+      cw.player:Notify(player, L('Diseases_Gave_Probiotics'))
+      player:TakeItem(self)
+
+      hook.Run('PlayerHealed', lookingPly, player, self)
     end
   end
 end

@@ -11,10 +11,15 @@ function COMMAND:OnRun(player, arguments)
   local position = player:GetEyeTraceNoCursor().HitPos
   local removed = 0
 
-  for k, v in pairs(cwDynamicAdverts.storedList) do
-    if v.position:Distance(position) <= 256 then
-      netstream.Start(nil, 'DynamicAdvertRemove', v.position)
-        table.remove(cwDynamicAdverts.storedList, k)
+  local storedList = cwDynamicAdverts.storedList
+
+  for k = #storedList, 1, -1 do
+    local advertPosition = storedList[k].position
+
+    if advertPosition:Distance(position) <= 256 then
+      netstream.Start(nil, 'DynamicAdvertRemove', advertPosition)
+      table.remove(storedList, k)
+
       removed = removed + 1
     end
   end

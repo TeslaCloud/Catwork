@@ -34,17 +34,16 @@ netstream.Hook('Salesmenu', function(data)
   cw.salesmenu.panel:MakePopup()
 end)
 
-netstream.Hook('SalesmenuRebuild', function(data)
-  local cash = data
-
+netstream.Hook('SalesmenuRebuild', function(cash, stock)
   if cw.salesmenu:IsSalesmenuOpen() then
     cw.salesmenu.cash = cash
+    cw.salesmenu.stock = stock or cw.salesmenu.stock
     cw.salesmenu.panel:Rebuild()
   end
 end)
 
 netstream.Hook('SalesmanPlaySound', function(data)
-  if data[2] and data[2]:IsValid() then
+  if IsValid(data[2]) then
     data[2]:EmitSound(data[1])
   end
 end)

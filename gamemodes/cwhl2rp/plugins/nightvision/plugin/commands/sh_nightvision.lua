@@ -1,8 +1,6 @@
 --- Registers the `/Nightvision` command of the Nightvision plugin, which toggles night vision for players allowed to
 -- use it by flipping their `nightvisionfx` networked boolean.
 
-local Clockwork = Clockwork
-
 local COMMAND = cw.command:New('Nightvision')
 COMMAND.tip = '#Command_Nightvision_Description'
 COMMAND.text = ''

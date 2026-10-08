@@ -6,6 +6,13 @@
 -- `CharacterOpen`, `CharacterAdd`, `CharacterRemove`, `CharacterFinish` and `SetWhitelisted` netstreams; the character
 -- cards send `InteractCharacter` to use or delete a character.
 
+-- Reused every frame by the paint functions below instead of allocating new colors.
+local barColor = Color(0, 0, 0, 100)
+local progressBarColor = Color(0, 0, 0, 100)
+local stepTextColor = Color(255, 255, 255, 200)
+local attributeBarColor = Color(75, 75, 75, 255)
+local modelAngles = Angle(0, 45, 0)
+
 local PANEL = {}
 
 --- Builds the full-screen character menu: schema title or logo, credits, the New, Load and Leave buttons,
@@ -134,6 +141,10 @@ function PANEL:Init()
     self.previousButton:SetFont(tinyTextFont)
     self.previousButton:SetText('#CharCreation_Previous')
     self.previousButton:SetCallback(function(panel)
+      if IsValid(self.fadingPanel) then
+        return
+      end
+
       if !cw.character:IsCreationProcessActive() then
         local activePanel = cw.character:GetActivePanel()
 
@@ -153,6 +164,10 @@ function PANEL:Init()
     self.nextButton:SetFont(tinyTextFont)
     self.nextButton:SetText('#CharCreation_Next')
     self.nextButton:SetCallback(function(panel)
+      if IsValid(self.fadingPanel) then
+        return
+      end
+
       if !cw.character:IsCreationProcessActive() then
         local activePanel = cw.character:GetActivePanel()
 
@@ -263,7 +278,7 @@ function PANEL:ReturnToMainMenu()
   if panel then
     panel:FadeOut(0.5, function()
       cw.character.activePanel = nil
-        panel:Remove()
+      panel:Remove()
       self:FadeInTitle()
     end)
   else
@@ -343,44 +358,42 @@ function PANEL:OpenPanel(vguiName, childData, Callback)
       y = ScrH() * 0.11
     end
 
-    if panel then
-      panel:FadeOut(0.5, function()
-        panel:Remove() self.childData = childData
-
-        cw.character.activePanel = vgui.Create(vguiName, self)
-        cw.character.activePanel:SetAlpha(0)
-        cw.character.activePanel:FadeIn(0.5)
-        cw.character.activePanel:MakePopup()
-
-        cw.character.activePanel:SetPos(ScrW() * 0.2, y)
-
-        if Callback then
-          Callback(cw.character.activePanel)
-        end
-
-        if childData then
-          cw.character.activePanel.bIsCreationProcess = true
-          cw.character:FadeInNavigation()
-        end
-      end)
-    else
+    local function ShowPanel()
       self.childData = childData
-      self:FadeOutTitle()
 
-      cw.character.activePanel = vgui.Create(vguiName, self)
-      cw.character.activePanel:SetAlpha(0)
-      cw.character.activePanel:FadeIn(0.5)
-      cw.character.activePanel:MakePopup()
-      cw.character.activePanel:SetPos(ScrW() * 0.2, y)
+      local activePanel = vgui.Create(vguiName, self)
+
+      cw.character.activePanel = activePanel
+
+      activePanel:SetAlpha(0)
+      activePanel:FadeIn(0.5)
+      activePanel:MakePopup()
+      activePanel:SetPos(ScrW() * 0.2, y)
 
       if Callback then
-        Callback(cw.character.activePanel)
+        Callback(activePanel)
       end
 
       if childData then
-        cw.character.activePanel.bIsCreationProcess = true
+        activePanel.bIsCreationProcess = true
         cw.character:FadeInNavigation()
       end
+    end
+
+    if panel then
+      -- The navigation buttons ignore clicks until the old panel is gone, or a second click would skip a step.
+      self.fadingPanel = panel
+
+      panel:FadeOut(0.5, function()
+        self.fadingPanel = nil
+        panel:Remove()
+
+        ShowPanel()
+      end)
+    else
+      self:FadeOutTitle()
+
+      ShowPanel()
     end
 
     --[[ Fade out the model panel, we probably don't need it now! --]]
@@ -414,15 +427,14 @@ function PANEL:Paint(w, h)
     local backgroundColor = cw.option:GetColor('background')
     local foregroundColor = cw.option:GetColor('foreground')
     local colorTargetID = cw.option:GetColor('target_id')
-    local tinyTextFont = cw.option:GetFont('menu_text_tiny')
     local colorWhite = cw.option:GetColor('white')
-    local scrW, scrH = ScrW(), ScrH()
+    local scrW = ScrW()
     local height = (self.createButton.y * 2) + self.createButton:GetTall()
-    local x, y = x, 0
+    local y = 0
 
-    cw.core:DrawSimpleGradientBox(0, 0, y, scrW, height, Color(
-      backgroundColor.r, backgroundColor.g, backgroundColor.b, 100
-    ))
+    barColor.r, barColor.g, barColor.b = backgroundColor.r, backgroundColor.g, backgroundColor.b
+
+    cw.core:DrawSimpleGradientBox(0, 0, y, scrW, height, barColor)
 
     surface.SetDrawColor(
       foregroundColor.r, foregroundColor.g, foregroundColor.b, 200
@@ -436,21 +448,20 @@ function PANEL:Paint(w, h)
       local progressHeight = 20
       local creationInfo = cw.character:GetCreationInfo()
       local progressY = y + height + 1
-      local boxColor = Color(
-        math.min(backgroundColor.r + 50, 255),
-        math.min(backgroundColor.g + 50, 255),
-        math.min(backgroundColor.b + 50, 255),
-        100
+
+      progressBarColor.r = math.min(backgroundColor.r + 50, 255)
+      progressBarColor.g = math.min(backgroundColor.g + 50, 255)
+      progressBarColor.b = math.min(backgroundColor.b + 50, 255)
+
+      cw.core:DrawSimpleGradientBox(0, 0, progressY, scrW, progressHeight, progressBarColor)
+
+      surface.SetDrawColor(
+        foregroundColor.r, foregroundColor.g, foregroundColor.b, 150
       )
 
-      cw.core:DrawSimpleGradientBox(0, 0, progressY, scrW, progressHeight, boxColor)
-
-        for i = 1, numCreationPanels do
-          surface.SetDrawColor(
-            foregroundColor.r, foregroundColor.g, foregroundColor.b, 150
-          )
-          surface.DrawRect((scrW / numCreationPanels) * i, progressY, 1, progressHeight)
-        end
+      for i = 1, numCreationPanels do
+        surface.DrawRect((scrW / numCreationPanels) * i, progressY, 1, progressHeight)
+      end
 
       cw.core:DrawSimpleGradientBox(
         0, 0, progressY, (scrW / 100) * creationProgress, progressHeight, colorTargetID
@@ -463,17 +474,20 @@ function PANEL:Paint(w, h)
         surface.DrawRect((scrW / 100) * creationProgress, progressY, 1, progressHeight)
       end
 
+      stepTextColor.r, stepTextColor.g, stepTextColor.b = colorWhite.r, colorWhite.g, colorWhite.b
+
       for i = 1, numCreationPanels do
         local Condition = creationPanels[i].Condition
         local textX = (scrW / numCreationPanels) * (i - 0.5)
         local textY = progressY + (progressHeight / 2)
-        local color = Color(colorWhite.r, colorWhite.g, colorWhite.b, 200)
 
         if Condition and !Condition(creationInfo) then
-          color = Color(colorWhite.r, colorWhite.g, colorWhite.b, 100)
+          stepTextColor.a = 100
+        else
+          stepTextColor.a = 200
         end
 
-        cw.core:DrawSimpleText(creationPanels[i].friendlyName, textX, textY - 1, color, 1, 1)
+        cw.core:DrawSimpleText(creationPanels[i].friendlyName, textX, textY - 1, stepTextColor, 1, 1)
       end
 
       surface.SetDrawColor(
@@ -498,7 +512,6 @@ function PANEL:Think()
     local bIsLoading = cw.character:IsPanelLoading()
     local schemaLogo = cw.option:GetKey('schema_logo')
     local activePanel = cw.character:GetActivePanel()
-    local fault = cw.character:GetFault()
 
     if hook.Run('ShouldDrawCharacterBackgroundBlur') then
       cw.core:RegisterBackgroundBlur(self, self.createTime)
@@ -560,11 +573,15 @@ function PANEL:Think()
       self.createButton:SetDisabled(false)
     end
 
+    local disconnectText = '#MainMenu_Leave'
+
     if cw.client:HasInitialized() and !cw.character:IsMenuReset() then
-      self.disconnectButton:SetText('#CharCreation_Cancel')
-      self.disconnectButton:SizeToContents()
-    else
-      self.disconnectButton:SetText('#MainMenu_Leave')
+      disconnectText = '#CharCreation_Cancel'
+    end
+
+    if self.disconnectText != disconnectText then
+      self.disconnectText = disconnectText
+      self.disconnectButton:SetText(disconnectText)
       self.disconnectButton:SizeToContents()
     end
 
@@ -594,30 +611,15 @@ hook.Add('VGUIMousePressed', 'cw.character:VGUIMousePressed', function(panel, co
   end
 end)
 
-local PANEL = {}
-
---- Sets up the character list (`cw.characterList`), stores it in the global `CHAR_LIST` and shows the
--- navigation buttons.
-function PANEL:Init()
-  self.selectedIdx = 1
-  self.characterPanels = {}
-  self.isCharacterList = true
-
-  CHAR_LIST = self
-
-  cw.character:FadeInNavigation()
-end
-
---- Draws nothing.
-function PANEL:Paint(w, h) end
-
---- Fades the character list out and hides it, playing the rollover sound.
+--- Fades a panel out and hides it, playing the rollover sound.
 --
--- When the list is already invisible or animating, it is hidden at once.
+-- When the panel is already transparent or animating, it is hidden at once. Shared by the character list and
+-- the creation steps.
 --
+-- @param self [Panel The panel to fade out]
 -- @param speed [Number Length of the fade in seconds]
--- @param Callback=nil [Function Called once the list is hidden]
-function PANEL:FadeOut(speed, Callback)
+-- @param Callback=nil [Function Called once the panel is hidden]
+local function FadeOutPanel(self, speed, Callback)
   if self:GetAlpha() > 0 and (!self.animation or !self.animation:Active()) then
     self.animation = Derma_Anim('Fade Panel', self, function(panel, animation, delta, data)
       panel:SetAlpha(255 - (delta * 255))
@@ -646,13 +648,15 @@ function PANEL:FadeOut(speed, Callback)
   end
 end
 
---- Shows the character list and fades it in, playing the click sound.
+--- Shows a panel and fades it in, playing the click sound.
 --
--- When the list is already visible or animating, it is made fully visible at once.
+-- When the panel is already visible or animating, it is made fully visible at once. Shared by the character
+-- list and the creation steps.
 --
+-- @param self [Panel The panel to fade in]
 -- @param speed [Number Length of the fade in seconds]
--- @param Callback=nil [Function Called once the list is fully visible]
-function PANEL:FadeIn(speed, Callback)
+-- @param Callback=nil [Function Called once the panel is fully visible]
+local function FadeInPanel(self, speed, Callback)
   if self:GetAlpha() == 0 and (!self.animation or !self.animation:Active()) then
     self.animation = Derma_Anim('Fade Panel', self, function(panel, animation, delta, data)
       panel:SetVisible(true)
@@ -680,6 +684,40 @@ function PANEL:FadeIn(speed, Callback)
       Callback()
     end
   end
+end
+
+local PANEL = {}
+
+--- Sets up the character list (`cw.characterList`) and shows the navigation buttons.
+function PANEL:Init()
+  self.selectedIdx = 1
+  self.characterPanels = {}
+  self.isCharacterList = true
+
+  cw.character:FadeInNavigation()
+end
+
+--- Draws nothing.
+function PANEL:Paint(w, h) end
+
+--- Fades the character list out and hides it, playing the rollover sound.
+--
+-- When the list is already invisible or animating, it is hidden at once.
+--
+-- @param speed [Number Length of the fade in seconds]
+-- @param Callback=nil [Function Called once the list is hidden]
+function PANEL:FadeOut(speed, Callback)
+  FadeOutPanel(self, speed, Callback)
+end
+
+--- Shows the character list and fades it in, playing the click sound.
+--
+-- When the list is already visible or animating, it is made fully visible at once.
+--
+-- @param speed [Number Length of the fade in seconds]
+-- @param Callback=nil [Function Called once the list is fully visible]
+function PANEL:FadeIn(speed, Callback)
+  FadeInPanel(self, speed, Callback)
 end
 
 --- Removes every character panel from the list.
@@ -776,40 +814,35 @@ function PANEL:Think()
 
   if self.animation then self.animation:Run() end
 
-  while self.selectedIdx > #self.characterPanels do
-    self.selectedIdx = self.selectedIdx - 1
-  end
+  local numPanels = #self.characterPanels
 
-  if self.selectedIdx == 0 then self.selectedIdx = 1 end
+  self.selectedIdx = math.max(math.min(self.selectedIdx, numPanels), 1)
 
-  if self.characterPanels[self.selectedIdx] then
-    local centerPanel = self.characterPanels[self.selectedIdx]
-      centerPanel:SetActive(true)
+  local selectedIdx = self.selectedIdx
+  local centerPanel = self.characterPanels[selectedIdx]
+
+  if centerPanel then
+    centerPanel:SetActive(true)
     self:ManageTargets(centerPanel, (self:GetWide() / 2) - (centerPanel:GetWide() / 2), 255)
 
     local rightX = centerPanel.x + centerPanel:GetWide() + 16
     local leftX = centerPanel.x - 16
 
-    for i = self.selectedIdx - 1, 1, -1 do
+    for i = selectedIdx - 1, 1, -1 do
       local previousPanel = self.characterPanels[i]
 
-      if previousPanel then
-        previousPanel:SetActive(false)
-          self:ManageTargets(previousPanel, leftX - previousPanel:GetWide(), (255 / self.selectedIdx) * i)
-        leftX = previousPanel.x - 16
-      end
+      previousPanel:SetActive(false)
+      self:ManageTargets(previousPanel, leftX - previousPanel:GetWide(), (255 / selectedIdx) * i)
+      leftX = previousPanel.x - 16
     end
 
-    for k, v in pairs(self.characterPanels) do
-      if k > self.selectedIdx then
-        v:SetActive(false)
-          self:ManageTargets(
-            v,
-            rightX,
-            (255 / ((#self.characterPanels + 1) - self.selectedIdx)) * ((#self.characterPanels + 1) - k)
-          )
-        rightX = v.x + v:GetWide() + 16
-      end
+    -- In order, since each panel is placed to the right of the one before it.
+    for i = selectedIdx + 1, numPanels do
+      local nextPanel = self.characterPanels[i]
+
+      nextPanel:SetActive(false)
+      self:ManageTargets(nextPanel, rightX, (255 / ((numPanels + 1) - selectedIdx)) * ((numPanels + 1) - i))
+      rightX = nextPanel.x + nextPanel:GetWide() + 16
     end
   end
 end
@@ -835,17 +868,16 @@ function PANEL:Init()
   local smallTextFont = cw.option:GetFont('menu_text_small')
   local tinyTextFont = cw.option:GetFont('menu_text_tiny')
   local buttonsList = {}
-  local colorWhite = cw.option:GetColor('white')
   local buttonX = 20
   local buttonY = 0
   local labels = {}
 
-  if !WOW then
-    WOW = self
-  end
-
   self.customData = self:GetParent().customData
   self.buttonPanels = {}
+
+  -- Kept in a local for the menu callbacks, which can run after the list has been rebuilt and this card removed.
+  local characterID = self.customData.characterID
+
   self:SetPaintBackground(false)
 
   hook.Run('GetCharacterPanelLabels', labels, self.customData)
@@ -927,7 +959,7 @@ function PANEL:Init()
     function button.DoClick(button)
       local function Callback()
         netstream.Start('InteractCharacter', {
-          characterID = self.customData.characterID, action = k
+          characterID = characterID, action = k
         })
       end
 
@@ -940,7 +972,7 @@ function PANEL:Init()
   -- Called when the button is clicked.
   function self.useButton.DoClick(spawnIcon)
     netstream.Start('InteractCharacter', {
-      characterID = self.customData.characterID, action = 'use' }
+      characterID = characterID, action = 'use' }
     )
   end
 
@@ -949,7 +981,7 @@ function PANEL:Init()
     cw.core:AddMenuFromData(nil, {
       [L('Yes')] = function()
         netstream.Start('InteractCharacter', {
-          characterID = self.customData.characterID, action = 'delete' }
+          characterID = characterID, action = 'delete' }
         )
       end,
       [L('No')] = function() end
@@ -960,15 +992,18 @@ function PANEL:Init()
 
   -- Called when the character model is clicked.
   function modelPanel.DoClick(modelPanel)
-    local activePanel = cw.character:GetActivePanel()
+    local activePanel = cw.character:GetPanelList()
+
+    if !activePanel then
+      return
+    end
 
     if activePanel:GetSelectedModel() == self then
       local options = {}
-      local panel = cw.character:GetPanel()
 
       options[L('Use')] = function()
         netstream.Start('InteractCharacter', {
-          characterID = self.customData.characterID, action = 'use' }
+          characterID = characterID, action = 'use' }
         )
       end
 
@@ -976,18 +1011,18 @@ function PANEL:Init()
       options[L('Delete')][L('No')] = function() end
       options[L('Delete')][L('Yes')] = function()
         netstream.Start('InteractCharacter', {
-          characterID = self.customData.characterID, action = 'delete' }
+          characterID = characterID, action = 'delete' }
         )
       end
 
       hook.Run(
-        'GetCustomCharacterOptions', self.customData.charTable, options, menu
+        'GetCustomCharacterOptions', self.customData.charTable, options
       )
 
       cw.core:AddMenuFromData(nil, options, function(menu, key, value)
         menu:AddOption(key, function()
           netstream.Start('InteractCharacter', {
-            characterID = self.customData.characterID, action = value }
+            characterID = characterID, action = value }
           )
         end)
       end)
@@ -1041,6 +1076,12 @@ end
 --- Highlights the character's name when it is the selected one.
 -- @param bActive [Boolean Whether this card is selected]
 function PANEL:SetActive(bActive)
+  if self.bActive == bActive then
+    return
+  end
+
+  self.bActive = bActive
+
   if bActive then
     self.nameLabel:OverrideTextColor(
       cw.option:GetColor('information')
@@ -1051,8 +1092,16 @@ function PANEL:SetActive(bActive)
 end
 
 --- Updates the card's model tooltip and weapon model from the `GetCharacterPanelToolTip` and
--- `GetCharacterPanelWeaponModel` hooks.
+-- `GetCharacterPanelWeaponModel` hooks, once a second.
 function PANEL:Think()
+  local realTime = RealTime()
+
+  if self.nextUpdateDetails and realTime < self.nextUpdateDetails then
+    return
+  end
+
+  self.nextUpdateDetails = realTime + 1
+
   local markupObject = cw.theme:GetMarkupObject()
   local weaponModel = hook.Run(
     'GetCharacterPanelWeaponModel', self, self.customData.charTable
@@ -1068,32 +1117,17 @@ function PANEL:Think()
   )
 
   if toolTip and toolTip != '' then
-    details = markupObject:Title(self.customData.name)
-    details = markupObject:Add(toolTip)
+    markupObject:Title(self.customData.name)
+    markupObject:Add(toolTip)
   end
 
-  if weaponModel then
-    self.characterModel:SetWeaponModel(weaponModel)
-  else
-    self.characterModel:SetWeaponModel(false)
-  end
-
+  self.characterModel:SetWeaponModel(weaponModel or false)
   self.characterModel:SetDetails(markupObject:GetText())
 end
 
 vgui.Register('cw.characterPanel', PANEL, 'DPanel')
 
 local PANEL = {}
-
---- Sets up the model panel (`cw.characterModel`) with full ambient light and a markup tooltip.
---
--- Overridden by the second `Init` further down in the file, so this one never runs.
-function PANEL:Init()
-  self:SetPaintBackground(false)
-  self:SetAmbientLight(Color(255, 255, 255, 255))
-
-  cw.core:CreateMarkupToolTip(self)
-end
 
 --- Fades the model panel out and hides it, playing the rollover sound.
 --
@@ -1177,7 +1211,9 @@ end
 function PANEL:SetAlpha(alpha)
   local color = self:GetColor()
 
-  self:SetColor(Color(color.r, color.g, color.b, alpha))
+  if color.a != alpha then
+    self:SetColor(Color(color.r, color.g, color.b, alpha))
+  end
 end
 
 --- Returns the model panel's alpha, taken from its model color.
@@ -1191,8 +1227,6 @@ end
 
 --- Runs the fade animation and keeps the panel at `forceX` when it is set.
 function PANEL:Think()
-  local entity = self.Entity
-
   if self.animation then
     self.animation:Run()
   end
@@ -1200,9 +1234,6 @@ function PANEL:Think()
   if self.forceX then
     self.x = self.forceX
   end
-
-  -- entity:ClearPoseParameters()
-  -- self:InvalidateLayout(true)
 end
 
 --- Sets the markup tooltip shown when hovering the model.
@@ -1236,6 +1267,17 @@ function PANEL:SetWeaponModel(weaponModel)
   self.weaponEntity:AddEffects(EF_BONEMERGE)
 end
 
+--- Removes the displayed model and its weapon model when the panel is removed.
+function PANEL:OnRemove()
+  if IsValid(self.weaponEntity) then
+    self.weaponEntity:Remove()
+  end
+
+  if IsValid(self.Entity) then
+    self.Entity:Remove()
+  end
+end
+
 --- Calls the panel's `DoClick` field, when set, on any mouse press.
 function PANEL:OnMousePressed()
   if self.DoClick then
@@ -1257,7 +1299,7 @@ function PANEL:LayoutEntity()
 
   entity:SetPoseParameter('head_pitch', fractionMY * 80 - 30)
   entity:SetPoseParameter('head_yaw', (fractionMX - fx) * 70)
-  entity:SetAngles(Angle(0, 45, 0))
+  entity:SetAngles(modelAngles)
   entity:SetIK(false)
 
   self:RunAnimation()
@@ -1280,6 +1322,11 @@ function PANEL:Init()
 
     if !IsValid(entity) then
       return
+    end
+
+    -- The base panel creates a new entity for each model, so move the weapon model over to it.
+    if IsValid(panel.weaponEntity) then
+      panel.weaponEntity:SetParent(entity)
     end
 
     local sequence = entity:LookupSequence('idle')
@@ -1372,17 +1419,10 @@ function PANEL:Init()
 
   -- Called when the panel should be painted.
   function self.pointsUsed.Paint(pointsUsed)
-    local color = Color(100, 100, 100, 255)
     local width =
       math.Clamp((pointsUsed:GetWide() / self.attributeTable.maximum) * self.totalPoints, 0, pointsUsed:GetWide())
 
-    if color then
-      color.r = math.min(color.r - 25, 255)
-      color.g = math.min(color.g - 25, 255)
-      color.b = math.min(color.b - 25, 255)
-    end
-
-    cw.core:DrawSimpleGradientBox(2, 0, 0, pointsUsed:GetWide(), pointsUsed:GetTall(), color)
+    cw.core:DrawSimpleGradientBox(2, 0, 0, pointsUsed:GetWide(), pointsUsed:GetTall(), attributeBarColor)
 
     if self.totalPoints > 0 and self.totalPoints < self.attributeTable.maximum then
       cw.core:DrawSimpleGradientBox(0, 2, 2, width - 4, pointsUsed:GetTall() - 4, colorTargetID)
@@ -1392,27 +1432,35 @@ function PANEL:Init()
   end
 end
 
---- Lays out the attribute row and refreshes its tooltip with the attribute's points and description.
+--- Lays out the attribute row and refreshes its tooltip with the attribute's points and description when the
+-- points change.
 function PANEL:Think()
+  if self.shownPoints != self.totalPoints then
+    self.shownPoints = self.totalPoints
+
+    self.pointsLabel:SetText(self.attributeTable.name)
+    self.pointsLabel:SizeToContents()
+
+    local markupObject = cw.theme:GetMarkupObject()
+    local attributeName = cw.lang:TranslateText(self.attributeTable.name)
+    local attributeMax = self.totalPoints..'/'..self.attributeTable.maximum
+
+    markupObject:Title(attributeName..', '..attributeMax)
+    markupObject:Add(self.attributeTable.description)
+
+    local toolTip = markupObject:GetText()
+
+    self:SetMarkupToolTip(toolTip)
+    self.pointsUsed:SetMarkupToolTip(toolTip)
+    self.pointsLabel:SetMarkupToolTip(toolTip)
+  end
+
   self.pointsUsed:SetSize(self:GetWide() - (self.pointsUsed.x * 2), 16)
-  self.pointsLabel:SetText(self.attributeTable.name)
   self.pointsLabel:SetPos(
     self:GetWide() / 2 - self.pointsLabel:GetWide() / 2,
     self:GetTall() / 2 - self.pointsLabel:GetTall() / 2
   )
-  self.pointsLabel:SizeToContents()
   self.addButton:SetPos(self.pointsUsed.x + self.pointsUsed:GetWide() + 8, 0)
-
-  local markupObject = cw.theme:GetMarkupObject()
-  local attributeName = cw.lang:TranslateText(self.attributeTable.name)
-  local attributeMax = self.totalPoints..'/'..self.attributeTable.maximum
-
-  markupObject:Title(attributeName..', '..attributeMax)
-  markupObject:Add(self.attributeTable.description)
-
-  self:SetMarkupToolTip(markupObject:GetText())
-  self.pointsUsed:SetMarkupToolTip(markupObject:GetText())
-  self.pointsLabel:SetMarkupToolTip(markupObject:GetText())
 end
 
 --- Adds a point to the attribute when the shared point budget allows it.
@@ -1549,32 +1597,7 @@ function PANEL:Paint(w, h) end
 -- @param speed [Number Length of the fade in seconds]
 -- @param Callback=nil [Function Called once the step is hidden]
 function PANEL:FadeOut(speed, Callback)
-  if self:GetAlpha() > 0 and (!self.animation or !self.animation:Active()) then
-    self.animation = Derma_Anim('Fade Panel', self, function(panel, animation, delta, data)
-      panel:SetAlpha(255 - (delta * 255))
-
-      if animation.Finished then
-        panel:SetVisible(false)
-      end
-
-      if animation.Finished and Callback then
-        Callback()
-      end
-    end)
-
-    if self.animation then
-      self.animation:Start(speed)
-    end
-
-    cw.option:PlaySound('rollover')
-  else
-    self:SetVisible(false)
-    self:SetAlpha(0)
-
-    if Callback then
-      Callback()
-    end
-  end
+  FadeOutPanel(self, speed, Callback)
 end
 
 --- Shows the step and fades it in, playing the click sound.
@@ -1584,33 +1607,7 @@ end
 -- @param speed [Number Length of the fade in seconds]
 -- @param Callback=nil [Function Called once the step is fully visible]
 function PANEL:FadeIn(speed, Callback)
-  if self:GetAlpha() == 0 and (!self.animation or !self.animation:Active()) then
-    self.animation = Derma_Anim('Fade Panel', self, function(panel, animation, delta, data)
-      panel:SetVisible(true)
-      panel:SetAlpha(delta * 255)
-
-      if animation.Finished then
-        self.animation = nil
-      end
-
-      if animation.Finished and Callback then
-        Callback()
-      end
-    end)
-
-    if self.animation then
-      self.animation:Start(speed)
-    end
-
-    cw.option:PlaySound('click_release')
-  else
-    self:SetVisible(true)
-    self:SetAlpha(255)
-
-    if Callback then
-      Callback()
-    end
-  end
+  FadeInPanel(self, speed, Callback)
 end
 
 --- Updates the remaining points text and runs the fade animation.
@@ -1624,7 +1621,10 @@ function PANEL:Think()
       pointsLeft = pointsLeft - v:GetTotalPoints()
     end
 
-    self.helpText:SetText('#CharCreation_AttributesHelp:'..pointsLeft..';')
+    if self.pointsLeft != pointsLeft then
+      self.pointsLeft = pointsLeft
+      self.helpText:SetText('#CharCreation_AttributesHelp:'..pointsLeft..';')
+    end
   end
 
   if self.animation then
@@ -1666,11 +1666,11 @@ function PANEL:Init()
           self.info.class = v.index
         end
       }
-      self.classForm:AddItem(vgui.Create('cwClassesItem', self))
+      self.classesForm:AddItem(vgui.Create('cwClassesItem', self))
     end
   end
 
-  self.categoryList:AddItem(self.classForm)
+  self.categoryList:AddItem(self.classesForm)
 end
 
 --- Draws nothing.
@@ -1683,32 +1683,7 @@ function PANEL:Paint(w, h) end
 -- @param speed [Number Length of the fade in seconds]
 -- @param Callback=nil [Function Called once the step is hidden]
 function PANEL:FadeOut(speed, Callback)
-  if self:GetAlpha() > 0 and (!self.animation or !self.animation:Active()) then
-    self.animation = Derma_Anim('Fade Panel', self, function(panel, animation, delta, data)
-      panel:SetAlpha(255 - (delta * 255))
-
-      if animation.Finished then
-        panel:SetVisible(false)
-      end
-
-      if animation.Finished and Callback then
-        Callback()
-      end
-    end)
-
-    if self.animation then
-      self.animation:Start(speed)
-    end
-
-    cw.option:PlaySound('rollover')
-  else
-    self:SetVisible(false)
-    self:SetAlpha(0)
-
-    if Callback then
-      Callback()
-    end
-  end
+  FadeOutPanel(self, speed, Callback)
 end
 
 --- Shows the step and fades it in, playing the click sound.
@@ -1718,33 +1693,7 @@ end
 -- @param speed [Number Length of the fade in seconds]
 -- @param Callback=nil [Function Called once the step is fully visible]
 function PANEL:FadeIn(speed, Callback)
-  if self:GetAlpha() == 0 and (!self.animation or !self.animation:Active()) then
-    self.animation = Derma_Anim('Fade Panel', self, function(panel, animation, delta, data)
-      panel:SetVisible(true)
-      panel:SetAlpha(delta * 255)
-
-      if animation.Finished then
-        self.animation = nil
-      end
-
-      if animation.Finished and Callback then
-        Callback()
-      end
-    end)
-
-    if self.animation then
-      self.animation:Start(speed)
-    end
-
-    cw.option:PlaySound('click_release')
-  else
-    self:SetVisible(true)
-    self:SetAlpha(255)
-
-    if Callback then
-      Callback()
-    end
-  end
+  FadeInPanel(self, speed, Callback)
 end
 
 --- Runs the step's fade animation.
@@ -1974,32 +1923,7 @@ function PANEL:Paint(w, h) end
 -- @param speed [Number Length of the fade in seconds]
 -- @param Callback=nil [Function Called once the step is hidden]
 function PANEL:FadeOut(speed, Callback)
-  if self:GetAlpha() > 0 and (!self.animation or !self.animation:Active()) then
-    self.animation = Derma_Anim('Fade Panel', self, function(panel, animation, delta, data)
-      panel:SetAlpha(255 - (delta * 255))
-
-      if animation.Finished then
-        panel:SetVisible(false)
-      end
-
-      if animation.Finished and Callback then
-        Callback()
-      end
-    end)
-
-    if self.animation then
-      self.animation:Start(speed)
-    end
-
-    cw.option:PlaySound('rollover')
-  else
-    self:SetVisible(false)
-    self:SetAlpha(0)
-
-    if Callback then
-      Callback()
-    end
-  end
+  FadeOutPanel(self, speed, Callback)
 end
 
 --- Shows the step and fades it in, playing the click sound.
@@ -2009,33 +1933,7 @@ end
 -- @param speed [Number Length of the fade in seconds]
 -- @param Callback=nil [Function Called once the step is fully visible]
 function PANEL:FadeIn(speed, Callback)
-  if self:GetAlpha() == 0 and (!self.animation or !self.animation:Active()) then
-    self.animation = Derma_Anim('Fade Panel', self, function(panel, animation, delta, data)
-      panel:SetVisible(true)
-      panel:SetAlpha(delta * 255)
-
-      if animation.Finished then
-        self.animation = nil
-      end
-
-      if animation.Finished and Callback then
-        Callback()
-      end
-    end)
-
-    if self.animation then
-      self.animation:Start(speed)
-    end
-
-    cw.option:PlaySound('click_release')
-  else
-    self:SetVisible(true)
-    self:SetAlpha(255)
-
-    if Callback then
-      Callback()
-    end
-  end
+  FadeInPanel(self, speed, Callback)
 end
 
 --- Runs the step's fade animation.
@@ -2214,7 +2112,10 @@ function PANEL:OnNext()
   if IsValid(self.genderMultiChoice) then
     local faction = self.forcedFaction
     local data = {}
+    -- Single-gender factions list the gender untranslated, so both spellings are accepted.
     local translate = {
+      [GENDER_FEMALE] = GENDER_FEMALE,
+      [GENDER_MALE] = GENDER_MALE,
       [cw.lang:TranslateText('#Gender_Female')] = GENDER_FEMALE,
       [cw.lang:TranslateText('#Gender_Male')] = GENDER_MALE
     }
@@ -2252,32 +2153,7 @@ function PANEL:Paint(w, h) end
 -- @param speed [Number Length of the fade in seconds]
 -- @param Callback=nil [Function Called once the step is hidden]
 function PANEL:FadeOut(speed, Callback)
-  if self:GetAlpha() > 0 and (!self.animation or !self.animation:Active()) then
-    self.animation = Derma_Anim('Fade Panel', self, function(panel, animation, delta, data)
-      panel:SetAlpha(255 - (delta * 255))
-
-      if animation.Finished then
-        panel:SetVisible(false)
-      end
-
-      if animation.Finished and Callback then
-        Callback()
-      end
-    end)
-
-    if self.animation then
-      self.animation:Start(speed)
-    end
-
-    cw.option:PlaySound('rollover')
-  else
-    self:SetVisible(false)
-    self:SetAlpha(0)
-
-    if Callback then
-      Callback()
-    end
-  end
+  FadeOutPanel(self, speed, Callback)
 end
 
 --- Shows the step and fades it in, playing the click sound.
@@ -2287,33 +2163,7 @@ end
 -- @param speed [Number Length of the fade in seconds]
 -- @param Callback=nil [Function Called once the step is fully visible]
 function PANEL:FadeIn(speed, Callback)
-  if self:GetAlpha() == 0 and (!self.animation or !self.animation:Active()) then
-    self.animation = Derma_Anim('Fade Panel', self, function(panel, animation, delta, data)
-      panel:SetVisible(true)
-      panel:SetAlpha(delta * 255)
-
-      if animation.Finished then
-        self.animation = nil
-      end
-
-      if animation.Finished and Callback then
-        Callback()
-      end
-    end)
-
-    if self.animation then
-      self.animation:Start(speed)
-    end
-
-    cw.option:PlaySound('click_release')
-  else
-    self:SetVisible(true)
-    self:SetAlpha(255)
-
-    if Callback then
-      Callback()
-    end
-  end
+  FadeInPanel(self, speed, Callback)
 end
 
 --- Runs the step's fade animation.
@@ -2364,10 +2214,10 @@ netstream.Hook('SetWhitelisted', function(data)
   for k, v in pairs(whitelisted) do
     if v == data[1] then
       if !data[2] then
-        whitelisted[k] = nil
-
-        return
+        table.remove(whitelisted, k)
       end
+
+      return
     end
   end
 

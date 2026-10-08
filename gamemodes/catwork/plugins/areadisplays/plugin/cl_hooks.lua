@@ -43,6 +43,8 @@ end
 
 --- Called when the foreground HUD is painted; draws and fades the active scrolling area displays.
 function cwAreaDisplays:HUDPaintForeground()
+  if next(self.activeDisplays) == nil then return end
+
   local info = { x = ScrW() * 0.1, y = ScrH() * 0.6 }
 
   for k, v in pairs(self.activeDisplays) do

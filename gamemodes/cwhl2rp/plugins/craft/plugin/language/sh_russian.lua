@@ -32,6 +32,7 @@ lang['#Craft_Error_NoTools'] = 'У Вас нет необходимых инст
 lang['#Craft_Error_NoAttributes'] = 'У Вас нет необходимых навыков.'
 lang['#Craft_Error_NoRequirements'] = 'Вы не выполнили необходимые условия.'
 lang['#Craft_Error_Cooldown'] = 'Вы должны подождать, прежде чем снова сможете что-то создать.'
+lang['#Craft_Error_NoStation'] = 'Вы должны находиться у подходящего верстака.'
 
 lang['#Craft_Category_Alcohol'] = 'Алкоголь'
 lang['#Craft_Category_Ammo'] = 'Боеприпасы'

@@ -71,6 +71,8 @@ function PANEL:Paint(w, h)
     local r, g, b = self.Color.r, self.Color.g, self.Color.b
     local volume = math.Approach(self.Volume, self.Player:VoiceVolume(), FrameTime() * 30)
 
+    self.Volume = volume
+
     surface.SetDrawColor(50 + (r * volume), 50 + (g * volume), 50 + (b * volume), 250)
     surface.DrawRect(0, 0, w, h)
 

@@ -68,9 +68,9 @@ end
 -- @param answer [Any The player's answer: the answer text or its position]
 -- @return [Boolean `true` if the answer is correct, otherwise `nil`]
 function cw.quiz:IsAnswerCorrect(index, answer)
-  question = self:GetQuestion(index)
+  local question = self:GetQuestion(index)
 
-  if question then
+  if question and answer != nil then
     if type(question.answer) == 'table' and table.HasValue(question.answer, answer) then
       return true
     elseif answer == question.possibleAnswers[question.answer] then

@@ -105,6 +105,28 @@ function cwDoorCmds:LoadDoorData()
   end
 end
 
+--- Sends a player the doors to outline while they set up door parents.
+--
+-- The `doorParentESP` message holds the player's active parent door under the `Parent` key, followed by the
+-- doors parented to it. It is empty when the player has no active parent door.
+-- @param player [Player The player setting up door parents]
+function cwDoorCmds:SendParentESP(player)
+  local parent = player.cwParentDoor
+  local doors = {}
+
+  if IsValid(parent) then
+    doors.Parent = parent
+
+    for child, childParent in pairs(self.parentData) do
+      if childParent == parent and IsValid(child) then
+        doors[#doors + 1] = child
+      end
+    end
+  end
+
+  netstream.Start(player, 'doorParentESP', doors)
+end
+
 --- Saves `cwDoorCmds.parentData` to the schema data file `plugins/parents/<map>` as door positions.
 function cwDoorCmds:SaveParentData()
   local parentData = {}

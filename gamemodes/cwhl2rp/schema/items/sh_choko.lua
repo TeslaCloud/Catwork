@@ -14,7 +14,7 @@ ITEM.hunger = 35
 
 --- Boosts strength and endurance by 2 for two minutes.
 function ITEM:OnUse(player, itemEntity)
-  player:BoostAttribute(self.name, ATB_STRENGHT, 2, 120)
+  player:BoostAttribute(self.name, ATB_STRENGTH, 2, 120)
   player:BoostAttribute(self.name, ATB_ENDURANCE, 2, 120)
 end
 

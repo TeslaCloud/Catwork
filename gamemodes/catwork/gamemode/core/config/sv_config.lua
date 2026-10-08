@@ -1,8 +1,8 @@
 --- Defines the framework's core config keys and their default values on the server with `config.Add`.
 --
--- Covers the `mysql_*` database settings and `owner_steamid` (static and private) and the gameplay keys such as
--- `default_cash`, `walk_speed`, `ooc_interval` and `default_theme`. The values are meant to be changed through the cfg
--- files or the in-game config editor, not by editing this file.
+-- Covers the `mysql_*` database settings and `owner_steamid` (static and private), the private API keys and the
+-- gameplay keys such as `default_cash`, `walk_speed`, `ooc_interval` and `default_theme`. The values are meant to be
+-- changed through the cfg files or the in-game config editor, not by editing this file.
 
 --[[
   Never edit this file! All config editing should be done
@@ -49,7 +49,7 @@ config.Add('scale_fall_damage', 1)
 config.Add('limb_damage_system', true, true)
 config.Add('enable_vignette', true, true)
 config.Add('use_free_aiming', true, true, true)
-config.Add('default_cash', 100, nil, nil, nil, nil, nil, true)
+config.Add('default_cash', 100)
 config.Add('armor_chest_only', false)
 config.Add('minimum_physdesc', 32, true)
 config.Add('wood_breaks_fall', true)
@@ -99,9 +99,9 @@ config.Add('draw_intro_bars', true, true)
 config.Add('enable_looc_icons', true, true, true)
 config.Add('show_business', true, true)
 config.Add('chat_multiplier', true, true, true)
-config.Add('steam_api_key', '')
+config.Add('steam_api_key', '', nil, nil, nil, true)
 config.Add('enable_map_props_physgrab', false)
-config.Add('translate_api_key', '')
+config.Add('translate_api_key', '', nil, nil, nil, true)
 config.Add('entity_handle_time', 0.1)
 config.Add('quick_raise_enabled', true)
 config.Add('force_entity_menus', 1, true)

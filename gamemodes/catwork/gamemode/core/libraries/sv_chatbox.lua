@@ -1,11 +1,12 @@
 --- Defines the server-side half of the global `chatbox` library, which processes what players type and decides who
 -- receives each chat message.
 --
--- Prefixes registered with `chatbox.AddPrefix` (`//`, `.//`, `[[`, `/`, `/?`, `@` and `<sys>` are built in) classify
--- typed text as OOC, local OOC, a command and so on, and filters registered with `chatbox.AddFilter` pick the
--- listeners. `chatbox.AddText` builds and sends a message from code and `chatbox.SayAsPlayer` speaks for a player. The
--- `ChatboxTextEntered` receiver runs commands, applies the `ooc_interval` and `looc_interval` configs, and kicks
--- players who type one of a hard-coded list of insults about the server.
+-- Prefixes registered with `chatbox.AddPrefix` (`//`, `.//`, `[[`, `/`, `/?`, `@` and `<sys>` are built in; `/?` and
+-- `<sys>` only work for admins) classify typed text as OOC, local OOC, a command and so on, and filters registered
+-- with `chatbox.AddFilter` pick the listeners. `chatbox.AddText` builds and sends a message from code and
+-- `chatbox.SayAsPlayer` speaks for a player. The `ChatboxTextEntered` receiver runs commands, applies the
+-- `ooc_interval` and `looc_interval` configs, and kicks players who type one of a hard-coded list of insults about
+-- the server.
 
 library.New('chatbox', _G)
 // Chatbox prefixes for serverside processing. Will be networked to clients for message styling.
@@ -44,6 +45,8 @@ function chatbox.AddPrefix(prefix, callback)
     if result then
       msgData.text = msgData.text:utf8sub((prefix == '/?' and 2) or (prefix:utf8len() + 1), msgData.text:utf8len())
     end
+
+    return result
   end
 
   chatbox.prefixes[prefix] = {}
@@ -96,7 +99,7 @@ end
 -- half the radius of the point they are looking at. Players that have not
 -- initialized never hear anything.
 -- @param listener [Player The player who would hear the message]
--- @param position [Vector Where the message comes from]
+-- @param position [Vector Where the message comes from; without one only a radius of `0` is heard]
 -- @param radius [Number Hearing radius; `0` means everyone hears it, a negative value or a non-number means
 -- nobody does]
 -- @return [Boolean Whether the listener can hear the message]
@@ -104,10 +107,11 @@ function chatbox.CanHear(listener, position, radius)
   if listener:HasInitialized() then
     if !isnumber(radius) then return false end
     if radius == 0 then return true end
-    if radius < 0 then return false end
+    if radius < 0 or !position then return false end
 
-    if cw.player:GetRealTrace(listener).HitPos:Distance(position) <= (radius / 2)
-    or position:Distance(listener:GetPos()) <= radius then
+    -- The distance is checked first, as the trace is only needed for listeners out of range.
+    if position:Distance(listener:GetPos()) <= radius
+    or cw.player:GetRealTrace(listener).HitPos:Distance(position) <= (radius / 2) then
       return true
     end
   end
@@ -133,7 +137,7 @@ do
   end)
 
   chatbox.AddFilter('ic', function(listener, msgData)
-    pos = msgData.position
+    local pos = msgData.position
 
     if !pos and IsValid(msgData.sender) then
       pos = msgData.sender:GetPos()
@@ -185,11 +189,7 @@ do
       msgData.filter = 'ooc'
       msgData.radius = 0
 
-      while text:StartsWith('// ') do
-        text = '//'..text:utf8sub(4, text:utf8len())
-      end
-
-      msgData.text = text
+      msgData.text = string.gsub(text, '^// +', '//')
 
       return true -- tell the system that we set everything!
     end
@@ -202,11 +202,7 @@ do
       msgData.filter = 'looc'
       msgData.radius = config.GetVal('talk_radius') -- todo
 
-      while text:StartsWith('.// ') do
-        text = './/'..text:utf8sub(5, text:utf8len())
-      end
-
-      msgData.text = text
+      msgData.text = string.gsub(text, '^%.// +', './/')
 
       return true
     end
@@ -220,11 +216,7 @@ do
       msgData.filter = 'looc'
       msgData.radius = config.GetVal('talk_radius') -- todo
 
-      while text:StartsWith('[[ ') do
-        text = '[['..text:utf8sub(4, text:utf8len())
-      end
-
-      msgData.text = text
+      msgData.text = string.gsub(text, '^%[%[ +', '[[')
 
       return true
     end
@@ -266,10 +258,11 @@ do
     end
   end)
 
+  -- Admins only: the message is shown to everyone without a name, like one from the server itself.
   chatbox.AddPrefix('<sys>', function(msgData)
     local text = msgData.text
 
-    if text:StartsWith('<sys>') then
+    if IsValid(msgData.sender) and msgData.sender:IsAdmin() and text:StartsWith('<sys>') then
       msgData.filter = 'player_as_system'
       msgData.radius = 0
 
@@ -304,7 +297,8 @@ end
 --
 -- Fires `ChatAddText(listeners, message)`, then `ChatboxAdjustMessageInfo(message,
 -- listeners)` (returning `false` there cancels the message), sends the message
--- to each listener over the `ChatboxAddText` netstream and finally fires
+-- over the `ChatboxAddText` netstream to the listeners that pass its filter (an
+-- unknown filter counts as `'default'`) and finally fires
 -- `ChatboxMessageSent(message)`.
 --
 -- ```
@@ -316,7 +310,8 @@ end
 --
 -- @param listeners=nil [Player A player or a list of players to send to; `nil` sends to everyone]
 -- @param ... [Any Strings, colors, players and option tables making up the message]
--- @return [Map The message table with a `listeners` key added, or `nil` if a hook cancelled it]
+-- @return [Map The message table with a `listeners` key added (the list of players it was sent to), or `nil` if
+-- a hook cancelled it or the only listener is no longer valid]
 -- @see chatbox.SayAsPlayer
 function chatbox.AddText(listeners, ...)
   local args = { ... }
@@ -338,6 +333,9 @@ function chatbox.AddText(listeners, ...)
 
   if listeners == nil then
     listeners = _player.GetAll()
+  elseif !istable(listeners) and !IsValid(listeners) then
+    -- A player who has left since the caller got hold of them.
+    return
   end
 
   local colored = false
@@ -394,19 +392,19 @@ function chatbox.AddText(listeners, ...)
     print('[Chat::'..message.filter:upper()..'] '..message.text)
   end
 
-  if !IsValid(listeners) then
-    for k, v in ipairs(listeners) do
-      if chatbox.GetFilter(message.filter)(v, message) then
-        netstream.Start(v, 'ChatboxAddText', message)
-      end
-    end
-  else
-    if chatbox.GetFilter(message.filter)(listeners, message) then
-      netstream.Start(listeners, 'ChatboxAddText', message)
+  local filterCallback = chatbox.GetFilter(message.filter) or chatbox.GetFilter('default')
+  local recipients = {}
+
+  for k, v in ipairs(IsValid(listeners) and { listeners } or listeners) do
+    if filterCallback(v, message) then
+      recipients[#recipients + 1] = v
     end
   end
 
-  message.listeners = listeners or _player.GetAll()
+  -- Sent in one go, so that the message is only encoded once.
+  netstream.Start(recipients, 'ChatboxAddText', message)
+
+  message.listeners = recipients
 
   hook.Run('ChatboxMessageSent', message)
 
@@ -440,9 +438,36 @@ function chatbox.SetClientMode(isclient)
   chatbox.clientMode = isclient
 end
 
+-- Message fields that server code acts on. A client asking for a message in its own chat box may not set them.
+local clientBlockedFields = { 'voice', 'listeners', 'players', 'position' }
+
 netstream.Hook('ChatboxAddText', function(player, ...)
+  local args = {}
+
+  for i = 1, math.min(select('#', ...), 64) do
+    local v = select(i, ...)
+
+    if istable(v) then
+      for k2, v2 in ipairs(clientBlockedFields) do
+        v[v2] = nil
+      end
+
+      if v.sender != player then v.sender = nil end
+      if !isstring(v.filter) then v.filter = nil end
+      if !isstring(v.text) then v.text = nil end
+      if !istable(v.data) then v.data = nil end
+
+      args[#args + 1] = v
+    elseif isstring(v) or type(v) == 'Player' then
+      args[#args + 1] = v
+    end
+  end
+
+  -- Players named in the message would otherwise set its position, and so reveal where they are.
+  args[#args + 1] = { position = player:GetPos() }
+
   chatbox.SetClientMode(true)
-  chatbox.AddText(player, ...)
+  chatbox.AddText(player, unpack(args))
   chatbox.SetClientMode(false)
 end)
 
@@ -484,6 +509,22 @@ netstream.Hook('ChatboxTextEntered', function(player, msgText)
     return
   end
 
+  local curTime = CurTime()
+
+  -- Nobody types this fast; without it a client could flood everyone in range as fast as it can send.
+  if player.cwNextChatText and curTime < player.cwNextChatText then return end
+
+  player.cwNextChatText = curTime + 0.2
+
+  local maxChatLength = config.GetVal('max_chat_length')
+  local maxBytes = (maxChatLength + 8) * 4
+
+  -- The text is cut to the maximum length further down; do not process more of it than can survive that.
+  -- The pattern drops the last multi-byte character, which the cut may have split.
+  if #msgText > maxBytes then
+    msgText = string.gsub(string.sub(msgText, 1, maxBytes), '[\192-\255][\128-\191]*$', '')
+  end
+
   local lowerText = msgText:utf8lower()
   lowerText = lowerText:Replace('.//', '')
   lowerText = lowerText:Replace('//', '')
@@ -513,7 +554,7 @@ netstream.Hook('ChatboxTextEntered', function(player, msgText)
     sender = player, -- player object
     filter = 'ic', -- filter id
     time = os.time(),
-    sendTime = CurTime(),
+    sendTime = curTime,
     position = player:GetPos(),
     steamID = player:SteamID(),
     steamID64 = player:SteamID64(),
@@ -540,10 +581,6 @@ netstream.Hook('ChatboxTextEntered', function(player, msgText)
     end
   end
 
-  local prefix = config.GetVal('command_prefix')
-  local maxChatLength = config.GetVal('max_chat_length')
-  local curTime = CurTime()
-
   if string.utf8len(message.text) >= maxChatLength then
     message.text = string.utf8sub(message.text, 0, maxChatLength)
     message.text = message.text..'...'
@@ -551,23 +588,27 @@ netstream.Hook('ChatboxTextEntered', function(player, msgText)
 
   hook.Run('ChatboxPlayerSay', player, message)
 
-  if hook.Run('ChatboxAdjustMessageInfo', message, listeners) == false then
+  if hook.Run('ChatboxAdjustMessageInfo', message) == false then
     return
   end
 
   if message.isCommand then
-    print('[Catwork Debug] Command detected: '..msgText)
+    local arguments = cw.core:ExplodeByTags(message.text, ' ', '"', '"', true)
 
     if message.isCommandSilent then
       player:OverrideName(table.Random(adminNames))
+
+      -- The fake name must not outlive the command, even if the command errors.
+      local bSuccess, errorText = pcall(cw.command.ConsoleCommand, cw.command, player, 'cwCmd', arguments)
+
+      player:OverrideName(nil)
+
+      if !bSuccess then
+        ErrorNoHalt(tostring(errorText)..'\n')
+      end
+    else
+      cw.command:ConsoleCommand(player, 'cwCmd', arguments)
     end
-
-    local prefixLength = string.utf8len(prefix)
-    local arguments = cw.core:ExplodeByTags(message.text, ' ', '"', '"', true)
-
-    cw.command:ConsoleCommand(player, 'cwCmd', arguments)
-
-    player:OverrideName(nil)
 
     return
   elseif message.data.anon then
@@ -577,29 +618,29 @@ netstream.Hook('ChatboxTextEntered', function(player, msgText)
   local shouldSend = true
 
   if message.filter == 'ooc' then
-    if hook.Run('PlayerCanSayOOC', player, message.text) then
-      if !player.cwNextTalkOOC or curTime > player.cwNextTalkOOC or player:IsAdmin() then
-        player.cwNextTalkOOC = curTime + config.Get('ooc_interval'):Get()
-      else
-        cw.player:Notify(
-          player, L('Chat_OOCWait', math.ceil(player.cwNextTalkOOC - CurTime()))
-        )
+    if !hook.Run('PlayerCanSayOOC', player, message.text) then return end
 
-        return
-      end
+    if !player.cwNextTalkOOC or curTime > player.cwNextTalkOOC or player:IsAdmin() then
+      player.cwNextTalkOOC = curTime + config.Get('ooc_interval'):Get()
+    else
+      cw.player:Notify(
+        player, L('Chat_OOCWait', math.ceil(player.cwNextTalkOOC - curTime))
+      )
+
+      return
     end
   elseif message.filter == 'looc' then
     if message.text != '' then
-      if hook.Run('PlayerCanSayLOOC', player, message.text) then
-        if !player.cwNextTalkLOOC or curTime > player.cwNextTalkLOOC or player:IsAdmin() then
-          player.cwNextTalkLOOC = curTime + config.Get('looc_interval'):Get()
-        else
-          cw.player:Notify(
-            player, L('Chat_LOOCWait', math.ceil(player.cwNextTalkLOOC - CurTime()))
-          )
+      if !hook.Run('PlayerCanSayLOOC', player, message.text) then return end
 
-          return
-        end
+      if !player.cwNextTalkLOOC or curTime > player.cwNextTalkLOOC or player:IsAdmin() then
+        player.cwNextTalkLOOC = curTime + config.Get('looc_interval'):Get()
+      else
+        cw.player:Notify(
+          player, L('Chat_LOOCWait', math.ceil(player.cwNextTalkLOOC - curTime))
+        )
+
+        return
       end
     end
   elseif message.filter == 'ic' then
@@ -623,16 +664,19 @@ netstream.Hook('ChatboxTextEntered', function(player, msgText)
 
   print('['..message.filter:upper()..'] '..player:Name()..': '..message.text)
 
+  local filterCallback = chatbox.GetFilter(message.filter) or chatbox.GetFilter('default')
   local listeners = {}
 
   for k, v in ipairs(_player.GetAll()) do
-    if chatbox.GetFilter(message.filter)(v, message) then
-      netstream.Start(v, 'ChatboxTextEnter', player, message)
-      table.insert(listeners, v)
+    if filterCallback(v, message) then
+      listeners[#listeners + 1] = v
     end
   end
 
-  message.listeners = listeners or _player.GetAll()
+  -- Sent in one go, so that the message is only encoded once.
+  netstream.Start(listeners, 'ChatboxTextEnter', player, message)
+
+  message.listeners = listeners
 
   hook.Run('ChatboxMessageSent', message)
 end)

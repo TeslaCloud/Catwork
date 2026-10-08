@@ -5,6 +5,8 @@
 -- `PlayerShouldShowOnScoreboard`, `ScoreboardSortClassPlayers` and `GetPlayerScoreboardText` hooks. Clicking a row's
 -- model opens the options from `GetPlayerScoreboardOptions`.
 
+local rowBackgroundColor = Color(75, 75, 75)
+
 local PANEL = {}
 
 --- Sizes the scoreboard menu tab to the menu, stores it as `cw.scoreboard` and builds it.
@@ -77,21 +79,13 @@ function PANEL:Rebuild()
     self.panelList:AddItem(playersLabel)
 
     for k, v in pairs(classes) do
-      local classData = cw.class:FindByID(v.name)
-      local classColor = nil
-
-      if classData then
-        -- classColor = classData.color
-      end
-
       local characterForm = vgui.Create('cwBasicForm', self)
       characterForm:SetPadding(8)
       characterForm:SetSpacing(8)
       characterForm:SetAutoSize(true)
       characterForm:SetText(
-        cw.lang:TranslateText(v.name)..(istable(v.players) and ' ('..tostring(#v.players)..')'),
-        cw.option:GetFont('scoreboard_class'),
-        classColor
+        cw.lang:TranslateText(v.name)..' ('..tostring(#v.players)..')',
+        cw.option:GetFont('scoreboard_class')
       )
 
       local panelList = vgui.Create('DPanelList', self)
@@ -253,7 +247,7 @@ end
 
 --- Draws the player row's grey background.
 function PANEL:Paint(width, height)
-  draw.RoundedBox(2, 0, 0, width, height, Color(75, 75, 75))
+  draw.RoundedBox(2, 0, 0, width, height, rowBackgroundColor)
 
   return true
 end
@@ -261,10 +255,17 @@ end
 --- Shows the player's ping, or the custom tooltip, on the row's icon.
 function PANEL:Think()
   if IsValid(self.player) then
-    if self.toolTip then
-      self.spawnIcon:SetTooltip(self.toolTip)
-    else
-      self.spawnIcon:SetTooltip(L('#Scoreboard_Ping:'..self.player:Ping()..';'))
+    local toolTip = self.toolTip or self.player:Ping()
+
+    -- Only translate and set the tooltip again when the custom text or the ping has changed.
+    if toolTip != self.shownToolTip then
+      self.shownToolTip = toolTip
+
+      if self.toolTip then
+        self.spawnIcon:SetTooltip(self.toolTip)
+      else
+        self.spawnIcon:SetTooltip(L('#Scoreboard_Ping:'..toolTip..';'))
+      end
     end
   end
 

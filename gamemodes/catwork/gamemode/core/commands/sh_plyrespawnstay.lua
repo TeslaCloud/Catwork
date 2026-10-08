@@ -13,7 +13,6 @@ function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
 
   if target then
-    -- cw.player:LightSpawn(target, true, true, false)
     local pos = target:GetPos()
     target:Spawn()
     target:SetPos(pos)

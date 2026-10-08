@@ -331,32 +331,43 @@ function CItem:IsDataNetworked(key)
 end
 
 if SERVER then
+  --- Returns the first recipe of an item that a player has access to and owns every ingredient of.
+  -- @param itemTable [Item The item being ordered]
+  -- @param player [Player The player ordering it]
+  -- @return [Map The recipe, or `nil` when the player can make none]
+  local function FindAffordableRecipe(itemTable, player)
+    for k, v in ipairs(itemTable.recipes) do
+      if cw.core:HasObjectAccess(player, v) then
+        local hasIngredients = true
+
+        for k2, v2 in pairs(v.ingredients) do
+          local itemList = player:GetItemsByID(k2)
+
+          if !itemList or table.Count(itemList) < v2 then
+            hasIngredients = false
+            break
+          end
+        end
+
+        if hasIngredients then
+          return v
+        end
+      end
+    end
+  end
+
   --- Takes the cost of an order from a player.
   --
   -- Takes the ingredients of the first recipe the player has access to and owns enough of, then
   -- takes `cost * batch` cash and logs the order. Call `CItem:CanPlayerAfford` first.
   -- @param player [Player The player ordering the item]
   function CItem:DeductFunds(player)
-    if #self.recipes > 0 then
-      for k, v in pairs(self.recipes) do
-        if cw.core:HasObjectAccess(player, v) then
-          local hasIngredients = true
+    local recipe = FindAffordableRecipe(self, player)
 
-          for k2, v2 in pairs(v.ingredients) do
-            if table.Count(player:GetItemsByID(k2)) < v2 then
-              hasIngredients = false
-            end
-          end
-
-          if hasIngredients then
-            for k2, v2 in pairs(v.ingredients) do
-              for i = 1, v2 do
-                player:TakeItemByID(k2)
-              end
-            end
-
-            break
-          end
+    if recipe then
+      for k, v in pairs(recipe.ingredients) do
+        for i = 1, v do
+          player:TakeItemByID(k)
         end
       end
     end
@@ -389,25 +400,7 @@ if SERVER then
     end
 
     if #self.recipes > 0 then
-      for k, v in pairs(self.recipes) do
-        if cw.core:HasObjectAccess(player, v) then
-          local hasIngredients = true
-
-          for k2, v2 in pairs(v.ingredients) do
-            local itemList = player:GetItemsByID(k2)
-
-            if !itemList or table.Count(itemList) < v2 then
-              hasIngredients = false
-            end
-          end
-
-          if hasIngredients then
-            return true
-          end
-        end
-      end
-
-      return false
+      return FindAffordableRecipe(self, player) != nil
     end
 
     return true
@@ -451,10 +444,13 @@ if SERVER then
     end
 
     timer.Create(timerName, 1, 1, function()
-      item.SendUpdate(
-        self, self.networkQueue
-      )
-      self.networkQueue = {}
+      -- A field set to `nil` leaves nothing in the queue to send.
+      if next(self.networkQueue) != nil then
+        item.SendUpdate(
+          self, self.networkQueue
+        )
+        self.networkQueue = {}
+      end
     end)
   end
 else
@@ -471,14 +467,6 @@ end
   End defining the base item class and begin defining
   the item utility functions.
 --]]
-
---- Returns every registered item definition, indexed by its numeric index.
---
--- Redefines the identical function declared at the top of the file.
--- @return [Map<Item> Item definitions indexed by numeric index]
-function item.GetBuffer()
-  return buffer
-end
 
 --- Returns every registered item definition, indexed by unique ID.
 -- @return [Map<Item> Item definitions indexed by unique ID]
@@ -507,6 +495,7 @@ function item.New(uniqueID)
     object.networkData = {}
     object.defaultData = {}
     object.recipes = {}
+    object.proxies = {}
     object.isBaseItem = nil
     object.baseItem = nil
     object.uniqueID = uniqueID
@@ -614,8 +603,6 @@ end
 -- @param weapon [Weapon The weapon]
 -- @return [Item The item instance, or `nil` when the weapon is invalid or not from an item]
 function item.GetByWeapon(weapon)
-  item.Validate(itemTable)
-
   if IsValid(weapon) then
     local itemID = tonumber(weapon:GetNWString('ItemID'))
 
@@ -630,6 +617,10 @@ end
 -- The instance is a copy of the definition stored in `item.GetInstances`. Data and custom fields
 -- are merged into it, and its `OnInstantiated` callback is called. Instances only exist in the
 -- realm they are created in; give them to players to network them.
+--
+-- When the item ID already belongs to an instance of another item, the server gives the new
+-- instance an ID of its own, so check the returned instance's `itemID`; the client replaces its
+-- instance, as the server decides which item an ID stands for.
 --
 -- ```
 -- local itemTable = item.CreateInstance('ration', nil, { Opened = true })
@@ -650,10 +641,23 @@ function item.CreateInstance(uniqueID, itemID, data, customData)
   if itemTable then
     if !itemID then
       itemID = item.GenerateID()
+    elseif instances[itemID] and instances[itemID].uniqueID != itemTable.uniqueID then
+      if SERVER then
+        itemID = item.GenerateID()
+      else
+        instances[itemID] = nil
+      end
     end
 
     if !instances[itemID] then
+      -- Instances share their base definition instead of each carrying a copy of it.
+      local baseClass = itemTable.baseClass
+
+      itemTable.baseClass = nil
       instances[itemID] = table.Copy(itemTable)
+      itemTable.baseClass = baseClass
+
+      instances[itemID].baseClass = baseClass
       instances[itemID].itemID = itemID
     end
 
@@ -673,17 +677,22 @@ function item.CreateInstance(uniqueID, itemID, data, customData)
   end
 end
 
-do
-  --[[ Just to make sure we never ever get the same ID. --]]
-  local ITEM_INDEX = item.ITEM_INDEX or 0
-  item.ITEM_INDEX = ITEM_INDEX
+--[[ Just to make sure we never ever get the same ID. --]]
+item.ITEM_INDEX = item.ITEM_INDEX or 0
 
-  --- Generates a new item ID from the current time and an increasing counter.
-  -- @return [Number The new item ID]
-  function item.GenerateID()
-    ITEM_INDEX = ITEM_INDEX + 1
-    return os.time() + ITEM_INDEX
-  end
+--- Generates a new item ID from the current time and an increasing counter.
+--
+-- IDs of instances that already exist in this realm are skipped.
+-- @return [Number The new item ID]
+function item.GenerateID()
+  local itemID
+
+  repeat
+    item.ITEM_INDEX = item.ITEM_INDEX + 1
+    itemID = os.time() + item.ITEM_INDEX
+  until !instances[itemID]
+
+  return itemID
 end
 
 --- Returns the item instance with an item ID.
@@ -708,7 +717,9 @@ function item.GetDefinition(itemTable, bNetworkData)
 
   if bNetworkData then
     for k, v in pairs(itemTable.networkData) do
-      definition.data[k] = itemTable:GetData(k)
+      if v then
+        definition.data[k] = itemTable:GetData(k)
+      end
     end
   end
 
@@ -727,7 +738,7 @@ end
 --- Finds an item definition by index, unique ID, weapon class or name.
 --
 -- When there is no exact match, the shortest item whose name contains the identifier (case
--- insensitive, as a Lua pattern) is returned, falling back to a match on `PrintName`.
+-- insensitive, as plain text) is returned, falling back to a match on `PrintName`.
 --
 -- ```
 -- local itemTable = item.FindByID('ration')
@@ -737,7 +748,7 @@ end
 -- @param bShouldValidate=nil [Boolean Return a merged copy of the definition, as `item.Validate` does]
 -- @return [Item The item definition, or `nil` when none matches]
 function item.FindByID(identifier, bShouldValidate)
-  if !isbool(identifier) and identifier and identifier != 0 then
+  if !isbool(identifier) and identifier and identifier != 0 and identifier != '' then
     if buffer[identifier] then
       return item.Validate(buffer[identifier], bShouldValidate)
     elseif stored[identifier] then
@@ -746,19 +757,23 @@ function item.FindByID(identifier, bShouldValidate)
       return item.Validate(weapons[identifier], bShouldValidate)
     end
 
+    if !isstring(identifier) then
+      return
+    end
+
     local lowerName = string.utf8lower(identifier)
     local itemTable = nil
 
     for k, v in pairs(stored) do
       local itemName = v.name
 
-      if string.find(string.utf8lower(itemName), lowerName)
+      if string.find(string.utf8lower(itemName), lowerName, 1, true)
       and (!itemTable or string.utf8len(itemName) < string.utf8len(itemTable.name)) then
         itemTable = v
       end
 
       if !itemTable and v.PrintName != itemName then
-        if string.find(string.utf8lower(v.PrintName), lowerName) then
+        if string.find(string.utf8lower(v.PrintName), lowerName, 1, true) then
           itemTable = v
         end
       end
@@ -823,10 +838,6 @@ function item.Initialize()
   end
 
   for k, v in pairs(itemsTable) do
-    if v.baseItem then
-      item.Merge(v, v.baseItem)
-    end
-
     if v.OnSetup then v:OnSetup() end
 
     if item.IsWeapon(v) then
@@ -843,6 +854,22 @@ if SERVER then
   local entities = item.entities or {}
   item.entities = entities
 
+  --- Plays the sound of an item action on a player.
+  -- @param player [Player The player to play the sound on]
+  -- @param itemSound [Any A sound path, a `List` of paths to pick from, `false` for silence or `nil` for the default]
+  -- @param defaultSound [String Sound played when the item has none]
+  local function EmitItemSound(player, itemSound, defaultSound)
+    if itemSound then
+      if istable(itemSound) then
+        player:EmitSound(itemSound[math.random(1, #itemSound)])
+      else
+        player:EmitSound(itemSound)
+      end
+    elseif itemSound != false then
+      player:EmitSound(defaultSound)
+    end
+  end
+
   --- Makes a player use an item from their inventory.
   --
   -- Calls the item's `OnUse`: a `nil` return takes the item from the player, `false` cancels the use
@@ -855,9 +882,9 @@ if SERVER then
   function item.Use(player, itemTable, bNoSound)
     local itemEntity = player:GetItemEntity()
 
-    itemTable = item.Validate(itemTable, true)
+    item.Validate(itemTable)
 
-    if player:HasItemInstance(itemTable) then
+    if itemTable and player:HasItemInstance(itemTable) then
       if itemTable.OnUse then
         if itemEntity and itemEntity.cwItemTable == itemTable then
           player:SetItemEntity(nil)
@@ -872,17 +899,7 @@ if SERVER then
         end
 
         if !bNoSound then
-          local useSound = itemTable.useSound
-
-          if useSound then
-            if type(useSound) == 'table' then
-              player:EmitSound(useSound[math.random(1, #useSound)])
-            else
-              player:EmitSound(useSound)
-            end
-          elseif useSound != false then
-            player:EmitSound('weapons/universal/uni_pistol_holster.wav')
-          end
+          EmitItemSound(player, itemTable.useSound, 'weapons/universal/uni_pistol_holster.wav')
         end
 
         hook.Run('PlayerUseItem', player, itemTable, itemEntity)
@@ -940,17 +957,9 @@ if SERVER then
         end
 
         if !bNoSound then
-          local dropSound = itemTable.dropSound
-
-          if dropSound then
-            if type(dropSound) == 'table' then
-              player:EmitSound(dropSound[math.random(1, #dropSound)])
-            else
-              player:EmitSound(dropSound)
-            end
-          elseif dropSound != false then
-            player:EmitSound('physics/body/body_medium_impact_soft'..math.random(1, 7)..'.wav')
-          end
+          EmitItemSound(
+            player, itemTable.dropSound, 'physics/body/body_medium_impact_soft'..math.random(1, 7)..'.wav'
+          )
         end
 
         hook.Run('PlayerDropItem', player, itemTable, position, entity)
@@ -971,7 +980,7 @@ if SERVER then
   function item.Destroy(player, itemTable, bNoSound)
     item.Validate(itemTable)
 
-    if player:HasItemInstance(itemTable) and itemTable.OnDestroy then
+    if itemTable and player:HasItemInstance(itemTable) and itemTable.OnDestroy then
       if itemTable:OnDestroy(player) == false then
         return false
       end
@@ -979,17 +988,9 @@ if SERVER then
       player:TakeItem(itemTable)
 
       if !bNoSound then
-        local destroySound = itemTable.destroySound
-
-        if destroySound then
-          if type(destroySound) == 'table' then
-            player:EmitSound(destroySound[math.random(1, #destroySound)])
-          else
-            player:EmitSound(destroySound)
-          end
-        elseif destroySound != false then
-          player:EmitSound('physics/body/body_medium_impact_soft'..math.random(1, 7)..'.wav')
-        end
+        EmitItemSound(
+          player, itemTable.destroySound, 'physics/body/body_medium_impact_soft'..math.random(1, 7)..'.wav'
+        )
       end
 
       hook.Run('PlayerDestroyItem', player, itemTable)
@@ -999,13 +1000,15 @@ if SERVER then
   end
 
   --- Forgets the item entity of an instance, called when the entity is removed.
+  --
+  -- Does nothing when the entity has no item, or when the instance has since been spawned as another entity.
   -- @param entity [Entity The item entity]
   function item.RemoveItemEntity(entity)
     local itemTable = entity:GetItemTable()
 
-    item.Validate(itemTable)
-
-    entities[itemTable.itemID] = nil
+    if itemTable and entities[itemTable.itemID] == entity then
+      entities[itemTable.itemID] = nil
+    end
   end
 
   --- Records the entity an item instance has been spawned as.
@@ -1056,18 +1059,24 @@ if SERVER then
     local info = {
       observers = {}, sendToAll = false
     }
+    local recipients = nil
 
-    if hook.Run('ItemGetNetworkObservers', itemTable, info)
-    or info.sendToAll then
-      info.observers = nil
+    if !hook.Run('ItemGetNetworkObservers', itemTable, info)
+    and !info.sendToAll then
+      recipients = {}
+
+      -- The hook indexes the observers by player, while netstream wants a list.
+      for k, v in pairs(info.observers) do
+        recipients[#recipients + 1] = v
+      end
     end
 
-    netstream.Start(info.observers, 'InvNetwork', {
+    netstream.Start(recipients, 'InvNetwork', {
       itemID = itemTable.itemID,
       data = data
     })
 
-    return info.observers
+    return recipients
   end
 else
   --- Returns the model and skin to draw an item's icon with.

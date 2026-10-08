@@ -38,7 +38,7 @@ end
 
 --- Always allows the bag to be picked up.
 function ITEM:CanPickup(player, quickUse, itemEntity)
-  return 'boxed_backpack'
+  return 'boxed_bag'
 end
 
 --- Blocks dropping the bag, with a notification, when the player would be left over their weight limit.

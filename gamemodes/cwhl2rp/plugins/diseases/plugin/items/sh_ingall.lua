@@ -18,39 +18,31 @@ ITEM.customFunctions = { 'Use on...' }
 --- Cures the player's pneumonia after one to two minutes and fires `PlayerHealed`.
 function ITEM:OnUse(player, itemEntity)
   if player:GetCharacterData('diseases') == 'pneumonia' then
-    timer.Simple(math.random(60, 120), function()
-      player:SetCharacterData('diseases', 'none')
-    end)
+    cwDiseases:SetDiseaseDelayed(player, math.random(60, 120), 'pneumonia', 'none')
   end
 
   hook.Run('PlayerHealed', player, player, self)
 end
 
 if SERVER then
-  --- Uses the inhaler on the player being looked at with "Give", curing their pneumonia after a delay.
+  --- Uses the inhaler on the player being looked at with "Use on...", curing their pneumonia after a delay.
   --
   -- Fires `PlayerHealed` with the user as the healer. Returns `false` when no player is looked at.
   function ITEM:OnCustomFunction(player, name)
-    if name == 'Give' then
-      local lookingPly = player:GetEyeTrace().Entity
+    if name == 'Use on...' then
+      local lookingPly = cwDiseases:FindPatient(player, self)
 
-      if lookingPly:IsPlayer() then
-        if lookingPly:GetCharacterData('diseases') == 'pneumonia' then
-          timer.Simple(math.random(60, 120), function()
-            lookingPly:SetCharacterData('diseases', 'none')
-          end)
-        end
+      if !lookingPly then return false end
 
-        player:EmitSound('ambient/voices/cough1.wav', 100, 100)
-        cw.player:Notify(player, L('Diseases_Used_Inhaler'))
-        player:TakeItem(player:FindItemByID('ingall'))
-
-        hook.Run('PlayerHealed', lookingPly, player, self)
-      else
-        cw.player:Notify(player, L('Diseases_MustLookAtPerson'))
-
-        return false
+      if lookingPly:GetCharacterData('diseases') == 'pneumonia' then
+        cwDiseases:SetDiseaseDelayed(lookingPly, math.random(60, 120), 'pneumonia', 'none')
       end
+
+      player:EmitSound('ambient/voices/cough1.wav', 100, 100)
+      cw.player:Notify(player, L('Diseases_Used_Inhaler'))
+      player:TakeItem(self)
+
+      hook.Run('PlayerHealed', lookingPly, player, self)
     end
   end
 end

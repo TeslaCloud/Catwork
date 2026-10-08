@@ -1,4 +1,4 @@
---- Registers the 9x18mm Rounds blueprint (`blueprint_ammo_9x18`) of the Craft plugin, which makes one `ammo_9x19` at
+--- Registers the 9x18mm Rounds blueprint (`blueprint_ammo_9x18`) of the Craft plugin, which makes one `ammo_9x18` at
 -- the ammo workbench (`cw_craft_bullet`) from one `bullet_casings`, one `gunpowder` and one `refined_metal`, requiring
 -- 25 Repair (`rem`) and progressing it by 15.
 
@@ -22,6 +22,6 @@ BLUEPRINT.recipe = {
   { 'refined_metal', 1 }
 }
 BLUEPRINT.finish = {
-  { 'ammo_9x19', 1 }
+  { 'ammo_9x18', 1 }
 }
 BLUEPRINT:Register()

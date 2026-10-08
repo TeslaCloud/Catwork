@@ -247,7 +247,7 @@ function cw.class:HasAnyFlags(name, flags)
     for i = 1, #flags do
       local flag = string.utf8sub(flags, i, i)
 
-      if string.find(sFlagString, flag) then
+      if string.find(sFlagString, flag, 1, true) then
         return true
       end
     end
@@ -267,7 +267,7 @@ function cw.class:HasFlags(name, flags)
     for i = 1, #flags do
       local flag = string.utf8sub(flags, i, i)
 
-      if !string.find(sFlagString, flag) then
+      if !string.find(sFlagString, flag, 1, true) then
         return false
       end
     end

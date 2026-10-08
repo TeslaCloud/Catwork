@@ -5,3 +5,4 @@ local lang = cw.lang:GetTable('ru')
 
 lang['#Attachments'] = 'Обвесы'
 lang['#FAS2_Suppressor'] = 'Глушитель'
+lang['#FAS2_Suppressor_Desc'] = 'Глушитель, который можно установить на огнестрельное оружие.'

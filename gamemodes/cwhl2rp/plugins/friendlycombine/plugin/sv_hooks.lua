@@ -7,46 +7,31 @@
 -- scales the damage these NPCs deal.
 
 local stored = {
-  'npc_metropolice',
-  'npc_combine_s',
-  'npc_manhack',
-  'npc_scanner',
-  'combine_mine',
-  'npc_combinegunship',
-  'npc_combinedropship',
-  'npc_strider',
-  'npc_rollermine',
-  'npc_cscanner',
-  'npc_turret_ceiling',
-  'npc_clawscanner',
-  'npc_turret_floor'
+  ['npc_metropolice'] = true,
+  ['npc_combine_s'] = true,
+  ['npc_manhack'] = true,
+  ['npc_scanner'] = true,
+  ['combine_mine'] = true,
+  ['npc_combinegunship'] = true,
+  ['npc_combinedropship'] = true,
+  ['npc_strider'] = true,
+  ['npc_rollermine'] = true,
+  ['npc_cscanner'] = true,
+  ['npc_turret_ceiling'] = true,
+  ['npc_clawscanner'] = true,
+  ['npc_turret_floor'] = true
 }
 
 local function ApplyNPCRelations(player, bHostile)
-  if !bHostile then
-    player:SetVar('faction', 'f_combine')
-    player:SetName('f_combine')
-  else
-    player:SetVar('faction', 'f_human')
-    player:SetName('f_human')
-  end
+  player:SetName(bHostile and 'f_human' or 'f_combine')
 
-  for k, v in ipairs(ents.GetAll()) do
-    if v:IsNPC() then
-      local class = v:GetClass()
-
-      if class and table.HasValue(stored, class:lower()) then
-        v:Fire('setrelationship', 'f_combine d_li 99', 0)
-        v:Fire('setrelationship', 'f_human d_ht 98', 0)
-      end
+  -- The relationships go by name and only reach the entities carrying it right now, so they are set again.
+  for k, v in ipairs(ents.FindByClass('npc_*')) do
+    if v:IsNPC() and stored[v:GetClass():lower()] then
+      v:Fire('setrelationship', 'f_combine d_li 99', 0)
+      v:Fire('setrelationship', 'f_human d_ht 98', 0)
     end
   end
-end
-
---- Called when a player spawns; clears the player's NPC faction variable.
--- @param player [Player The player who spawned]
-function PLUGIN:PlayerSpawn(player)
-  player:SetVar('faction', nil)
 end
 
 --- Called after a player spawns an NPC; makes a new Combine NPC hate non-Combine players.
@@ -55,9 +40,7 @@ end
 -- @param player [Player The player who spawned the NPC]
 -- @param npc [NPC The NPC that was spawned]
 function PLUGIN:PlayerSpawnedNPC(player, npc)
-  local class = npc:GetClass()
-
-  if class and table.HasValue(stored, class:lower()) then
+  if stored[npc:GetClass():lower()] then
     if !config.GetVal('combine_attack_combine') then
       npc:Fire('setrelationship', 'f_combine d_li 99', 0)
     end
@@ -135,15 +118,15 @@ end
 -- @param damageInfo [CTakeDamageInfo The damage being dealt; scaled in place]
 function PLUGIN:PlayerTakeDamage(victim, inflictor, attacker, hitGroup, damageInfo)
   if IsValid(attacker) and IsValid(victim) and attacker:IsNPC() then
-    local class = attacker:GetClass()
+    local class = attacker:GetClass():lower()
 
-    if class and table.HasValue(stored, class:lower()) then
+    if stored[class] then
       if Schema:PlayerIsCombine(victim) or victim:HasItemByID('combine_security_card') then
-        damageInfo:ScaleDamage(0) -- �������� �� �������� �����
+        damageInfo:ScaleDamage(0)
       elseif victim:GetRagdollState() == RAGDOLL_FALLENOVER then
-        damageInfo:ScaleDamage(0.2) -- ���� � ��������� �������� 20% �� �����
-      elseif class:lower() == 'npc_turret_floor' or class:lower() == 'npc_turret_ceiling' then
-        damageInfo:ScaleDamage(5) -- ������ ������� 500% ����� �� ��-���������
+        damageInfo:ScaleDamage(0.2)
+      elseif class == 'npc_turret_floor' or class == 'npc_turret_ceiling' then
+        damageInfo:ScaleDamage(5)
       end
     end
   end

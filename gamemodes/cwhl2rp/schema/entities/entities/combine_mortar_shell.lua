@@ -107,6 +107,8 @@ function ENT:Think()
 end
 
 if CLIENT then
+  local glowMaterial = Material('sprites/light_ignorez')
+
   --- Draws the glowing sprites on the shell's tail while it is visible.
   function ENT:DrawTranslucent()
     local pos = self:GetPos() + Vector(7, 0, 60)
@@ -131,7 +133,7 @@ if CLIENT then
       local Alpha2 = math.Clamp((1000 - Distance) * Visibile * ViewDot, 0, 200)
       local Alpha3 = math.Clamp((1000 - Distance) * Visibile * ViewDot, 0, 70)
 
-      render.SetMaterial(Material('sprites/light_ignorez'))
+      render.SetMaterial(glowMaterial)
 
       render.DrawSprite(LightPos, Size * 3, Size * 3, Color(200, 225, 255, Alpha3 / 3), Visibile * ViewDot)
       render.DrawSprite(LightPos, Size, Size, Color(180, 200, 255, Alpha3), Visibile * ViewDot)

@@ -6,6 +6,8 @@
 
 include('shared.lua')
 
+local defaultModelScale = Vector(1, 1, 1)
+
 --- Fetches the item data, then hides the gear while the local player wears it in first person or is dead.
 function ENT:Think()
   if !cw.entity:HasFetchedItemData(self) then
@@ -42,7 +44,7 @@ function ENT:Draw()
     local playerEyePos = cw.client:EyePos()
     local colorTable = self:GetColor()
     local itemTable = cw.entity:FetchItemTable(self)
-    local modelScale = itemTable.attachmentModelScale or Vector(1, 1, 1)
+    local modelScale = itemTable.attachmentModelScale or defaultModelScale
     local bDrawModel = false
     local eyePos = EyePos()
     local player = self:GetPlayer()
@@ -66,10 +68,13 @@ function ENT:Draw()
       end
     end
 
-    if modelScale then
+    -- The scale matrix stays on the entity, so it is only rebuilt when the scale changes.
+    if modelScale and modelScale != self.cwModelScale then
       local entityMatrix = Matrix()
         entityMatrix:Scale(modelScale)
       self:EnableMatrix('RenderMultiply', entityMatrix)
+
+      self.cwModelScale = Vector(modelScale)
     end
 
     if bDrawModel and hook.Run('GearEntityDraw', self) != false then

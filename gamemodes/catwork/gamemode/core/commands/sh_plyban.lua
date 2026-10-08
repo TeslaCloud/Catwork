@@ -14,7 +14,6 @@ COMMAND.alias = { 'Ban' }
 --
 -- A duration of 0 bans permanently. Protected players cannot be banned.
 function COMMAND:OnRun(player, arguments)
-  local schemaFolder = cw.core:GetSchemaFolder()
   local duration = tonumber(arguments[2])
   local reason = table.concat(arguments, ' ', 3)
 
@@ -23,7 +22,7 @@ function COMMAND:OnRun(player, arguments)
   end
 
   if !cw.player:IsProtected(arguments[1]) then
-    if duration then
+    if duration and duration >= 0 and duration < math.huge then
       cw.bans:Add(arguments[1], duration * 60, reason, function(steamName, duration, reason)
         if IsValid(player) then
           if steamName then

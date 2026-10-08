@@ -94,9 +94,13 @@ Deploy
 
 --- Plays the fists draw animation and delays the first punch by one second.
 function SWEP:Deploy()
-  local vm = self:GetOwner():GetViewModel()
+  local owner = self:GetOwner()
+  local vm = IsValid(owner) and owner:GetViewModel()
 
-  vm:SendViewModelMatchingSequence(vm:LookupSequence('fists_draw'))
+  if IsValid(vm) then
+    vm:SendViewModelMatchingSequence(vm:LookupSequence('fists_draw'))
+  end
+
   self:SetNextPrimaryFire(CurTime() + 1)
 
   return true
@@ -118,10 +122,11 @@ function SWEP:PrimaryAttack()
       self:GetOwner():SetAnimation(PLAYER_ATTACK1)
       self:SetNextPrimaryFire(CurTime() + 0.5)
       self:SetNextSecondaryFire(CurTime() + 0.7)
-      timer.Simple(0.10, function ()self:EmitSound(self.SwingSound) end)
-      self.Primary.Damage = self.Primary.Damage
-      -- + cw.attributes:Get(self:GetOwner(), ATB_MELEE, nil, true) * 0.03
-      -- + cw.attributes:Get(self:GetOwner(), ATB_STRENGTH, nil, true) * 0.03
+      timer.Simple(0.10, function()
+        if IsValid(self) then
+          self:EmitSound(self.SwingSound)
+        end
+      end)
 
       local trace = self:GetOwner():GetEyeTraceNoCursor()
 
@@ -287,13 +292,16 @@ PunchEntity
 --
 -- Plays the hit sound after a short delay. The server also runs it on the owner's client for the sound.
 function SWEP:PunchEntity()
-  local bounds = Vector(0, 0, 0)
-  local startPosition = self:GetOwner():GetShootPos()
-  local finishPosition = startPosition + (self:GetOwner():GetAimVector() * 64)
+  local owner = self:GetOwner()
+
+  if !IsValid(owner) then return end
+
+  local startPosition = owner:GetShootPos()
+  local finishPosition = startPosition + (owner:GetAimVector() * 64)
   local traceLineAttack = util.TraceLine({
     start = startPosition,
     endpos = finishPosition,
-    filter = self:GetOwner()
+    filter = owner
   })
 
   timer.Simple(0.32, function ()
@@ -307,7 +315,7 @@ function SWEP:PunchEntity()
 
     if IsValid(traceLineAttack.Entity) then
       traceLineAttack.Entity:TakeDamageInfo(
-        cw.core:FakeDamageInfo(self.Primary.Damage, self, self:GetOwner(), traceLineAttack.HitPos, DMG_CLUB, 1)
+        cw.core:FakeDamageInfo(self.Primary.Damage, self, owner, traceLineAttack.HitPos, DMG_CLUB, 1)
       )
     end
   end
@@ -327,16 +335,15 @@ function SWEP:PlayPunchAnimation()
 
   if self.left == nil then self.left = true else self.left = !self.left end
 
-  local anim = 'fists_right'
-  local ownerAnim = PLAYER_ATTACK1
+  local owner = self:GetOwner()
 
-  if self.left then
-    anim = 'fists_left'
-    -- ownerAnim = PLAYER_ATTACK2
+  if !IsValid(owner) then return end
+
+  local vm = owner:GetViewModel()
+
+  owner:SetAnimation(PLAYER_ATTACK1)
+
+  if IsValid(vm) then
+    vm:SendViewModelMatchingSequence(vm:LookupSequence(self.left and 'fists_left' or 'fists_right'))
   end
-
-  local vm = self:GetOwner():GetViewModel()
-
-  self:GetOwner():SetAnimation(ownerAnim)
-  vm:SendViewModelMatchingSequence(vm:LookupSequence(anim))
 end

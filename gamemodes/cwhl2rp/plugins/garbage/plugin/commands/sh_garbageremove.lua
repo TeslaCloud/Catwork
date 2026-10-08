@@ -12,10 +12,11 @@ function COMMAND:OnRun(player, arguments)
   local position = player:GetEyeTraceNoCursor().HitPos + Vector(0, 0, 32)
   local pointsCount = 0
 
-  for k, v in pairs(cwGarbage.garbagePoints) do
-    if v.position:Distance(position) <= 50 then
+  -- Backwards, so that removing a point does not shift the ones still to be checked.
+  for k = #cwGarbage.garbagePoints, 1, -1 do
+    if cwGarbage.garbagePoints[k].position:Distance(position) <= 50 then
       pointsCount = pointsCount + 1
-      cwGarbage.garbagePoints[k] = nil
+      table.remove(cwGarbage.garbagePoints, k)
     end
   end
 

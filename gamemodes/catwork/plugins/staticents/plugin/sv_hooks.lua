@@ -2,8 +2,8 @@
 --
 -- The file removes Sandbox's own persistence hooks and takes their place: `PlayerMakeStatic` marks a whitelisted
 -- entity (props, ragdolls, `edit_` and `gmod_` entities) persistent for an admin, `PersistenceSave` copies every
--- persistent entity into the `static` schema data with the duplicator on shutdown, and `PersistenceLoad` pastes them
--- back once the map has loaded.
+-- persistent entity into the `static` schema data with the duplicator on shutdown and after a change, and
+-- `PersistenceLoad` pastes them back once the map has loaded.
 --
 -- Backported from the [Flux](https://github.com/TeslaCloud/flux-ce) project.
 
@@ -32,7 +32,7 @@ local whitelistedEntities = {
 function cwStaticEnts:PlayerMakeStatic(player, bIsStatic)
   if !IsValid(player) then return end
 
-  if (bIsStatic and !player:IsAdmin()) or (!bIsStatic and !player:IsAdmin()) then
+  if !player:IsAdmin() then
     cw.player:Notify(player, L('Commands_cwLua_accessDenied', player:Name()))
 
     return
@@ -77,12 +77,24 @@ function cwStaticEnts:PlayerMakeStatic(player, bIsStatic)
 
   entity:SetPersistent(bIsStatic)
 
+  self.bUnsavedChanges = true
+
   cw.player:Notify(player, (bIsStatic and '#Static_Added') or '#Static_Removed')
 end
 
 --- Called when the server shuts down; runs the `PersistenceSave` hook to save static entities.
 function cwStaticEnts:ShutDown()
   hook.Run('PersistenceSave')
+end
+
+--- Called when Catwork saves its data; saves the static entities if any were added or removed since the last save.
+--
+-- Keeps a crash from losing which entities are static. Nothing is saved before the saved entities have been
+-- loaded, so that a failed load is not saved over.
+function cwStaticEnts:SaveData()
+  if self.bLoaded and self.bUnsavedChanges then
+    hook.Run('PersistenceSave')
+  end
 end
 
 --- Called to save persistent entities; copies every static entity with the duplicator into the schema data.
@@ -100,32 +112,61 @@ function cwStaticEnts:PersistenceSave()
   if !istable(toSave) then return end
 
   cw.core:SaveSchemaData('static', toSave, true)
+
+  self.bUnsavedChanges = nil
+end
+
+-- Item instances do not survive being saved as JSON, which keeps neither their functions nor their place in the
+-- item registry, so the items of a saved inventory are created anew from their item IDs and data.
+local function RestoreInventory(inventory)
+  local stored = item.GetStored()
+  local restored = {}
+
+  for uniqueID, items in pairs(inventory) do
+    if stored[uniqueID] and istable(items) then
+      for itemID, itemData in pairs(items) do
+        local itemTable = istable(itemData)
+          and item.CreateInstance(uniqueID, tonumber(itemID), istable(itemData.data) and itemData.data or nil)
+
+        if itemTable then
+          cw.inventory:AddInstance(restored, itemTable)
+        end
+      end
+    end
+  end
+
+  return restored
 end
 
 --- Called to load persistent entities; pastes the saved static entities back and marks them persistent.
 --
--- Custom fields saved with each entity are merged back into its table.
+-- Custom fields saved with each entity are merged back into its table, and the items of a saved `cwInventory`
+-- are created again as item instances.
 function cwStaticEnts:PersistenceLoad()
   local loaded = cw.core:RestoreSchemaData('static', {}, true)
 
-  if !istable(loaded) then return end
-  if !loaded.Entities then return end
-  if !loaded.Constraints then return end
+  if istable(loaded) and loaded.Entities and loaded.Constraints then
+    local entities, constraints = duplicator.Paste(nil, loaded.Entities, loaded.Constraints)
 
-  local entities, constraints = duplicator.Paste(nil, loaded.Entities, loaded.Constraints)
+    -- Restore any custom data the static entities might have had.
+    for k, v in pairs(entities) do
+      local entData = loaded.Entities[k]
 
-  -- Restore any custom data the static entities might have had.
-  for k, v in pairs(entities) do
-    local entData = loaded.Entities[k]
+      if entData then
+        table.Merge(v:GetTable(), entData)
 
-    if entData then
-      table.Merge(v:GetTable(), entData)
+        if istable(v.cwInventory) then
+          v.cwInventory = RestoreInventory(v.cwInventory)
+        end
+      end
+    end
+
+    for k, v in pairs(entities) do
+      v:SetPersistent(true)
     end
   end
 
-  for k, v in pairs(entities) do
-    v:SetPersistent(true)
-  end
+  self.bLoaded = true
 end
 
 --- Called after the map has loaded all of its entities; runs the `PersistenceLoad` hook.

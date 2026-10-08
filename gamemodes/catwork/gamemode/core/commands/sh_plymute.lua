@@ -14,6 +14,11 @@ function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
   local duration = tonumber(arguments[2])
 
+  if !duration or duration != duration then
+    cw.player:Notify(player, L('Command_Plyban_InvalidDuration'))
+    return
+  end
+
   if target then
     if !cw.player:IsProtected(arguments[1]) then
       local curTime = CurTime()

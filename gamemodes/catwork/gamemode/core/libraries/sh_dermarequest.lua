@@ -23,9 +23,28 @@ if SERVER then
   local hooks = cw.dermaRequest.hooks or {}
   cw.dermaRequest.hooks = hooks
 
+  --- Stores a request until its player answers, and forgets the requests of players who have left.
+  -- @param player [Player The player being asked]
+  -- @param Callback [Function Called with the answer]
+  -- @param bString [Boolean Whether the answer is a string instead of a confirmation]
+  -- @return [Number The ID of the new request]
+  local function AddRequest(player, Callback, bString)
+    for k, v in pairs(hooks) do
+      if !IsValid(v.player) then
+        hooks[k] = nil
+      end
+    end
+
+    local rID = cw.dermaRequest:GenerateID()
+
+    hooks[rID] = { Callback = Callback, player = player, isString = bString }
+
+    return rID
+  end
+
   --- Asks a player to type a string into a Derma text prompt.
   --
-  -- The callback runs when the player submits the prompt.
+  -- The callback runs when the player submits the prompt; closing the prompt drops the request.
   --
   -- ```
   -- cw.dermaRequest:RequestString(
@@ -46,14 +65,12 @@ if SERVER then
   -- @param Callback [Function Called with the entered String]
   -- @see cw.dermaRequest:RequestConfirmation
   function cw.dermaRequest:RequestString(player, title, question, default, Callback)
-    local rID = self:GenerateID()
     netstream.Start(player, 'dermaRequest_stringQuery', {
-      id = rID,
+      id = AddRequest(player, Callback, true),
       title = title,
       question = question,
       default = default
     })
-    hooks[rID] = { Callback = Callback, player = player }
   end
 
   --- Asks a player to confirm or cancel in a Derma query window.
@@ -64,12 +81,14 @@ if SERVER then
   -- @param player [Player The player to ask]
   -- @param title [String Window title]
   -- @param question [String Question shown in the window]
-  -- @param Callback [Function Called with the Boolean answer]
+  -- @param Callback [Function Called with `true` when the player confirms]
   -- @see cw.dermaRequest:RequestString
   function cw.dermaRequest:RequestConfirmation(player, title, question, Callback)
-    local rID = self:GenerateID()
-    netstream.Start(player, 'dermaRequest_confirmQuery', { id = rID, title = title, question = question })
-    hooks[rID] = { Callback = Callback, player = player }
+    netstream.Start(player, 'dermaRequest_confirmQuery', {
+      id = AddRequest(player, Callback, false),
+      title = title,
+      question = question
+    })
   end
 
   --- Shows a player a Derma message box.
@@ -79,31 +98,49 @@ if SERVER then
   -- @param title=nil [String Window title]
   -- @param button=nil [String Text of the close button]
   function cw.dermaRequest:Message(player, message, title, button)
-    netstream.Start(player, 'dermaRequest_message', { message = message, title = title or nil, button = button or nil })
+    netstream.Start(player, 'dermaRequest_message', { message = message, title = title, button = button })
   end
 
   --- Returns whether a request answer from a client is valid.
   --
-  -- The answer must name a pending request that was sent to the same player and carry a truthy
-  -- `recv` value.
+  -- The answer must name a pending request that was sent to the same player and carry the kind of
+  -- `recv` value that request expects: a string for a text prompt, `true` for a confirmation.
   --
   -- @param player [Player The player who sent the answer]
   -- @param data [Map The answer, with `id` and `recv` keys]
   -- @return [Boolean Whether the answer is valid]
   -- @warning [Internal] Called by the `dermaRequestCallback` netstream receiver.
   function cw.dermaRequest:Validate(player, data)
-    if data.id and data.recv and hooks[data.id] and hooks[data.id].player == player then
-      return true
+    if !istable(data) then return false end
+
+    local request = hooks[data.id]
+
+    if !request or request.player != player then
+      return false
     end
 
-    return false
+    if request.isString then
+      return isstring(data.recv)
+    end
+
+    return data.recv == true
   end
 
   netstream.Hook('dermaRequestCallback', function(player, data)
-    if !cw.dermaRequest:Validate(player, data) then return end
+    if !istable(data) then return end
 
-    hooks[data.id].Callback(data.recv)
+    local request = hooks[data.id]
+
+    if !request or request.player != player then return end
+
+    local bValid = cw.dermaRequest:Validate(player, data)
+
+    -- Any answer ends the request: a cancelled prompt answers `false` and cannot be answered again.
     hooks[data.id] = nil
+
+    if bValid then
+      request.Callback(data.recv)
+    end
   end)
 else
   --- Sends the answer to a Derma request back to the server.
@@ -118,6 +155,8 @@ else
   netstream.Hook('dermaRequest_stringQuery', function(data)
     Derma_StringRequest(data.title, data.question, data.default, function(recv)
       cw.dermaRequest:Send(data.id, recv)
+    end, function()
+      cw.dermaRequest:Send(data.id, false)
     end)
   end)
 
@@ -128,9 +167,6 @@ else
   end)
 
   netstream.Hook('dermaRequest_message', function(data)
-    local title = data.title or nil
-    local button = data.button or nil
-
     Derma_Message(data.message, data.title, data.button)
   end)
 end

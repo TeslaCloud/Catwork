@@ -2,6 +2,7 @@
 -- `diseases` net var: motion blur for fever and the lethal injections, and a greyscale screen for colour blindness.
 
 local PLUGIN = PLUGIN
+local texturizeMaterial = Material('pp/texturize/plain.png')
 
 --- Called when the local player's motion blurs should be adjusted; applies disease screen effects.
 --
@@ -18,7 +19,7 @@ function PLUGIN:PlayerAdjustMotionBlurs(motionBlurs)
     end
 
     if disease == 'colorblindness' then
-      DrawTexturize(1, Material('pp/texturize/plain.png'))
+      DrawTexturize(1, texturizeMaterial)
     end
 
     if disease == 'slow_deathinjection' or disease == 'fast_deathinjection' then

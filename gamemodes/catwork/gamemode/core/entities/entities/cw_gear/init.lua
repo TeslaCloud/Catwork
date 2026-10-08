@@ -1,8 +1,8 @@
 --- Server side of the `cw_gear` entity, an item's model attached to a player's body, such as a holstered weapon.
 --
--- It is created by `cw.player:CreateGear`. Its think removes the gear when the owner is gone or the item's
--- `GetAttachmentExists` says so, hides it when `GetAttachmentVisible` says so (by default a weapon's gear is hidden
--- while that weapon is held), and recreates it when the item's model changes.
+-- It is created by `cw.player:CreateGear`. Its think, ten times a second, removes the gear when the owner is gone or
+-- the item's `GetAttachmentExists` says so, hides it when `GetAttachmentVisible` says so (by default a weapon's gear is
+-- hidden while that weapon is held), and recreates it when the item's model changes.
 
 include('shared.lua')
 
@@ -80,13 +80,15 @@ end
 function ENT:SetItemTable(gearClass, itemTable)
   self.cwGearClass = gearClass
   self.cwItemTable = itemTable
+  self.cwGearModel = itemTable.attachmentModel or itemTable.model
   self:SetDTInt(0, itemTable.index)
 end
 
 --- Removes or hides the gear as `ENT:GetShouldExist` and `ENT:GetIsVisible` decide, and copies the owner's material.
 --
--- Recreates the gear with `cw.player:CreateGear` when its model changed or the item's `ShouldGearRespawn`
--- says so, and removes it when it must be carried (`ENT:SetMustHave`) but the player lost the item.
+-- Recreates the gear with `cw.player:CreateGear` when the item's model changed since the gear was made or the
+-- item's `ShouldGearRespawn` says so, and removes it when it must be carried (`ENT:SetMustHave`) but the player
+-- lost the item.
 function ENT:Think()
   local player = self:GetPlayer()
 
@@ -96,30 +98,42 @@ function ENT:Think()
     return
   end
 
-  local entityColor = self:GetColor()
+  self:NextThink(CurTime() + 0.1)
 
-  if !self:GetIsVisible(player) then
-    self:SetColor(Color(entityColor.r, entityColor.g, entityColor.b, 0))
-    self:SetNoDraw(true)
-  else
-    self:SetColor(Color(entityColor.r, entityColor.g, entityColor.b, 255))
-    self:SetNoDraw(false)
+  local entityColor = self:GetColor()
+  local bVisible = self:GetIsVisible(player) and true or false
+  local alpha = bVisible and 255 or 0
+
+  if entityColor.a != alpha then
+    self:SetColor(Color(entityColor.r, entityColor.g, entityColor.b, alpha))
   end
 
-  self:SetMaterial(player:GetMaterial())
+  self:SetNoDraw(!bVisible)
 
-  local model = self.cwItemTable.attachmentModel or self.cwItemTable.model
+  local material = player:GetMaterial()
 
-  if self:GetModel() != model or (self.cwItemTable.ShouldGearRespawn
-  and self.cwItemTable:ShouldGearRespawn(self)) then
-    cw.player:CreateGear(
-      player, self.cwGearClass, self.cwItemTable
-    )
+  if self:GetMaterial() != material then
+    self:SetMaterial(material)
   end
 
   if self.cwMustHave and !player:HasItemInstance(self.cwItemTable) then
     cw.player:RemoveGear(
       player, self.cwGearClass
     )
+
+    return true
   end
+
+  -- The model is compared with the one the gear was made for: `GetModel` reports the error model for a missing
+  -- one, which would never match and respawn the gear on every think.
+  local model = self.cwItemTable.attachmentModel or self.cwItemTable.model
+
+  if self.cwGearModel != model or (self.cwItemTable.ShouldGearRespawn
+  and self.cwItemTable:ShouldGearRespawn(self)) then
+    cw.player:CreateGear(
+      player, self.cwGearClass, self.cwItemTable, self.cwMustHave
+    )
+  end
+
+  return true
 end

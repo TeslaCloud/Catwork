@@ -57,9 +57,14 @@ end
 
 --- Subtracts the damage from the radio's health and destroys it when it reaches 0.
 function ENT:OnTakeDamage(damageInfo)
+  -- Several hits can land in the tick the radio breaks, before it is actually removed.
+  if self.destroyed then return end
+
   self:SetHealth(math.max(self:Health() - damageInfo:GetDamage(), 0))
 
   if self:Health() <= 0 then
+    self.destroyed = true
+
     self:Explode() self:Remove()
   end
 end

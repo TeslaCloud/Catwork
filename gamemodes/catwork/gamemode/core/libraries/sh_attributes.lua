@@ -11,8 +11,10 @@ if SERVER then
   --
   -- Progress runs from 0 to 100. Reaching 100 raises the attribute by one point with
   -- `Player:UpdateAttribute` and carries the remainder over; dropping below 0 lowers it by
-  -- one point. With `gradual`, positive progress shrinks as the attribute nears its maximum.
-  -- Runs the `OnAttributeProgress` hook (via `hook.Run`) before applying the progress.
+  -- one point, or leaves it at no progress when the attribute has no points to lose. With
+  -- `gradual`, positive progress shrinks as the attribute nears its maximum.
+  -- Runs the `OnAttributeProgress` hook (via `hook.Run`) before applying the progress; a number it
+  -- returns replaces the amount.
   --
   -- @param player [Player The player whose attribute progresses]
   -- @param attribute [Any Attribute index, unique ID or name, as accepted by `cw.attribute:FindByID`]
@@ -40,7 +42,7 @@ if SERVER then
         end
       end
 
-      hook.Run('OnAttributeProgress', player, attribute, amount)
+      amount = hook.Run('OnAttributeProgress', player, attribute, amount) or amount
 
       if attributes[attribute] then
         if attributes[attribute].amount == attributeTable.maximum then
@@ -63,16 +65,14 @@ if SERVER then
         if remaining > 0 then
           return player:ProgressAttribute(attribute, remaining)
         end
-      elseif progress < 0 then
+      elseif progress < 0 and attributes[attribute].amount > 0 then
         attributes[attribute].progress = 100
 
         player:UpdateAttribute(attribute, -1)
 
-        if progress < 0 then
-          return player:ProgressAttribute(attribute, progress)
-        end
+        return player:ProgressAttribute(attribute, progress)
       else
-        attributes[attribute].progress = progress
+        attributes[attribute].progress = math.max(progress, 0)
       end
 
       if attributes[attribute].amount == 0 and attributes[attribute].progress == 0 then
@@ -196,8 +196,10 @@ if SERVER then
   --
   -- With an `amount`, the boost is added (replacing a boost with the same identifier) and sent to
   -- the client. Without one, the boost named by `identifier` is removed, or every boost of the
-  -- attribute when `identifier` is also `nil`. If the attribute cannot be found, all of the
-  -- player's boosts are cleared. Does nothing for invalid or uninitialized players.
+  -- attribute when `identifier` is also `nil`. With a `nil` attribute and no `amount`, the boost
+  -- named by `identifier` is removed from every attribute, or all of the player's boosts are
+  -- cleared when `identifier` is `nil` too. Does nothing for an attribute that cannot be found,
+  -- or for invalid or uninitialized players.
   --
   -- ```
   -- local id = cw.attributes:Boost(player, 'drunk', ATB_STRENGTH, -10, 120)
@@ -210,7 +212,8 @@ if SERVER then
   -- @param attribute [Any Attribute index, unique ID or name]
   -- @param amount=nil [Number Points to add while the boost lasts, or `nil` to remove boosts]
   -- @param duration=nil [Number How long the boost lasts in seconds, or `nil` for no time limit]
-  -- @return [String The boost identifier when a boost was added, or `true` when boosts were removed]
+  -- @return [String The boost identifier when a boost was added, `true` when boosts were removed, or
+  -- `nil` when nothing was done]
   -- @see cw.attributes:ClearBoosts
   function cw.attributes:Boost(player, identifier, attribute, amount, duration)
     if !IsValid(player) or !player:HasInitialized() then return end
@@ -274,8 +277,22 @@ if SERVER then
 
         return true
       end
-    else
-      self:ClearBoosts(player)
+    elseif attribute == nil and !amount then
+      if !identifier then
+        self:ClearBoosts(player)
+
+        return true
+      end
+
+      for k, v in pairs(player.cwAttrBoosts) do
+        if v[identifier] then
+          v[identifier] = nil
+
+          netstream.Start(player, 'AttrBoostClear', {
+            index = cw.attribute:FindByID(k).index, identifier = identifier
+          })
+        end
+      end
 
       return true
     end
@@ -463,6 +480,17 @@ else
     end
   end
 
+  --- Rebuilds the attributes panel when it is the one shown in the open menu.
+  local function RebuildActivePanel()
+    if cw.menu:GetOpen() then
+      local panel = cw.attributes:GetPanel()
+
+      if panel and cw.menu:GetActivePanel() == panel then
+        panel:Rebuild()
+      end
+    end
+  end
+
   netstream.Hook('AttrBoostClear', function(data)
     local index = nil
     local identifier = nil
@@ -488,13 +516,7 @@ else
       cw.attributes.boosts = {}
     end
 
-    if cw.menu:GetOpen() then
-      local panel = cw.attributes:GetPanel()
-
-      if panel and cw.menu:GetActivePanel() == panel then
-        panel:Rebuild()
-      end
-    end
+    RebuildActivePanel()
   end)
 
   netstream.Hook('AttrBoost', function(data)
@@ -528,13 +550,7 @@ else
         }
       end
 
-      if cw.menu:GetOpen() then
-        local panel = cw.attributes:GetPanel()
-
-        if panel and cw.menu:GetActivePanel() == panel then
-          panel:Rebuild()
-        end
-      end
+      RebuildActivePanel()
     end
   end)
 
@@ -574,12 +590,6 @@ else
     cw.attributes.stored = {}
     cw.attributes.boosts = {}
 
-    if cw.menu:GetOpen() then
-      local panel = cw.attributes:GetPanel()
-
-      if panel and cw.menu:GetActivePanel() == panel then
-        panel:Rebuild()
-      end
-    end
+    RebuildActivePanel()
   end)
 end

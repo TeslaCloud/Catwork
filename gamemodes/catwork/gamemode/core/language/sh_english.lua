@@ -137,6 +137,7 @@ lang['#StoragePlayerNoInstance'] = 'You do not have an instance of this item!'
 
 -- Class Error Messages
 lang['#ClassNoAccess'] = 'This player does not have access to this class!'
+lang['#ClassNoAccessSelf'] = 'You do not have access to this class!'
 lang['#ClassTooMany'] = 'There are too many characters with this class!'
 lang['#ClassNotValid'] = 'This is not a valid class!'
 lang['#ClassSetTarget'] = 'Your class was set to #1 by #2.'
@@ -1051,6 +1052,7 @@ lang['#Command_CannotTakeAdminFlags'] = "You cannot take 'o', 'a' or 's' flags!"
 lang['#Command_NotValidFaction'] = '#1 is not a valid faction!'
 lang['#Command_NotValidCommandOrAlias'] = '#1 is not a valid command or alias!'
 lang['#Command_MustEnterPermission'] = 'You must enter the name of the permission!'
+lang['#Command_TextTooLong'] = 'This text cannot be longer than #1 characters!'
 lang['#Command_Whitelist_NoWhitelist'] = '#1 does not have a whitelist!'
 
 -- core-server: commands (core/commands)

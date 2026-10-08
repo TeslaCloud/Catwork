@@ -23,9 +23,10 @@ ITEM.description = '#Item_UnionLight_Description'
 -- @return [Boolean `false` when the spot is too far away]
 function ITEM:OnUse(player, itemEntity)
   local trace = player:GetEyeTraceNoCursor()
-  local entity = ents.Create('cw_unionlight')
 
   if trace.HitPos:Distance(player:GetShootPos()) <= 192 then
+    local entity = ents.Create('cw_unionlight')
+
     cw.player:GiveProperty(player, entity)
 
     entity:SetModel(self.model)

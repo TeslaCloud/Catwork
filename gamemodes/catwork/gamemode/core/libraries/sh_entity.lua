@@ -37,13 +37,13 @@ if CLIENT then
       end
     end
 
-    local attachment = weapon:GetAttachment(attachment or 1)
+    local attachmentData = weapon:GetAttachment(attachment or 1)
 
-    if !attachment then
+    if !attachmentData then
       return origin, angle
     end
 
-    return attachment.Pos, attachment.Ang
+    return attachmentData.Pos, attachmentData.Ang
   end
 else
   --- Returns the doors that existed on the map when the server started.
@@ -159,6 +159,37 @@ function cw.entity:GetPelvisPosition(entity)
   return position
 end
 
+local SIGHT_MASK =
+  CONTENTS_SOLID + CONTENTS_MOVEABLE + CONTENTS_OPAQUE + CONTENTS_DEBRIS + CONTENTS_HITBOX + CONTENTS_MONSTER
+
+--- Traces from the centre of an entity to a position and returns whether enough of the trace is clear.
+-- @param entity [Entity The entity looking]
+-- @param position [Vector The position to look at]
+-- @param filter [List<Entity> Entities the trace ignores; `tIgnoreEnts` is added to it]
+-- @param iAllowance=0.75 [Number Fraction of the trace that must be clear, from `0` to `1`]
+-- @param tIgnoreEnts=nil [List<Entity> Extra entities the trace ignores; any other non-`nil` value ignores them all]
+-- @return [Boolean `true` when visible, `nil` otherwise]
+local function IsPositionInSight(entity, position, filter, iAllowance, tIgnoreEnts)
+  if tIgnoreEnts then
+    if type(tIgnoreEnts) == 'table' then
+      table.Add(filter, tIgnoreEnts)
+    else
+      table.Add(filter, ents.GetAll())
+    end
+  end
+
+  local trace = util.TraceLine({
+    mask = SIGHT_MASK,
+    start = entity:LocalToWorld(entity:OBBCenter()),
+    endpos = position,
+    filter = filter
+  })
+
+  if trace.Fraction >= (iAllowance or 0.75) then
+    return true
+  end
+end
+
 --- Returns whether a position is visible from the centre of an entity.
 --
 -- Traces against solid, opaque and moveable contents, hitboxes and monsters, and counts the
@@ -169,27 +200,7 @@ end
 -- @param tIgnoreEnts=nil [List<Entity> Extra entities the trace ignores; any other non-`nil` value ignores them all]
 -- @return [Boolean `true` when visible, `nil` otherwise]
 function cw.entity:CanSeePosition(entity, position, iAllowance, tIgnoreEnts)
-  local trace = {}
-
-  trace.mask =
-    CONTENTS_SOLID + CONTENTS_MOVEABLE + CONTENTS_OPAQUE + CONTENTS_DEBRIS + CONTENTS_HITBOX + CONTENTS_MONSTER
-  trace.start = entity:LocalToWorld(entity:OBBCenter())
-  trace.endpos = position
-  trace.filter = { entity }
-
-  if tIgnoreEnts then
-    if type(tIgnoreEnts) == 'table' then
-      table.Add(trace.filter, tIgnoreEnts)
-    else
-      table.Add(trace.filter, ents.GetAll())
-    end
-  end
-
-  trace = util.TraceLine(trace)
-
-  if trace.Fraction >= (iAllowance or 0.75) then
-    return true
-  end
+  return IsPositionInSight(entity, position, { entity }, iAllowance, tIgnoreEnts)
 end
 
 --- Returns whether an NPC's shoot position is visible from the centre of an entity.
@@ -200,27 +211,7 @@ end
 -- @return [Boolean `true` when visible, `nil` otherwise]
 -- @see cw.entity:CanSeePosition
 function cw.entity:CanSeeNPC(entity, target, iAllowance, tIgnoreEnts)
-  local trace = {}
-
-  trace.mask =
-    CONTENTS_SOLID + CONTENTS_MOVEABLE + CONTENTS_OPAQUE + CONTENTS_DEBRIS + CONTENTS_HITBOX + CONTENTS_MONSTER
-  trace.start = entity:LocalToWorld(entity:OBBCenter())
-  trace.endpos = target:GetShootPos()
-  trace.filter = { entity, target }
-
-  if tIgnoreEnts then
-    if type(tIgnoreEnts) == 'table' then
-      table.Add(trace.filter, tIgnoreEnts)
-    else
-      table.Add(trace.filter, ents.GetAll())
-    end
-  end
-
-  trace = util.TraceLine(trace)
-
-  if trace.Fraction >= (iAllowance or 0.75) then
-    return true
-  end
+  return IsPositionInSight(entity, target:GetShootPos(), { entity, target }, iAllowance, tIgnoreEnts)
 end
 
 --- Returns whether a player and an entity can see each other.
@@ -236,29 +227,9 @@ end
 function cw.entity:CanSeePlayer(entity, target, iAllowance, tIgnoreEnts)
   if target:GetEyeTraceNoCursor().Entity == entity then
     return true
-  else
-    local trace = {}
-
-    trace.mask =
-      CONTENTS_SOLID + CONTENTS_MOVEABLE + CONTENTS_OPAQUE + CONTENTS_DEBRIS + CONTENTS_HITBOX + CONTENTS_MONSTER
-    trace.start = entity:LocalToWorld(entity:OBBCenter())
-    trace.endpos = target:GetShootPos()
-    trace.filter = { entity, target }
-
-    if tIgnoreEnts then
-      if type(tIgnoreEnts) == 'table' then
-        table.Add(trace.filter, tIgnoreEnts)
-      else
-        table.Add(trace.filter, ents.GetAll())
-      end
-    end
-
-    trace = util.TraceLine(trace)
-
-    if trace.Fraction >= (iAllowance or 0.75) then
-      return true
-    end
   end
+
+  return IsPositionInSight(entity, target:GetShootPos(), { entity, target }, iAllowance, tIgnoreEnts)
 end
 
 --- Returns whether the centre of an entity is visible from the centre of another.
@@ -269,26 +240,9 @@ end
 -- @return [Boolean `true` when visible, `nil` otherwise]
 -- @see cw.entity:CanSeePosition
 function cw.entity:CanSeeEntity(entity, target, iAllowance, tIgnoreEnts)
-  local trace = {}
-  trace.mask =
-    CONTENTS_SOLID + CONTENTS_MOVEABLE + CONTENTS_OPAQUE + CONTENTS_DEBRIS + CONTENTS_HITBOX + CONTENTS_MONSTER
-  trace.start = entity:LocalToWorld(entity:OBBCenter())
-  trace.endpos = target:LocalToWorld(target:OBBCenter())
-  trace.filter = { entity, target }
-
-  if tIgnoreEnts then
-    if type(tIgnoreEnts) == 'table' then
-      table.Add(trace.filter, tIgnoreEnts)
-    else
-      table.Add(trace.filter, ents.GetAll())
-    end
-  end
-
-  trace = util.TraceLine(trace)
-
-  if trace.Fraction >= (iAllowance or 0.75) then
-    return true
-  end
+  return IsPositionInSight(
+    entity, target:LocalToWorld(target:OBBCenter()), { entity, target }, iAllowance, tIgnoreEnts
+  )
 end
 
 --- Returns whether a door cannot be bought.
@@ -468,10 +422,14 @@ if CLIENT then
     end
 
     if IsValid(data.entity) then
-      data.entity.cwFetchedItemData = true
-      data.entity.cwItemTable = item.CreateInstance(
+      local itemTable = item.CreateInstance(
         data.definition.index, data.definition.itemID, data.definition.data
       )
+
+      if itemTable then
+        data.entity.cwFetchedItemData = true
+        data.entity.cwItemTable = itemTable
+      end
     end
   end)
 else
@@ -482,7 +440,7 @@ else
       entity = ents.GetByIndex(data)
     end
 
-    if !IsValid(entity) then return end
+    if !isentity(entity) or !IsValid(entity) then return end
 
     --[[
       Find out what the entity's item table is
@@ -579,8 +537,7 @@ else
   --
   -- The door is unlocked and made invisible and non-solid, its Combine lock explodes and its breach
   -- entity is breached. The prop is pushed away from the attacker, or by `force` when there is no
-  -- attacker. The timer meant to restore the door after five minutes checks an undefined `door`
-  -- variable, so the door is never restored.
+  -- attacker. The door is restored after five minutes.
   -- @param entity [Entity The door]
   -- @param force=nil [Vector Force applied to the prop]
   -- @param attacker=nil [Entity The entity that blasted the door]
@@ -613,7 +570,7 @@ else
     cw.entity:Decay(fakeDoor, 300)
 
     timer.Create('ResetDoor'..entity:EntIndex(), 300, 1, function()
-      if IsValid(door) then
+      if IsValid(entity) then
         entity.cwIsBustedDown = nil
         entity:SetNotSolid(false)
         entity:DrawShadow(true)
@@ -648,6 +605,42 @@ end
 -- @return [Boolean Whether the door's save table says it is locked]
 function cw.entity:IsDoorLocked(entity)
   return (entity:GetSaveTable().m_bLocked == true)
+end
+
+--- Lowers an entity's alpha once a second and removes the entity when it reaches zero.
+-- @param entity [Entity The entity]
+-- @param seconds [Number Roughly how many seconds the fade takes]
+-- @param Callback=nil [Function Called just before the entity is removed]
+local function FadeAndRemove(entity, seconds, Callback)
+  local color = entity:GetColor()
+  local subtract = math.ceil(color.a / seconds)
+  local alpha = color.a
+
+  if !entity.cwIsDecaying then
+    entity.cwIsDecaying = tostring({})
+  end
+
+  local index = entity.cwIsDecaying
+
+  timer.Create('Decay'..index, 1, 0, function()
+    alpha = alpha - subtract
+
+    if IsValid(entity) then
+      local color = entity:GetColor()
+      local decayed = math.Clamp(math.ceil(alpha), 0, 255)
+
+      if color.a <= 0 then
+        if Callback then Callback() end
+
+        entity:Remove()
+        timer.Remove('Decay'..index)
+      else
+        entity:SetColor(Color(color.r, color.g, color.b, decayed))
+      end
+    else
+      timer.Remove('Decay'..index)
+    end
+  end)
 end
 
 if SERVER then
@@ -799,6 +792,8 @@ if SERVER then
   end
 
   --- Spawns every item of an inventory and an amount of cash at a position.
+  --
+  -- The items are removed from the inventory table as they are dropped.
   -- @param inventory [Inventory The items to drop]
   -- @param cash [Number Amount of cash to drop; none when `nil` or not positive]
   -- @param position [Vector Where to drop them]
@@ -807,6 +802,9 @@ if SERVER then
     if !cw.inventory:IsEmpty(inventory) then
       for k, v in pairs(inventory) do
         for k2, v2 in pairs(v) do
+          -- Whatever still points at this inventory, such as an open storage, must not hand the item out too.
+          v[k2] = nil
+
           local itemEntity = self:CreateItem(nil, v2, position)
 
           if IsValid(itemEntity) and IsValid(entity) then
@@ -855,12 +853,12 @@ if SERVER then
     if IsValid(ragdoll) then
       local headIndex = ragdoll:LookupBone('ValveBiped.Bip01_Head1')
 
-      for i = 1, ragdoll:GetPhysicsObjectCount() do
+      for i = 0, ragdoll:GetPhysicsObjectCount() - 1 do
         local physicsObject = ragdoll:GetPhysicsObjectNum(i)
         local boneIndex = ragdoll:TranslatePhysBoneToBone(i)
         local position, angle = entity:GetBonePosition(boneIndex)
 
-        if IsValid(physicsObject) then
+        if IsValid(physicsObject) and position and angle then
           physicsObject:SetPos(position)
           physicsObject:SetAngles(angle)
 
@@ -1114,29 +1112,28 @@ if SERVER then
         end
 
         if self:IsChairEntity(entity) then
-          local entityModel = string.lower(entity:GetModel())
-          local vehicles = list.Get('Vehicles')
-          -- local k2, v2
+          entityModel = string.lower(entity:GetModel())
 
-          for k, v in pairs(vehicles) do
-            local keyValues = v.KeyValues
-            local members = v.Members
+          for k, v in pairs(list.Get('Vehicles')) do
             local model = v.Model
             local class = v.Class
 
-            if string.lower(class) == targetFaction then
-              if string.lower(model) == entityModel then
-                for k2, v2 in pairs(keyValues) do
+            if class and model and string.lower(class) == targetFaction
+            and string.lower(model) == entityModel then
+              if v.KeyValues then
+                for k2, v2 in pairs(v.KeyValues) do
                   entity:SetKeyValue(k2, v2)
                 end
-
-                entity.VehicleTable = v
-                entity.ClassOverride = class
-
-                table.Merge(entity, members)
-
-                return true
               end
+
+              entity.VehicleTable = v
+              entity.ClassOverride = class
+
+              if v.Members then
+                table.Merge(entity, v.Members)
+              end
+
+              return true
             end
           end
         end
@@ -1204,13 +1201,7 @@ if SERVER then
   -- @param entity [Entity The entity]
   -- @param isMapEntity [Boolean Whether it is a map entity]
   function cw.entity:SetMapEntity(entity, isMapEntity)
-    local entIndex = entity:EntIndex()
-
-    if isMapEntity then
-      cw.Entities[entity] = true
-    else
-      cw.Entities[entity] = false
-    end
+    cw.Entities[entity] = isMapEntity and true or false
   end
 
   --- Returns whether an entity was created by the map.
@@ -1239,7 +1230,7 @@ if SERVER then
   function cw.entity:Disintegrate(entity, delay, velocity, Callback)
     if velocity then
       if entity:GetClass() == 'prop_ragdoll' then
-        for i = 1, entity:GetPhysicsObjectCount() do
+        for i = 0, entity:GetPhysicsObjectCount() - 1 do
           local physicsObject = entity:GetPhysicsObjectNum(i)
 
           if IsValid(physicsObject) then
@@ -1259,7 +1250,7 @@ if SERVER then
           entity:SetNotSolid(true)
 
           if entity:GetClass() == 'prop_ragdoll' then
-            for i = 1, entity:GetPhysicsObjectCount() do
+            for i = 0, entity:GetPhysicsObjectCount() - 1 do
               local physicsObject = entity:GetPhysicsObjectNum(i)
 
               if IsValid(physicsObject) then
@@ -1275,7 +1266,7 @@ if SERVER then
       entity:SetNotSolid(true)
 
       if entity:GetClass() == 'prop_ragdoll' then
-        for i = 1, entity:GetPhysicsObjectCount() do
+        for i = 0, entity:GetPhysicsObjectCount() - 1 do
           local physicsObject = entity:GetPhysicsObjectNum(i)
 
           if IsValid(physicsObject) then
@@ -1315,42 +1306,15 @@ if SERVER then
   -- @param seconds [Number Roughly how many seconds the fade takes]
   -- @param Callback=nil [Function Called just before the entity is removed]
   function cw.entity:Decay(entity, seconds, Callback)
-    local color = entity:GetColor()
-    local subtract = math.ceil(color.a / seconds)
-    local index = tostring({})
-    local alpha = color.a
-
-    if !entity.cwIsDecaying then
-      entity.cwIsDecaying = index
-    end
-
     self:SetPlayer(entity, NULL)
-    index = entity.cwIsDecaying
 
-    timer.Create('Decay'..index, 1, 0, function()
-      alpha = alpha - subtract
-
-      if IsValid(entity) then
-        local color = entity:GetColor()
-        local decayed = math.Clamp(math.ceil(alpha), 0, 255)
-
-        if color.a <= 0 then
-          if Callback then Callback() end
-
-          entity:Remove()
-          timer.Remove('Decay'..index)
-        else
-          entity:SetColor(Color(color.r, color.g, color.b, decayed))
-        end
-      else
-        timer.Remove('Decay'..index)
-      end
-    end)
+    FadeAndRemove(entity, seconds, Callback)
   end
 
   --- Spawns a `cw_cash` entity.
   --
-  -- Does nothing when cash is disabled in the config.
+  -- Does nothing when cash is disabled in the config, or when the amount is not a finite number that
+  -- rounds to at least one.
   --
   -- The owner is either a player or, for offline owners, a table with a character `key` and the
   -- player's `uniqueID`.
@@ -1358,8 +1322,14 @@ if SERVER then
   -- @param cash [Number Amount of cash, rounded]
   -- @param position [Vector Where to spawn it]
   -- @param angles=nil [Angle Angles of the entity]
-  -- @return [Entity The cash entity, or `nil` when cash is disabled or it failed to spawn]
+  -- @return [Entity The cash entity, or `nil` when cash is disabled, the amount is invalid or it failed to spawn]
   function cw.entity:CreateCash(ownerObj, cash, position, angles)
+    if !isnumber(cash) or cash != cash or cash == math.huge then return end
+
+    cash = math.Round(cash)
+
+    if cash < 1 then return end
+
     if config.Get('cash_enabled'):Get() then
       local entity = ents.Create('cw_cash')
 
@@ -1380,7 +1350,7 @@ if SERVER then
       entity:Spawn()
 
       if IsValid(entity) then
-        entity:SetAmount(math.Round(cash))
+        entity:SetAmount(cash)
 
         return entity
       end
@@ -1430,20 +1400,24 @@ if SERVER then
   -- @param itemTable [Item The item instance or definition, or a unique ID string]
   -- @param position [Vector Where to spawn it]
   -- @param angles=nil [Angle Angles of the entity]
-  -- @return [Entity The item entity, or `nil` when `itemTable` is `nil`]
+  -- @return [Entity The item entity, or `nil` when `itemTable` is `nil` or not an existing item]
   function cw.entity:CreateItem(ownerObj, itemTable, position, angles)
     if itemTable == nil then return end
 
     item.Validate(itemTable)
 
+    if isstring(itemTable) then
+      itemTable = item.CreateInstance(itemTable)
+    elseif !itemTable:IsInstance() then
+      itemTable = item.CreateInstance(itemTable.uniqueID)
+    end
+
+    if !itemTable then return end
+
     local entity = ents.Create('cw_item')
 
     if !angles then
       angles = Angle(0, 0, 0)
-    end
-
-    if isstring(itemTable) then
-      itemTable = item.CreateInstance(itemTable)
     end
 
     if type(ownerObj) == 'table' then
@@ -1452,10 +1426,6 @@ if SERVER then
       end
     elseif IsValid(ownerObj) and ownerObj:IsPlayer() then
       cw.player:GiveProperty(ownerObj, entity)
-    end
-
-    if !itemTable:IsInstance() then
-      itemTable = item.CreateInstance(itemTable.uniqueID)
     end
 
     entity:SetItemTable(itemTable)
@@ -1574,36 +1544,7 @@ else
   -- @param seconds [Number Roughly how many seconds the fade takes]
   -- @param Callback=nil [Function Called just before the entity is removed]
   function cw.entity:Decay(entity, seconds, Callback)
-    local color = entity:GetColor()
-    local subtract = math.ceil(color.a / seconds)
-    local index = tostring({})
-    local alpha = color.a
-
-    if !entity.cwIsDecaying then
-      entity.cwIsDecaying = index
-    end
-
-    index = entity.cwIsDecaying
-
-    timer.Create('Decay'..index, 1, 0, function()
-      alpha = alpha - subtract
-
-      if IsValid(entity) then
-        local color = entity:GetColor()
-        local decayed = math.Clamp(math.ceil(alpha), 0, 255)
-
-        if color.a <= 0 then
-          if Callback then Callback() end
-
-          entity:Remove()
-          timer.Remove('Decay'..index)
-        else
-          entity:SetColor(Color(color.r, color.g, color.b, decayed))
-        end
-      else
-        timer.Remove('Decay'..index)
-      end
-    end)
+    FadeAndRemove(entity, seconds, Callback)
   end
 
   --[[
@@ -1615,8 +1556,7 @@ else
   --- Calculates where to draw the text on both faces of a door.
   --
   -- Traces onto the door's thinnest side, and retries from the other side when the trace hits the
-  -- world. The body checks an undefined `reverse` variable instead of `reversed`, so the retry
-  -- traces from the same side.
+  -- world.
   -- @param door [Entity The door]
   -- @param reversed=nil [Boolean Whether this is the retry from the other side]
   -- @return [Map The `position`, `angles`, `positionBack`, `anglesBack`, `width` and `hitWorld` of the text]
@@ -1627,11 +1567,11 @@ else
     local obbMins = door:OBBMins()
 
     traceData.endpos = door:LocalToWorld(obbCenter)
-    traceData.filter = ents.FindInSphere(traceData.endpos, 20)
+    traceData.filter = {}
 
-    for k, v in pairs(traceData.filter) do
-      if v == door then
-        traceData.filter[k] = nil
+    for k, v in ipairs(ents.FindInSphere(traceData.endpos, 20)) do
+      if v != door then
+        traceData.filter[#traceData.filter + 1] = v
       end
     end
 
@@ -1647,7 +1587,7 @@ else
       length = size.z
       width = size.y
 
-      if reverse then
+      if reversed then
         traceData.start = traceData.endpos - (door:GetUp() * length)
       else
         traceData.start = traceData.endpos + (door:GetUp() * length)
@@ -1656,16 +1596,16 @@ else
       length = size.x
       width = size.y
 
-      if reverse then
+      if reversed then
         traceData.start = traceData.endpos - (door:GetForward() * length)
       else
         traceData.start = traceData.endpos + (door:GetForward() * length)
       end
-    elseif size.y < size.x then
+    else
       length = size.y
       width = size.x
 
-      if reverse then
+      if reversed then
         traceData.start = traceData.endpos - (door:GetRight() * length)
       else
         traceData.start = traceData.endpos + (door:GetRight() * length)

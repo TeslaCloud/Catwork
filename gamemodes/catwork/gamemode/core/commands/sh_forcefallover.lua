@@ -17,9 +17,9 @@ function COMMAND:OnRun(player, arguments)
   if target then
     local seconds = tonumber(arguments[2])
 
-    if seconds then
+    if seconds and seconds == seconds then
       seconds = math.Clamp(seconds, 2, 30)
-    elseif seconds == 0 then
+    else
       seconds = nil
     end
 

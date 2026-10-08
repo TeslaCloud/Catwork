@@ -32,11 +32,7 @@ function cw.flag:Add(flag, name, details)
       htmlCode = string.Replace(htmlCode, '[details]', cw.lang:TranslateText(details or ''))
 
       if cw.player:HasFlags(cw.client, sortData) then
-        return cw.core:Replace(
-          cw.core:Replace(htmlCode, [[<font color="red">]], [[<font color="green">]]),
-          '</font>',
-          '</font>'
-        )
+        return cw.core:Replace(htmlCode, [[<font color="red">]], [[<font color="green">]])
       else
         return htmlCode
       end

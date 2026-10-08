@@ -13,7 +13,7 @@ function cwSaveItems:LoadShipments()
   local shipments = cw.core:RestoreSchemaData('plugins/shipments/'..game.GetMap())
 
   for k, v in pairs(shipments) do
-    if item.GetStored()[v.item] then
+    if istable(v) and isvector(v.position) and item.GetStored()[v.item] then
       local entity = cw.entity:CreateShipment(
         { key = v.key, uniqueID = v.uniqueID }, v.item, v.amount, v.position, v.angles
       )
@@ -32,28 +32,32 @@ end
 --- Saves every `cw_shipment` entity on the map to the schema data.
 --
 -- Stores the item, the number of items left, position, angles, whether it can move, and the `key` and
--- `uniqueID` properties.
+-- `uniqueID` properties. Shipments without an item table or inventory are skipped.
 function cwSaveItems:SaveShipments()
   local shipments = {}
 
   for k, v in pairs(ents.FindByClass('cw_shipment')) do
     local physicsObject = v:GetPhysicsObject()
     local itemTable = v:GetItemTable()
+    local itemsList = itemTable and v.cwInventory and v.cwInventory[itemTable.uniqueID]
     local bMoveable = nil
 
     if IsValid(physicsObject) then
       bMoveable = physicsObject:IsMoveable()
     end
 
-    shipments[#shipments + 1] = {
-      key = cw.entity:QueryProperty(v, 'key'),
-      item = itemTable.uniqueID,
-      angles = v:GetAngles(),
-      amount = table.Count(v.cwInventory[itemTable.uniqueID]),
-      uniqueID = cw.entity:QueryProperty(v, 'uniqueID'),
-      position = v:GetPos(),
-      isMoveable = bMoveable
-    }
+    -- One shipment without its item or inventory must not stop the others from being saved.
+    if itemsList then
+      shipments[#shipments + 1] = {
+        key = cw.entity:QueryProperty(v, 'key'),
+        item = itemTable.uniqueID,
+        angles = v:GetAngles(),
+        amount = table.Count(itemsList),
+        uniqueID = cw.entity:QueryProperty(v, 'uniqueID'),
+        position = v:GetPos(),
+        isMoveable = bMoveable
+      }
+    end
   end
 
   cw.core:SaveSchemaData('plugins/shipments/'..game.GetMap(), shipments)
@@ -67,7 +71,7 @@ function cwSaveItems:LoadItems()
   local items = cw.core:RestoreSchemaData('plugins/items/'..game.GetMap())
 
   for k, v in pairs(items) do
-    local itemTable = item.CreateInstance(v.item, v.itemID, v.data)
+    local itemTable = istable(v) and isvector(v.position) and item.CreateInstance(v.item, v.itemID, v.data)
 
     if itemTable then
       local entity = cw.entity:CreateItem(

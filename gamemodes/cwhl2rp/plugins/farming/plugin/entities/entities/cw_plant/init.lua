@@ -19,31 +19,36 @@ function ENT:Initialize()
   self:SetSolid(SOLID_VPHYSICS)
   self:SetCollisionGroup(COLLISION_GROUP_WORLD)
 
-  local phys = self:GetPhysicsObject()
+  local physObj = self:GetPhysicsObject()
 
   if IsValid(physObj) then
     physObj:EnableMotion(false)
     physObj:Sleep()
-    -- physObj:SetMass(500)
   end
 end
 
---- Scales the plant up from a quarter of its size as it grows.
+--- Scales the plant up from a quarter of its size as it grows, checking every five seconds.
 function ENT:Think()
-  if self:GetSpawnTime() and self:GetGrowTime() and self:GetGrowTime() > CurTime() then
-    local GrowthPercent = (CurTime() - self:GetSpawnTime()) / (self:GetGrowTime() - self:GetSpawnTime())
+  local curTime = CurTime()
+  local spawnTime = self:GetSpawnTime()
+  local growTime = self:GetGrowTime()
 
-    if GrowthPercent <= 1 then
-      self:SetModelScale(math.max(1 * GrowthPercent, 0.25))
-    end
+  if growTime > curTime and growTime > spawnTime then
+    self:SetModelScale(math.Clamp((curTime - spawnTime) / (growTime - spawnTime), 0.25, 1))
+  elseif self:GetModelScale() != 1 then
+    self:SetModelScale(1)
   end
+
+  self:NextThink(curTime + 5)
+
+  return true
 end
 
 --- Destroys the plant when a player damages it.
 function ENT:OnTakeDamage(dmg)
-  local player = dmg:GetAttacker()
+  local attacker = dmg:GetAttacker()
 
-  if player:IsPlayer() then self:Remove() end
+  if IsValid(attacker) and attacker:IsPlayer() then self:Remove() end
 end
 
 --- Starts harvesting the ripe plant for a crouching, untied player.
@@ -52,31 +57,43 @@ end
 -- must stay crouched and near the plant. On success it fires `PlayerHarvest` and removes the
 -- plant.
 function ENT:Use(activator)
+  if !IsValid(activator) or !activator:IsPlayer() then return end
+
   if self:GetGrowTime() <= CurTime() and !self.isGathering then
     if activator:GetNetVar('tied') == 0 and activator:Crouching() then
-      local gathertime = math.random(11, 25) - math.Round(cw.attributes:Fraction(activator, ATB_FARM, 10))
+      local gathertime = math.random(11, 25) - math.Round(cw.attributes:Fraction(activator, ATB_FARM, 10) or 0)
 
       self.isGathering = true
 
-      cw.player:SetAction(activator, 'farming', gathertime)
+      -- Started before the action: it ends the player's previous harvest, which clears that harvest's action.
       cw.player:EntityConditionTimer(activator, self, self, gathertime, 192, function()
         return activator:Alive() and !activator:IsRagdolled() and activator:GetNetVar('tied') == 0 and
           activator:Crouching()
       end,
       function(success)
-        if success then
-          hook.Run('PlayerHarvest', activator, self:GetItem())
+        -- The timer also ends, unsuccessfully, when the plant or the player is gone.
+        if IsValid(self) then
+          if success then
+            local uniqueID = self:GetItem()
 
-          self.isGathering = false
-          activator:EmitSound('physics/body/body_medium_impact_soft'..math.random(1, 7)..'.wav')
-          activator:FakePickup(self)
-          self:Remove()
-        else
-          self.isGathering = false
+            activator:EmitSound('physics/body/body_medium_impact_soft'..math.random(1, 7)..'.wav')
+            activator:FakePickup(self)
+
+            -- The plant stays marked as being gathered, so that it cannot be harvested twice.
+            self:Remove()
+
+            hook.Run('PlayerHarvest', activator, uniqueID)
+          else
+            self.isGathering = false
+          end
         end
 
-        cw.player:SetAction(activator, 'farming', false)
+        if IsValid(activator) then
+          cw.player:SetAction(activator, 'farming', false)
+        end
       end)
+
+      cw.player:SetAction(activator, 'farming', gathertime)
     else
       cw.player:Notify(activator, L('Farming_MustCrouch'))
     end

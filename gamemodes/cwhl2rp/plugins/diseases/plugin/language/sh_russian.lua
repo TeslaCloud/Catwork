@@ -19,6 +19,7 @@ lang['#Command_Charsetdisease_Syntax'] = '<имя> <болезнь>'
 lang['#Diseases_SetByOther'] = '#1 установил вам болезнь: #2.'
 lang['#Diseases_SetOther'] = 'Вы установили игроку #1 болезнь: #2.'
 lang['#Diseases_SetSelf'] = 'Вы установили себе болезнь: #1.'
+lang['#Diseases_InvalidDisease'] = '#1 не является болезнью!'
 
 -- Symptoms
 lang['#Diseases_Emote_PneumoniaCough'] = 'очень сильно кашляет, отхаркивая мокроту из легких.'

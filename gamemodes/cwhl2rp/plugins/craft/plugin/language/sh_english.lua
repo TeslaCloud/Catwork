@@ -32,6 +32,7 @@ lang['#Craft_Error_NoTools'] = 'You do not have the required tools.'
 lang['#Craft_Error_NoAttributes'] = 'You do not have the required skills.'
 lang['#Craft_Error_NoRequirements'] = 'You do not meet the requirements.'
 lang['#Craft_Error_Cooldown'] = 'You cannot craft another item that fast.'
+lang['#Craft_Error_NoStation'] = 'You have to be at the right crafting station.'
 
 lang['#Craft_Category_Alcohol'] = 'Alcohol'
 lang['#Craft_Category_Ammo'] = 'Ammunition'

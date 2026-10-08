@@ -12,22 +12,37 @@ netstream.Hook('RunCommand', function(data)
 end)
 
 netstream.Hook('SharedTables', function(data)
-  cw.SharedTables = data
+  if istable(data) then
+    cw.SharedTables = data
+  end
 end)
 
 netstream.Hook('SetSharedTableVar', function(data)
+  if !istable(data) or data.sharedTable == nil or data.key == nil then return end
+
+  cw.SharedTables = cw.SharedTables or {}
   cw.SharedTables[data.sharedTable] = cw.SharedTables[data.sharedTable] or {}
   cw.SharedTables[data.sharedTable][data.key] = data.value
 end)
 
 netstream.Hook('HiddenCommands', function(data)
-  for k, v in pairs(data) do
-    for k2, v2 in pairs(cw.command:GetAll()) do
-      if cw.core:GetShortCRC(k2) == v then
-        cw.command:SetHidden(k2, true)
+  if !istable(data) then return end
 
-        break
-      end
+  -- The checksum of every command is worked out once, instead of once for each hidden command.
+  local namesByCRC = {}
+
+  for k, v in pairs(cw.command:GetAll()) do
+    local shortCRC = cw.core:GetShortCRC(k)
+
+    namesByCRC[shortCRC] = namesByCRC[shortCRC] or {}
+    table.insert(namesByCRC[shortCRC], k)
+  end
+
+  for k, v in pairs(data) do
+    local names = namesByCRC[v]
+
+    if names and #names > 0 then
+      cw.command:SetHidden(table.remove(names), true)
     end
   end
 end)
@@ -47,17 +62,18 @@ netstream.Hook('CharacterInit', function(data)
 end)
 
 netstream.Hook('Log', function(data)
-  local logType = data.logType
-  local text = data.text
+  if !istable(data) or data.text == nil then return end
 
-  cw.core:PrintColoredText(cw.core:GetLogTypeColor(logType), text)
+  cw.core:PrintColoredText(cw.core:GetLogTypeColor(data.logType), tostring(data.text))
 end)
 
 netstream.Hook('StartSound', function(data)
+  if !istable(data) or data.uniqueID == nil or !isstring(data.sound) then return end
+
   if IsValid(cw.client) then
     local uniqueID = data.uniqueID
     local sound = data.sound
-    local volume = data.volume
+    local volume = tonumber(data.volume) or 1
 
     if !cw.clientSounds then
       cw.clientSounds = {}
@@ -73,8 +89,10 @@ netstream.Hook('StartSound', function(data)
 end)
 
 netstream.Hook('StopSound', function(data)
+  if !istable(data) or data.uniqueID == nil then return end
+
   local uniqueID = data.uniqueID
-  local fadeOut = data.fadeOut
+  local fadeOut = tonumber(data.fadeOut) or 0
 
   if !cw.clientSounds then
     cw.clientSounds = {}
@@ -105,7 +123,9 @@ netstream.Hook('InfoToggle', function(data)
 end)
 
 netstream.Hook('PlaySound', function(data)
-  surface.PlaySound(data)
+  if isstring(data) then
+    surface.PlaySound(data)
+  end
 end)
 
 netstream.Hook('DataStreaming', function(data)
@@ -126,12 +146,11 @@ netstream.Hook('QuizCompleted', function(data)
       cw.quiz.panel:MakePopup()
     end
   else
-    local characterPanel = cw.character:GetPanel()
     local quizPanel = cw.quiz:GetPanel()
 
     cw.quiz:SetCompleted(true)
 
-    if quizPanel then
+    if IsValid(quizPanel) then
       quizPanel:Remove()
     end
   end
@@ -175,32 +194,40 @@ netstream.Hook('ClockworkIntro', function(data)
 
     cw.ClockworkIntroWhiteScreen = curTime + (FrameTime() * 8)
     cw.ClockworkIntroFadeOut = curTime + duration
-    cw.ClockworkIntroSound = CreateSound(cw.client, introSound)
-    cw.ClockworkIntroSound:PlayEx(0.75, 100)
 
-    timer.Simple(duration - 4, function()
-      cw.ClockworkIntroSound:FadeOut(4)
-      cw.ClockworkIntroSound = nil
-    end)
+    if IsValid(cw.client) and isstring(introSound) and introSound != '' then
+      local introSoundPatch = CreateSound(cw.client, introSound)
+
+      cw.ClockworkIntroSound = introSoundPatch
+      introSoundPatch:PlayEx(0.75, 100)
+
+      timer.Simple(duration - 4, function()
+        introSoundPatch:FadeOut(4)
+
+        if cw.ClockworkIntroSound == introSoundPatch then
+          cw.ClockworkIntroSound = nil
+        end
+      end)
+    end
 
     surface.PlaySound('buttons/button1.wav')
   end
 end)
 
 netstream.Hook('SharedVar', function(data)
-  local key = data.key
+  if !istable(data) or data.key == nil then return end
+
   local sharedVars = cw.core:GetSharedVars():Player()
+  local sharedVarData = sharedVars and sharedVars[data.key]
 
-  if sharedVars and sharedVars[key] then
-    local sharedVarData = sharedVars[key]
-
-    if sharedVarData then
-      sharedVarData.value = data.value
-    end
+  if sharedVarData then
+    sharedVarData.value = data.value
   end
 end)
 
 netstream.Hook('HideCommand', function(data)
+  if !istable(data) then return end
+
   local index = data.index
 
   for k, v in pairs(cw.command:GetAll()) do
@@ -214,16 +241,17 @@ end)
 
 netstream.Hook('CfgListVars', function(data)
   cw.client:PrintMessage(2, '######## [Catwork] Config ########\n')
-    local sSearchData = data
+    local sSearchData = nil
     local tConfigRes = {}
 
-    if sSearchData then
-      sSearchData = string.lower(sSearchData)
+    if isstring(data) and data != '' then
+      sSearchData = string.lower(data)
     end
 
     for k, v in pairs(config.GetStored()) do
+      -- The search text is what the player typed, so it is matched as plain text and not as a pattern.
       if type(v.value) != 'table' and (!sSearchData
-      or string.find(string.lower(k), sSearchData)) and !v.isStatic then
+      or string.find(string.lower(k), sSearchData, 1, true)) and !v.isStatic then
         if v.isPrivate then
           tConfigRes[#tConfigRes + 1] = {
             k, string.rep('*', string.utf8len(tostring(v.value)))
@@ -258,8 +286,10 @@ netstream.Hook('ClearRecognisedNames', function(data)
 end)
 
 netstream.Hook('RecognisedName', function(data)
+  if !istable(data) or data.key == nil then return end
+
   local key = data.key
-  local status = data.status
+  local status = tonumber(data.status) or 0
 
   if status > 0 then
     cw.RecognisedNames[key] = status
@@ -269,7 +299,7 @@ netstream.Hook('RecognisedName', function(data)
 end)
 
 netstream.Hook('Hint', function(data)
-  if istable(data) then
+  if istable(data) and isstring(data.text) then
     if data.center then
       cw.core:AddCenterHint(
         cw.core:ParseData(cw.lang:TranslateText(data.text)), data.delay, data.color, data.noSound, data.showDuplicates
@@ -283,6 +313,8 @@ netstream.Hook('Hint', function(data)
 end)
 
 netstream.Hook('WeaponItemData', function(data)
+  if !istable(data) or !isnumber(data.weapon) or !istable(data.definition) then return end
+
   local weapon = Entity(data.weapon)
 
   if IsValid(weapon) then
@@ -293,21 +325,27 @@ netstream.Hook('WeaponItemData', function(data)
 end)
 
 netstream.Hook('CinematicText', function(data)
-  if istable(data) then
+  if istable(data) and data.text != nil then
     cw.core:AddCinematicText(data.text, data.color, data.barLength, data.hangTime)
   end
 end)
 
 netstream.Hook('AddAccessory', function(data)
-  cw.AccessoryData[data.itemID] = data.uniqueID
+  if istable(data) and data.itemID != nil then
+    cw.AccessoryData[data.itemID] = data.uniqueID
+  end
 end)
 
 netstream.Hook('RemoveAccessory', function(data)
-  cw.AccessoryData[data.itemID] = nil
+  if istable(data) and data.itemID != nil then
+    cw.AccessoryData[data.itemID] = nil
+  end
 end)
 
 netstream.Hook('AllAccessories', function(data)
   cw.AccessoryData = {}
+
+  if !istable(data) then return end
 
   for k, v in pairs(data) do
     cw.AccessoryData[k] = v
@@ -315,7 +353,9 @@ netstream.Hook('AllAccessories', function(data)
 end)
 
 netstream.Hook('Notification', function(data)
-  local text = data.text
+  if !istable(data) or data.text == nil then return end
+
+  local text = tostring(data.text)
   local class = data.class
   local sound = 'ambient/water/drip2.wav'
 
@@ -336,8 +376,12 @@ netstream.Hook('Notification', function(data)
   }
 
   if hook.Run('NotificationAdjustInfo', info) then
-    cw.core:AddNotify(info.text, info.class, 10)
+    hook.Run('AddNotify', info.text, info.class, 10)
+
+    if isstring(info.sound) then
       surface.PlaySound(info.sound)
+    end
+
     print(info.text)
   end
 end)

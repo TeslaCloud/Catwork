@@ -12,10 +12,11 @@ COMMAND.alias = { 'Restart' }
 --
 -- The delay defaults to ten seconds.
 function COMMAND:OnRun(player, arguments)
-  local delay = tonumber(arguments[1]) or 10
+  local delay = tonumber(arguments[1])
 
-  if isnumber(arguments[1]) then
-    delay = arguments[1]
+  -- tonumber('nan') is NaN.
+  if !delay or delay != delay or delay < 0 then
+    delay = 10
   end
 
   cw.player:NotifyAll(L('Command_Maprestart_Restarting', player:Name(), delay))

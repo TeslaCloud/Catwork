@@ -1,7 +1,7 @@
 --- Registers the admin command `/CharGetDisease` of the Diseases plugin, which tells the player the disease stored in
 -- the target character's `diseases` character data.
 
-COMMAND = cw.command:New('CharGetDisease')
+local COMMAND = cw.command:New('CharGetDisease')
 COMMAND.tip = '#Command_Chargetdisease_Description'
 COMMAND.text = '#Command_Chargetdisease_Syntax'
 COMMAND.flags = CMD_DEFAULT
@@ -13,7 +13,7 @@ function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
 
   if target then
-    cw.player:Notify(player, target:GetCharacterData('diseases'))
+    cw.player:Notify(player, tostring(target:GetCharacterData('diseases', 'none')))
   else
     cw.player:Notify(player, L('NotValidPlayer', arguments[1]))
   end

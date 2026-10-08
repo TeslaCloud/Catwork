@@ -33,6 +33,8 @@ end
 --- Spawns the monitor from the spawn menu where the player looks, facing out of the surface.
 -- @return [Entity The new monitor]
 function ENT:SpawnFunction(client, trace)
+  if !trace.Hit then return end
+
   local entity = ents.Create(self.ClassName)
   entity:SetPos(trace.HitPos)
   entity:SetAngles(trace.HitNormal:Angle())
@@ -49,29 +51,23 @@ function ENT:TurnOff()
 end
 
 --- Switches the monitor's screen on with a blip for six seconds.
--- @param player [Player The player who activated the monitor]
-function ENT:TurnOn(player)
-  if player:GetCharacterData('cit_cid', 0) then
-    self:SetNetVar('monitor_activated', true)
-    self:EmitSound('buttons/blip1.wav')
-    self.timeGen = CurTime() + 6
-  end
+function ENT:TurnOn()
+  self:SetNetVar('monitor_activated', true)
+  self:EmitSound('buttons/blip1.wav')
+  self.timeGen = CurTime() + 6
 end
 
 --- Switches the monitor off once its six seconds are up, checking once a second.
 function ENT:Think()
   local curTime = CurTime()
 
-  if self:GetNetVar('monitor_activated') then
-    if self.timeGen < curTime then
-      self:TurnOff()
-      self:SetNetVar('users', {})
-    end
-  else
-    self.activator = nil
+  if self:GetNetVar('monitor_activated') and self.timeGen < curTime then
+    self:TurnOff()
   end
 
   self:NextThink(curTime + 1)
+
+  return true
 end
 
 -- (c) [s]AleXXX_007[/s] ИДИ НАХУЙ СУКА СО СВОИМ ГОВНОКОДОМ БЛЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯ
@@ -126,11 +122,11 @@ end
 
 --- Shows a non-Combine player's civil record on the monitor when it is switched off.
 function ENT:Use(player)
-  if !self:GetNetVar('monitor_activated') and !player:IsCombine() then
-    self.activator = player
-    self:TurnOn(player)
-    self:SetPlayer(player)
+  if !IsValid(player) or !player:IsPlayer() then return end
 
-    return
+  if !self:GetNetVar('monitor_activated') and !player:IsCombine() then
+    -- The record goes out first so that clients have it by the time the screen switches on.
+    self:SetPlayer(player)
+    self:TurnOn()
   end
 end

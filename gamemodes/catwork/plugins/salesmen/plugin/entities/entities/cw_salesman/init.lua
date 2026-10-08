@@ -16,6 +16,15 @@ function ENT:Initialize()
   self:PhysicsInit(SOLID_BBOX)
   self:SetMoveType(MOVETYPE_NONE)
   self:SetUseType(SIMPLE_USE)
+
+  -- A salesman sells and buys nothing until the plugin fills these in after spawning it.
+  self.cwCash = -1
+  self.cwStock = {}
+  self.cwBuyTab = {}
+  self.cwSellTab = {}
+  self.cwTextTab = {}
+  self.cwClasses = {}
+  self.cwFactions = {}
 end
 
 --- Sets the salesman's networked name and physical description, starts its animation and optionally
@@ -39,9 +48,11 @@ end
 -- The line is prefixed with the salesman's name unless `text.bHideName` is `true`. A response whose
 -- `text` is an empty string is not shown, but its sound still plays.
 -- @param player [Player The player to talk to]
--- @param text [Map The response, with `text`, `sound` and `bHideName` keys]
+-- @param text [Map The response, with `text`, `sound` and `bHideName` keys; `nil` says the default line]
 -- @param default [String Line to say when the response has no `text`]
 function ENT:TalkToPlayer(player, text, default)
+  text = text or {}
+
   local sayString = text.text or default
 
   if text.bHideName != true then
@@ -70,6 +81,9 @@ end
 --- Spawns a `cw_chatbubble` entity parented to the salesman, 90 units above it.
 function ENT:MakeChatBubble()
   self.cwChatBubble = ents.Create('cw_chatbubble')
+
+  if !IsValid(self.cwChatBubble) then return end
+
   self.cwChatBubble:SetParent(self)
   self.cwChatBubble:SetPos(self:GetPos() + Vector(0, 0, 90))
   self.cwChatBubble:SetNWEntity('salesman', self)

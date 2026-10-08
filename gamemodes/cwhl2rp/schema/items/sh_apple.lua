@@ -15,7 +15,7 @@ ITEM.thirst = 10
 
 --- Boosts strength and endurance by 1 for two minutes.
 function ITEM:OnUse(player, itemEntity)
-  player:BoostAttribute(self.name, ATB_STRENGHT, 1, 120)
+  player:BoostAttribute(self.name, ATB_STRENGTH, 1, 120)
   player:BoostAttribute(self.name, ATB_ENDURANCE, 1, 120)
 end
 

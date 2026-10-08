@@ -70,10 +70,14 @@ function cwStorage:EntityBreached(entity, activator)
 end
 
 --- Called when an entity is removed; drops the container's items and cash on the ground, unless the
--- entity is a belongings bag.
+-- entity is a belongings bag or the server is shutting down.
 -- @param entity [Entity The removed entity]
 function cwStorage:EntityRemoved(entity)
-  if IsValid(entity) and !entity.cwIsBelongings then
+  if !entity.cwInventory and !entity.cwCash then return end
+
+  self.storage[entity] = nil
+
+  if IsValid(entity) and !entity.cwIsBelongings and !cw.core:IsShuttingDown() then
     cw.entity:DropItemsAndCash(entity.cwInventory, entity.cwCash, entity:GetPos(), entity)
     entity.cwInventory = nil
     entity.cwCash = nil

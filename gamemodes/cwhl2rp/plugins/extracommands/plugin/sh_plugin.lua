@@ -5,6 +5,22 @@
 -- `/CharSetSkin`, and `PlayerUnragdolled` restores the bodygroups when the player gets up from a ragdoll.
 
 if SERVER then
+  --- Applies the bodygroups saved in a character's `CustomBodyGroup` data to the player.
+  -- @param player [Player The player to update]
+  local function ApplyCustomBodyGroups(player)
+    local bodyGroups = player:GetCharacterData('CustomBodyGroup')
+
+    if !istable(bodyGroups) then return end
+
+    for k, v in pairs(bodyGroups) do
+      local bodyGroup, value = tonumber(k), tonumber(v)
+
+      if bodyGroup and value then
+        player:SetBodygroup(bodyGroup, value)
+      end
+    end
+  end
+
   --- Called just after a player spawns; reapplies the character's custom bodygroups and skin.
   --
   -- The values come from the `CustomBodyGroup` and `CustomSkin` character data set by the
@@ -14,14 +30,9 @@ if SERVER then
   -- @param changeClass [Boolean Whether the player spawned because their class changed]
   -- @param firstSpawn [Boolean Whether this is the character's first spawn]
   function PLUGIN:PostPlayerSpawn(player, lightSpawn, changeClass, firstSpawn)
-    local bodyGroup = player:GetCharacterData('CustomBodyGroup')
-    local skin = player:GetCharacterData('CustomSkin')
+    local skin = tonumber(player:GetCharacterData('CustomSkin'))
 
-    if istable(bodyGroup) then
-      for k, v in pairs(bodyGroup) do
-        player:SetBodygroup(k, v)
-      end
-    end
+    ApplyCustomBodyGroups(player)
 
     if skin then
       player:SetSkin(skin)
@@ -33,12 +44,6 @@ if SERVER then
   -- @param state [Number The ragdoll state being set, a `RAGDOLL_*` value such as `RAGDOLL_RESET`]
   -- @param ragdollTable [Map The player's ragdoll data]
   function PLUGIN:PlayerUnragdolled(player, state, ragdollTable)
-    local bodyGroup = player:GetCharacterData('CustomBodyGroup')
-
-    if istable(bodyGroup) then
-      for k, v in pairs(bodyGroup) do
-        player:SetBodygroup(k, v)
-      end
-    end
+    ApplyCustomBodyGroups(player)
   end
 end

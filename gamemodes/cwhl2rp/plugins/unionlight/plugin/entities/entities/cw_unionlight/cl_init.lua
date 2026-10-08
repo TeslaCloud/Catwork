@@ -9,7 +9,7 @@ end
 
 --- Draws the light's model.
 function ENT:Draw()
-  self.Entity:DrawModel()
+  self:DrawModel()
 end
 
 --- Keeps a pale blue dynamic light with an 800 unit radius at the light's position.
@@ -17,7 +17,6 @@ function ENT:Think()
   local dlight = DynamicLight(self:EntIndex())
 
   if dlight then
-    local r, g, b, a = self:GetColor()
     dlight.Pos = self:GetPos()
     dlight.r = 125
     dlight.g = 200

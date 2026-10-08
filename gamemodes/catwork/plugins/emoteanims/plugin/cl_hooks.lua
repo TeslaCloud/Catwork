@@ -5,9 +5,11 @@
 -- player for other emotes, using the `StanceAng` and `StanceIdle` net vars.
 
 --- Called to decide whether the local player is drawn; draws them while they are in a stance.
--- @return [Boolean Whether the local player is in a stance]
+-- @return [Boolean `true` while the local player is in a stance, otherwise `nil` to leave it to other hooks]
 function cwEmoteAnims:ShouldDrawLocalPlayer()
-  return self:IsPlayerInStance(cw.client)
+  if self:IsPlayerInStance(cw.client) then
+    return true
+  end
 end
 
 --- Called when a player's animation is updated; renders an emoting player at their stance angles.
@@ -39,7 +41,8 @@ function cwEmoteAnims:CalcViewAdjustTable(view)
     end
 
     if idleStance then
-      local bonePosition = cw.client:GetBonePosition(cw.client:LookupBone(headBone))
+      local bone = cw.client:LookupBone(headBone)
+      local bonePosition = bone and cw.client:GetBonePosition(bone)
 
       if bonePosition then
         position = bonePosition + Vector(0, 0, 8)

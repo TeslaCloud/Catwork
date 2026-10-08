@@ -304,7 +304,7 @@ else
     if cw.limb.stored[hitGroup] then
       cw.limb.stored[hitGroup] = math.max(cw.limb.stored[hitGroup] - amount, 0)
 
-      if cw.limb.stored[hitGroup] == 100 then
+      if cw.limb.stored[hitGroup] == 0 then
         cw.limb.stored[hitGroup] = nil
       end
 

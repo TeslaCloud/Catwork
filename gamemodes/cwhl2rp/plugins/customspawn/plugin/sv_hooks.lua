@@ -7,13 +7,11 @@
 
 --- Called when the spawn saver wants to store where a player left; skipped for characters with a custom spawn.
 -- @param player [Player The player whose position would be saved]
--- @return [Boolean `false` when the character has a custom spawn, otherwise `true`]
+-- @return [Boolean `false` when the character has a custom spawn, otherwise `nil` to let other hooks decide]
 function cwCustomSpawn:ShouldSavePlayerSpawn(player)
   if player:GetCharacterData('CustomSpawn') then
     return false
   end
-
-  return true
 end
 
 --- Called just after a player spawns; moves the player to their character's custom spawn point.
@@ -25,17 +23,19 @@ end
 -- @param bChangeClass [Boolean Whether the player spawned because their class changed]
 -- @param bFirstSpawn [Boolean Whether this is the character's first spawn]
 function cwCustomSpawn:PostPlayerSpawn(player, bLightSpawn, bChangeClass, bFirstSpawn)
-  if !bLightSpawn then
-    local spawnPos = player:GetCharacterData('CustomSpawn')
+  if bLightSpawn then return end
 
-    if spawnPos then
-      if spawnPos.map == game.GetMap() then
-        player:SetPos(Vector(spawnPos.x, spawnPos.y, spawnPos.z))
+  local spawnPos = player:GetCharacterData('CustomSpawn')
 
-        if spawnPos.angles then
-          player:SetEyeAngles(spawnPos.angles)
-        end
-      end
+  if !istable(spawnPos) or spawnPos.map != game.GetMap() then return end
+
+  local x, y, z = tonumber(spawnPos.x), tonumber(spawnPos.y), tonumber(spawnPos.z)
+
+  if x and y and z then
+    player:SetPos(Vector(x, y, z))
+
+    if isangle(spawnPos.angles) then
+      player:SetEyeAngles(spawnPos.angles)
     end
   end
 end

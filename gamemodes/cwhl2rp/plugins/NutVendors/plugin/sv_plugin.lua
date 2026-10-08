@@ -10,23 +10,24 @@ local PLUGIN = PLUGIN
 --- Spawns the vending machines saved for the current map.
 --
 -- Reads `plugins/nutVend/<map>` from the schema data and restores each machine's position,
--- angles, active state and the stock of its four buttons.
+-- angles, active state and the stock of its four buttons. Entries without a position or angles are skipped.
 -- @see PLUGIN:SaveNuttyVendingMachines
 function PLUGIN:LoadNuttyVendingMachines()
   local nutVend = cw.core:RestoreSchemaData('plugins/nutVend/'..game.GetMap())
 
   for k, v in pairs(nutVend) do
+    if !istable(v) or !isvector(v.pos) or !isangle(v.angles) then continue end
+
     local entity = ents.Create('nut_vend')
     entity:SetPos(v.pos)
     entity:SetAngles(v.angles)
     entity:Spawn()
     entity:Activate()
-    entity:SetDTBool(0, v.active)
-    -- entity:SetSharedVar("stocks", v.stocks)
-    entity:SetDTFloat(1, v.stock1)
-    entity:SetDTFloat(2, v.stock2)
-    entity:SetDTFloat(3, v.stock3)
-    entity:SetDTFloat(4, v.stock4)
+    entity:SetDTBool(0, v.active != false)
+    entity:SetDTFloat(1, tonumber(v.stock1) or 0)
+    entity:SetDTFloat(2, tonumber(v.stock2) or 0)
+    entity:SetDTFloat(3, tonumber(v.stock3) or 0)
+    entity:SetDTFloat(4, tonumber(v.stock4) or 0)
   end
 end
 

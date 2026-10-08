@@ -3,28 +3,13 @@
 --
 -- The screen is rendered to a per-entity render target with a scrolling scanline material, for players within 1000
 -- units. It shows a waiting message while the monitor is off and the civil record from the `userData` net var while it
--- is on; an anti-citizen gets a flashing `ERROR` screen with random binary instead. Also creates the `_CMB_FONT_1`,
--- `_CMB_FONT_2`, `_CMB_FONT_4` and `_CMB_FONT_5` fonts.
+-- is on; an anti-citizen gets a flashing `ERROR` screen with random binary instead. Also creates the
+-- `_CMB_CHECK_FONT_1`, `_CMB_CHECK_FONT_2`, `_CMB_CHECK_FONT_4` and `_CMB_CHECK_FONT_5` fonts, named apart from the
+-- `_CMB_FONT_` ones of the Combine Devices plugin, which have other sizes.
 
 include('shared.lua')
 
-local glow = CreateMaterial('_CMB_SMALLMONITOR_GLOW4', 'UnlitGeneric', {
-  ['$basetexture'] = 'sprites/glow06',
-  ['$additive'] = '1',
-  ['$selfilium'] = '1',
-  ['$vertexcolor'] = '1',
-  ['$vertexalpha'] = '1'
-})
-
-local errorc = CreateMaterial('_CMB_ERROR', 'Modulate', {
-  ['$basetexture'] = 'props/combine_monitor_access_off',
-  ['$ignorez'] = '1',
-  ['$vertexcolor'] = '1',
-  ['$vertexalpha'] = '1',
-  ['$translucent'] = '1'
-})
-
-surface.CreateFont('_CMB_FONT_1', {
+surface.CreateFont('_CMB_CHECK_FONT_1', {
   font = 'Myriad Pro',
   size = 22,
   weight = 1000,
@@ -34,7 +19,7 @@ surface.CreateFont('_CMB_FONT_1', {
   extended = true
 })
 
-surface.CreateFont('_CMB_FONT_2', {
+surface.CreateFont('_CMB_CHECK_FONT_2', {
   font = 'Consolas',
   size = 20,
   weight = 1000,
@@ -44,7 +29,7 @@ surface.CreateFont('_CMB_FONT_2', {
   extended = true
 })
 
-surface.CreateFont('_CMB_FONT_4', {
+surface.CreateFont('_CMB_CHECK_FONT_4', {
   font = 'System',
   size = 72,
   weight = 1000,
@@ -53,7 +38,7 @@ surface.CreateFont('_CMB_FONT_4', {
   extended = true
 })
 
-surface.CreateFont('_CMB_FONT_5', {
+surface.CreateFont('_CMB_CHECK_FONT_5', {
   font = 'System',
   size = 9,
   weight = 500,
@@ -64,8 +49,9 @@ surface.CreateFont('_CMB_FONT_5', {
 
 --- Creates the render target and scanline material the monitor's screen is drawn with.
 function ENT:Initialize()
-  self.RT = GetRenderTarget('_CMB_SMALLMONITOR_ENT'..self:EntIndex()..CurTime(), 256, 256, false)
-  self.RTMat = CreateMaterial('_CMB_SMALLMONITOR_ENT_RTMAT'..self:EntIndex()..CurTime(), 'UnlitTwoTexture', {
+  -- Render targets are never freed, so an entity that is created again has to get the one it had before.
+  self.RT = GetRenderTarget('_CMB_SMALLMONITOR_ENT'..self:EntIndex(), 256, 256, false)
+  self.RTMat = CreateMaterial('_CMB_SMALLMONITOR_ENT_RTMAT'..self:EntIndex(), 'UnlitTwoTexture', {
     ['$selfilium'] = '1',
     ['$texture2'] = 'dev/dev_scanline',
     ['Proxies'] = {
@@ -117,22 +103,21 @@ function ENT:DrawTranslucent()
       cam.Start2D()
       local glow_text = math.abs(math.sin(curTime * 3) * 255)
 
-      if !self:GetNetVar('monitor_activated') then
+      local data = self:GetNetVar('userData')
+
+      if !self:GetNetVar('monitor_activated') or !istable(data) or !isstring(data.name) then
         surface.SetTextColor(100, 100, 255)
-        surface.SetFont('_CMB_FONT_1')
+        surface.SetFont('_CMB_CHECK_FONT_1')
         surface.SetTextPos(20, 15)
         surface.DrawText('#CombineMonitor_Title')
         surface.SetTextPos(90, 35)
         surface.DrawText(Schema.City)
         surface.SetTextColor(100, 100, 255, glow_text)
-        surface.SetFont('_CMB_FONT_1')
+        surface.SetFont('_CMB_CHECK_FONT_1')
         surface.SetTextPos(16, 256 - 128 - 4)
         surface.DrawText('#CombineMonitor_Waiting')
       else
-        local data = self:GetNetVar('userData', {})
-
         if data.status == '#Status_AntiCitizen' then
-          text = ''
           render.Clear(80, 0, 0, 255)
         end
 
@@ -144,7 +129,7 @@ function ENT:DrawTranslucent()
           local offset = 20
 
           surface.SetTextColor(100, 100, 255)
-          surface.SetFont('_CMB_FONT_1')
+          surface.SetFont('_CMB_CHECK_FONT_1')
 
           surface.SetTextPos(20, 15)
           surface.DrawText('#CombineMonitor_Title')
@@ -153,7 +138,7 @@ function ENT:DrawTranslucent()
           surface.DrawText(Schema.City)
 
           surface.SetTextColor(100, 100, 255)
-          surface.SetFont('_CMB_FONT_2')
+          surface.SetFont('_CMB_CHECK_FONT_2')
 
           surface.SetTextPos(18, 65)
           surface.DrawText(L('#CombineMonitor_Name')..': '..data.name)
@@ -192,7 +177,7 @@ function ENT:DrawTranslucent()
           surface.DrawRect(0, 85 + (offset * 7), 256, 2)
         else
           surface.SetTextColor(255, 0, 0)
-          surface.SetFont('_CMB_FONT_4')
+          surface.SetFont('_CMB_CHECK_FONT_4')
           surface.SetTextPos(10, 50)
           surface.DrawText('ERROR')
 
@@ -203,7 +188,7 @@ function ENT:DrawTranslucent()
 
           if dist < 300 then
             surface.SetTextColor(255, 0, 0)
-            surface.SetFont('_CMB_FONT_5')
+            surface.SetFont('_CMB_CHECK_FONT_5')
             surface.SetTextPos(20, 140)
             surface.DrawText('1E'..string.upper(util.MD5('b'..math.random(0, 9))))
             surface.SetTextPos(20, 155)

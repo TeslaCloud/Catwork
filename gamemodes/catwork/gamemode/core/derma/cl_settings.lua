@@ -4,6 +4,8 @@
 -- Each setting gets the control for its class (number slider, multi choice, number wang, text entry, check box or
 -- color mixer), bound to its console variable.
 
+local outlineColor = Color(0, 0, 0)
+
 local PANEL = {}
 
 --- Sizes the settings menu tab to the menu, creates its list and builds it.
@@ -180,7 +182,7 @@ function PANEL:PerformLayout(w, h) end
 
 --- Draws the outlined panel background.
 function PANEL:Paint(w, h)
-  draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0))
+  draw.RoundedBox(0, 0, 0, w, h, outlineColor)
   draw.RoundedBox(0, 1, 1, w - 2, h - 2, cw.option:GetColor('panel_background'))
 
   return true

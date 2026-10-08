@@ -29,7 +29,12 @@ timer.Create('forcefieldUpdater', 250, 0, function()
 
       v:PhysicsFromMesh(verts)
       v:EnableCustomCollisions(true)
-      v:GetPhysicsObject():EnableCollisions(false)
+
+      local physObj = v:GetPhysicsObject()
+
+      if IsValid(physObj) then
+        physObj:EnableCollisions(false)
+      end
     end
   end
 end)

@@ -16,6 +16,11 @@ function COMMAND:OnRun(player, arguments)
   player.cwSalesmanAnim = tonumber(arguments[1])
   player.cwSalesmanHitPos = player:GetEyeTraceNoCursor().HitPos
 
+  -- Forget an edit that was started and never finished, or the new salesman would replace the edited one.
+  player.cwSalesmanEdit = nil
+  player.cwSalesmanPos = nil
+  player.cwSalesmanAng = nil
+
   if !player.cwSalesmanAnim and type(arguments[1]) == 'string' then
     player.cwSalesmanAnim = tonumber(_G[arguments[1]])
   end

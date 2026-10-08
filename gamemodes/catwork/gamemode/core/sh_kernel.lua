@@ -494,7 +494,8 @@ function string.FindAll(str, pattern)
 
     table.insert(hits, { str:sub(startPos, endPos), startPos, endPos })
 
-    lastPos = endPos + 1
+    -- An empty match ends before it starts; step past it or the search never advances.
+    lastPos = math.max(startPos, endPos) + 1
   end
 
   return hits
@@ -565,31 +566,39 @@ end
 
 --- Returns whether two tables have the same contents.
 --
--- Compares the array length and then every key of `tableA` against `tableB`, recursing into
--- nested tables. Returns `false` when either argument is not a table.
+-- Every key of each table must be present in the other with an equal value; nested tables are compared
+-- the same way. Returns `false` when either argument is not a table.
 -- @param tableA [Map The first table]
 -- @param tableB [Map The second table]
 -- @return [Boolean Whether the tables are equal]
 function cw.core:AreTablesEqual(tableA, tableB)
-  if istable(tableA) and istable(tableB) then
-    if #tableA != #tableB then
-      return false
-    end
+  if !istable(tableA) or !istable(tableB) then
+    return false
+  end
 
-    for k, v in pairs(tableA) do
-      if istable(v) and !self:AreTablesEqual(v, tableB[k]) then
-        return false
-      end
-
-      if v != tableB[k] then
-        return false
-      end
-    end
-
+  if tableA == tableB then
     return true
   end
 
-  return false
+  for k, v in pairs(tableA) do
+    local other = tableB[k]
+
+    if istable(v) and istable(other) then
+      if !self:AreTablesEqual(v, other) then
+        return false
+      end
+    elseif v != other then
+      return false
+    end
+  end
+
+  for k in pairs(tableB) do
+    if tableA[k] == nil then
+      return false
+    end
+  end
+
+  return true
 end
 
 --- Returns whether a weapon is a sandbox tool (physgun, gravity gun or toolgun).
@@ -838,7 +847,7 @@ end
 -- @return [String The folder name or path]
 function cw.core:GetSchemaFolder(sFolderName)
   if sFolderName then
-    return cw.Schema..'/schema/'..sFolderNane
+    return cw.Schema..'/schema/'..sFolderName
   else
     return cw.Schema
   end
@@ -967,10 +976,10 @@ end
 --- Deserializes a string created by `cw.core:Serialize`.
 --
 -- Tries pON unless `bForceJSON` is set, then falls back to JSON. Prints an error and returns an
--- empty table when the data cannot be decoded or is not a string.
+-- empty table when decoding raises an error or the data is not a string.
 -- @param strData [String The serialized data]
 -- @param bForceJSON=false [Boolean Always use JSON]
--- @return [Map The decoded table]
+-- @return [Map The decoded table, or `nil` when the data is neither valid pON nor valid JSON]
 -- @see cw.core:Serialize
 function cw.core:Deserialize(strData, bForceJSON)
   if isstring(strData) then
@@ -1048,6 +1057,8 @@ function cw.core:GetAmmoInformation(weapon)
   end
 end
 
+local waitCount = 0
+
 --- Runs a callback once an entity index becomes valid.
 --
 -- Calls it straight away when the entity already exists, otherwise polls with a timer.
@@ -1066,7 +1077,10 @@ function util.WaitForEntity(entIndex, callback, delay, waitTime)
   local entity = Entity(entIndex)
 
   if !IsValid(entity) then
-    local timerName = CurTime()..'_EntWait'
+    -- Unique per call: two waits started in the same tick must not replace each other's timer.
+    waitCount = waitCount + 1
+
+    local timerName = 'EntWait_'..entIndex..'_'..waitCount
 
     timer.Create(timerName, delay or 0, waitTime or 100, function()
       local entity = Entity(entIndex)
@@ -1115,7 +1129,7 @@ function cw.core:LoadSchema()
   elseif CW_SCRIPT_SHARED.schemaData then
     table.Merge(Schema, CW_SCRIPT_SHARED.schemaData)
   else
-    MsgC(Color(255, 100, 0, 255), '\n[Catwork] The schema has no '..schemaFolder..'.ini!\n')
+    MsgC(Color(255, 100, 0, 255), '\n[Catwork] The schema has no '..cw.Schema..'.ini!\n')
   end
 
   self:Debug('Generated schema info table at '..math.Round(os.clock() - startTime, 3)..'.')
@@ -1164,9 +1178,8 @@ function cw.core:ExplodeByTags(text, seperator, open, close, hide)
   local current = ''
   local tag = nil
 
-  for i = 1, #text do
-    local character = string.utf8sub(text, i, i)
-
+  -- One UTF-8 character at a time: a lead byte and its continuation bytes.
+  for character in string.gmatch(text, '[%z\1-\127\194-\244][\128-\191]*') do
     if !tag then
       if character == open then
         if !hide then
@@ -1230,10 +1243,10 @@ do
   --- Replaces every occurrence of a plain string, without pattern matching.
   -- @param text [String The text to search]
   -- @param find [String The literal text to find]
-  -- @param replace [String The replacement; `%` is still special here]
+  -- @param replace [String The replacement, inserted as it is]
   -- @return [String The new text]
   function cw.core:Replace(text, find, replace)
-    return (text:gsub(find:gsub(MAGIC_CHARACTERS, '%%%1'), replace))
+    return (text:gsub(find:gsub(MAGIC_CHARACTERS, '%%%1'), (tostring(replace):gsub('%%', '%%%%'))))
   end
 end
 
@@ -1409,7 +1422,7 @@ function util.IncludeDirectory(strDirectory, strBase, bIsRecursive)
 
     -- Then include all directories.
     for k, v in ipairs(folders) do
-      util.IncludeDirectory(strDirectory..v, bIsRecursive)
+      util.IncludeDirectory(strDirectory..v, nil, true)
     end
   else
     local files, _ = _file.Find(strDirectory..'*.lua', 'LUA', 'namedesc')
@@ -1584,7 +1597,8 @@ end
 --- Removes falsy entries from the array part of a table, in place.
 -- @param baseTable [List The table to clean]
 function cw.core:ValidateTableKeys(baseTable)
-  for i = 1, #baseTable do
+  -- Backwards, so that removing an entry does not skip the one that slides into its place.
+  for i = #baseTable, 1, -1 do
     if !baseTable[i] then
       table.remove(baseTable, i)
     end
@@ -1672,8 +1686,9 @@ end
 --
 -- `^amount^` becomes formatted cash and `!amount!` singular cash (with `(amount)` for a
 -- lowercase cash name), `*key*` the value of an option (`*(key)*` passes `true` to
--- `cw.option:GetKey`) and, on the client, `:command:` the key bound to a command. Finally
--- `config.Parse` replaces `$key$` with config values.
+-- `cw.option:GetKey`; text between asterisks that is not an option is left alone) and, on the
+-- client, `:command:` the key bound to a command. Finally `config.Parse` replaces `$key$` with
+-- config values.
 --
 -- ```
 -- cw.core:ParseData('It costs ^50^. Press :+use: to buy.')
@@ -1682,10 +1697,11 @@ end
 -- @param text [String The text to parse]
 -- @return [String The parsed text]
 function cw.core:ParseData(text)
-  local classes = { '%^', '%!' }
+  local classes = { '^', '!' }
 
+  -- The keys come out of the text, so they are replaced as plain strings and never used as patterns.
   for k, v in ipairs(classes) do
-    for key in string.gmatch(text, v..'(.-)'..v) do
+    for key in string.gmatch(text, '%'..v..'(.-)%'..v) do
       local lower = false
       local amount
 
@@ -1697,12 +1713,7 @@ function cw.core:ParseData(text)
       end
 
       if amount then
-        text =
-          string.gsub(
-            text,
-            v..string.gsub(key, '([%(%)])', '%%%1')..v,
-            tostring(self:FormatCash(amount, k == 2, lower))
-          )
+        text = self:Replace(text, v..key..v, self:FormatCash(amount, k == 2, lower))
       end
     end
   end
@@ -1710,9 +1721,9 @@ function cw.core:ParseData(text)
   for k in string.gmatch(text, '%*(.-)%*') do
     k = string.gsub(k, '[%(%)]', '')
 
-    if k != '' then
-      text = string.gsub(text, '%*%('..k..'%)%*', tostring(cw.option:GetKey(k, true)))
-      text = string.gsub(text, '%*'..k..'%*', tostring(cw.option:GetKey(k)))
+    if k != '' and cw.option:GetKey(k) != nil then
+      text = self:Replace(text, '*('..k..')*', tostring(cw.option:GetKey(k, true)))
+      text = self:Replace(text, '*'..k..'*', tostring(cw.option:GetKey(k)))
     end
   end
 

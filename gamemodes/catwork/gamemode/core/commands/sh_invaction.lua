@@ -23,9 +23,12 @@ function COMMAND:OnRun(player, arguments)
 
     if customFunctions then
       for k, v in pairs(customFunctions) do
-        if string.lower(v) == itemAction then
+        -- An entry is the function's name, or a table that holds it as `name`.
+        local name = (istable(v) and v.name) or v
+
+        if isstring(name) and string.lower(name):Replace('#', '') == itemAction then
           if itemTable.OnCustomFunction then
-            itemTable:OnCustomFunction(player, v)
+            itemTable:OnCustomFunction(player, name)
             return
           end
         end
@@ -54,8 +57,6 @@ function COMMAND:OnRun(player, arguments)
       end
 
       if hook.Run('PlayerCanUseItem', player, itemTable) then
-        print('Using item: '..tostring(itemTable))
-
         return item.Use(player, itemTable)
       end
     else

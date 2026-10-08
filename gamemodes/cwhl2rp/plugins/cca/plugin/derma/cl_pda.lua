@@ -25,6 +25,14 @@ local browserNames = {
   'CapitolNET'
 }
 
+local colorWhite = Color(255, 255, 255)
+local colorError = Color(255, 100, 100)
+local colorNoAccess = Color(255, 50, 50)
+local colorEngineName = Color(255, 255, 255)
+
+-- Seconds between two searches for the same text, so that players who join or change their name show up.
+local searchInterval = 0.5
+
 local PANEL = {}
 
 --- Creates the PDA's search bar and registers the panel as `Schema.pdaPanel`.
@@ -50,7 +58,7 @@ function PANEL:Rebuild()
   self.searchBar:SetPos(32, height / 2 - 16)
   self.searchBar.OnEnter = function(bar)
     if IsValid(self.playerCard) then
-      self.playerCard:SafeRemove()
+      self.playerCard:Remove()
     end
 
     local player = _player.Find(bar:GetValue())
@@ -72,57 +80,78 @@ function PANEL:Think()
   end
 end
 
---- Draws the search engine name and up to six players whose names match the search text.
+--- Returns up to six players whose names contain the search text.
 --
 -- Refugees and rebels are left out of the matches.
 --
--- @warning [Expensive] Iterates every player each frame while the search bar has text.
+-- @param text [String The search text, in lower case]
+-- @return [List The matching players]
+function PANEL:FindMatches(text)
+  local matches = {}
+
+  for k, v in ipairs(player.GetAll()) do
+    if #matches >= 6 then break end
+
+    local faction = v:GetFaction()
+
+    if faction == FACTION_REFUGEE or faction == FACTION_REBEL then continue end
+
+    if v:Name():utf8lower():find(text, 1, true) then
+      matches[#matches + 1] = v
+    end
+  end
+
+  return matches
+end
+
+--- Draws the search engine name and up to six players whose names match the search text.
+--
+-- The matches are looked up when the search text changes and twice a second after that.
 function PANEL:PaintOver(width, height)
   local w, h = util.GetTextSize('DermaNarrow42', combine_search_engine_name)
-  local sX, sY = self.searchBar:GetPos()
+
+  colorEngineName.a = self.alpha or 255
 
   draw.SimpleText(
     combine_search_engine_name,
     'DermaNarrowBold42',
     width / 2 - w / 2,
     height / 2 - h - 32,
-    Color(255, 255, 255, (self.alpha or 255))
+    colorEngineName
   )
 
-  if IsValid(self.searchBar) then
-    local val = self.searchBar:GetValue()
+  if !IsValid(self.searchBar) then return end
 
-    if isstring(val) and val != '' then
-      val = val:utf8lower()
+  local val = self.searchBar:GetValue()
 
-      local matches = {}
+  if !isstring(val) or val == '' then
+    self.alpha = 255
+    self.searchText = nil
+    self.matches = nil
 
-      for k, v in ipairs(player.GetAll()) do
-        if #matches >= 6 then break end
-
-        local faction = v:GetFaction()
-
-        if faction == FACTION_REFUGEE or faction == FACTION_REBEL then continue end
-
-        if v:Name():utf8lower():find(val, 1, true) then
-          table.insert(matches, v)
-        end
-      end
-
-      if #matches > 0 then
-        local curY = 0
-        self.alpha = 50
-
-        for k, v in ipairs(matches) do
-          draw.SimpleText(v:Name()..' ('..v:GetFaction()..')', 'DermaNarrow28', sX, curY + 64, _team.GetColor(v:Team()))
-
-          curY = curY + 34
-        end
-      end
-    else
-      self.alpha = 255
-    end
+    return
   end
+
+  local curTime = RealTime()
+
+  if val != self.searchText or curTime >= self.nextSearch then
+    self.searchText = val
+    self.nextSearch = curTime + searchInterval
+    self.matches = self:FindMatches(val:utf8lower())
+  end
+
+  local sX = self.searchBar:GetPos()
+  local curY = 0
+
+  for k, v in ipairs(self.matches) do
+    if !IsValid(v) then continue end
+
+    draw.SimpleText(v:Name()..' ('..v:GetFaction()..')', 'DermaNarrow28', sX, curY + 64, _team.GetColor(v:Team()))
+
+    curY = curY + 34
+  end
+
+  self.alpha = (curY > 0 and 50) or 255
 end
 
 --- Returns the PDA's width in the main menu.
@@ -145,6 +174,7 @@ PANEL.buttons = {}
 --- Creates the player card's civil record list and fires `AddCombinePDAButons` to collect its buttons.
 function PANEL:Init()
   self.buttons = {}
+  self.buttonPanels = {}
 
   self.logs = vgui.Create('cwCombinePlayerLog', self)
   self.logs:SetPos(0, 220)
@@ -157,9 +187,22 @@ end
 
 --- Lays out the card for its player: civil record, model and the buttons the viewer may use.
 --
--- Buttons are hidden for Combine targets, and Combine-only buttons for non-Combine viewers.
+-- The model and buttons of the previous layout are removed first. Buttons are hidden for Combine targets, and
+-- Combine-only buttons for non-Combine viewers.
 function PANEL:Rebuild()
   self:SetTitle('')
+
+  if IsValid(self.model) then
+    self.model:Remove()
+  end
+
+  for k, v in ipairs(self.buttonPanels) do
+    if IsValid(v) then
+      v:Remove()
+    end
+  end
+
+  self.buttonPanels = {}
 
   if !IsValid(self.player) then return end
 
@@ -190,10 +233,13 @@ function PANEL:Rebuild()
   local offset = 0
   local offsetX = 0
 
-  for k, v in pairs(self.buttons) do
+  for k, v in ipairs(self.buttons) do
     if v.combine and !isCombine then continue end
 
     local btn = vgui.Create('DButton', self)
+
+    self.buttonPanels[#self.buttonPanels + 1] = btn
+
     btn:SetPos(155 + offsetX, 130 + offset)
     btn:SetText(v.name)
     btn:SizeToContents()
@@ -254,16 +300,16 @@ end
 -- Combine players show an insufficient permissions message instead of their details.
 function PANEL:PaintOver(width, height)
   if !IsValid(self.player) then
-    draw.SimpleText('#PDA_Error', 'DermaNarrow42', 32, 32, Color(255, 100, 100))
+    draw.SimpleText('#PDA_Error', 'DermaNarrow42', 32, 32, colorError)
 
     return
   end
 
-  draw.SimpleText(self.player:Name(), 'DermaNarrow30', 155, 50, Color(255, 255, 255))
-  draw.SimpleText(self.player:GetFaction(), 'DermaNarrow22', 155, 80, team.GetColor(self.player:Team()))
+  draw.SimpleText(self.player:Name(), 'DermaNarrow30', 155, 50, colorWhite)
+  draw.SimpleText(self.player:GetFaction(), 'DermaNarrow22', 155, 80, _team.GetColor(self.player:Team()))
 
   if Schema:PlayerIsCombine(self.player) then
-    draw.SimpleText('#Err_CMB_InsufficientPermissions', 'DermaNarrow24', 155, 120, Color(255, 50, 50))
+    draw.SimpleText('#Err_CMB_InsufficientPermissions', 'DermaNarrow24', 155, 120, colorNoAccess)
   else
     local points = math.floor(Schema:GetLP(self.player))
     local tier = Schema:DetermineLoyalistTier(points)
@@ -276,9 +322,9 @@ function PANEL:PaintOver(width, height)
       '#LP: '..points..' | #CP: '..Schema:GetCP(self.player)..' | #WP: '..Schema:GetWorkPoints(self.player)
     local pW, pH = util.GetTextSize('DermaNarrow15', pointsText)
 
-    draw.SimpleText('#Residence: '..Schema:GetResidence(self.player), 'DermaNarrow15', 155, 107, Color(255, 255, 255))
+    draw.SimpleText('#Residence: '..Schema:GetResidence(self.player), 'DermaNarrow15', 155, 107, colorWhite)
 
-    draw.SimpleText(pointsText, 'DermaNarrow15', 76 - pW / 2, yPos - 26, Color(255, 255, 255))
+    draw.SimpleText(pointsText, 'DermaNarrow15', 76 - pW / 2, yPos - 26, colorWhite)
 
     draw.RoundedBox(0, xPos - 4, yPos - 6, boxW, h + 12, color)
     draw.SimpleText(tier.name, 'DermaNarrow15', (xPos + boxW) / 2 - w / 2, yPos, color:Darken(80))

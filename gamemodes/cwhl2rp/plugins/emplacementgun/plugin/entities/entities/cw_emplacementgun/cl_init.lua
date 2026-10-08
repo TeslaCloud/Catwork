@@ -43,6 +43,9 @@ local function ZAR3_S()
     AR3 = nil
   end
 
+  -- The server forgets about the trigger whenever the gun changes hands.
+  Shooting = false
+
   local wep = LocalPlayer():GetActiveWeapon()
   local vm = LocalPlayer():GetViewModel()
 
@@ -57,7 +60,10 @@ local function ZAR3_S()
   end
 
   if IsValid(AR3) then
-    vm:SetNoDraw(true)
+    if IsValid(vm) then
+      vm:SetNoDraw(true)
+    end
+
     -- "nicer", but way buggier and breaking quite a lot:
 -- ~ 		-- Holster it
 -- ~ 		wep:SendWeaponAnim(ACT_VM_HOLSTER)
@@ -80,7 +86,7 @@ local function ZAR3_S()
     -- There seems to be a repeating-glitch, somehow, avoid that. Yes, if you start shooting it will break the
     -- animation, but it's better than having to re-draw all the time.
     timer.Simple(
-      vm:SequenceDuration(),
+      IsValid(vm) and vm:SequenceDuration() or 0,
       function() if IsValid(wep) and wep == LocalPlayer():GetActiveWeapon() then wep:SendWeaponAnim(ACT_VM_IDLE) end end
     )
   end

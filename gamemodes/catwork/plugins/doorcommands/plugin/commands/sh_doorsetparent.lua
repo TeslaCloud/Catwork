@@ -12,22 +12,10 @@ function COMMAND:OnRun(player, arguments)
   local door = player:GetEyeTraceNoCursor().Entity
 
   if IsValid(door) and cw.entity:IsDoor(door) then
-    cwDoorCmds.infoTable = cwDoorCmds.infoTable or {}
-
     player.cwParentDoor = door
-    cwDoorCmds.infoTable.Parent = door
-
-    for k, parent in pairs(cwDoorCmds.parentData) do
-      if parent == door then
-        table.insert(cwDoorCmds.infoTable, k)
-      end
-    end
 
     cw.player:Notify(player, L('DoorCmds_ParentSet'))
-
-    if cwDoorCmds.infoTable != {} then
-      netstream.Start(player, 'doorParentESP', cwDoorCmds.infoTable)
-    end
+    cwDoorCmds:SendParentESP(player)
   else
     cw.player:Notify(player, L('DoorCmds_NotValidDoor'))
   end

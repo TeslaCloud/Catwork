@@ -133,20 +133,27 @@ end
 -- database. Any failure is sent to the client with
 -- `cw.player:SetCreateFault`. On success the character is created with
 -- `cw.player:LoadCharacter` and used right away if it is the player's only
--- one.
+-- one. A request that arrives while an earlier one is still being saved is
+-- ignored.
+--
+-- Of the client's `plugin` table, only the custom choices that the
+-- `GetPersuasionChoices` hook returns on the server become character data,
+-- and only with a value the choice allows.
 -- @param player [Player The player creating the character]
 -- @param data [Map The creation request from the client: `faction`, `gender`, `model`, `class`, `attributes`,
--- `forename` and `surname` or `fullName`, `physDesc` and `plugin` (extra character data)]
+-- `forename` and `surname` or `fullName`, `physDesc` and `plugin` (values of the custom choices)]
 -- @return [Nil Nothing; the result is sent to the client]
 -- @warning [Internal] Called by the `CreateCharacter` netstream receiver.
 function cw.player:CreateCharacterFromData(player, data)
-  if player.cwIsCreatingChar then
+  if !istable(data) or !player:GetCharacters() then return end
+
+  if player.cwIsCreatingChar and player.cwIsCreatingChar > CurTime() then
     return
   end
 
   local minimumPhysDesc = config.Get('minimum_physdesc'):Get()
   local attributesTable = cw.attribute:GetAll()
-  local factionTable = faction.FindByID(data.faction)
+  local factionTable = (isstring(data.faction) or isnumber(data.faction)) and faction.FindByID(data.faction)
   local attributes = nil
   local info = {}
 
@@ -172,9 +179,33 @@ function cw.player:CreateCharacterFromData(player, data)
   info.model = data.model
   info.data = {}
 
-  if data.plugin then
-    for k, v in pairs(data.plugin) do
-      info.data[k] = v
+  if istable(data.plugin) then
+    local customChoices = {}
+
+    hook.Run('GetPersuasionChoices', customChoices)
+
+    for k, v in pairs(customChoices) do
+      local value = data.plugin[v.name]
+
+      if isstring(value) and value != '' then
+        local bIsValid = string.utf8len(value) <= 256
+
+        if !v.type or string.lower(v.type) == 'combobox' then
+          bIsValid = istable(v.choices) and table.HasValue(v.choices, value)
+        elseif v.isNumber then
+          local number = tonumber(value)
+
+          bIsValid = number != nil and number == number and (!v.max or number <= v.max) and (!v.min or number >= v.min)
+        end
+
+        if !bIsValid then
+          return self:SetCreateFault(
+            player, L('CharFault_CreationError')
+          )
+        end
+
+        info.data[v.name] = value
+      end
     end
   end
 
@@ -188,9 +219,10 @@ function cw.player:CreateCharacterFromData(player, data)
   end
 
   if classes then
-    local classTable = cw.class:FindByID(data.class)
+    local classTable = (isstring(data.class) or isnumber(data.class)) and cw.class:FindByID(data.class)
 
-    if !classTable then
+    if !classTable or !classTable.isOnCharScreen
+    or !classTable.factions or !table.HasValue(classTable.factions, factionTable.name) then
       return self:SetCreateFault(
         player, L'InvalidClass'
       )
@@ -212,11 +244,14 @@ function cw.player:CreateCharacterFromData(player, data)
     end
 
     for k, v in pairs(data.attributes) do
-      local attributeTable = cw.attribute:FindByID(k)
+      local attributeTable = (isstring(k) or isnumber(k)) and cw.attribute:FindByID(k)
+      local amount = tonumber(v)
 
-      if attributeTable and attributeTable.isOnCharScreen then
+      -- NaN would pass the comparison with the maximum below.
+      if attributeTable and attributeTable.isOnCharScreen and amount and amount == amount then
         local uniqueID = attributeTable.uniqueID
-        local amount = math.Clamp(v, 0, attributeTable.maximum)
+
+        amount = math.Clamp(amount, 0, attributeTable.maximum)
 
         info.attributes[uniqueID] = {
           amount = amount,
@@ -240,7 +275,7 @@ function cw.player:CreateCharacterFromData(player, data)
 
   if !factionTable.GetName then
     if !factionTable.useFullName then
-      if data.forename and data.surname then
+      if isstring(data.forename) and isstring(data.surname) then
         data.forename = string.gsub(data.forename, '^.', string.upper)
         data.surname = string.gsub(data.surname, '^.', string.upper)
 
@@ -272,10 +307,17 @@ function cw.player:CreateCharacterFromData(player, data)
           player, L('CharCreation_Appearance_ErrorMessage1')
         )
       end
-    elseif !data.fullName or data.fullName == '' then
-      return self:SetCreateFault(
-        player, L('CharCreation_Appearance_ErrorMessage1')
-      )
+    else
+      if isstring(data.fullName) then
+        data.fullName = string.Trim(data.fullName)
+      end
+
+      if !isstring(data.fullName) or data.fullName == '' or string.find(data.fullName, '%c')
+      or string.utf8len(data.fullName) > 64 then
+        return self:SetCreateFault(
+          player, L('CharCreation_Appearance_ErrorMessage1')
+        )
+      end
     end
   end
 
@@ -369,6 +411,10 @@ function cw.player:CreateCharacterFromData(player, data)
           player, fault or L('CharFault_CreationError')
         )
       end
+
+      -- Covers the name check and the insert that follows. It expires by itself, as neither query calls back when
+      -- it fails.
+      player.cwIsCreatingChar = CurTime() + 10
 
       local queryObj = cwDatabase:Select(charactersTable)
         queryObj:Where('_Schema', schemaFolder)
@@ -693,7 +739,7 @@ function cw.player:GetAction(player, percentage)
   local curTime = CurTime()
   local action = player:GetNetVar('ActName') or 'Unknown'
 
-  if startActionTime and CurTime() < startActionTime + actionDuration then
+  if startActionTime and curTime < startActionTime + actionDuration then
     if percentage then
       return action, (100 / actionDuration) * (actionDuration - ((startActionTime + actionDuration) - curTime))
     else
@@ -773,7 +819,8 @@ function cw.player:CanSeePosition(player, position, iAllowance, tIgnoreEnts, tar
     if type(tIgnoreEnts) == 'table' then
       table.Add(trace.filter, tIgnoreEnts)
     else
-      table.Add(trace.filter, ents.GetAll())
+      -- Every entity, which includes the player and the target.
+      trace.filter = ents.GetAll()
     end
   end
 
@@ -820,11 +867,11 @@ function cw.player:SetupRemovePropertyDelays(player, bAllCharacters)
     if IsValid(v) and removeDelay then
       if uniqueID == cw.entity:QueryProperty(v, 'uniqueID')
       and (bAllCharacters or key == cw.entity:QueryProperty(v, 'key')) then
-        timer.Create('RemoveDelay'..v:EntIndex(), removeDelay, 1, function(entity)
-          if IsValid(entity) then
-            entity:Remove()
+        timer.Create('RemoveDelay'..v:EntIndex(), removeDelay, 1, function()
+          if IsValid(v) then
+            v:Remove()
           end
-        end, v)
+        end)
       end
     end
   end
@@ -918,7 +965,6 @@ function cw.player:GivePropertyOffline(key, uniqueID, entity, networked, removeD
   cw.entity:ClearProperty(entity)
 
   if key and uniqueID then
-    local propertyUniqueID = cw.entity:QueryProperty(entity, 'uniqueID')
     local owner = player.GetByUniqueID(uniqueID)
 
     if IsValid(owner) and owner:GetCharacterKey() == key then
@@ -928,9 +974,7 @@ function cw.player:GivePropertyOffline(key, uniqueID, entity, networked, removeD
       owner = nil
     end
 
-    if propertyUniqueID then
-      timer.Remove('RemoveDelay'..entity:EntIndex()..' '..cwPropertyTabUniqueID)
-    end
+    timer.Remove('RemoveDelay'..entity:EntIndex())
 
     entity.cwPropertyTab = {
       key = key,
@@ -1143,7 +1187,14 @@ function cw.player:SetWhitelisted(player, faction, isWhitelisted)
 
   if isWhitelisted then
     if !self:IsWhitelisted(player, faction) then
-      whitelisted[table.Count(whitelisted) + 1] = faction
+      local index = 1
+
+      -- Removing a whitelist leaves a gap, so the number of entries does not point at a free index.
+      while whitelisted[index] != nil do
+        index = index + 1
+      end
+
+      whitelisted[index] = faction
     end
   else
     for k, v in pairs(whitelisted) do
@@ -1203,14 +1254,18 @@ function cw.player:ConditionTimer(player, delay, Condition, Callback)
       return
     end
 
+    -- The timer is cleared before the callback runs, so that a callback that errors is not called again every
+    -- tick and one that starts a new condition timer keeps it.
     if Condition() then
       if CurTime() >= realDelay then
-        Callback(true) player.cwConditionTimer = nil
         timer.Remove('CondTimer'..uniqueID)
+        player.cwConditionTimer = nil
+        Callback(true)
       end
     else
-      Callback(false) player.cwConditionTimer = nil
       timer.Remove('CondTimer'..uniqueID)
+      player.cwConditionTimer = nil
+      Callback(false)
     end
   end)
 end
@@ -1255,12 +1310,14 @@ function cw.player:EntityConditionTimer(player, target, entity, delay, distance,
     and traceLine.Entity:GetPos():Distance(player:GetShootPos()) <= distance
     and Condition() then
       if CurTime() >= realDelay then
-        Callback(true) player.cwConditionEntTimer = nil
         timer.Remove('EntityCondTimer'..uniqueID)
+        player.cwConditionEntTimer = nil
+        Callback(true)
       end
     else
-      Callback(false) player.cwConditionEntTimer = nil
       timer.Remove('EntityCondTimer'..uniqueID)
+      player.cwConditionEntTimer = nil
+      Callback(false)
     end
   end)
 end
@@ -1377,7 +1434,7 @@ function cw.player:GiveFlags(player, flags)
   for i = 1, #flags do
     local flag = string.utf8sub(flags, i, i)
 
-    if !string.find(player:GetFlags(), flag) then
+    if !string.find(player:GetFlags(), flag, 1, true) then
       player:SetCharacterData('Flags', player:GetFlags()..flag, true)
 
       hook.Run('PlayerFlagsGiven', player, flag)
@@ -1396,7 +1453,7 @@ function cw.player:GivePlayerFlags(player, flags)
   for i = 1, #flags do
     local flag = string.utf8sub(flags, i, i)
 
-    if !string.find(player:GetPlayerFlags(), flag) then
+    if !string.find(player:GetPlayerFlags(), flag, 1, true) then
       player:SetData('Flags', player:GetPlayerFlags()..flag, true)
 
       hook.Run('PlayerFlagsGiven', player, flag)
@@ -1592,8 +1649,8 @@ function cw.player:TakeFlags(player, flags)
   for i = 1, #flags do
     local flag = string.utf8sub(flags, i, i)
 
-    if string.find(player:GetFlags(), flag) then
-      player:SetCharacterData('Flags', string.gsub(player:GetFlags(), flag, ''), true)
+    if flag != '' and string.find(player:GetFlags(), flag, 1, true) then
+      player:SetCharacterData('Flags', string.Replace(player:GetFlags(), flag, ''), true)
 
       hook.Run('PlayerFlagsTaken', player, flag)
     end
@@ -1610,8 +1667,8 @@ function cw.player:TakePlayerFlags(player, flags)
   for i = 1, #flags do
     local flag = string.utf8sub(flags, i, i)
 
-    if string.find(player:GetPlayerFlags(), flag) then
-      player:SetData('Flags', string.gsub(player:GetFlags(), flag, ''), true)
+    if flag != '' and string.find(player:GetPlayerFlags(), flag, 1, true) then
+      player:SetData('Flags', string.Replace(player:GetPlayerFlags(), flag, ''), true)
 
       hook.Run('PlayerFlagsTaken', player, flag)
     end
@@ -1682,7 +1739,7 @@ function cw.player:HasAnyFlags(player, flags, bByDefault)
           elseif player:IsUserGroup('operator') then
             return true
           end
-        elseif string.find(playerFlags, flag) then
+        elseif flag != '' and string.find(playerFlags, flag, 1, true) then
           return true
         end
       end
@@ -1712,7 +1769,9 @@ function cw.player:HasFlags(player, flags, bByDefault, bIsStrict)
     end
 
     if !bIsStrict then
-      for k, v in ipairs(string.Explode('', flags)) do
+      for i = 1, #flags do
+        local v = string.sub(flags, i, i)
+
         if !bByDefault then
           local hasFlag = hook.Run('PlayerDoesHaveFlag', player, v)
 
@@ -1735,7 +1794,7 @@ function cw.player:HasFlags(player, flags, bByDefault, bIsStrict)
           end
         end
 
-        if string.find(playerFlags, v) then
+        if string.find(playerFlags, v, 1, true) then
           return true
         end
       end
@@ -1772,7 +1831,7 @@ function cw.player:HasFlags(player, flags, bByDefault, bIsStrict)
               return
             end
           end
-        elseif !string.find(playerFlags, flag) then
+        elseif !string.find(playerFlags, flag, 1, true) then
           return
         end
       end
@@ -1830,7 +1889,7 @@ end
 -- and `PlayerDoorTaken` fires. Non-map `prop_dynamic` doors are removed.
 -- @param player [Player The owner]
 -- @param door [Entity The door]
--- @param bForce=nil [Boolean Meant to skip the refund]
+-- @param bForce=nil [Boolean Do not refund the door]
 -- @param bThisDoorOnly=nil [Boolean Do not take the door's parent or children]
 -- @param bChildrenOnly=nil [Boolean Take the children even if the door has a parent, instead of going through the
 -- parent]
@@ -1868,7 +1927,7 @@ function cw.player:TakeDoor(player, door, bForce, bThisDoorOnly, bChildrenOnly)
     end
   end
 
-  if !force and doorCost > 0 then
+  if !bForce and doorCost > 0 then
     self:GiveCash(player, doorCost / 2, L('CashReason_DoorSale'))
   end
 end
@@ -1900,9 +1959,12 @@ function cw.player:SayRadio(player, text, check, noEavesdrop)
   end
 
   if !info.noEavesdrop then
+    local talkRadius = config.Get('talk_radius'):Get()
+    local position = player:GetShootPos()
+
     for k, v in ipairs(_player.GetAll()) do
       if v:HasInitialized() and !table.HasValue(listeners, v) then
-        if v:GetShootPos():Distance(player:GetShootPos()) <= config.Get('talk_radius'):Get() then
+        if v:GetShootPos():Distance(position) <= talkRadius then
           table.insert(eavesdroppers, v)
         end
       end
@@ -2151,6 +2213,11 @@ function cw.player:UseCharacter(player, characterID)
 
   if currentCharacter != character or isCharacterMenuReset then
     local factionTable = _faction.FindByID(character.faction)
+
+    if !factionTable then
+      return false, L('InvalidFaction')
+    end
+
     local fault = hook.Run('PlayerCanUseCharacter', player, character)
 
     if fault == nil or fault == true then
@@ -2165,7 +2232,7 @@ function cw.player:UseCharacter(player, characterID)
         limit = nil
       end
 
-      if limit and players == limit then
+      if limit and players >= limit then
         return false, L('CharFault_FactionFull', character.faction, limit, limit)
       else
         if currentCharacter then
@@ -2251,6 +2318,8 @@ function cw.player:FormatRecognisedText(player, text, ...)
         unrecognisedName = arguments[i]:Name()
       end
 
+      -- A '%' in a name or physical description must not be read as part of the replacement pattern.
+      unrecognisedName = string.gsub(unrecognisedName, '%%', '%%%%')
       text = string.gsub(text, '%%s', unrecognisedName, 1)
     end
   end
@@ -2601,7 +2670,7 @@ end
 --
 -- The amount is rounded and the balance cannot drop below zero. Shows a hint
 -- with the change and fires `PlayerCashUpdated`. Does nothing when cash is
--- disabled.
+-- disabled or the amount is not a finite number.
 --
 -- ```
 -- cw.player:GiveCash(player, -50, 'buying a crowbar')
@@ -2613,6 +2682,11 @@ end
 -- @param bNoMsg=nil [Boolean Do not show a hint]
 -- @see Player:GiveCash
 function cw.player:GiveCash(player, amount, reason, bNoMsg)
+  amount = tonumber(amount)
+
+  -- NaN or an infinite amount would wreck the balance for good.
+  if !amount or amount != amount or math.abs(amount) == math.huge then return end
+
   if config.Get('cash_enabled'):Get() then
     local positiveHintColor = 'positive_hint'
     local negativeHintColor = 'negative_hint'
@@ -2673,11 +2747,11 @@ end
 --- Shows cinematic text to every player who has initialized.
 -- @param text [String The text]
 -- @param color=nil [Color The text color; defaults to white]
--- @param hangTime=nil [Number Passed on as the bar length of `cw.player:CinematicText`, not the hang time]
+-- @param hangTime=nil [Number Seconds the text stays on screen; defaults to 3]
 function cw.player:CinematicTextAll(text, color, hangTime)
   for k, v in ipairs(_player.GetAll()) do
     if v:HasInitialized() then
-      self:CinematicText(v, text, color, hangTime)
+      self:CinematicText(v, text, color, nil, hangTime)
     end
   end
 end
@@ -2761,7 +2835,7 @@ end
 -- @param text [String The text]
 -- @param icon=nil [String Path of the icon shown next to the message]
 function cw.player:NotifyAdmins(adminLevel, text, icon)
-  for k, v in pairs(player.GetAll()) do
+  for k, v in ipairs(_player.GetAll()) do
     if adminLevel == 'operator' or adminLevel == 'o' then
       if v:IsAdmin() then
         self:Notify(v, text, true, icon)
@@ -3182,12 +3256,13 @@ function cw.player:SetRagdollState(player, state, delay, decay, force, multiplie
 
         ragdoll:SetCollisionGroup(COLLISION_GROUP_WEAPON)
 
-        for i = 1, ragdoll:GetPhysicsObjectCount() do
+        -- Physics objects are numbered from zero.
+        for i = 0, ragdoll:GetPhysicsObjectCount() - 1 do
           local physicsObject = ragdoll:GetPhysicsObjectNum(i)
           local boneIndex = ragdoll:TranslatePhysBoneToBone(i)
           local position, angle = player:GetBonePosition(boneIndex)
 
-          if IsValid(physicsObject) then
+          if IsValid(physicsObject) and position then
             physicsObject:SetPos(position)
             physicsObject:SetAngles(angle)
 
@@ -3318,7 +3393,7 @@ function cw.player:SetRagdollState(player, state, delay, decay, force, multiplie
         end
 
         if state != RAGDOLL_RESET then
-          self:SetWeapons(player, ragdollTable.weapons, true)
+          self:SetWeapons(player, ragdollTable.weapons or {}, true)
 
           if ragdollTable.weapon then
             player:SelectWeapon(ragdollTable.weapon)
@@ -3466,9 +3541,7 @@ function cw.player:LightSpawn(player, weapons, ammo, bForceReturn)
     player:SetEyeAngles(angles)
 
     if gamemodeHook then
-      special = special or false
-
-      hook.Run('PostPlayerLightSpawn', player, weapons, ammo, special)
+      hook.Run('PostPlayerLightSpawn', player, weapons, ammo, false)
     end
 
     player:ResetSequence(
@@ -3561,6 +3634,8 @@ function cw.player:CharacterScreenAdd(player, character)
 end
 
 --- Decodes the JSON and numeric fields of a character loaded from the database, in place.
+--
+-- Cash that is not a finite number becomes `0`.
 -- @param baseTable [Character The camel case character table]
 function cw.player:ConvertCharacterMySQL(baseTable)
   baseTable.recognisedNames = self:ConvertCharacterRecognisedNamesString(baseTable.recognisedNames)
@@ -3570,7 +3645,12 @@ function cw.player:ConvertCharacterMySQL(baseTable)
   baseTable.inventory = cw.inventory:ToLoadable(
     self:ConvertCharacterDataString(baseTable.inventory)
   )
-  baseTable.cash = tonumber(baseTable.cash)
+  baseTable.cash = tonumber(baseTable.cash) or 0
+
+  if baseTable.cash != baseTable.cash or math.abs(baseTable.cash) == math.huge then
+    baseTable.cash = 0
+  end
+
   baseTable.ammo = self:ConvertCharacterDataString(baseTable.ammo)
   baseTable.data = self:ConvertCharacterDataString(baseTable.data)
   baseTable.key = tonumber(baseTable.key)
@@ -3613,8 +3693,6 @@ function cw.player:LoadCharacter(player, characterID, tMergeCreate, Callback, bF
   local unixTime = os.time()
 
   if tMergeCreate then
-    character = {}
-    character.name = name
     character.data = {}
     character.ammo = {}
     character.cash = config.Get('default_cash'):Get()
@@ -3637,32 +3715,36 @@ function cw.player:LoadCharacter(player, characterID, tMergeCreate, Callback, bF
     if !player.cwCharacterList[characterID] then
       table.Merge(character, tMergeCreate)
 
-      if character and type(character) == 'table' then
-        character.inventory = {}
-        hook.Run(
-          'GetPlayerDefaultInventory', player, character, character.inventory
-        )
+      character.inventory = {}
+      hook.Run(
+        'GetPlayerDefaultInventory', player, character, character.inventory
+      )
 
-        if !bForce then
-          local fault = hook.Run('PlayerCanCreateCharacter', player, character, characterID)
+      if !bForce then
+        local fault = hook.Run('PlayerCanCreateCharacter', player, character, characterID)
 
-          if fault == false or type(fault) == 'string' then
-            return self:SetCreateFault(player, fault or L('CharFault_CannotCreate'))
-          end
+        if fault == false or type(fault) == 'string' then
+          player.cwIsCreatingChar = nil
+
+          return self:SetCreateFault(player, fault or L('CharFault_CannotCreate'))
         end
-
-        self:SaveCharacter(player, true, character, function(key)
-          player.cwCharacterList[characterID] = character
-          player.cwCharacterList[characterID].key = key
-
-          hook.Run('PlayerCharacterCreated', player, character)
-          self:CharacterScreenAdd(player, character)
-
-          if Callback then
-            Callback()
-          end
-        end)
       end
+
+      self:SaveCharacter(player, true, character, function(key)
+        if !IsValid(player) then return end
+
+        player.cwCharacterList[characterID] = character
+        player.cwCharacterList[characterID].key = key
+
+        hook.Run('PlayerCharacterCreated', player, character)
+        self:CharacterScreenAdd(player, character)
+
+        if Callback then
+          Callback()
+        end
+      end)
+    else
+      player.cwIsCreatingChar = nil
     end
   else
     character = player.cwCharacterList[characterID]
@@ -3680,6 +3762,10 @@ function cw.player:LoadCharacter(player, characterID, tMergeCreate, Callback, bF
       if player:Alive() then
         player:KillSilent()
       end
+
+      -- The previous character's ammo is saved with it above; left on the player, the save below would write it
+      -- into this character too.
+      player:StripAmmo()
 
       if self:SetBasicSharedVars(player) then
         hook.Run('PlayerCharacterLoaded', player)
@@ -3912,7 +3998,7 @@ end
 function cw.player:SaveData(player, bCreate)
   if !bCreate then
     local schemaFolder = cw.core:GetSchemaFolder()
-    local steamName = cwDatabase:Escape(player:SteamName())
+    local steamName = player:SteamName()
     local ipAddress = player:IPAddress()
     local userGroup = player:GetClockworkUserGroup()
     local steamID = player:SteamID()
@@ -3971,9 +4057,6 @@ end
 function cw.player:SaveCharacter(player, bCreate, character, Callback)
   if bCreate then
     local charactersTable = config.Get('mysql_characters_table'):Get()
-    local values = ''
-    local amount = 1
-    local keys = ''
 
     if !character or type(character) != 'table' then
       character = player:GetCharacter()
@@ -4016,8 +4099,10 @@ function cw.player:SaveCharacter(player, bCreate, character, Callback)
     local steamID = player:SteamID()
 
     if !character then
-      character = player:GetCharacter()
+      character = currentCharacter
     end
+
+    if !character then return end
 
     local queryObj = cwDatabase:Update(charactersTable)
       queryObj:Where('_Schema', schemaFolder)

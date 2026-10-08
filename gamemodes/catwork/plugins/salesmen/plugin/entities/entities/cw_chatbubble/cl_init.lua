@@ -13,10 +13,15 @@ end
 function ENT:Think()
   local salesman = self:GetNWEntity('salesman')
 
-  if IsValid(salesman) and salesman:IsValid() then
-    self:SetPos(salesman:GetPos() + Vector(0, 0, 90) + Vector(0, 0, math.sin(UnPredictedCurTime()) * 2.5))
+  if IsValid(salesman) then
+    local curTime = UnPredictedCurTime()
+    local position = salesman:GetPos()
 
-    if self.cwNextChangeAngle <= UnPredictedCurTime() then
+    position.z = position.z + 90 + math.sin(curTime) * 2.5
+
+    self:SetPos(position)
+
+    if self.cwNextChangeAngle <= curTime then
       self:SetAngles(self:GetAngles() + Angle(0, 0.25, 0))
       self.cwNextChangeAngle = self.cwNextChangeAngle + (1 / 60)
     end

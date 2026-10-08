@@ -8,7 +8,8 @@ local PLUGIN = PLUGIN
 
 --- Removes every map entity whose class and exact position match an entry saved for the current map.
 --
--- The loaded entries are kept in `self.removeData`, so later saves include them.
+-- The loaded entries are kept in `self.removeData`, so later saves include them; entries without a class
+-- or a position are dropped.
 -- @see PLUGIN:SaveRemoves
 function PLUGIN:LoadRemoves()
   self.removeData = {}
@@ -17,42 +18,27 @@ function PLUGIN:LoadRemoves()
   local removeData = cw.core:RestoreSchemaData('plugins/removeData/'..game.GetMap())
 
   for k, v in pairs(removeData) do
-    self.removeData[#self.removeData + 1] = v
-  end
+    if istable(v) and isstring(v.class) and isvector(v.position) then
+      self.removeData[#self.removeData + 1] = v
 
-  --[[
-  for k, v in pairs(ents.GetAll()) do
-    if (IsValid(v)) then
-      local position = v:GetPos()
-
-      if (position) then
-        positions[tostring(position)] = v
-      end
+      positions[v.class] = positions[v.class] or {}
+      table.insert(positions[v.class], v.position)
     end
   end
-  --]]
 
-  for k1, v1 in pairs(ents.GetAll()) do
-    for k, v in pairs(removeData) do
-      if v1:GetPos() == v.position and v1:GetClass() == v.class then
-        v1:Remove()
+  for k, v in ipairs(ents.GetAll()) do
+    local classPositions = positions[v:GetClass()]
+
+    if classPositions then
+      local position = v:GetPos()
+
+      for k2, v2 in ipairs(classPositions) do
+        if position == v2 then
+          v:Remove()
+
+          break
+        end
       end
-
-      --[[
-      local entity = positions[tostring(v.position)]
-
-      if (IsValid(entity) and !self.removeData[entity]) then
-        local data = {
-          class = v.class,
-          position = v.position,
-          entity = entity,
-          angle = v.angle,
-          name = v.name
-        }
-
-        self.removeData[data.entity] = data
-      end
-      --]]
     end
   end
 end

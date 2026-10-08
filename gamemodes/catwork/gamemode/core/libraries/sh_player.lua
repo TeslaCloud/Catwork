@@ -97,29 +97,37 @@ cw.player.SetSharedVar = cw.player.SetNetVar
 
 --- Finds an initialized player by part of their name or by Steam ID.
 --
--- The name is matched as a Lua pattern anywhere in the player's name; the first match wins.
--- Passing a valid player returns that player.
+-- The name is matched as plain text anywhere in the player's name. A player whose whole name or
+-- Steam ID matches wins; otherwise the first partial match does. Passing a valid player returns
+-- that player.
 --
 -- @param name [String Part of the player's name or their Steam ID, or a Player]
 -- @param bCaseSensitive=nil [Boolean Match the name case-sensitively]
--- @return [Player The player, or `nil` if nobody matches]
+-- @return [Player The player, or `nil` if nobody matches or `name` is empty]
 function player.Find(name, bCaseSensitive)
-  if name == nil then return end
+  if name == nil or name == '' then return end
   if !isstring(name) then return (IsValid(name) and name) or nil end
+
+  local searchName = (bCaseSensitive and name) or name:utf8lower()
+  local partialMatch
 
   for k, v in ipairs(_player.GetAll()) do
     if !v:HasInitialized() then continue end
 
     local plyName = v:Name(true)
 
-    if !bCaseSensitive and plyName:utf8lower():find(name:utf8lower()) then
+    if !bCaseSensitive then
+      plyName = plyName:utf8lower()
+    end
+
+    if plyName == searchName or v:SteamID() == name then
       return v
-    elseif plyName:find(name) then
-      return v
-    elseif v:SteamID() == name then
-      return v
+    elseif !partialMatch and plyName:find(searchName, 1, true) then
+      partialMatch = v
     end
   end
+
+  return partialMatch
 end
 
 --- Registers a character data type that is networked when it changes.
@@ -207,8 +215,7 @@ end
 --- Returns whether a player's rank allows them to promote a target.
 --
 -- The player's rank must have a `canPromote` position, which must be less than or equal to the
--- target's rank position, and the target must not already hold the highest rank. Calls
--- `player:Faction()`, which is not defined, so it errors once the player's rank has `canPromote`.
+-- target's rank position, and the target must not already hold the highest rank.
 --
 -- @param player [Player The player doing the promotion]
 -- @param target [Player The player who would be promoted]
@@ -217,14 +224,12 @@ end
 function cw.player:CanPromote(player, target)
   local stringRank, rank = self:GetFactionRank(player)
 
-  if rank then
-    if rank.canPromote then
-      local stringTargetRank, targetRank = self:GetFactionRank(target)
-      local highestRank, rankTable = faction.GetHighestRank(player:Faction()).position
+  if rank and rank.canPromote then
+    local stringTargetRank, targetRank = self:GetFactionRank(target)
+    local highestRank, rankTable = faction.GetHighestRank(player:GetFaction())
 
-      if targetRank.position and targetRank.position != rankTable.position then
-        return (rank.canPromote <= targetRank.position)
-      end
+    if targetRank and targetRank.position and rankTable and targetRank.position != rankTable.position then
+      return (rank.canPromote <= targetRank.position)
     end
   end
 end
@@ -232,8 +237,7 @@ end
 --- Returns whether a player's rank allows them to demote a target.
 --
 -- The player's rank must have a `canDemote` position, which must be less than or equal to the
--- target's rank position, and the target must not already hold the lowest rank. Calls
--- `player:Faction()`, which is not defined, so it errors once the player's rank has `canDemote`.
+-- target's rank position, and the target must not already hold the lowest rank.
 --
 -- @param player [Player The player doing the demotion]
 -- @param target [Player The player who would be demoted]
@@ -242,14 +246,12 @@ end
 function cw.player:CanDemote(player, target)
   local stringRank, rank = self:GetFactionRank(player)
 
-  if rank then
-    if rank.canDemote then
-      local stringTargetRank, targetRank = self:GetFactionRank(target)
-      local lowestRank, rankTable = faction.GetLowestRank(player:Faction()).position
+  if rank and rank.canDemote then
+    local stringTargetRank, targetRank = self:GetFactionRank(target)
+    local lowestRank, rankTable = faction.GetLowestRank(player:GetFaction())
 
-      if targetRank.position and targetRank.position != rankTable.position then
-        return (rank.canDemote <= targetRank.position)
-      end
+    if targetRank and targetRank.position and rankTable and targetRank.position != rankTable.position then
+      return (rank.canDemote <= targetRank.position)
     end
   end
 end

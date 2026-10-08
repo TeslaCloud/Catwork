@@ -10,19 +10,21 @@ COMMAND.arguments = 1
 
 --- Unbans a character by name, online or in the database; the argument is the character name.
 function COMMAND:OnRun(player, arguments)
-  local charName = string.lower(arguments[1])
+  local charName = arguments[1]
+  local lowerName = string.lower(charName)
+  local playerName = player:Name()
 
   for k, v in ipairs(_player.GetAll()) do
     if v:HasInitialized() then
-      if string.lower(v:Name()) == charName then
-        cw.player:NotifyAll(L('Command_Charunban_Unbanned', player:Name(), arguments[1]))
+      if string.lower(v:Name()) == lowerName then
+        cw.player:NotifyAll(L('Command_Charunban_Unbanned', playerName, charName))
         cw.player:SetBanned(v, false)
 
         return
       else
         for k2, v2 in pairs(v:GetCharacters()) do
-          if string.lower(v2.name) == charName then
-            cw.player:NotifyAll(L('Command_Charunban_Unbanned', player:Name(), arguments[1]))
+          if string.lower(v2.name) == lowerName then
+            cw.player:NotifyAll(L('Command_Charunban_Unbanned', playerName, charName))
 
             v2.data['CharBanned'] = false
 
@@ -33,20 +35,18 @@ function COMMAND:OnRun(player, arguments)
     end
   end
 
-  local charactersTable = 'characters'
-  local charName = arguments[1]
-
+  local charactersTable = config.GetVal('mysql_characters_table')
   local queryObj = cw.database:Select(charactersTable)
     queryObj:Where('_Name', charName)
     queryObj:Callback(function(result)
       if cw.database:IsResult(result) then
         local queryObj = cw.database:Update(charactersTable)
           queryObj:Where('_Name', charName)
-          queryObj:Update('_Data', string.gsub(result[1]._Data or '', '"CharBanned":true', '"CharBanned":false'))
+          queryObj:Update('_Data', (string.gsub(result[1]._Data or '', '"CharBanned":true', '"CharBanned":false')))
         queryObj:Execute()
 
-        cw.player:NotifyAll(L('Command_Charunban_Unbanned', player:Name(), arguments[1]))
-      else
+        cw.player:NotifyAll(L('Command_Charunban_Unbanned', playerName, charName))
+      elseif IsValid(player) then
         cw.player:Notify(player, L('NotValidCharacter', charName))
       end
     end)

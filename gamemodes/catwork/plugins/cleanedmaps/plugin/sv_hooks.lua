@@ -67,6 +67,8 @@ function cwCleanedMaps:InitPostEntity()
     for k2, v2 in pairs(gunButtons) do
       if string.find(string.lower(v:GetName()), v2) then
         v:Remove()
+
+        break
       end
     end
   end
@@ -86,9 +88,7 @@ function cwCleanedMaps:InitPostEntity()
   timer.Simple(1, function()
     local specialDoor = ents.FindByName('JailFl1SCP')
     local coreTwo = ents.FindByName('core_refract2')
-    local coreTwo = ents.FindByName('core_refract2')
 
-    if coreOne and IsValid(coreOne[1]) then coreOne[1]:Remove() end
     if coreTwo and IsValid(coreTwo[1]) then coreTwo[1]:Remove() end
 
     if specialDoor and IsValid(specialDoor[1]) then

@@ -15,7 +15,7 @@ ITEM.description = '#Item_OrangeCleaned_Description'
 
 --- Heals the player by 15 and boosts endurance and strength by 10 for two minutes.
 function ITEM:OnUse(player, itemEntity)
-  player:SetHealth(math.Clamp(player:Health() + 15, 0, 100))
+  player:SetHealth(math.Clamp(player:Health() + 15, 0, player:GetMaxHealth()))
 
   player:BoostAttribute(self.name, ATB_ENDURANCE, 10, 120)
   player:BoostAttribute(self.name, ATB_STRENGTH, 10, 120)

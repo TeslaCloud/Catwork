@@ -2,7 +2,8 @@
 --
 -- Derived items set `playerSkin`, and optionally `protection` (percent of damage absorbed) and `isCombine` (Combine
 -- players can only wear items marked with it). Wearing goes through `Player:SetSkinClothes`, the item stays in the
--- inventory, and it is taken off, resetting the skin to 0, when dropped, sold, stored or unequipped.
+-- inventory, and it is taken off, resetting the skin to 0, when dropped, sold, stored, unequipped or taken from the
+-- inventory in any other way.
 --
 -- Originally written for the Global Cooldown community.
 
@@ -46,18 +47,26 @@ end
 
 --- Wears the item with `Player:SetSkinClothes` and keeps it in the inventory.
 --
--- Combine players can only wear items marked `isCombine`.
+-- Combine players can only wear items marked `isCombine`, and dead or ragdolled players
+-- cannot wear anything.
+--
+-- @return [Boolean `true` when worn, `false` otherwise; either way the item is kept]
 function ITEM:OnUse(player, itemEntity)
-  if (!player:IsCombine() or self.isCombine) and self.playerSkin != -1 then
-    if player:Alive() and !player:IsRagdolled() then
-      player:SetSkinClothes(self)
-      return true
-    end
-  else
+  if (player:IsCombine() and !self.isCombine) or self.playerSkin == -1 then
     cw.player:Notify(player, '#ITEM_ErrCantWear')
 
     return false
   end
+
+  if !player:Alive() or player:IsRagdolled() then
+    cw.player:Notify(player, '#CantDoThisNow')
+
+    return false
+  end
+
+  player:SetSkinClothes(self)
+
+  return true
 end
 
 --- Takes the item off when it is dropped while worn.
@@ -130,4 +139,11 @@ end
 --- Takes the item off when the player unequips it.
 function ITEM:OnPlayerUnequipped(player, extraData)
   player:SetSkinClothes(self, true)
+end
+
+--- Takes the item off when it is taken from the player's inventory while worn.
+function ITEM:OnTakeFromPlayer(player)
+  if self:HasPlayerEquipped(player) then
+    player:SetSkinClothes(self, true)
+  end
 end

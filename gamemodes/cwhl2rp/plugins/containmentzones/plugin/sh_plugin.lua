@@ -68,54 +68,98 @@ if SERVER then
     end
   end
 
-  local function CheckRadSphere(pos, radius, rad)
-    for k, v in pairs(ents.FindInSphere(pos, radius)) do
-      if !v:IsPlayer() then continue end
+  --- Returns a zone's bounds as plain numbers, which are much cheaper to compare than vectors.
+  --
+  -- The bounds are worked out once and kept on the zone as `bounds`. A box zone's corners can be given in any
+  -- order.
+  --
+  -- @param zone [Map The zone, from `cwRadSystem.stored`]
+  -- @return [Map `x`, `y`, `z` and `radiusSqr` for a sphere zone; `minX` to `maxZ` for a box zone]
+  local function GetZoneBounds(zone)
+    local bounds = zone.bounds
 
-      v:SetNWBool('inRadArea', true)
-      v.inRadArea = CurTime() + 1
-      v.radEffects[#v.radEffects + 1] = rad
+    if bounds then return bounds end
+
+    local pos, pos1, pos2 = zone.pos, zone.pos1, zone.pos2
+
+    bounds = {}
+
+    if pos and zone.radius then
+      bounds.x, bounds.y, bounds.z = pos.x, pos.y, pos.z
+      bounds.radiusSqr = zone.radius * zone.radius
     end
+
+    if pos1 and pos2 then
+      bounds.minX, bounds.maxX = math.min(pos1.x, pos2.x), math.max(pos1.x, pos2.x)
+      bounds.minY, bounds.maxY = math.min(pos1.y, pos2.y), math.max(pos1.y, pos2.y)
+      bounds.minZ, bounds.maxZ = math.min(pos1.z, pos2.z), math.max(pos1.z, pos2.z)
+    end
+
+    zone.bounds = bounds
+
+    return bounds
   end
 
-  local function CheckRadBox(pos1, pos2, rad)
-    for k, v in pairs(ents.FindInBox(pos1, pos2)) do
-      if !v:IsPlayer() then continue end
+  --- Returns the strongest radiation among the zones that a bounding box touches.
+  -- @param zones [Map The zones, from `cwRadSystem.stored`]
+  -- @param mins [Vector Lower corner of the box, in world space]
+  -- @param maxs [Vector Upper corner of the box, in world space]
+  -- @return [Number The radiation level, at least 0, or `nil` when the box touches no zone]
+  local function GetZoneRadiation(zones, mins, maxs)
+    local minX, minY, minZ = mins.x, mins.y, mins.z
+    local maxX, maxY, maxZ = maxs.x, maxs.y, maxs.z
+    local strongest = nil
 
-      v:SetNWBool('inRadArea', true)
-      v.inRadArea = CurTime() + 1
-      v.radEffects[#v.radEffects + 1] = rad
+    for k, zone in pairs(zones) do
+      local bounds = GetZoneBounds(zone)
+      local bInside = false
+
+      if bounds.radiusSqr then
+        -- Distance from the sphere's centre to the closest point of the box.
+        local x = math.Clamp(bounds.x, minX, maxX) - bounds.x
+        local y = math.Clamp(bounds.y, minY, maxY) - bounds.y
+        local z = math.Clamp(bounds.z, minZ, maxZ) - bounds.z
+
+        bInside = (x * x + y * y + z * z) <= bounds.radiusSqr
+      end
+
+      if !bInside and bounds.minX then
+        bInside = minX <= bounds.maxX and maxX >= bounds.minX
+          and minY <= bounds.maxY and maxY >= bounds.minY
+          and minZ <= bounds.maxZ and maxZ >= bounds.minZ
+      end
+
+      if bInside then
+        strongest = math.max(strongest or 0, zone.rad or 0)
+      end
     end
+
+    return strongest
   end
 
   --- Called every half second; finds the players inside containment zones.
   --
-  -- Resets every player's `inRadArea` flag, flags the players inside each stored sphere or
-  -- box zone and runs `OnPlayerInContainmentArea` for each living flagged player with the
-  -- strongest radiation level among the zones they stand in.
+  -- Networks every player's `inRadArea` flag and runs `OnPlayerInContainmentArea` for each living player with a
+  -- character who touches a sphere or box zone, or left one less than a second ago, with the strongest radiation
+  -- level among the zones they are in (0 after leaving).
   function cwRadSystem:HalfSecond()
-    for k, v in pairs(player.GetAll()) do
-      v.radEffects = {}
-      v:SetNWBool('inRadArea', false)
-    end
+    local curTime = CurTime()
+    local zones = self.stored
 
-    for k, zone in pairs(self.stored) do
-      if zone.pos then
-        CheckRadSphere(zone.pos, zone.radius, zone.rad)
+    for k, v in ipairs(player.GetAll()) do
+      local rad = GetZoneRadiation(zones, v:WorldSpaceAABB())
+      local bInside = (rad != nil)
+
+      if v:GetNWBool('inRadArea') != bInside then
+        v:SetNWBool('inRadArea', bInside)
       end
 
-      if zone.pos1 then
-        if zone.pos2 then
-          CheckRadBox(zone.pos1, zone.pos2, zone.rad)
-        end
+      if bInside then
+        v.inRadArea = curTime + 1
       end
-    end
 
-    for k, v in pairs(player.GetAll()) do
-      if !v:Alive() then continue end
-
-      if v.inRadArea and v.inRadArea >= CurTime() then
-        hook.Run('OnPlayerInContainmentArea', v, math.max(0, unpack(v.radEffects)))
+      if v.inRadArea and v.inRadArea >= curTime and v:Alive() and v:HasInitialized() then
+        hook.Run('OnPlayerInContainmentArea', v, rad or 0)
       end
     end
   end
@@ -290,7 +334,7 @@ if SERVER then
             cw.player:SetRagdollState(ply, RAGDOLL_KNOCKEDOUT, math.random(5, 15))
             chatbox.AddText(
               ply,
-              '** Вы сильно устали, и Вам очень плохо. Вы ощущаете жар по всему телу...',
+              L('Containment_RadKnockout'),
               { textColor = Color('#89D235'), filter = 'player_events', icon = false }
             )
             ply.nextRadFall = CurTime() + 20
@@ -310,7 +354,6 @@ if SERVER then
     if !ply.lastRadMessageTime then ply.lastRadMessageTime = CurTime() end
 
     if ply.lastRadMessageTime and CurTime() >= ply.lastRadMessageTime then
-      -- cw.chatBox:Add(ply, nil, "sleep", "** " .. text)
       chatbox.AddText(ply, text, { textColor = Color('#89D235'), filter = 'player_events', icon = false })
 
       if ply.lastRadMessage != text then
@@ -333,52 +376,34 @@ if SERVER then
     end
 
     if newrad > 899 then
-      ply:BoostAttribute('Radiation', ATB_ACROBATICS, -60)
       ply:BoostAttribute('Radiation', ATB_ENDURANCE, -60)
       ply:BoostAttribute('Radiation', ATB_STRENGTH, -60)
       ply:BoostAttribute('Radiation', ATB_AGILITY, -60)
-      ply:BoostAttribute('Radiation', ATB_DEXTERITY, -60)
-      ply:BoostAttribute('Radiation', ATB_STAMINA, -60)
       self:RadMessage(ply, L('Containment_RadSickness_Stage5'))
     elseif newrad > 599 then
-      ply:BoostAttribute('Radiation', ATB_ACROBATICS, -15)
       ply:BoostAttribute('Radiation', ATB_ENDURANCE, -30)
       ply:BoostAttribute('Radiation', ATB_STRENGTH, -30)
       ply:BoostAttribute('Radiation', ATB_AGILITY, -30)
-      ply:BoostAttribute('Radiation', ATB_DEXTERITY, -30)
-      ply:BoostAttribute('Radiation', ATB_STAMINA, -30)
       self:RadMessage(ply, L('Containment_RadSickness_Stage4'))
     elseif newrad > 449 then
-      ply:BoostAttribute('Radiation', ATB_ACROBATICS, -10)
       ply:BoostAttribute('Radiation', ATB_ENDURANCE, -30)
       ply:BoostAttribute('Radiation', ATB_STRENGTH, -10)
       ply:BoostAttribute('Radiation', ATB_AGILITY, -15)
-      ply:BoostAttribute('Radiation', ATB_DEXTERITY, -15)
-      ply:BoostAttribute('Radiation', ATB_STAMINA, -20)
       self:RadMessage(ply, L('Containment_RadSickness_Stage3'))
     elseif newrad > 299 then
-      ply:BoostAttribute('Radiation', ATB_ACROBATICS, -2)
       ply:BoostAttribute('Radiation', ATB_ENDURANCE, -3)
       ply:BoostAttribute('Radiation', ATB_STRENGTH, -5)
       ply:BoostAttribute('Radiation', ATB_AGILITY, -10)
-      ply:BoostAttribute('Radiation', ATB_DEXTERITY, -10)
-      ply:BoostAttribute('Radiation', ATB_STAMINA, -10)
       self:RadMessage(ply, L('Containment_RadSickness_Stage2'))
     elseif newrad > 149 then
-      ply:BoostAttribute('Radiation', ATB_ACROBATICS, -1)
       ply:BoostAttribute('Radiation', ATB_ENDURANCE, -2)
       ply:BoostAttribute('Radiation', ATB_STRENGTH, -2)
       ply:BoostAttribute('Radiation', ATB_AGILITY, -5)
-      ply:BoostAttribute('Radiation', ATB_DEXTERITY, -2)
-      ply:BoostAttribute('Radiation', ATB_STAMINA, -2)
       self:RadMessage(ply, L('Containment_RadSickness_Stage1'))
     else
-      ply:BoostAttribute('Radiation', ATB_ACROBATICS, false)
       ply:BoostAttribute('Radiation', ATB_ENDURANCE, false)
       ply:BoostAttribute('Radiation', ATB_STRENGTH, false)
       ply:BoostAttribute('Radiation', ATB_AGILITY, false)
-      ply:BoostAttribute('Radiation', ATB_DEXTERITY, false)
-      ply:BoostAttribute('Radiation', ATB_STAMINA, false)
     end
   end
 
@@ -452,6 +477,9 @@ if SERVER then
     end
   end)
 else
+  local colorFilterBar = Color(130, 130, 130)
+  local colorZone = Color(255, 0, 0)
+
   cwRadSystem.localstored = cwRadSystem.localstored or {}
   cwRadSystem.show = false
 
@@ -485,8 +513,9 @@ else
     local rad = LP:GetCharacterData('radlevel', 0) or 0
 
     if rad > 449 then
-      local raddelta = LP:GetCharacterData('radlevel', 0) / (1000 + 449)
-      local mod = (0.5 * raddelta) * (LP:GetMaxHealth() / LP:Health())
+      local raddelta = rad / (1000 + 449)
+      -- A dead player has no health, and the bloom must not be given an infinite strength.
+      local mod = (0.5 * raddelta) * (LP:GetMaxHealth() / math.max(LP:Health(), 1))
       local sinScaler = math.sin(CT * mod)
       DrawBloom(
         0,
@@ -500,28 +529,18 @@ else
         0
       )
     end
-
-    -- if rad > 299 then
-    --	local raddelta = LP:GetCharacterData("radlevel", 0)/(1000+299)
-    --	DrawMotionBlur(0.4, 1 * raddelta, 0)
-    --- end
   end
 
   --- Plays the local player's Geiger counter clicks.
   --
   -- While the player is inside a containment zone, picks a click chance and volume from the
-  -- networked `radLevel` and plays a `player/geiger` sound. Runs at most every 0.06 seconds.
+  -- networked `radLevel` and plays a `player/geiger` sound.
   function cwRadSystem:GeigerThink()
     local LP = cw.client
     local highsound = false
     local pct = 0
     local flvol = 0
     local radlevel = LP:GetNWInt('radLevel') or 0
-
-    if !self.LastSound then self.LastSound = CurTime() end
-    if (CurTime() - self.LastSound) < 0.06 then return end
-
-    self.LastSound = CurTime()
 
     if LP:GetNWBool('inRadArea') then
       if radlevel > 199 then
@@ -581,8 +600,18 @@ else
   end
 
   --- Called every frame; runs `cwRadSystem:GeigerThink` when the local player has a Geiger counter.
+  --
+  -- Runs at most every 0.06 seconds, and only while the player is inside a containment zone.
   function cwRadSystem:Think()
+    local curTime = CurTime()
+
+    if self.LastSound and (curTime - self.LastSound) < 0.06 then return end
+
+    self.LastSound = curTime
+
     local LP = cw.client
+
+    if !IsValid(LP) or !LP:GetNWBool('inRadArea') then return end
 
     if self:PlayerHasGeigerCounter(LP) then
       self:GeigerThink()
@@ -594,11 +623,11 @@ else
   -- @param bars [Map The HUD bars being built]
   function cwRadSystem:GetBars(bars)
     local LP = cw.client
-    local cp_filter = LP:GetCharacterData('cp_filter') or 0
 
     if LP:GetFaction() == FACTION_MPF then
-      local delta = math.floor(cp_filter)
-      cw.bars:Add('ФИЛЬТР', Color(130, 130, 130), nil, cp_filter, 100, cp_filter < 90)
+      local cp_filter = LP:GetCharacterData('cp_filter') or 0
+
+      cw.bars:Add('#Containment_FilterBar', colorFilterBar, nil, cp_filter, 100, cp_filter < 90)
     end
   end
 
@@ -606,24 +635,23 @@ else
   --
   -- When resistance reduces the absorbed amount, it is shown in brackets after the zone value.
   function cwRadSystem:HUDPaint()
-    local LocalPlayer = LocalPlayer()
-    local hasgeiger = self:PlayerHasGeigerCounter(LocalPlayer)
+    local client = LocalPlayer()
+    local radzonelevel = math.Round(client:GetNWInt('radLevel'), 1) or 0
+
+    -- The cheap check goes first: looking for a Geiger counter searches the inventory.
+    if radzonelevel <= 0 or !self:PlayerHasGeigerCounter(client) then return end
+
     local resist = ''
-    local radzonelevel = math.Round(LocalPlayer:GetNWInt('radLevel'), 1) or 0
-    local radzonelevel2 = math.Round(LocalPlayer:GetNWInt('radLevelRes'), 1) or 0
+    local radzonelevel2 = math.Round(client:GetNWInt('radLevelRes'), 1) or 0
 
     if radzonelevel2 != radzonelevel then
       resist = ' ('..radzonelevel2..')'
     end
 
-    if hasgeiger then
-      if radzonelevel > 0 then
-        surface.SetFont('hl2_CinematicText')
-        surface.SetTextColor(255, 0, 0, 255)
-        surface.SetTextPos(64, ScrH() / 3)
-        surface.DrawText(radzonelevel..resist..' '..L('#Containment_RadPerSecond'))
-      end
-    end
+    surface.SetFont('hl2_CinematicText')
+    surface.SetTextColor(255, 0, 0, 255)
+    surface.SetTextPos(64, ScrH() / 3)
+    surface.DrawText(radzonelevel..resist..' '..L('#Containment_RadPerSecond'))
   end
 
   hook.Add('PostDrawOpaqueRenderables', 'ContainmentArea', function()
@@ -631,14 +659,12 @@ else
     if !LocalPlayer():IsSuperAdmin() then return end
 
     for k, v in pairs(cwRadSystem.localstored) do
-      if v.pos then
-        render.DrawWireframeSphere(v.pos, v.radius, 10, 10, Color(255, 0, 0), true)
+      if v.pos and v.radius then
+        render.DrawWireframeSphere(v.pos, v.radius, 10, 10, colorZone, true)
       end
 
-      if v.pos1 then
-        if v.pos2 then
-          render.DrawWireframeBox(Vector(0, 0, 0), Angle(0, 0, 0), v.pos1, v.pos2, Color(255, 0, 0), true)
-        end
+      if v.pos1 and v.pos2 then
+        render.DrawWireframeBox(vector_origin, angle_zero, v.pos1, v.pos2, colorZone, true)
       end
     end
   end)

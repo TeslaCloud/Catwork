@@ -60,22 +60,22 @@ end
 -- @see cw.character:RegisterCreationPanel
 function cw.character:RemoveCreationPanel(name)
   local removed = false
-  local index
 
-  for k, v in pairs(self.creationPanels) do
+  -- Backwards, so that removing a step does not skip the one after it.
+  for k = #self.creationPanels, 1, -1 do
+    local v = self.creationPanels[k]
+
     if name == v.vguiName or name == v.friendlyName then
-      index = v.index
       removed = true
 
       table.remove(self.creationPanels, k)
     end
   end
 
-  if removed == true then
-    for k, v in pairs(cw.character.creationPanels) do
-      if v.index >= index then
-        v.index = v.index - 1
-      end
+  if removed then
+    -- A step's index is its place in the list.
+    for k, v in ipairs(self.creationPanels) do
+      v.index = k
     end
   end
 end
@@ -218,7 +218,7 @@ end
 --- Sets whether the character menu is waiting for the character list.
 -- @param loading [Boolean Whether the menu is loading]
 function cw.character:SetPanelLoading(loading)
-  self.loading = loading
+  self.isLoading = loading
 end
 
 --- Returns whether the character menu is waiting for the character list.

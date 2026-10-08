@@ -27,7 +27,8 @@ end
 if SERVER then
   --- Sets one of the player's permissions and stores it in the player's data.
   --
-  -- The ID is stored as given, without lowercasing. Does nothing when `id` is not a string.
+  -- The ID is lowercased, as `Player:HasPermission` looks it up. Does nothing when `id` is not a
+  -- string.
   --
   -- @param id [String Permission ID]
   -- @param value [Any New value, normally `true` or `false`]
@@ -35,6 +36,8 @@ if SERVER then
   -- @see Player:HasPermission
   function playerMeta:SetPermission(id, value)
     if !isstring(id) then return end
+
+    id = string.lower(id)
 
     local permissions = self:GetData('permissions', {})
     local bHasChanged = (permissions[id] != value)

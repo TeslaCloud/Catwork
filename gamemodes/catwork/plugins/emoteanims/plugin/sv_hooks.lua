@@ -55,42 +55,34 @@ end
 -- @param infoTable [Map The player's think info]
 function cwEmoteAnims:PlayerThink(player, curTime, infoTable)
   local forcedAnimation = player:GetForcedAnimation()
-  local isMoving = false
-  local uniqueID = player:SteamID64()
-
-  if player:KeyDown(IN_FORWARD) or player:KeyDown(IN_BACK) or player:KeyDown(IN_MOVELEFT)
-  or player:KeyDown(IN_MOVERIGHT) then
-    isMoving = true
-  end
 
   if forcedAnimation and self.stanceList[forcedAnimation.animation] then
-    local plyPos = player:GetPos()
+    local stancePos = player:GetNetVar('StancePos')
 
-    local tr = util.TraceLine({
+    if !stancePos then return end
+
+    local plyPos = player:GetPos()
+    local ground = util.TraceLine({
       start = plyPos - Vector(0, 0, 4),
       endpos = plyPos - Vector(0, 0, 24)
-    })
+    }).Entity
+    local bExit = (ground == NULL)
 
-    if player:GetNetVar('StancePos') then
-      if tr.Entity != NULL then
-        if player:GetPos():Distance(player:GetNetVar('StancePos')) > 16 or !player:IsOnGround() or isMoving
-        or (tr.Entity:GetClass() != 'prop_physics' and tr.Entity:GetClass() != 'prop_static'
-        and tr.Entity:GetClass() != 'worldspawn') then
-          player:SetForcedAnimation(false)
-          player.cwPreviousPos = nil
-          player:SetNetVar('StancePos', Vector(0, 0, 0))
-          player:SetNetVar('StanceAng', nil)
-          player:SetNetVar('StanceIdle', false)
-        end
-      else
-        player:SetForcedAnimation(false)
-        player.cwPreviousPos = nil
-        player:SetNetVar('StancePos', Vector(0, 0, 0))
-        player:SetNetVar('StanceAng', nil)
-        player:SetNetVar('StanceIdle', false)
-      end
+    if !bExit then
+      local class = ground:GetClass()
+
+      bExit = plyPos:Distance(stancePos) > 16 or !player:IsOnGround()
+        or player:KeyDown(IN_FORWARD) or player:KeyDown(IN_BACK) or player:KeyDown(IN_MOVELEFT)
+        or player:KeyDown(IN_MOVERIGHT)
+        or (class != 'prop_physics' and class != 'prop_static' and class != 'worldspawn')
+    end
+
+    if bExit then
+      self:MakePlayerExitStance(player, true)
     end
   elseif self:IsPlayerInStance(player) then
+    local uniqueID = player:SteamID64()
+
     if !timer.Exists('ExitStance'..uniqueID) then
       timer.Create('ExitStance'..uniqueID, 1, 1, function()
         if IsValid(player) then

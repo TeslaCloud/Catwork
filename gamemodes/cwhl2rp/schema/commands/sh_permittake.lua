@@ -11,11 +11,11 @@ function COMMAND:OnRun(player, arguments)
     if !Schema:IsPlayerCombineRank(player, 'RCT') then
       local target = player:GetEyeTraceNoCursor().Entity
 
-      if target and target:IsPlayer() then
+      if IsValid(target) and target:IsPlayer() then
         if target:GetShootPos():Distance(player:GetShootPos()) <= 192 then
           if target:GetFaction() == FACTION_CITIZEN then
             for k, v in pairs(Schema.customPermits) do
-              cw.player:TakeFlags(target, v)
+              cw.player:TakeFlags(target, v.flag)
             end
 
             cw.player:Notify(player, L('Permit_Taken'))

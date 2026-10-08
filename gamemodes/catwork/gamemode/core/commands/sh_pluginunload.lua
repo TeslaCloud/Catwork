@@ -12,22 +12,22 @@ COMMAND.arguments = 1
 --
 -- Players who may use this command are sent the new plugin state.
 function COMMAND:OnRun(player, arguments)
-  local plugin = plugin.FindByID(arguments[1])
+  local pluginTable = plugin.FindByID(arguments[1])
 
-  if !plugin then
+  if !pluginTable then
     cw.player:Notify(player, L('PluginManage_NotValid'))
     return
   end
 
-  local unloadTable = cw.command:FindByID('PluginLoad')
+  local unloadTable = cw.command:FindByID('PluginUnload')
   local loadTable = cw.command:FindByID('PluginLoad')
 
-  if !plugin.IsDisabled(plugin.name) then
-    local bSuccess = plugin.SetUnloaded(plugin.name, true)
+  if !plugin.IsDisabled(pluginTable.name) then
+    local bSuccess = plugin.SetUnloaded(pluginTable.name, true)
     local recipients = {}
 
     if bSuccess then
-      cw.player:NotifyAll(L('PluginManage_Unloaded', player:Name(), plugin.name))
+      cw.player:NotifyAll(L('PluginManage_Unloaded', player:Name(), pluginTable.name))
 
       for k, v in ipairs(_player.GetAll()) do
         if v:HasInitialized() then
@@ -39,7 +39,7 @@ function COMMAND:OnRun(player, arguments)
       end
 
       if #recipients > 0 then
-        netstream.Start(recipients, 'SystemPluginSet', { plugin.name, true })
+        netstream.Start(recipients, 'SystemPluginSet', { pluginTable.name, true })
       end
     else
       cw.player:Notify(player, L('PluginManage_CouldNotUnload'))

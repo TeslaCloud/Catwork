@@ -10,7 +10,8 @@ local stored = cw.currency.stored or {}
 cw.currency.stored = stored
 
 --[[ Set the __index meta function of the class. --]]
-local CLASS_TABLE = { __index = CLASS_TABLE }
+local CLASS_TABLE = {}
+CLASS_TABLE.__index = CLASS_TABLE
 
 --- Makes the currency object callable as a shorthand for `CLASS_TABLE:Query`.
 --
@@ -53,16 +54,12 @@ end
 
 --- Sets a value in the currency's data.
 --
--- Also stores the currency object in the currency list under `key`.
---
 -- @param key [String Data key to set]
 -- @param value [Any New value]
 function CLASS_TABLE:SetData(key, value)
   if self.data then
     self.data[key] = value
   end
-
-  stored[key] = self
 end
 
 --- Returns the currency's world model.
@@ -112,13 +109,11 @@ function cw.currency:Add(name, model, defaultValue)
       currencyObject:SetModel(model)
     end
 
-    if defaultValue != 0 then
+    if defaultValue != nil and defaultValue != 0 then
       currencyObject:SetDefault(defaultValue)
     end
 
-    if currencyObject.data then
-      stored[key] = currencyObject
-    end
+    stored[key] = currencyObject
 
     return currencyObject
   end

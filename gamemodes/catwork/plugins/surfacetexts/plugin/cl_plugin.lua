@@ -35,11 +35,13 @@ function cwSurfaceTexts:RemoveAtTrace(trace)
   local hitPos = trace.HitPos
   local traceStart = trace.StartPos
 
+  local font = cw.option:GetFont('surface_text_font')
+
   for k, v in pairs(self.stored) do
     local pos = v.pos
     local normal = v.normal
     local ang = normal:Angle()
-    local w, h = util.GetTextSize(cw.option:GetFont('large_3d_2d'), v.text)
+    local w, h = util.GetTextSize(font, v.text)
 
     local startPos = pos - -ang:Right() * (w / 22) * v.scale
     local endPos = pos + -ang:Right() * (w / 22) * v.scale

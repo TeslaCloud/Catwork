@@ -7,6 +7,8 @@
 include('shared.lua')
 
 local material = Material('effects/com_shield003a')
+local boundsOffset = Vector(0, 0, 40)
+local angleFlip = Angle(0, 180, 0)
 
 --- Builds the field's collision mesh between this post and the wall up to 600 units to its side.
 function ENT:Initialize()
@@ -43,14 +45,14 @@ function ENT:Draw()
 
   if IsValid(post) then
     local vertex = self:WorldToLocal(post:GetPos())
-    self:SetRenderBounds(vector_origin - Vector(0, 0, 40), vertex + self:GetUp() * 150)
+    self:SetRenderBounds(vector_origin - boundsOffset, vertex + self:GetUp() * 150)
 
     cam.PushModelMatrix(matrix)
     self:DrawShield(vertex)
     cam.PopModelMatrix()
 
     matrix:Translate(vertex)
-    matrix:Rotate(Angle(0, 180, 0))
+    matrix:Rotate(angleFlip)
 
     cam.PushModelMatrix(matrix)
     self:DrawShield(vertex)

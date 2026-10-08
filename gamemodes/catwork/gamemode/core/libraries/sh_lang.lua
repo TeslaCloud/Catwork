@@ -83,25 +83,28 @@ function cw.lang:Set(language) end
 --
 -- @param language [String Language code]
 -- @param identifier [String Phrase identifier, including the leading `#`]
--- @param arguments={} [List Values that replace `#1`, `#2`...; converted with `tostring`]
+-- @param arguments=nil [List Values that replace `#1`, `#2`...; converted with `tostring`]
 -- @return [String The translated text]
 function cw.lang:GetString(language, identifier, arguments)
-  local langString = nil
-  arguments = arguments or {}
-
-  if stored[language] then
-    langString = stored[language][identifier]
-  end
+  local langTable = stored[language]
+  local langString = langTable and langTable[identifier]
 
   if !langString then
-    langString = stored['en'][identifier] or identifier
+    local english = stored['en']
+
+    langString = (english and english[identifier]) or identifier
   end
 
-  for k, v in pairs(arguments) do
-    langString = string.gsub(langString, '#'..k, tostring(v), 1)
+  if arguments then
+    for k, v in pairs(arguments) do
+      -- Arguments are often player-written text, and a '%' is special in a gsub replacement.
+      langString = string.gsub(langString, '#'..k, (string.gsub(tostring(v), '%%', '%%%%')), 1)
+    end
   end
 
-  langString = langString:Replace(';', '')
+  if string.find(langString, ';', 1, true) then
+    langString = string.gsub(langString, ';', '')
+  end
 
   return langString
 end
@@ -109,6 +112,7 @@ end
 if CLIENT then
   -- gmod_language is blocked from Lua, so the settings menu writes this instead. Empty means "follow the game".
   local cwLanguage = CreateClientConVar('cwLanguage', '', true, false, 'Interface language, empty to follow the game.')
+  local gmodLanguage
 
   --- Returns the language the interface is shown in.
   --
@@ -119,7 +123,8 @@ if CLIENT then
     local lang = cwLanguage:GetString()
 
     if lang == '' then
-      lang = GetConVar('gmod_language'):GetString()
+      gmodLanguage = gmodLanguage or GetConVar('gmod_language')
+      lang = gmodLanguage:GetString()
     end
 
     return lang
@@ -141,26 +146,27 @@ if CLIENT then
   function L(identifier)
     if !identifier then return '' end
 
-    local lang = cw.lang:GetLanguage()
-    local args = {}
+    local args
 
     -- Get all the arguments.
-    if string.find(identifier, ';') then
+    if string.find(identifier, ';', 1, true) then
       args = string.Explode(',', identifier)
 
-      local colon = args[1]:find(':')
+      local colon = string.find(args[1], ':', 1, true)
 
       if colon then
         -- The first result will always be the base identifier.
-        identifier = args[1]:sub(1, colon - 1)
-        args[1] = args[1]:sub(colon + 1, args[1]:len())
+        identifier = string.sub(args[1], 1, colon - 1)
+        args[1] = string.sub(args[1], colon + 1)
       end
     end
 
-    return cw.lang:GetString(lang, identifier, args)
+    return cw.lang:GetString(cw.lang:GetLanguage(), identifier, args)
   end
 
-  surface.bTranslating = surface.bTranslating or true
+  if surface.bTranslating == nil then
+    surface.bTranslating = true
+  end
 
   --- Turns automatic translation of drawn text and panel text on or off.
   --
@@ -197,6 +203,16 @@ if CLIENT then
   -- @param sText [String Text containing phrases]
   -- @return [String The text with every phrase translated]
   function cw.lang:TranslateText(sText)
+    -- This runs for every text that is drawn or measured, and most of it has no phrases.
+    if !string.find(sText, '#', 1, true) then
+      return sText
+    end
+
+    -- A lone phrase without arguments needs no searching either.
+    if string.find(sText, '^#[%w_.]+$') then
+      return L(sText)
+    end
+
     local phrases = string.FindAll(sText, '#[%w_.]+')
     local translations = {}
 
@@ -261,13 +277,10 @@ if CLIENT then
   -- @param sText [String Text or phrase identifier]
   function PANEL_META:SetText(sText)
     if string.sub(sText, 1, 1) == '#' and surface.bTranslating then
-      local phraseName = sText
-      local translated = L(sText)
-
-      if translated != sText and !self.AllowInput then
-        sText = translated
-      elseif translated != text and self.AllowInput then
+      if self.AllowInput then
         sText = string.gsub(sText, '#', '')
+      else
+        sText = L(sText)
       end
 
       self.__PhraseName = sText
@@ -276,6 +289,27 @@ if CLIENT then
     return self:OldSetText(sText)
   end
 else
+  --[[
+    We do this to provide backcompat for the
+    few translations that were actually done serverside.
+
+    This is also a way nicer way to do things, but
+    you need to remember this is ONLY available serverside.
+
+    Clientside needs to manually concat arguments.
+  --]]
+  local function BuildPhrase(identifier, ...)
+    local arguments = { ... }
+
+    for i = 1, select('#', ...) do
+      local value = arguments[i]
+
+      arguments[i] = (value == nil and '') or tostring(value)
+    end
+
+    return '#'..identifier..':'..table.concat(arguments, ',')..';'
+  end
+
   --- Builds a phrase string to send to clients, which translate it themselves.
   --
   -- Returns `#Identifier:arg1,arg2;`, which the client's `L` and `cw.lang:TranslateText`
@@ -287,48 +321,18 @@ else
   --
   -- @param player [Player The player the text is for (unused), or the identifier when called without one]
   -- @param identifier [String Phrase identifier without the leading `#`]
-  -- @param ... [Any Arguments for `#1`, `#2`... in the phrase]
+  -- @param ... [Any Arguments for `#1`, `#2`... in the phrase; converted with `tostring`]
   -- @return [String The phrase string, or `nil` when there is no identifier]
   function L(player, identifier, ...)
-    local arguments = { ... }
-
     -- In case the format L(identifier, ...) is used.
     if isstring(player) then
       if identifier then
-        table.insert(arguments, 1, identifier)
+        return BuildPhrase(player, identifier, ...)
       end
 
-      identifier = player
-    end
-
-    if identifier then
-      local text = '#'..identifier
-
-      --[[
-        We do this to provide backcompat for the
-        few translations that were actually done serverside.
-
-        This is also a way nicer way to do things, but
-        you need to remember this is ONLY available serverside.
-
-        Clientside needs to manually concat arguments.
-      --]]
-
-      if arguments then
-        text = text..':'
-
-        for k, v in ipairs(arguments) do
-          text = text..v
-
-          if k < #arguments then
-            text = text..','
-          end
-        end
-
-        text = text..';'
-      end
-
-      return text
+      return BuildPhrase(player, ...)
+    elseif identifier then
+      return BuildPhrase(identifier, ...)
     end
   end
 end

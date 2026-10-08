@@ -1,7 +1,7 @@
 --- Registers the operator command `/KarmaSet` (aliases `/CharSetKarma` and `/SetKarma`) of the Karma plugin, which sets
 -- the target character's karma to a value from -100 to 100.
 
-COMMAND = cw.command:New('KarmaSet')
+local COMMAND = cw.command:New('KarmaSet')
 COMMAND.tip = '#Command_Karmaset_Description'
 COMMAND.text = '#Command_Karmaset_Syntax'
 COMMAND.flags = CMD_DEFAULT
@@ -17,7 +17,7 @@ function COMMAND:OnRun(player, arguments)
   if target then
     if karma and karma <= 100 and karma >= -100 then
       target:SetKarma(karma)
-      cw.player:Notify(player, L('Karma_SetTo', target:Name(), karma))
+      cw.player:Notify(player, L('Karma_SetTo', target:Name(), target:GetCharacterData('karma', 0)))
     else
       cw.player:Notify(player, L('Karma_InvalidLevel'))
     end

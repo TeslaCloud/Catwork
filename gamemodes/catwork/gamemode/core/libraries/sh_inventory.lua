@@ -11,7 +11,7 @@ library.New('inventory', cw)
 --
 -- Only changes the table; it does not network anything or touch a player. Use `Player:GiveItem`
 -- to give a player an item. For quantities above one, new instances of the same item are created
--- and added as well. A quantity below one never stops recursing.
+-- and added as well.
 --
 -- ```
 -- cw.inventory:AddInstance(inventory, item.CreateInstance('ration'), 2)
@@ -39,7 +39,7 @@ function cw.inventory:AddInstance(inventory, itemTable, quantity)
 
   inventory[itemTable.uniqueID][itemTable.itemID] = itemTable
 
-  if quantity != 1 then
+  if quantity > 1 then
     self:AddInstance(inventory, item.CreateInstance(itemTable.uniqueID), quantity - 1)
   end
 
@@ -52,9 +52,12 @@ end
 function cw.inventory:CalculateSpace(inventory)
   local space = 0
 
-  for k, v in pairs(self:GetAsItemsList(inventory)) do
-    local spaceUsed = v.space
-    if spaceUsed then space = space + spaceUsed end
+  for k, v in pairs(inventory) do
+    for k2, v2 in pairs(v) do
+      if v2.space then
+        space = space + v2.space
+      end
+    end
   end
 
   return space
@@ -66,9 +69,11 @@ end
 function cw.inventory:CalculateWeight(inventory)
   local weight = 0
 
-  for k, v in pairs(self:GetAsItemsList(inventory)) do
-    if v.weight then
-      weight = weight + v.weight
+  for k, v in pairs(inventory) do
+    for k2, v2 in pairs(v) do
+      if v2.weight then
+        weight = weight + v2.weight
+      end
     end
   end
 
@@ -211,15 +216,13 @@ function cw.inventory:GetAsItemsList(inventory)
 end
 
 --- Returns how many instances of an item an inventory has.
---
--- Errors when the item does not exist.
 -- @param inventory [Inventory The inventory table]
 -- @param uniqueID [String Unique ID, index or name of the item, as accepted by `item.FindByID`]
--- @return [Number The number of instances]
+-- @return [Number The number of instances; `0` when the item does not exist]
 function cw.inventory:GetItemCountByID(inventory, uniqueID)
   local itemTable = item.FindByID(uniqueID)
 
-  if inventory[itemTable.uniqueID] then
+  if itemTable and inventory[itemTable.uniqueID] then
     return table.Count(inventory[itemTable.uniqueID])
   else
     return 0
@@ -233,9 +236,9 @@ end
 -- @param uniqueID [String Unique ID of the item]
 -- @return [Boolean Whether the inventory has the item; `nil` when it never had any]
 function cw.inventory:HasItemByID(inventory, uniqueID)
-  local itemTable = item.FindByID(uniqueID)
-  return (inventory[uniqueID or itemTable.uniqueID]
-  and table.Count(inventory[uniqueID or itemTable.uniqueID]) > 0)
+  local itemsList = inventory[uniqueID]
+
+  return (itemsList and next(itemsList) != nil)
 end
 
 --- Returns whether an inventory has at least an amount of instances of an item.
@@ -268,10 +271,8 @@ end
 function cw.inventory:IsEmpty(inventory)
   if !inventory then return true end
 
-  local bEmpty = true
-
   for k, v in pairs(inventory) do
-    if table.Count(v) > 0 then
+    if next(v) != nil then
       return false
     end
   end
@@ -324,7 +325,8 @@ end
 --- Converts a saved inventory back into an inventory of item instances.
 --
 -- Creates an instance for every saved entry and keeps it unless its `OnLoaded` returns `false`.
--- Entries saved under a key that is not the item's current unique ID are dropped.
+-- Entries saved under a key that is not the item's current unique ID are dropped. An entry whose item ID is
+-- already taken by an instance of another item is loaded under a new item ID.
 -- @param inventory [Map Saved data of each item ID, indexed by unique ID, as made by `cw.inventory:ToSaveable`]
 -- @return [Inventory The inventory of instances]
 function cw.inventory:ToLoadable(inventory)
@@ -345,14 +347,12 @@ function cw.inventory:ToLoadable(inventory)
       end
 
       for k2, v2 in pairs(v) do
-        local itemID = tonumber(k2)
         local instance = item.CreateInstance(
-          k, itemID, v2
+          k, tonumber(k2), v2
         )
 
-        if instance and !instance.OnLoaded
-        or instance:OnLoaded() != false then
-          newTable[uniqueID][itemID] = instance
+        if instance and (!instance.OnLoaded or instance:OnLoaded() != false) then
+          newTable[uniqueID][instance.itemID] = instance
         end
       end
     end
@@ -461,6 +461,8 @@ if CLIENT then
     local itemTable = item.CreateInstance(
       data.index, data.itemID, data.data
     )
+
+    if !itemTable then return end
 
     cw.inventory:AddInstance(
       cw.inventory.client, itemTable

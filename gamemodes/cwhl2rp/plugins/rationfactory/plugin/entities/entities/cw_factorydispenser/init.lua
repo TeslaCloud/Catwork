@@ -2,7 +2,7 @@
 -- the contents of a ration.
 --
 -- Pressing it creates a `breens_water` or a `citizen_supplements` item, depending on the type set with `SetSpawnType`,
--- with a five second cooldown.
+-- with a five second cooldown. It stops while 20 of its items are still lying around.
 --
 -- Originally written for the Iron Wall community.
 
@@ -10,6 +10,10 @@ include('shared.lua')
 
 AddCSLuaFile('cl_init.lua')
 AddCSLuaFile('shared.lua')
+
+-- How many items of one dispenser may exist at once. Nothing removes an item that is left lying around, so without a
+-- limit the button could be used to fill the map with entities.
+local MAX_PRODUCTS = 20
 
 --- Sets up the button model, attaches the output pipe and defaults to dispensing supplies.
 function ENT:Initialize()
@@ -34,9 +38,30 @@ function ENT:Initialize()
   self:SetCollisionGroup(COLLISION_GROUP_WORLD)
 
   local phys = self:GetPhysicsObject()
-  phys:SetMass(120)
+
+  if IsValid(phys) then
+    phys:SetMass(120)
+  end
+
+  self.products = {}
 
   self:SetSpawnType(1)
+end
+
+--- Returns how many of the items the dispenser made still exist, forgetting the ones that are gone.
+-- @return [Number The item count]
+function ENT:CountProducts()
+  local products = {}
+
+  for k, v in ipairs(self.products or {}) do
+    if IsValid(v) then
+      products[#products + 1] = v
+    end
+  end
+
+  self.products = products
+
+  return #products
 end
 
 --- Sets what the dispenser spawns; other values are ignored.
@@ -72,12 +97,12 @@ end
 
 --- Dispenses an item when a player presses the button, with a five second cooldown.
 --
--- Pressing it during the cooldown plays a denial sound.
+-- Pressing it during the cooldown, or while 20 of its items still exist, plays a denial sound.
 function ENT:Use(activator, caller)
   if activator:IsPlayer() and activator:GetEyeTraceNoCursor().Entity == self then
     local curTime = CurTime()
 
-    if !self.nextUse or curTime >= self.nextUse then
+    if (!self.nextUse or curTime >= self.nextUse) and self:CountProducts() < MAX_PRODUCTS then
       self:EmitRandomSound()
 
       self:SpawnItem(activator)
@@ -92,10 +117,16 @@ end
 --- Spawns the dispenser's item: Breen's Water at the pipe, or citizen supplements at the button.
 -- @param activator [Player The player who pressed the button, passed on as the item's creator]
 function ENT:SpawnItem(activator)
+  local entity
+
   if self:GetSpawnType() == TYPE_WATERCAN then
-    cw.entity:CreateItem(activator, 'breens_water', self.tube:GetPos())
+    entity = cw.entity:CreateItem(activator, 'breens_water', self.tube:GetPos())
   else
-    cw.entity:CreateItem(activator, 'citizen_supplements', self:GetPos())
+    entity = cw.entity:CreateItem(activator, 'citizen_supplements', self:GetPos())
+  end
+
+  if IsValid(entity) then
+    self.products[#self.products + 1] = entity
   end
 end
 

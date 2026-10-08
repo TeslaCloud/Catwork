@@ -94,8 +94,8 @@ QUERY_CLASS.__index = QUERY_CLASS
 -- `cw.database:Delete`, `cw.database:Create`, `cw.database:Drop` and
 -- `cw.database:Truncate`). The builder methods add clauses, then
 -- `QUERY_CLASS:Execute` builds the SQL and sends it. Values are escaped and
--- quoted; column and table names are only wrapped in backticks, so never
--- build them from player input.
+-- wrapped in single quotes; column and table names are only wrapped in
+-- backticks, so never build them from player input.
 --
 -- ```
 -- local queryObj = cw.database:Select(config.Get('mysql_characters_table'):Get())
@@ -155,14 +155,14 @@ end
 -- @param key [String Column name]
 -- @param value [Any Value the column must equal; it is escaped and quoted]
 function QUERY_CLASS:WhereEqual(key, value)
-  self.whereList[#self.whereList + 1] = '`'..key..'` = "'..self:Escape(value)..'"'
+  self.whereList[#self.whereList + 1] = '`'..key.."` = '"..self:Escape(value).."'"
 end
 
 --- Adds a `key != value` condition to the query's WHERE clause.
 -- @param key [String Column name]
 -- @param value [Any Value the column must not equal; it is escaped and quoted]
 function QUERY_CLASS:WhereNotEqual(key, value)
-  self.whereList[#self.whereList + 1] = '`'..key..'` != "'..self:Escape(value)..'"'
+  self.whereList[#self.whereList + 1] = '`'..key.."` != '"..self:Escape(value).."'"
 end
 
 --- Adds a `key LIKE value` condition to the query's WHERE clause.
@@ -171,42 +171,42 @@ end
 -- @param key [String Column name]
 -- @param value [String Pattern the column must match; it is escaped and quoted]
 function QUERY_CLASS:WhereLike(key, value)
-  self.whereList[#self.whereList + 1] = '`'..key..'` LIKE "'..self:Escape(value)..'"'
+  self.whereList[#self.whereList + 1] = '`'..key.."` LIKE '"..self:Escape(value).."'"
 end
 
 --- Adds a `key NOT LIKE value` condition to the query's WHERE clause.
 -- @param key [String Column name]
 -- @param value [String Pattern the column must not match; it is escaped and quoted]
 function QUERY_CLASS:WhereNotLike(key, value)
-  self.whereList[#self.whereList + 1] = '`'..key..'` NOT LIKE "'..self:Escape(value)..'"'
+  self.whereList[#self.whereList + 1] = '`'..key.."` NOT LIKE '"..self:Escape(value).."'"
 end
 
 --- Adds a `key > value` condition to the query's WHERE clause.
 -- @param key [String Column name]
 -- @param value [Any Value the column must be greater than; it is escaped and quoted]
 function QUERY_CLASS:WhereGT(key, value)
-  self.whereList[#self.whereList + 1] = '`'..key..'` > "'..self:Escape(value)..'"'
+  self.whereList[#self.whereList + 1] = '`'..key.."` > '"..self:Escape(value).."'"
 end
 
 --- Adds a `key < value` condition to the query's WHERE clause.
 -- @param key [String Column name]
 -- @param value [Any Value the column must be less than; it is escaped and quoted]
 function QUERY_CLASS:WhereLT(key, value)
-  self.whereList[#self.whereList + 1] = '`'..key..'` < "'..self:Escape(value)..'"'
+  self.whereList[#self.whereList + 1] = '`'..key.."` < '"..self:Escape(value).."'"
 end
 
 --- Adds a `key >= value` condition to the query's WHERE clause.
 -- @param key [String Column name]
 -- @param value [Any Value the column must be greater than or equal to; it is escaped and quoted]
 function QUERY_CLASS:WhereGTE(key, value)
-  self.whereList[#self.whereList + 1] = '`'..key..'` >= "'..self:Escape(value)..'"'
+  self.whereList[#self.whereList + 1] = '`'..key.."` >= '"..self:Escape(value).."'"
 end
 
 --- Adds a `key <= value` condition to the query's WHERE clause.
 -- @param key [String Column name]
 -- @param value [Any Value the column must be less than or equal to; it is escaped and quoted]
 function QUERY_CLASS:WhereLTE(key, value)
-  self.whereList[#self.whereList + 1] = '`'..key..'` <= "'..self:Escape(value)..'"'
+  self.whereList[#self.whereList + 1] = '`'..key.."` <= '"..self:Escape(value).."'"
 end
 
 --- Sorts the results of a SELECT query by a column, highest first.
@@ -247,14 +247,14 @@ end
 -- @param key [String Column name]
 -- @param value [Any Value to insert; it is escaped and quoted]
 function QUERY_CLASS:Insert(key, value)
-  self.insertList[#self.insertList + 1] = { '`'..key..'`', '"'..self:Escape(value)..'"' }
+  self.insertList[#self.insertList + 1] = { '`'..key..'`', "'"..self:Escape(value).."'" }
 end
 
 --- Sets a column value for an UPDATE query.
 -- @param key [String Column name]
 -- @param value [Any New value; it is escaped and quoted]
 function QUERY_CLASS:Update(key, value)
-  self.updateList[#self.updateList + 1] = { '`'..key..'`', '"'..self:Escape(value)..'"' }
+  self.updateList[#self.updateList + 1] = { '`'..key..'`', "'"..self:Escape(value).."'" }
 end
 
 --- Adds a column definition to a CREATE query.
@@ -280,9 +280,9 @@ function QUERY_CLASS:Limit(value)
   self.limit = value
 end
 
---- Sets a row offset for the query.
+--- Sets how many matching rows a SELECT query skips.
 --
--- Only UPDATE queries add it, as an `OFFSET` clause; SELECT queries ignore it.
+-- Only used together with `QUERY_CLASS:Limit`.
 -- @param value [Number Number of rows to skip]
 function QUERY_CLASS:Offset(value)
   self.offset = value
@@ -317,6 +317,11 @@ local function BuildSelectQuery(queryObj)
   if isnumber(queryObj.limit) then
     queryString[#queryString + 1] = ' LIMIT '
     queryString[#queryString + 1] = queryObj.limit
+
+    if isnumber(queryObj.offset) then
+      queryString[#queryString + 1] = ' OFFSET '
+      queryString[#queryString + 1] = queryObj.offset
+    end
   end
 
   return table.concat(queryString)
@@ -359,26 +364,23 @@ local function BuildUpdateQuery(queryObj)
     return
   end
 
-  if istable(queryObj.updateList) and #queryObj.updateList > 0 then
-    local updateList = {}
-
-    queryString[#queryString + 1] = ' SET'
-
-    for i = 1, #queryObj.updateList do
-      updateList[#updateList + 1] = queryObj.updateList[i][1]..' = '..queryObj.updateList[i][2]
-    end
-
-    queryString[#queryString + 1] = ' '..table.concat(updateList, ', ')
+  if !istable(queryObj.updateList) or #queryObj.updateList == 0 then
+    return
   end
+
+  local updateList = {}
+
+  queryString[#queryString + 1] = ' SET'
+
+  for i = 1, #queryObj.updateList do
+    updateList[#updateList + 1] = queryObj.updateList[i][1]..' = '..queryObj.updateList[i][2]
+  end
+
+  queryString[#queryString + 1] = ' '..table.concat(updateList, ', ')
 
   if istable(queryObj.whereList) and #queryObj.whereList > 0 then
     queryString[#queryString + 1] = ' WHERE '
     queryString[#queryString + 1] = table.concat(queryObj.whereList, ' AND ')
-  end
-
-  if isnumber(queryObj.offset) then
-    queryString[#queryString + 1] = ' OFFSET '
-    queryString[#queryString + 1] = queryObj.offset
   end
 
   return table.concat(queryString)
@@ -476,7 +478,7 @@ end
 --- Builds the SQL for the query and sends it to the database.
 --
 -- Does nothing if the query could not be built (no table name, or an INSERT
--- without values). The query runs immediately when the connection is ready
+-- or UPDATE without values). The query runs immediately when the connection is ready
 -- and is queued otherwise. With MySQLOO the callback runs asynchronously;
 -- with SQLite it runs before this returns.
 -- @param bQueueQuery=false [Boolean Add the query to the queue instead of running it now]
@@ -841,8 +843,8 @@ end
 --- Escapes a value for use inside a quoted SQL string.
 --
 -- MySQLOO uses the connection's escape function when connected and a Lua
--- equivalent of `mysql_real_escape_string` otherwise. SQLite replaces double
--- quotes with single quotes and escapes with `sql.SQLStr`.
+-- equivalent of `mysql_real_escape_string` otherwise. SQLite escapes with
+-- `sql.SQLStr`, which is only safe inside single quotes.
 -- @param text [Any The value; it is converted with `tostring` first]
 -- @return [String The escaped text, without surrounding quotes]
 function cw.database:Escape(text)
@@ -862,7 +864,7 @@ function cw.database:Escape(text)
     return EscapeMySQL(text)
   end
 
-  return sql.SQLStr(string.gsub(text, '"', "'"), true)
+  return sql.SQLStr(text, true)
 end
 
 --- Closes the current connection and cancels any pending MySQLOO reconnect.
@@ -889,16 +891,11 @@ end
 -- @warning [Internal] Called every second by the `cw.Database.Think` timer.
 function cw.database:Think()
   if #QueueTable > 0 and IsReady(self) then
-    if istable(QueueTable[1]) then
-      local queueObj = QueueTable[1]
-      local queryString = queueObj[1]
-      local callback = queueObj[2]
+    -- Taken out of the queue first, so that a query that errors cannot block the ones behind it.
+    local queueObj = table.remove(QueueTable, 1)
 
-      if isstring(queryString) then
-        self:RawQuery(queryString, callback)
-      end
-
-      table.remove(QueueTable, 1)
+    if istable(queueObj) and isstring(queueObj[1]) then
+      self:RawQuery(queueObj[1], queueObj[2])
     end
   end
 end
@@ -988,8 +985,8 @@ function cw.database:OnConnected()
     queryObj:Execute()
 
     local queryObj = self:Create('characters')
-      queryObj:Create('_Key', 'smallint(11) NOT NULL AUTO_INCREMENT')
-      queryObj:Create('_Data', 'text NOT NULL')
+      queryObj:Create('_Key', 'int(11) NOT NULL AUTO_INCREMENT')
+      queryObj:Create('_Data', 'mediumtext NOT NULL')
       queryObj:Create('_Name', 'varchar(150) NOT NULL')
       queryObj:Create('_Ammo', 'text NOT NULL')
       queryObj:Create('_Cash', 'varchar(150) NOT NULL')
@@ -1000,7 +997,7 @@ function cw.database:OnConnected()
       queryObj:Create('_Faction', 'varchar(50) NOT NULL')
       queryObj:Create('_SteamID', 'varchar(60) NOT NULL')
       queryObj:Create('_SteamName', 'varchar(150) NOT NULL')
-      queryObj:Create('_Inventory', 'text NOT NULL')
+      queryObj:Create('_Inventory', 'mediumtext NOT NULL')
       queryObj:Create('_OnNextLoad', 'text NOT NULL')
       queryObj:Create('_Attributes', 'text NOT NULL')
       queryObj:Create('_LastPlayed', 'varchar(50) NOT NULL')
@@ -1012,7 +1009,7 @@ function cw.database:OnConnected()
     queryObj:Execute()
 
     local queryObj = self:Create('players')
-      queryObj:Create('_Key', 'smallint(11) NOT NULL AUTO_INCREMENT')
+      queryObj:Create('_Key', 'int(11) NOT NULL AUTO_INCREMENT')
       queryObj:Create('_Data', 'text NOT NULL')
       queryObj:Create('_Schema', 'text NOT NULL')
       queryObj:Create('_SteamID', 'varchar(60) NOT NULL')
@@ -1059,6 +1056,32 @@ function cw.database:IsConnected()
   return Connected
 end
 
+-- A function to add the conditions of an Easy* `where` argument to a query object.
+local function AddEasyWhere(queryObj, where)
+  if istable(where[1]) then
+    for k, v in pairs(where) do
+      queryObj:Where(v[1], v[2])
+    end
+  else
+    queryObj:Where(where[1], where[2])
+  end
+end
+
+-- A function to describe an Easy* `where` argument for debug messages.
+local function DescribeEasyWhere(where)
+  if !istable(where[1]) then
+    return tostring(where[1])..' = '..tostring(where[2])
+  end
+
+  local conditions = {}
+
+  for k, v in pairs(where) do
+    conditions[#conditions + 1] = tostring(v[1])..' = '..tostring(v[2])
+  end
+
+  return table.concat(conditions, ' AND ')
+end
+
 --- Updates the rows matching a condition, or inserts a new row if none match.
 --
 -- ```
@@ -1073,30 +1096,21 @@ end
 -- @param data [Map Column names mapped to the values to write]
 -- @see cw.database:EasyRead
 function cw.database:EasyWrite(tableName, where, data)
-  if !data or !istable(data) then
+  if !istable(data) then
     ErrorNoHalt('[Catwork] Easy MySQL error! Data has unexpected value type (table expected, got '..type(data)..')\n')
 
     return
   end
 
-  if !where then
-    ErrorNoHalt(
-      "[Catwork] Easy MySQL error! 'where' table is malformed! ([1] = "..type(where[1])..', [2] = '..type(where[2])..
-        ')\n'
-    )
+  if !istable(where) then
+    ErrorNoHalt("[Catwork] Easy MySQL error! 'where' table is malformed! (table expected, got "..type(where)..')\n')
 
     return
   end
 
   local query = self:Select(tableName)
 
-    if istable(where[1]) then
-      for k, v in pairs(where) do
-        query:Where(v[1], v[2])
-      end
-    else
-      query:Where(where[1], where[2])
-    end
+    AddEasyWhere(query, where)
 
     query:Callback(function(result, status, lastID)
       if istable(result) and #result > 0 then
@@ -1106,9 +1120,10 @@ function cw.database:EasyWrite(tableName, where, data)
             updateObj:Update(k, v)
           end
 
-          updateObj:Where(where[1], where[2])
+          AddEasyWhere(updateObj, where)
+
           updateObj:Callback(function()
-            cw.core:Debug("Easy MySQL updated data. ('"..tableName.."' WHERE "..where[1]..' = '..where[2]..')')
+            cw.core:Debug("Easy MySQL updated data. ('"..tableName.."' WHERE "..DescribeEasyWhere(where)..')')
           end)
 
         updateObj:Execute()
@@ -1120,23 +1135,7 @@ function cw.database:EasyWrite(tableName, where, data)
           end
 
           insertObj:Callback(function(result)
-            if !istable(where[1]) then
-              cw.core:Debug("Easy MySQL inserted data into '"..tableName.."' WHERE "..where[1]..' = '..where[2]..'.')
-            else
-              local msg = "Easy MySQL inserted data into '"..tableName.."' WHERE "
-              local i = 0
-
-              for k, v in pairs(where) do
-                i = i + 1
-                msg = msg..v[1]..' = '..v[2]
-
-                if table.Count(where) != i then
-                  msg = msg..' AND '
-                end
-              end
-
-              cw.core:Debug(msg)
-            end
+            cw.core:Debug("Easy MySQL inserted data into '"..tableName.."' WHERE "..DescribeEasyWhere(where)..'.')
           end)
 
         insertObj:Execute()
@@ -1153,24 +1152,17 @@ end
 -- @return [Boolean `false` if `where` is missing; nothing otherwise]
 -- @see cw.database:EasyWrite
 function cw.database:EasyRead(tableName, where, callback)
-  if !where then
+  if !istable(where) then
     ErrorNoHalt(
-      "[Catwork] Easy MySQL Read error! 'where' table is malformed! ([1] = "..type(where[1])..', [2] = '..
-        type(where[2])..
-        ')\n'
+      "[Catwork] Easy MySQL Read error! 'where' table is malformed! (table expected, got "..type(where)..')\n'
     )
+
     return false
   end
 
   local query = self:Select(tableName)
 
-    if istable(where[1]) then
-      for k, v in pairs(where) do
-        query:Where(v[1], v[2])
-      end
-    else
-      query:Where(where[1], where[2])
-    end
+    AddEasyWhere(query, where)
 
     query:Callback(function(result)
       cw.core:Debug('Easy MySQL has successfully read the data!')
@@ -1178,7 +1170,7 @@ function cw.database:EasyRead(tableName, where, callback)
       local success, value = pcall(callback, result, (istable(result) and #result > 0))
 
       if !success then
-        ErrorNoHalt('[CW:EasyRead Error] '..value..'\n')
+        ErrorNoHalt('[CW:EasyRead Error] '..tostring(value)..'\n')
       end
     end)
 

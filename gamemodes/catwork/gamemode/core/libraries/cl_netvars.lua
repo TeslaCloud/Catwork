@@ -25,8 +25,10 @@ netstream.Hook('nDel', function(index)
 end)
 
 netstream.Hook('nLcl', function(key, value)
-  stored[LocalPlayer():EntIndex()] = stored[LocalPlayer():EntIndex()] or {}
-  stored[LocalPlayer():EntIndex()][key] = value
+  local index = LocalPlayer():EntIndex()
+
+  stored[index] = stored[index] or {}
+  stored[index][key] = value
 end)
 
 netstream.Hook('gVar', function(key, value)
@@ -53,10 +55,14 @@ end
 -- @alias [Player.GetNetVar]
 -- @alias [Player.GetLocalVar]
 function entityMeta:GetNetVar(key, default)
-  local index = self:EntIndex()
+  local vars = stored[self:EntIndex()]
 
-  if stored[index] and stored[index][key] != nil then
-    return stored[index][key]
+  if vars then
+    local value = vars[key]
+
+    if value != nil then
+      return value
+    end
   end
 
   return default

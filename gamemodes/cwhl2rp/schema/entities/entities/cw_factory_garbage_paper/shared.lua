@@ -5,8 +5,7 @@
 -- `ENT.GARBAGE_ITEMS` lists the accepted items (`empty_carton`, `empty_takeout_carton` and `empty_cardboard`),
 -- `ENT.METAL_GARBAGE_COUNT_START` (4) is the garbage needed for a cycle and `ENT.WORK_TIME` (30) its length in
 -- seconds. `ENT:Think` absorbs accepted `cw_item` entities above an idle recycler, each counting twice its weight,
--- drains the count during a cycle and calls `ENT:EndWork` when the time is up; the file also adds a
--- `PostDrawOpaqueRenderables` hook named `Factories`, whose class check skips every entity. The single-file
+-- drains the count during a cycle and calls `ENT:EndWork` when the time is up. The single-file
 -- `cw_factory_garbage_paper.lua` next to this folder defines the same class and is loaded after it.
 
 ENT.Base = 'base_gmodentity'
@@ -52,7 +51,6 @@ end
 --
 -- Garbage `cw_item` entities inside `ENT:GetSearchPos` are taken while the recycler is idle and not full.
 -- During a cycle the garbage count drains step by step and `ENT:EndWork` runs when the time is up.
--- While paused, the cycle times are pushed forward so the time left stays the same.
 function ENT:Think()
   if SERVER then
     if !self:GetIsWorking() then
@@ -60,15 +58,19 @@ function ENT:Think()
         local pos = self:GetSearchPos()
 
         for k, v in pairs(ents.FindInBox(pos[1], pos[2])) do
-          if self:GetGarbageCount() < self.METAL_GARBAGE_COUNT_START then
-            if v:GetClass() != 'cw_item' then continue end
-            if !self:CanGarbageUsed(v:GetItemTable()) then continue end
+          if self:GetGarbageCount() >= self.METAL_GARBAGE_COUNT_START then break end
 
-            v:Remove()
-            self:SetGarbageCount(self:GetGarbageCount() + (v:GetItemTable()('weight') * 2 or 1))
-            self.Garbages[#self.Garbages + 1] = v:GetItemTable()('uniqueID')
-            self:EmitSound('items/ammocrate_close.wav')
-          end
+          -- An item that was picked up this tick is still around until the tick ends.
+          if v:GetClass() != 'cw_item' or v:IsMarkedForDeletion() then continue end
+
+          local itemTable = v:GetItemTable()
+
+          if !itemTable or !self:CanGarbageUsed(itemTable) then continue end
+
+          v:Remove()
+          self:SetGarbageCount(self:GetGarbageCount() + (itemTable('weight') or 0.5) * 2)
+          self.Garbages[#self.Garbages + 1] = itemTable('uniqueID')
+          self:EmitSound('items/ammocrate_close.wav')
         end
       end
     end
@@ -101,52 +103,10 @@ function ENT:Think()
       if CurTime() > self:GetNextWorkTime() then
         self:EndWork()
       end
-    else
-      if self.WorkSound and self.WorkSound:IsPlaying() then
-        self.WorkSound:Stop()
-      end
-
-      if self:GetStopWorkTime() > 0 then
-        local i = self.WORK_TIME - self:GetStopWorkTime()
-        self:SetStartWorkTime(CurTime() - i)
-        self:SetNextWorkTime((CurTime() + self.WORK_TIME) - i)
-        self.NextGarbageDecrease =
-          CurTime() + ((self:GetNextWorkTime() - (self:GetStartWorkTime() + i)) - 5) / self.METAL_GARBAGE_COUNT_START
-      end
+    elseif self.WorkSound and self.WorkSound:IsPlaying() then
+      self.WorkSound:Stop()
     end
   end
 
   self:NextThink(CurTime())
 end
-
-hook.Add('PostDrawOpaqueRenderables', 'Factories', function()
-  if IsValid(LocalPlayer():GetActiveWeapon()) then
-    if LocalPlayer():GetActiveWeapon():GetClass() == 'gmod_tool' then
-      for k, self in pairs(ents.GetAll()) do
-        if self:GetClass() != 'cw_factory_garbage_metal' or
-        self:GetClass() != 'cw_factory_garbage_paper' or
-        self:GetClass() != 'cw_factory_garbage_plastic' then continue end
-
-        render.DrawLine(
-          self:GetProductPos() - self:GetForward() * 12,
-          self:GetProductPos() + self:GetForward() * 12,
-          Color(255, 255, 255),
-          true
-        )
-        render.DrawLine(
-          self:GetProductPos() - self:GetRight() * 12,
-          self:GetProductPos() + self:GetRight() * 12,
-          Color(255, 255, 255),
-          true
-        )
-        render.DrawLine(
-          self:GetProductPos() - self:GetUp() * 12,
-          self:GetProductPos() + self:GetUp() * 12,
-          Color(255, 255, 255),
-          true
-        )
-        render.DrawLine(self:GetProductPos(), self:GetPos(), Color(255, 255, 255), true)
-      end
-    end
-  end
-end)

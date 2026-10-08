@@ -44,39 +44,36 @@ end
 
 --- Keeps the doors locked or unlocked, updates the status light and keeps the lock frozen.
 --
--- Removes the lock with an explosion when its door is gone. With the `combine_lock_overrides` config
--- enabled, the lock state is forced onto its doors every think. The light flashes red with a beep while a
--- smoke charge counts down, is red during an access denied flash, orange (or the override color) when
--- locked and green when unlocked.
+-- Removes the lock, which explodes in `ENT:OnRemove`, when its door is gone. With the
+-- `combine_lock_overrides` config enabled, the lock state is forced onto its doors every think. The light
+-- flashes red with a beep while a smoke charge counts down, is red during an access denied flash, orange
+-- (or the override color) when locked and green when unlocked.
 function ENT:Think()
-  if IsValid(self.entity) then
-    if config.Get('combine_lock_overrides'):Get() then
-      for k, v in ipairs(self.entities) do
-        if IsValid(v) then
-          if self:IsLocked() then
-            v:Fire('Lock', '', 0)
-            v:Fire('Close', '', 0)
-          else
-            v:Fire('Unlock', '', 0)
-          end
+  if !IsValid(self.entity) then
+    self:Remove()
+
+    return
+  end
+
+  if config.Get('combine_lock_overrides'):Get() then
+    for k, v in ipairs(self.entities) do
+      if IsValid(v) then
+        if self:IsLocked() then
+          v:Fire('Lock', '', 0)
+          v:Fire('Close', '', 0)
+        else
+          v:Fire('Unlock', '', 0)
         end
       end
     end
-  else
-    self:Explode() self:Remove()
   end
 
   local smokeChargeTime = self:GetDTFloat(0)
   local a = self:GetColor().a
   local flashTime = self:GetDTFloat(1)
-  local position = self:GetPos()
-  local forward = self:GetForward() * -4
   local curTime = CurTime()
-  local right = self:GetRight() * -6
-  local up = self:GetUp() * -9
 
   if smokeChargeTime > curTime then
-    local glowColor = Color(255, 0, 0, a)
     local timeLeft = smokeChargeTime - curTime
 
     if !self.nextFlash or curTime >= self.nextFlash or (self.flashUntil and self.flashUntil > curTime) then
@@ -109,9 +106,11 @@ function ENT:Think()
     self.glow:SetKeyValue('rendercolor', glowColor.r..' '..glowColor.g..' '..glowColor.b)
   end
 
-  if IsValid(self:GetPhysicsObject()) then
-    self:GetPhysicsObject():SetVelocity(Vector())
-    self:GetPhysicsObject():EnableMotion(false)
+  local physicsObject = self:GetPhysicsObject()
+
+  if IsValid(physicsObject) then
+    physicsObject:SetVelocity(vector_origin)
+    physicsObject:EnableMotion(false)
   end
 
   self:NextThink(curTime + 0.1)
@@ -187,10 +186,12 @@ end
 function ENT:Lock()
   self:EmitRandomSound()
 
-  for k, v in ipairs(self.entities) do
-    if IsValid(v) then
-      v:Fire('Lock', '', 0)
-      v:Fire('Close', '', 0)
+  if self.entities then
+    for k, v in ipairs(self.entities) do
+      if IsValid(v) then
+        v:Fire('Lock', '', 0)
+        v:Fire('Close', '', 0)
+      end
     end
   end
 
@@ -201,9 +202,11 @@ end
 function ENT:Unlock()
   self:EmitRandomSound()
 
-  for k, v in ipairs(self.entities) do
-    if IsValid(v) then
-      v:Fire('Unlock', '', 0)
+  if self.entities then
+    for k, v in ipairs(self.entities) do
+      if IsValid(v) then
+        v:Fire('Unlock', '', 0)
+      end
     end
   end
 
@@ -287,14 +290,6 @@ end
 --- Plays the explosion and unlocks the lock's doors.
 function ENT:OnRemove()
   self:Explode() self:Unlock()
-
-  if self.entities then
-    for k, v in ipairs(self.entities) do
-      if IsValid(v) then
-        v:Fire('Unlock', '', 0)
-      end
-    end
-  end
 end
 
 --- Toggles the lock if the player has access, or flashes it red if they do not.

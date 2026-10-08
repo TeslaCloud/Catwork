@@ -4,6 +4,8 @@
 -- or more than 192 units away.
 
 local PANEL = {}
+local colorFrame = Color(35, 35, 35, 235)
+local colorBackground = Color(30, 30, 30, 255)
 
 --- Sets up the read-only notepad window and its scrolling list.
 function PANEL:Init()
@@ -58,10 +60,7 @@ surface.CreateFont('cwNotepadFont', {
 --
 -- @param text [String The text to show]
 function PANEL:Populate(text)
-  local colorWhite = cw.option:GetColor('white')
-
   self.panelList:Clear()
-  self.labels = {}
 
   self.textPanel = vgui.Create('DTextEntry')
   self.textPanel:SetMultiline(true)
@@ -83,8 +82,8 @@ end
 
 --- Paints the window's dark background.
 function PANEL:Paint(w, h)
-  draw.RoundedBox(2, 0, 0, w, h, Color(35, 35, 35, 235))
-  draw.RoundedBox(2, 4, 28, w - 8, h - 32, Color(30, 30, 30, 255))
+  draw.RoundedBox(2, 0, 0, w, h, colorFrame)
+  draw.RoundedBox(2, 4, 28, w - 8, h - 32, colorBackground)
 end
 
 --- Stretches the list to fill the window below the title bar.

@@ -2,7 +2,7 @@
 -- looking at after a timed action.
 --
 -- The target must be untied, within 192 units and facing away or ragdolled. The delay comes from
--- `Schema:GetDexterityTime`; on success `Schema:TiePlayer` is called, the zip tie is used up, dexterity progresses and
+-- `Schema:GetDexterityTime`; on success `Schema:TiePlayer` is called, the zip tie is used up, agility progresses and
 -- a tied Combine unit raises a lost-contact line on the Combine display. The file also adds the item's English and
 -- Russian notification strings.
 
@@ -43,8 +43,8 @@ ITEM.description = '#ITEM_Zip_Tie_Desc'
 --
 -- The target must be untied, within 192 units and facing away or ragdolled. Tying takes
 -- `Schema:GetDexterityTime` seconds; on success the target is tied, Combine are alerted when the target
--- is Combine, the zip tie is used up and dexterity progresses. Always returns `false` so the item is
--- only removed once tying succeeds.
+-- is Combine, the zip tie is used up and agility progresses. Nothing happens when the zip tie is gone by
+-- then. Always returns `false` so the item is only removed once tying succeeds.
 function ITEM:OnUse(player, itemEntity)
   if player.isTying then
     cw.player:Notify(player, L('Zip_Tie_IsTying'))
@@ -63,39 +63,51 @@ function ITEM:OnUse(player, itemEntity)
 
             cw.player:EntityConditionTimer(player, target, trace.Entity, tieTime, 192, function()
               if player:Alive() and !player:IsRagdolled() and target:GetNetVar('tied') == 0
-              and target:GetAimVector():Dot(player:GetAimVector()) > 0 then
+              and (target:GetAimVector():Dot(player:GetAimVector()) > 0 or target:IsRagdolled()) then
                 return true
               end
             end, function(success)
-              if success then
-                player.isTying = nil
+              -- The timer also reports failure once the player has left.
+              if !IsValid(player) then return end
 
-                Schema:TiePlayer(target, true, nil, player:IsCombine())
-
-                if Schema:PlayerIsCombine(target) then
-                  local location = Schema:PlayerGetLocation(player)
-
-                  Schema:AddCombineDisplayLine(
-                    L('Zip_Tie_LostContactInformation1'),
-                    Color(255, 255, 255, 255),
-                    nil,
-                    player
-                  )
-                  Schema:AddCombineDisplayLine(
-                    L('Zip_Tie_LostContactInformation2', location),
-                    Color(255, 0, 0, 255),
-                    nil,
-                    player
-                  )
-                end
-
-                player:TakeItem(self)
-                player:ProgressAttribute(ATB_DEXTERITY, 15, true)
-              else
-                player.isTying = nil
-              end
+              player.isTying = nil
 
               cw.player:SetAction(player, 'tie', false)
+
+              if !success then return end
+
+              -- Used straight off the ground, the zip tie is still that item entity rather than carried.
+              local isCarried = player:HasItemInstance(self)
+              local entityItem = IsValid(itemEntity) and itemEntity:GetItemTable()
+
+              if !isCarried and (!entityItem or entityItem.itemID != self.itemID) then return end
+
+              Schema:TiePlayer(target, true, nil, player:IsCombine())
+
+              if Schema:PlayerIsCombine(target) then
+                local location = Schema:PlayerGetLocation(player)
+
+                Schema:AddCombineDisplayLine(
+                  L('Zip_Tie_LostContactInformation1'),
+                  Color(255, 255, 255, 255),
+                  nil,
+                  player
+                )
+                Schema:AddCombineDisplayLine(
+                  L('Zip_Tie_LostContactInformation2', location),
+                  Color(255, 0, 0, 255),
+                  nil,
+                  player
+                )
+              end
+
+              if isCarried then
+                player:TakeItem(self)
+              else
+                itemEntity:Remove()
+              end
+
+              player:ProgressAttribute(ATB_AGILITY, 15, true)
             end)
           else
             cw.player:Notify(player, '#Zip_Tie_IsFacting')

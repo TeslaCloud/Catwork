@@ -11,7 +11,7 @@ lang['#Farming_UseText_Peel'] = 'Очистить'
 lang['#Farming_Category_Plants'] = 'Растения'
 lang['#Farming_Plant_Default'] = 'Растение'
 lang['#Farming_Maturity'] = 'Зрелость: #1%'
-lang['#Farming_ProgressBar_Cleanup'] = 'Вы убираете мусор...'
+lang['#Farming_ProgressBar_Harvest'] = 'Вы собираете урожай...'
 
 lang['#Farming_Planted'] = 'Вы успешно посадили семена.'
 lang['#Farming_TooClose'] = 'Нельзя сажать растения так близко друг к другу!'

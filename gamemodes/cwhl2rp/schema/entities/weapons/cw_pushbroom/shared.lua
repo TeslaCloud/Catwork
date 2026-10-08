@@ -70,6 +70,9 @@ function SWEP:Deploy()
     self.Owner.broomProp:SetSolid(SOLID_NONE)
     self.Owner.broomProp:Spawn()
     self.Owner.broomProp:Fire('setparentattachment', 'cleaver_attachment', 0.01)
+
+    -- OnRemove cannot reach the prop when the weapon is removed after losing its owner.
+    self:DeleteOnRemove(self.Owner.broomProp)
   end
 
   return true
@@ -101,7 +104,7 @@ function SWEP:Think()
     local currentAnim = self.Owner:GetForcedAnimation() -- Get the player's current animation for checks
 
     if cw.player:GetWeaponRaised(self.Owner) then
-      if self.Owner:GetVelocity() == Vector(0, 0, 0) or !self.Owner:OnGround() then
+      if self.Owner:GetVelocity() == vector_origin or !self.Owner:OnGround() then
         local curTime = CurTime()
 
         if self.isSweep then
@@ -177,8 +180,6 @@ function SWEP:PrimaryAttack()
     end
   end
 end
-
-local counter = 0
 
 --- Does nothing.
 -- @return [Boolean Always `false`]

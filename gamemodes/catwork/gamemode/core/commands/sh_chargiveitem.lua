@@ -15,41 +15,40 @@ COMMAND.alias = { 'PlyGiveItem', 'GiveItem' }
 function COMMAND:OnRun(player, arguments)
   if cw.player:HasFlags(player, 'G') then
     local target = _player.Find(arguments[1])
-    local amount = tonumber(arguments[3]) or 1
+    local amount = math.floor(tonumber(arguments[3]) or 1)
 
     if target then
       if amount > 0 and amount <= 10 then
         local itemTable = item.FindByID(arguments[2])
 
         if itemTable and !itemTable.isBaseItem then
+          local given = 0
+
           for i = 1, amount do
-            local itemTable = item.CreateInstance(itemTable.uniqueID)
-            local bSuccess, fault = target:GiveItem(itemTable, true)
+            local bSuccess, fault = target:GiveItem(item.CreateInstance(itemTable.uniqueID), true)
 
             if !bSuccess then
               cw.player:Notify(player, fault)
 
               break
             end
+
+            given = given + 1
           end
 
-          if string.utf8sub(itemTable.name, -1) == 's' and amount == 1 then
-            cw.player:Notify(player, L('Command_Chargiveitem_Gave', target:Name(), itemTable.PrintName))
-          elseif amount > 1 then
-            cw.player:Notify(player, L('Command_Chargiveitem_GaveAmount', target:Name(), amount, itemTable.PrintName))
-          else
+          if given > 1 then
+            cw.player:Notify(player, L('Command_Chargiveitem_GaveAmount', target:Name(), given, itemTable.PrintName))
+          elseif given == 1 then
             cw.player:Notify(player, L('Command_Chargiveitem_Gave', target:Name(), itemTable.PrintName))
           end
 
           if player != target then
-            if string.utf8sub(itemTable.name, -1) == 's' and amount == 1 then
-              cw.player:Notify(target, L('Command_Chargiveitem_Received', player:Name(), itemTable.PrintName))
-            elseif amount > 1 then
+            if given > 1 then
               cw.player:Notify(
                 target,
-                L('Command_Chargiveitem_ReceivedAmount', player:Name(), amount, itemTable.PrintName)
+                L('Command_Chargiveitem_ReceivedAmount', player:Name(), given, itemTable.PrintName)
               )
-            else
+            elseif given == 1 then
               cw.player:Notify(target, L('Command_Chargiveitem_Received', player:Name(), itemTable.PrintName))
             end
           end

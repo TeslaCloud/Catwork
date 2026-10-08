@@ -8,13 +8,8 @@
 ENT.RenderGroup = RENDERGROUP_TRANSLUCENT
 include('shared.lua')
 
-local glow = CreateMaterial('_CMB_SMALLMONITOR_GLOW4', 'UnlitGeneric', {
-  ['$basetexture'] = 'sprites/glow06',
-  ['$additive'] = '1',
-  ['$selfilium'] = '1',
-  ['$vertexcolor'] = '1',
-  ['$vertexalpha'] = '1'
-})
+local screenMaterial = Material('props/combine_monitor_access')
+local gradientMaterial = Material('gui/gradient_up')
 local errorc = CreateMaterial('_CMB_ERROR', 'Modulate', {
   ['$basetexture'] = 'props/combine_monitor_access_off',
   ['$ignorez'] = '1',
@@ -62,8 +57,9 @@ surface.CreateFont('_CMB_FONT_5', {
 
 --- Creates the render target and scanline material the monitor's screen is drawn with.
 function ENT:Initialize()
-  self.RT = GetRenderTarget('_CMB_SMALLMONITOR_ENT'..self:EntIndex()..CurTime(), 256, 256, false)
-  self.RTMat = CreateMaterial('_CMB_SMALLMONITOR_ENT_RTMAT'..self:EntIndex()..CurTime(), 'UnlitTwoTexture', {
+  -- Render targets are never freed, so an entity that is created again has to get the one it had before.
+  self.RT = GetRenderTarget('_CMB_ACCESSMONITOR_ENT'..self:EntIndex(), 256, 256, false)
+  self.RTMat = CreateMaterial('_CMB_ACCESSMONITOR_ENT_RTMAT'..self:EntIndex(), 'UnlitTwoTexture', {
     ['$selfilium'] = '1',
     ['$texture2'] = 'dev/dev_scanline',
     ['Proxies'] =
@@ -97,6 +93,10 @@ end
 function ENT:DrawTranslucent()
   self:DrawModel()
 
+  local status = self:GetDTInt(5)
+
+  if status == 1 then return end
+
   local pos = self:GetPos()
   local ang = self:GetAngles()
 
@@ -109,10 +109,10 @@ function ENT:DrawTranslucent()
     render.Clear(0, 0, 0, 255)
     cam.Start2D()
     surface.SetDrawColor(255, 255, 255, 255)
-    surface.SetMaterial(Material('props/combine_monitor_access'))
+    surface.SetMaterial(screenMaterial)
     surface.DrawTexturedRect(0, 0, 256, 256)
 
-    if self:GetDTInt(5) == 2 then
+    if status == 2 then
       if self.error then
         surface.SetTextColor(255, 0, 0)
         surface.SetFont('_CMB_FONT_4')
@@ -155,7 +155,7 @@ function ENT:DrawTranslucent()
       surface.SetTextPos(24, 256 - 128 + 38 + 8)
       surface.DrawText('LEVEL:')
       surface.SetDrawColor(255, 0, 0, 128)
-      surface.SetMaterial(Material('gui/gradient_up'))
+      surface.SetMaterial(gradientMaterial)
       surface.DrawTexturedRect(256 - 256 / 3.5 - 56 / 2, 256 - 256 / 3.5 - 56 / 2, 56, 56)
 
       surface.SetTextColor(255, 0, 0)
@@ -169,11 +169,9 @@ function ENT:DrawTranslucent()
 
   self.RTMat:SetTexture('$basetexture', self.RT)
 
-  if self:GetDTInt(5) != 1 then
-    cam.Start3D2D(pos, ang, 0.064)
-      surface.SetDrawColor(255, 255, 255, 255)
-      surface.SetMaterial(self.RTMat)
-      surface.DrawTexturedRect(0, 0, 256, 256)
-    cam.End3D2D()
-  end
+  cam.Start3D2D(pos, ang, 0.064)
+    surface.SetDrawColor(255, 255, 255, 255)
+    surface.SetMaterial(self.RTMat)
+    surface.DrawTexturedRect(0, 0, 256, 256)
+  cam.End3D2D()
 end

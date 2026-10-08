@@ -3,6 +3,8 @@
 --
 -- The tab stores itself as `cw.directory.panel` and rebuilds its tree from `cw.directory.stored`.
 
+local backgroundColor = Color(200, 200, 200)
+
 local PANEL = {}
 
 --- Sizes the directory menu tab to the menu, creates the category tree and page view, registers itself
@@ -228,22 +230,29 @@ end
 
 --- Places the category tree on the left quarter and the page view on the rest.
 function PANEL:PerformLayout(w, h)
-  self:SetSize(w, ScrH() * 0.75)
+  h = ScrH() * 0.75
+
+  self:SetSize(w, h)
   self.treeNode:SetPos(4, 4)
   self.treeNode:SetSize(w * 0.25, h - 8)
   self.htmlPanel:SetPos((w * 0.25) + 8, 4)
   self.htmlPanel:SetSize((w * 0.75) - 16, h - 8)
 end
 
---- Draws the white panel background.
+--- Draws the light grey panel background.
 function PANEL:Paint(w, h)
-  cdraw.DrawBox(0, 0, w, h, COLOR_WHITE)
+  cdraw.DrawBox(0, 0, w, h, backgroundColor)
   return true
 end
 
---- Lays the panel out again each frame.
+--- Lays the panel out again when the screen height changes.
 function PANEL:Think()
-  self:InvalidateLayout(true)
+  local scrH = ScrH()
+
+  if self.layoutScrH != scrH then
+    self.layoutScrH = scrH
+    self:InvalidateLayout()
+  end
 end
 
 vgui.Register('cwDirectory', PANEL, 'EditablePanel')

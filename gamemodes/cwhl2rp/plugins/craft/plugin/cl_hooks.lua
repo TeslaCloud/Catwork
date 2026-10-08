@@ -1,7 +1,8 @@
 --- Client-side code of the Craft plugin that opens the `cwCraft` menu and decides which blueprints it lists.
 --
 -- The `Craft::OpenMenu` netstream creates the menu for a crafting station, and `cwCraft:PlayerCanSeeCraft` hides
--- blueprints whose attribute requirements are well above the player's attributes.
+-- blueprints whose attribute requirements are well above the player's attributes. `PlayerItemGiven` and
+-- `PlayerItemTaken` refresh the open menu, so that its item counts follow the inventory.
 
 --- Checks whether the local player may see a blueprint in the craft menu.
 --
@@ -11,7 +12,6 @@
 -- @param bpTable [Map The blueprint; its `reqatt` list holds `{ attributeID, minimum }` pairs]
 -- @return [Boolean Whether the blueprint is listed]
 function cwCraft:PlayerCanSeeCraft(bpTable)
-  local flags = bpTable['flag']
   local atts = bpTable['reqatt']
 
   if atts then
@@ -31,10 +31,28 @@ function cwCraft:PlayerCanSeeCraft(bpTable)
   return true
 end
 
+--- Rebuilds the open craft menu on the next frame; a burst of calls rebuilds it once.
+local function RebuildMenu()
+  cw.core:OnNextFrame('cwCraftMenuRebuild', function()
+    if IsValid(CRAFT_TABLE_MENU) then
+      CRAFT_TABLE_MENU:Rebuild()
+    end
+  end)
+end
+
+--- Called when the local player gains an item; refreshes the item counts of the open craft menu.
+function cwCraft:PlayerItemGiven(itemTable)
+  RebuildMenu()
+end
+
+--- Called when the local player loses an item; refreshes the item counts of the open craft menu.
+function cwCraft:PlayerItemTaken(itemTable)
+  RebuildMenu()
+end
+
 netstream.Hook('Craft::OpenMenu', function(class, name)
-  if CRAFT_TABLE_MENU then
+  if IsValid(CRAFT_TABLE_MENU) then
     CRAFT_TABLE_MENU:Remove()
-    CRAFT_TABLE_MENU = nil
   end
 
   CRAFT_TABLE_MENU = vgui.Create('cwCraft')

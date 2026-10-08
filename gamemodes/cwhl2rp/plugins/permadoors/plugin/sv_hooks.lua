@@ -40,16 +40,12 @@ function cwPermaDoors:LoadPermaDoors()
 
   for k, v in pairs(cw.entity:GetDoorEntities()) do
     if IsValid(v) then
-      local position = v:GetPos()
-
-      if position then
-        positions[tostring(position)] = v
-      end
+      positions[tostring(v:GetPos())] = v
     end
   end
 
   for k, v in pairs(data) do
-    local door = positions[tostring(v.position)]
+    local door = istable(v) and positions[tostring(v.position)]
 
     if IsValid(door) and cw.entity:IsDoor(door) then
       cw.entity:SetDoorUnownable(door, true)
@@ -62,20 +58,22 @@ function cwPermaDoors:LoadPermaDoors()
 end
 
 --- Saves the name, text, secret and position of every permanent door to `plugins/permadoors/<map>`.
+--
+-- A door whose entity no longer exists is saved with its last known position.
 -- @see cwPermaDoors:LoadPermaDoors
 function cwPermaDoors:SavePermaDoors()
   local toSave = {}
 
   for k, v in pairs(self.stored) do
-    if v then
-      local saveTable = {
+    local position = IsValid(k) and k:GetPos() or v.position
+
+    if position then
+      table.insert(toSave, {
         name = v.name,
         text = v.text,
         secret = v.secret,
-        position = k:GetPos()
-      }
-
-      table.insert(toSave, saveTable)
+        position = position
+      })
     end
   end
 

@@ -13,7 +13,7 @@ function ENT:HUDPaintTargetID(x, y, alpha)
 
   y = cw.core:DrawInfo('#Radio_TargetID_Name', x, y, colorTargetID, alpha)
 
-  if frequency == 0 then
+  if frequency == '' then
     y = cw.core:DrawInfo('#Radio_TargetID_NoFrequency', x, y, colorWhite, alpha)
   else
     y = cw.core:DrawInfo(frequency, x, y, colorWhite, alpha)

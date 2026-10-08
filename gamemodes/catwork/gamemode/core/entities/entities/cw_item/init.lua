@@ -52,20 +52,24 @@ function ENT:SetItemTable(itemTable)
       itemTable:OnCreated(self)
     end
 
+    item.RemoveItemEntity(self)
+
     self.cwItemTable = itemTable
 
-    item.RemoveItemEntity(self)
     item.AddItemEntity(self, itemTable)
   end
 end
 
---- Calls the item's `OnEntityRemoved(entity)` when the entity is removed.
+--- Calls the item's `OnEntityRemoved(entity)` when the entity is removed and forgets the entity with
+-- `item.RemoveItemEntity`.
 function ENT:OnRemove()
   local itemTable = self.cwItemTable
 
   if itemTable and itemTable.OnEntityRemoved then
     itemTable:OnEntityRemoved(self)
   end
+
+  item.RemoveItemEntity(self)
 end
 
 --- Plays a glass impact effect and a soft impact sound at the entity's position.
@@ -86,6 +90,9 @@ end
 function ENT:OnTakeDamage(damageInfo)
   local itemTable = self.cwItemTable
 
+  -- Further hits in the tick that destroyed the entity must not destroy it again.
+  if !itemTable or self.cwIsDestroyed then return end
+
   if itemTable.OnEntityTakeDamage
   and itemTable:OnEntityTakeDamage(self, damageInfo) == false then
     return
@@ -97,6 +104,8 @@ function ENT:OnTakeDamage(damageInfo)
     self:SetHealth(math.max(self:Health() - damageInfo:GetDamage(), 0))
 
     if self:Health() <= 0 then
+      self.cwIsDestroyed = true
+
       if itemTable.OnEntityDestroyed then
         itemTable:OnEntityDestroyed(self)
       end
@@ -135,7 +144,9 @@ function ENT:Think()
       local nextThink = itemTable:OnEntityThink(self)
 
       if isnumber(nextThink) then
-        return self:NextThink(CurTime() + nextThink)
+        self:NextThink(CurTime() + nextThink)
+
+        return true
       end
     end
   else
@@ -143,4 +154,6 @@ function ENT:Think()
   end
 
   self:NextThink(CurTime() + 1)
+
+  return true
 end

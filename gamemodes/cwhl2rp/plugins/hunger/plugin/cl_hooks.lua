@@ -2,6 +2,7 @@
 -- player's hunger drops below 90.
 
 local PLUGIN = PLUGIN
+local barColor = Color(100, 175, 175, 255)
 
 --- Called to add HUD bars; adds the hunger bar, with thirst as its second value, below 90 hunger.
 --
@@ -11,6 +12,6 @@ function PLUGIN:GetBars(bars)
   local thirst = cw.client:GetNetVar('Thirst') or 100
 
   if hunger < 90 and cw.client:Alive() and self:PlayerHasNeeds(cw.client) then
-    bars:Add('#Bars_Hunger', Color(100, 175, 175, 255), '', hunger, 100, hunger < 10, nil, thirst, '#Bars_Thirst')
+    bars:Add('#Bars_Hunger', barColor, '', hunger, 100, hunger < 10, nil, thirst, '#Bars_Thirst')
   end
 end

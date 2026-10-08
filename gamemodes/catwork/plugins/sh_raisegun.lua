@@ -15,11 +15,11 @@ PLUGIN.compatibility = '1.2'
 
 local playerMeta = FindMetaTable('Player')
 local blockedWeapons = {
-  'weapon_physgun',
-  'gmod_tool',
-  'gmod_camera',
-  'weapon_physcannon',
-  'cw_keys'
+  ['weapon_physgun'] = true,
+  ['gmod_tool'] = true,
+  ['gmod_camera'] = true,
+  ['weapon_physcannon'] = true,
+  ['cw_keys'] = true
 }
 
 local rotationTranslate = {
@@ -58,7 +58,7 @@ function playerMeta:IsWeaponRaised()
     return false
   end
 
-  if table.HasValue(blockedWeapons, weapon:GetClass()) then
+  if blockedWeapons[weapon:GetClass()] then
     return true
   end
 
@@ -73,11 +73,11 @@ end
 
 --- Raises the player's weapon if it is lowered, or lowers it if it is raised.
 --
--- Only acts when the `CanWeaponBeToggled` hook returns true for the active weapon.
+-- Does nothing when the `CanWeaponBeToggled` hook returns false for the active weapon.
 --
 -- @see Player:SetWeaponRaised
 function playerMeta:ToggleWeaponRaised()
-  if hook.Run('CanWeaponBeToggled', self, self:GetActiveWeapon()) then
+  if hook.Run('CanWeaponBeToggled', self, self:GetActiveWeapon()) != false then
     if self:IsWeaponRaised() then
       self:SetWeaponRaised(false)
     else
@@ -109,7 +109,7 @@ end
 -- @param bIsRaised [Boolean Whether the weapon is now raised]
 -- @param curTime [Number The current time]
 function PLUGIN:UpdateWeaponRaised(player, weapon, bIsRaised, curTime)
-  if bIsRaised or table.HasValue(blockedWeapons, weapon:GetClass()) then
+  if bIsRaised or blockedWeapons[weapon:GetClass()] then
     weapon:SetNextPrimaryFire(curTime)
     weapon:SetNextSecondaryFire(curTime)
 
@@ -148,7 +148,9 @@ end
 function PLUGIN:KeyPress(player, key)
   if key == IN_RELOAD then
     timer.Create('WeaponRaise'..player:SteamID(), 1, 1, function()
-      player:ToggleWeaponRaised()
+      if IsValid(player) then
+        player:ToggleWeaponRaised()
+      end
     end)
   end
 end

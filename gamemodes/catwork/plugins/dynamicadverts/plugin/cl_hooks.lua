@@ -11,9 +11,6 @@
 function cwDynamicAdverts:PostDrawTranslucentRenderables(bDrawingDepth, bDrawingSkybox, bDrawing3DSkybox)
   if bDrawing3DSkybox or bDrawingDepth then return end
 
-  local eyePos = EyePos()
-  local eyeAngles = EyeAngles()
-
   for k, v in pairs(self.storedList) do
     if v.material then
       cam.Start3D2D(v.position, v.angles, v.scale or 0.25)

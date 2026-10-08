@@ -144,15 +144,55 @@ function THEME:Initialize()
   Schema:DownloadMaterial('http://teslacdn.net/files/logo/logo_white_512_256.png', 'catwork/tc_logo_512.png')
 end
 
+-- Colours of the bar and skin painters below, which run every frame for every bar and visible panel.
+local colorWhite = Color(255, 255, 255, 255)
+local colorBlack = Color(0, 0, 0, 255)
+local colorBarFrame = Color(220, 220, 220)
+local colorBarDefault = Color(200, 200, 200)
+local colorBarLimit = Color(213, 173, 39)
+local colorWeaponInfo = Color(120, 120, 120, 120)
+local colorTabInactive = Color(40, 40, 40)
+local colorLine = Color(50, 50, 50, 255)
+local colorLineHovered = Color(100, 100, 100, 255)
+local colorLineAlt = Color(75, 75, 75, 255)
+local colorOptionDepressed = Color(225, 225, 225, 255)
+local colorButton = Color(40, 40, 40, 255)
+local colorCategory = Color(20, 20, 20)
+
 local function DrawHL2Bar(x, y, w, h, amt, spacing, percentage, color)
-  local ox, oy = 0, 0
+  local ox = 0
   local width = (w - (amt * spacing)) / amt
-  local amtToDraw = math.ceil(amt / (w / percentage))
+  local amtToDraw = math.min(math.ceil(amt / (w / percentage)), amt)
+
+  color = color or colorBarDefault
+
+  surface.SetDrawColor(color.r, color.g, color.b, color.a)
 
   for i = 1, amtToDraw do
-    cdraw.DrawBox(x + ox, y, width, h, color, 0)
+    surface.DrawRect(x + ox, y, width, h)
     ox = ox + width + spacing
   end
+end
+
+local upperCache = {}
+local upperCacheCount = 0
+
+-- Bars are drawn every frame with the same few texts, and uppercasing UTF-8 text is slow.
+local function GetUpperText(text)
+  local upper = upperCache[text]
+
+  if !upper then
+    if upperCacheCount >= 64 then
+      upperCache = {}
+      upperCacheCount = 0
+    end
+
+    upper = string.utf8upper(text)
+    upperCache[text] = upper
+    upperCacheCount = upperCacheCount + 1
+  end
+
+  return upper
 end
 
 --- Called just before a bar is drawn.
@@ -163,7 +203,7 @@ end
 -- `drawProgress`, changed in place]
 function THEME.module:PreDrawBar(barInfo)
   if !barInfo.uniqueID then
-    cdraw.DrawBox(barInfo.x - 2, barInfo.y - 2, barInfo.width + 4, barInfo.height + 4, Color(220, 220, 220), 0)
+    cdraw.DrawBox(barInfo.x - 2, barInfo.y - 2, barInfo.width + 4, barInfo.height + 4, colorBarFrame, 0)
   else
     surface.SetDrawColor(75, 75, 75, 180)
     surface.SetMaterial(cw.core:GetMaterial('data/catwork/gradient.png'))
@@ -174,7 +214,7 @@ function THEME.module:PreDrawBar(barInfo)
   barInfo.drawProgress = false
 
   if barInfo.text then
-    barInfo.text = string.utf8upper(barInfo.text)
+    barInfo.text = GetUpperText(barInfo.text)
   end
 end
 
@@ -188,10 +228,10 @@ function THEME.module:PostDrawBar(barInfo)
     DrawHL2Bar(barInfo.x, barInfo.y, barInfo.width, barInfo.height, 42, 4, barInfo.progressWidth, barInfo.color)
   else
     if barInfo.progressWidth > 4 then
-      local color = barInfo.color:Darken(10)
+      local color = barInfo.color
       local x, y, w, h = barInfo.x, barInfo.y, barInfo.width, barInfo.height
 
-      surface.SetDrawColor(color.r, color.g, color.b, 255)
+      surface.SetDrawColor(math.max(color.r - 10, 0), math.max(color.g - 10, 0), math.max(color.b - 10, 0), 255)
       surface.SetMaterial(cw.core:GetMaterial('data/catwork/gradient.png'))
 
       render.SetScissorRect(x, y, x + (barInfo.progressWidth + 4 or w), y + h, true)
@@ -204,7 +244,7 @@ function THEME.module:PostDrawBar(barInfo)
           cw.fonts:GetSize('hl2_BarsFont', 15),
           barInfo.x + 6,
           barInfo.y - 1,
-          Color('white')
+          colorWhite
         )
       DisableClipping(false)
     end
@@ -219,19 +259,19 @@ end
 -- @return [Boolean Always `true`, replacing the default limit drawing]
 function THEME.module:DrawBarLimit(barInfo)
   local x, y, w, h = barInfo.x, barInfo.y, barInfo.width, barInfo.height
-  local length = w * ((barInfo.maximum - barInfo.maxValue) / barInfo.maximum)
-  local color = Color('#D5AD27')
 
   if barInfo.limitText then
+    local length = w * ((barInfo.maximum - barInfo.maxValue) / barInfo.maximum)
     local limitText = cw.lang:TranslateText(barInfo.limitText)
-    local textWide = util.GetTextSize(cw.fonts:GetSize('hl2_BarsFont', 15), limitText)
+    local font = cw.fonts:GetSize('hl2_BarsFont', 15)
+    local textWide = util.GetTextSize(font, limitText)
 
     render.SetScissorRect(x + w - length, y, x + w, y + h, true)
-      surface.SetDrawColor(color.r, color.g, color.b, 255)
+      surface.SetDrawColor(colorBarLimit)
       surface.SetMaterial(cw.core:GetMaterial('data/catwork/gradient.png'))
       surface.DrawTexturedRect(x, y, w, h)
 
-      draw.SimpleText(limitText, cw.fonts:GetSize('hl2_BarsFont', 15), x + w - textWide - 8, y - 1, Color('white'))
+      draw.SimpleText(limitText, font, x + w - textWide - 8, y - 1, colorWhite)
     render.SetScissorRect(0, 0, 0, 0, false)
   end
 
@@ -241,7 +281,7 @@ end
 --- Called just before the weapon selection info is drawn; draws a grey box instead of the default background.
 -- @param info [Map The box: `x`, `y`, `width`, `height` and `drawBackground`]
 function THEME.module:PreDrawWeaponSelectionInfo(info)
-  draw.RoundedBox(2, info.x, info.y, info.width, info.height, Color(120, 120, 120, 120))
+  draw.RoundedBox(2, info.x, info.y, info.width, info.height, colorWeaponInfo)
 
   info.drawBackground = false
 end
@@ -363,7 +403,7 @@ function THEME.skin:PaintTab(panel, w, h)
   if panel:GetPropertySheet():GetActiveTab() == panel then
     self:DrawGenericBackground(0, 0, w - 2, h - 8, self.colTab)
   else
-    self:DrawGenericBackground(0, 0, w, h, Color(40, 40, 40))
+    self:DrawGenericBackground(0, 0, w, h, colorTabInactive)
   end
 end
 
@@ -381,16 +421,16 @@ end
 --- Paints a list view line in grey, white when selected, and sets its columns' text colour to match.
 -- @param panel [Panel The list view line]
 function THEME.skin:PaintListViewLine(panel)
-  local color = Color(50, 50, 50, 255)
-  local textColor = Color(255, 255, 255, 255)
+  local color = colorLine
+  local textColor = colorWhite
 
   if panel:IsSelected() then
-    color = Color(255, 255, 255, 255)
-    textColor = Color(0, 0, 0, 255)
+    color = colorWhite
+    textColor = colorBlack
   elseif panel.Hovered then
-    color = Color(100, 100, 100, 255)
+    color = colorLineHovered
   elseif panel.m_bAlt then
-    color = Color(75, 75, 75, 255)
+    color = colorLineAlt
   end
 
   for k, v in pairs(panel.Columns) do
@@ -413,7 +453,7 @@ end
 -- @param w [Number The width]
 -- @param h [Number The height]
 function THEME.skin:PaintMenu(panel, w, h)
-  surface.SetDrawColor(Color(15, 15, 15, 255))
+  surface.SetDrawColor(15, 15, 15, 255)
   panel:DrawFilledRect(0, 0, w, h)
 end
 
@@ -432,21 +472,13 @@ end
 -- @param w [Number The width]
 -- @param h [Number The height]
 function THEME.skin:PaintMenuOption(panel, w, h)
-  local textColor = Color(255, 255, 255, 255)
+  local textColor = colorWhite
 
   if panel.m_bBackground and panel.Hovered then
-    local color = nil
-
-    if panel.Depressed then
-      color = Color(225, 225, 225, 255)
-    else
-      color = Color(255, 255, 255, 255)
-    end
-
-    surface.SetDrawColor(color.r, color.g, color.b, color.a)
+    surface.SetDrawColor(panel.Depressed and colorOptionDepressed or colorWhite)
     surface.DrawRect(0, 0, w, h)
 
-    textColor = Color(0, 0, 0, 255)
+    textColor = colorBlack
   end
 
   panel:SetFGColor(textColor)
@@ -474,22 +506,21 @@ end
 -- @param w [Number The width]
 -- @param h [Number The height]
 function THEME.skin:PaintButton(panel, w, h)
-  local textColor = Color(255, 255, 255, 255)
+  local textColor = colorWhite
 
   if panel.m_bBackground then
-    local color = Color(40, 40, 40, 255)
-    local borderColor = Color(0, 0, 0, 255)
+    local color = colorButton
 
     if panel:GetDisabled() then
       color = self.controlColorDark
     elseif panel.Depressed then
-      color = Color(255, 255, 255, 255)
-      textColor = Color(0, 0, 0, 255)
+      color = colorWhite
+      textColor = colorBlack
     elseif panel.Hovered then
       color = self.controlColorHighlight
     end
 
-    self:DrawGenericBackground(0, 0, w, h, borderColor)
+    self:DrawGenericBackground(0, 0, w, h, colorBlack)
     self:DrawGenericBackground(1, 1, w - 2, h - 2, color)
   end
 
@@ -500,10 +531,9 @@ end
 -- @param panel [Panel The grip]
 function THEME.skin:PaintScrollBarGrip(panel)
   local w, h = panel:GetSize()
-  local color = Color(255, 255, 255, 255)
 
-  self:DrawGenericBackground(0, 0, w, h, color)
-  self:DrawGenericBackground(1, 1, w - 2, h - 2, Color(0, 0, 0, 255))
+  self:DrawGenericBackground(0, 0, w, h, colorWhite)
+  self:DrawGenericBackground(1, 1, w - 2, h - 2, colorBlack)
 end
 
 --- Paints a frame's dark body and a title bar in a darkened `information` colour.
@@ -513,13 +543,13 @@ end
 function THEME.skin:PaintFrame(panel, w, h)
   local color = cw.option:GetColor('information')
 
-  surface.SetDrawColor(Color(10, 10, 10))
+  surface.SetDrawColor(10, 10, 10, 255)
   surface.DrawRect(0, 24, w, h)
 
-  surface.SetDrawColor(Color(40, 40, 40))
+  surface.SetDrawColor(40, 40, 40, 255)
   surface.DrawRect(1, 0, w - 2, h - 1)
 
-  surface.SetDrawColor(color:Darken(20))
+  surface.SetDrawColor(math.max(color.r - 20, 0), math.max(color.g - 20, 0), math.max(color.b - 20, 0), color.a)
   surface.DrawRect(0, 0, w, 24)
 end
 
@@ -528,13 +558,13 @@ end
 -- @param w [Number The width]
 -- @param h [Number The height]
 function THEME.skin:PaintCollapsibleCategory(panel, w, h)
-  panel.Header:SetFont(cw.fonts:GetSize('hl2_dermafont', 16))
+  local font = cw.fonts:GetSize('hl2_dermafont', 16)
 
-  self:DrawGenericBackground(0, 0, w, 21, Color(0, 0, 0))
+  if panel.Header:GetFont() != font then
+    panel.Header:SetFont(font)
+  end
 
-  if h < 21 then return end
-
-  self:DrawGenericBackground(0, 0, w, 21, Color(20, 20, 20))
+  self:DrawGenericBackground(0, 0, w, 21, h < 21 and colorBlack or colorCategory)
 end
 
 cw.theme:Finish(THEME)

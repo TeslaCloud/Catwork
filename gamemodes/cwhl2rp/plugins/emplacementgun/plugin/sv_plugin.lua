@@ -1,21 +1,9 @@
 --- Server side of the Emplacement Gun plugin: `PLUGIN:LoadEmplacementGuns` and `PLUGIN:SaveEmplacementGuns`, which keep
--- the position and angles of every `cw_emplacementgun` in the schema data `plugins/emplacementGuns/<map>`, and the
--- hooks that call them.
+-- the position and angles of every `cw_emplacementgun` in the schema data `plugins/emplacementGuns/<map>`.
 --
--- Loaded guns are each spawned on a new frozen barricade. The `ClockworkInitPostEntity` and `PostSaveData` hooks here
--- replace the identical ones in `sv_hooks.lua`.
+-- Loaded guns are each spawned on a new frozen barricade. The hooks that call these functions are in `sv_hooks.lua`.
 
 local PLUGIN = PLUGIN
-
---- Called after Catwork has loaded the map entities; spawns the saved emplacement guns.
-function PLUGIN:ClockworkInitPostEntity()
-  self:LoadEmplacementGuns()
-end
-
---- Called after data is saved; saves the emplacement guns.
-function PLUGIN:PostSaveData()
-  self:SaveEmplacementGuns()
-end
 
 --- Spawns the emplacement guns saved for the current map, each on a new frozen barricade.
 function PLUGIN:LoadEmplacementGuns()

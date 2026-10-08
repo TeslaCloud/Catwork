@@ -4,6 +4,8 @@
 -- Offers the same helpers as `DForm` (`TextEntry`, `ComboBox`, `NumberWang`, `NumSlider`, `CheckBox`, `Help`,
 -- `ControlHelp`, `Button`, `PanelSelect`, `ListBox`) plus `SetText` for the header.
 
+local headerColor = Color(120, 75, 235)
+
 local PANEL = {}
 
 --- Sets the form's header text, creating the header label on first use.
@@ -48,7 +50,7 @@ function PANEL:SetText(text, fontName, color, size)
 
   label.Paint = function(lbl, w, h)
     DisableClipping(true)
-      draw.RoundedBox(0, -2, -2, w + 4, h + 4, Color(120, 75, 235))
+      draw.RoundedBox(0, -2, -2, w + 4, h + 4, headerColor)
     DisableClipping(false)
   end
 
@@ -279,10 +281,12 @@ end
 
 --- Adds a list box, preceded by a label when one is given.
 -- @param strLabel=nil [String Label text shown above the list box]
--- @return [Panel The `DListBox`, Nil Always `nil`, since the label is local to the `if` block]
+-- @return [Panel The `DListBox`, Panel The label, or `nil` when no label text was given]
 function PANEL:ListBox(strLabel)
+  local left
+
   if strLabel then
-    local left = vgui.Create('DLabel', self)
+    left = vgui.Create('DLabel', self)
     left:SetText(strLabel)
     left:SetFont(cw.fonts:GetSize(cw.option:GetFont('menu_text_tiny'), 16))
     left:SetTextColor(cw.option:GetColor('basic_form_color'))

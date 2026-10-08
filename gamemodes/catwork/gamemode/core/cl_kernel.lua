@@ -29,6 +29,18 @@ local vgui = vgui
 local cam = cam
 local gui = gui
 
+-- Matches one UTF-8 character; unlike `string.utf8sub` it never raises an error on malformed text.
+local UTF8_CHARACTER = '[%z\1-\127\194-\244][\128-\191]*'
+
+local scratchColor = Color(255, 255, 255, 255)
+
+-- Returns a shared color for a draw call that reads it right away, so drawing every frame does not allocate one.
+local function ScratchColor(r, g, b, a)
+  scratchColor.r, scratchColor.g, scratchColor.b, scratchColor.a = r, g, b, a
+
+  return scratchColor
+end
+
 do
   --[[
     This is a hack to display world tips correctly based on their owner.
@@ -84,21 +96,22 @@ function base64.decode(data)
 end
 
 do
-  local cwOldRunConsoleCommand = RunConsoleCommand
+  -- Kept on `cw` so that reloading this file does not wrap the wrapper again.
+  local cwOldRunConsoleCommand = cw.RunConsoleCommand or RunConsoleCommand
+  cw.RunConsoleCommand = cwOldRunConsoleCommand
 
   --- Runs a console command, ignoring calls without a command name.
   --
-  -- Wraps the engine `RunConsoleCommand` so that a `nil` first argument does nothing instead of
-  -- raising an error.
-  -- @param ... [Any The command name followed by its arguments]
-  function RunConsoleCommand(...)
-    local arguments = { ... }
-
-    if arguments[1] == nil then
+  -- Wraps the engine `RunConsoleCommand`, which is kept as `cw.RunConsoleCommand`, so that a `nil`
+  -- command does nothing instead of raising an error.
+  -- @param command [String The command name]
+  -- @param ... [Any The command's arguments]
+  function RunConsoleCommand(command, ...)
+    if command == nil then
       return
     end
 
-    cwOldRunConsoleCommand(...)
+    cwOldRunConsoleCommand(command, ...)
   end
 end
 
@@ -150,9 +163,18 @@ function surface.DrawRotatedText(text, font, x, y, angle, color)
   cam.PopModelMatrix()
 end
 
+-- Runs a drawing callback between a matrix push and pop; an error must not leave the matrix pushed.
+local function RunDrawCallback(name, callback, ...)
+  local bSuccess, message = pcall(callback, ...)
+
+  if !bSuccess then
+    ErrorNoHalt('['..name..'] '..tostring(message)..'\n')
+  end
+end
+
 --- Runs a drawing callback with everything scaled around a point.
 --
--- The callback is run through `Try`, so its errors are caught.
+-- The callback is run in a `pcall`; its errors are printed rather than raised.
 --
 -- ```
 -- surface.DrawScaled(x, y, 2, function(x, y, scale)
@@ -176,7 +198,7 @@ function surface.DrawScaled(x, y, scale, callback)
   cam.PushModelMatrix(matrix)
 
     if callback then
-      Try('DrawScaled', callback, x, y, scale)
+      RunDrawCallback('DrawScaled', callback, x, y, scale)
     end
 
   cam.PopModelMatrix()
@@ -184,7 +206,7 @@ end
 
 --- Runs a drawing callback with everything rotated around a point.
 --
--- The callback is run through `Try`, so its errors are caught.
+-- The callback is run in a `pcall`; its errors are printed rather than raised.
 -- @param x [Number X position of the rotation origin]
 -- @param y [Number Y position of the rotation origin]
 -- @param angle [Number Rotation in degrees]
@@ -200,7 +222,7 @@ function surface.DrawRotated(x, y, angle, callback)
   cam.PushModelMatrix(matrix)
 
     if callback then
-      Try('DrawRotated', callback, x, y, angle)
+      RunDrawCallback('DrawRotated', callback, x, y, angle)
     end
 
   cam.PopModelMatrix()
@@ -220,7 +242,7 @@ concommand.Add('cwLua', function(player, command, arguments)
     return
   end
 
-  print('#Commands_cwLua_accessDenied:'..player:Name()..';')
+  print(L('#Commands_cwLua_accessDenied:'..player:Name()..';'))
 end)
 
 cw.BackgroundBlurs = cw.BackgroundBlurs or {}
@@ -342,17 +364,25 @@ end
 -- @param pngParameters=nil [String Parameters for `Material`, such as `'smooth'`]
 -- @return [IMaterial The material]
 function cw.core:GetMaterial(materialPath, pngParameters)
-  if typeof(materialPath) != 'string' then
+  if !isstring(materialPath) then
     return materialPath
   end
 
-  self.CachedMaterial = self.CachedMaterial or {}
+  local cachedMaterials = self.CachedMaterial
 
-  if !self.CachedMaterial[materialPath] then
-    self.CachedMaterial[materialPath] = Material(materialPath, pngParameters)
+  if !cachedMaterials then
+    cachedMaterials = {}
+    self.CachedMaterial = cachedMaterials
   end
 
-  return self.CachedMaterial[materialPath]
+  local material = cachedMaterials[materialPath]
+
+  if !material then
+    material = Material(materialPath, pngParameters)
+    cachedMaterials[materialPath] = material
+  end
+
+  return material
 end
 
 --- Returns the font size used for 3D2D text.
@@ -372,11 +402,9 @@ function cw.core:GetTextSize(font, text)
   local defaultWidth, defaultHeight = self:GetCachedTextSize(font, 'U')
   local height = defaultHeight
   local width = 0
-  local textLength = 0
 
-  for i in string.gmatch(text, '([%z\1-\127\194-\244][\128-\191]*)') do
-    local currentCharacter = textLength + 1
-    local textWidth, textHeight = self:GetCachedTextSize(font, string.utf8sub(text, currentCharacter, currentCharacter))
+  for character in string.gmatch(text, UTF8_CHARACTER) do
+    local textWidth, textHeight = self:GetCachedTextSize(font, character)
 
     if textWidth == 0 then
       textWidth = defaultWidth
@@ -387,7 +415,6 @@ function cw.core:GetTextSize(font, text)
     end
 
     width = width + textWidth
-    textLength = textLength + 1
   end
 
   return width, height
@@ -427,32 +454,81 @@ function cw.core:WrapText(text, font, maximumWidth, baseTable)
     return
   end
 
-  if self:GetTextSize(font, text) > maximumWidth then
-    local currentWidth = 0
-    local firstText = nil
-    local secondText = nil
+  local lines = self:GetWrappedLines(text, font, maximumWidth)
 
-    for i = 0, #text do
-      local currentCharacter = string.utf8sub(text, i, i)
-      local currentSingleWidth = self:GetTextSize(font, currentCharacter)
+  for i = 1, #lines do
+    baseTable[#baseTable + 1] = lines[i]
+  end
+end
 
-      if (currentWidth + currentSingleWidth) >= maximumWidth then
-        baseTable[#baseTable + 1] = string.utf8sub(text, 0, (i - 1))
-        text = string.utf8sub(text, i)
+do
+  local MAX_CACHED_TEXTS = 256
+  local wrapCache = {}
+  local wrapCacheCount = 0
 
-        break
-      else
-        currentWidth = currentWidth + currentSingleWidth
+  local function BuildWrappedLines(text, font, maximumWidth)
+    local defaultWidth = cw.core:GetCachedTextSize(font, 'U')
+    local remainingWidth = cw.core:GetTextSize(font, text)
+    local lines = {}
+    local lineStart = 1
+    local lineWidth = 0
+
+    for position, character in string.gmatch(text, '()('..UTF8_CHARACTER..')') do
+      local characterWidth = cw.core:GetCachedTextSize(font, character)
+
+      if characterWidth == 0 then
+        characterWidth = defaultWidth
       end
+
+      -- A line always takes at least one character, or a width narrower than a character would never finish.
+      if remainingWidth > maximumWidth and lineWidth + characterWidth >= maximumWidth and position > lineStart then
+        lines[#lines + 1] = string.sub(text, lineStart, position - 1)
+        remainingWidth = remainingWidth - lineWidth
+        lineStart = position
+        lineWidth = 0
+      end
+
+      lineWidth = lineWidth + characterWidth
     end
 
-    if self:GetTextSize(font, text) > maximumWidth then
-      self:WrapText(text, font, maximumWidth, baseTable)
-    else
-      baseTable[#baseTable + 1] = text
+    lines[#lines + 1] = string.sub(text, lineStart)
+
+    return lines
+  end
+
+  --- Returns a text wrapped into lines that fit a width, as `cw.core:WrapText` does.
+  --
+  -- The lines of the most recently wrapped texts are cached, so wrapping the same text every frame is cheap.
+  -- @param text [String The text to wrap]
+  -- @param font [String Font name]
+  -- @param maximumWidth [Number Maximum line width in pixels]
+  -- @return [List<String> The lines; the table is shared, do not change it]
+  -- @see cw.core:WrapText
+  function cw.core:GetWrappedLines(text, font, maximumWidth)
+    local cached = wrapCache[text]
+
+    if cached and cached.font == font and cached.maximumWidth == maximumWidth then
+      return cached.lines
     end
-  else
-    baseTable[#baseTable + 1] = text
+
+    if !cached then
+      if wrapCacheCount >= MAX_CACHED_TEXTS then
+        wrapCache = {}
+        wrapCacheCount = 0
+      end
+
+      wrapCacheCount = wrapCacheCount + 1
+    end
+
+    cached = {
+      lines = BuildWrappedLines(text, font, maximumWidth),
+      maximumWidth = maximumWidth,
+      font = font
+    }
+
+    wrapCache[text] = cached
+
+    return cached.lines
   end
 end
 
@@ -572,9 +648,12 @@ end
 function draw.TexturedRect(x, y, w, h, material, color)
   if !material then return end
 
-  color = (IsColor(color) and color) or Color(255, 255, 255)
+  if IsColor(color) then
+    surface.SetDrawColor(color.r, color.g, color.b, color.a)
+  else
+    surface.SetDrawColor(255, 255, 255, 255)
+  end
 
-  surface.SetDrawColor(color.r, color.g, color.b, color.a)
   surface.SetMaterial(material)
   surface.DrawTexturedRect(x, y, w, h)
 end
@@ -668,7 +747,12 @@ end
 -- @param extra=0 [Number Extra width added to the text measurement]
 -- @return [Number The text width plus `addition` if it is wider, else `width`]
 function cw.core:AdjustMaximumWidth(font, text, width, addition, extra)
-  local textString = tostring(self:Replace(text, '&', 'U'))
+  local textString = tostring(text)
+
+  if string.find(textString, '&', 1, true) then
+    textString = string.gsub(textString, '&', 'U')
+  end
+
   local textWidth = self:GetCachedTextSize(font, textString) + (extra or 0)
 
   if textWidth > width then
@@ -678,178 +762,96 @@ function cw.core:AdjustMaximumWidth(font, text, width, addition, extra)
   return width
 end
 
+-- Adds a hint to the top or center list; `x` and `y` are where it slides in from.
+local function AddHint(hints, text, delay, color, bNoSound, showDuplicated, x, y)
+  if text == nil then return end
+
+  text = tostring(text)
+
+  if isstring(color) then
+    color = cw.option:GetColor(color)
+  end
+
+  if !istable(color) then
+    color = cw.option:GetColor('white')
+  end
+
+  if !showDuplicated then
+    for k, v in ipairs(hints) do
+      if v.text == text then
+        return
+      end
+    end
+  end
+
+  if #hints >= 10 then
+    table.remove(hints, 10)
+  end
+
+  if isstring(bNoSound) then
+    surface.PlaySound(bNoSound)
+  elseif bNoSound == nil then
+    surface.PlaySound('hl1/fvox/blip.wav')
+  end
+
+  hints[#hints + 1] = {
+    startTime = SysTime(),
+    velocityX = -5,
+    velocityY = 0,
+    targetAlpha = 255,
+    alphaSpeed = 64,
+    color = color,
+    delay = tonumber(delay) or 5,
+    alpha = 0,
+    text = text,
+    y = y,
+    x = x
+  }
+end
+
 --- Shows a hint in the middle of the screen.
 --
 -- At most 10 center hints are shown; identical hints already on screen are skipped unless
--- `showDuplicated` is set.
+-- `showDuplicated` is set. Does nothing when `text` is `nil`.
 -- @param text [String The hint text]
--- @param delay [Number Seconds the hint stays before fading]
+-- @param delay=5 [Number Seconds the hint stays before fading]
 -- @param color=nil [Color Text color, or the name of a color option; defaults to white]
 -- @param bNoSound=nil [String Sound to play; `nil` plays a blip and `false` plays nothing]
 -- @param showDuplicated=false [Boolean Show the hint even when the same text is on screen]
 -- @see cw.core:AddTopHint
 function cw.core:AddCenterHint(text, delay, color, bNoSound, showDuplicated)
-  local colorWhite = cw.option:GetColor('white')
-
-  if color then
-    if type(color) == 'string' then
-      color = cw.option:GetColor(color)
-    end
-  else
-    color = colorWhite
-  end
-
-  if !showDuplicated then
-    for k, v in pairs(self.CenterHints) do
-      if v.text == text then
-        return
-      end
-    end
-  end
-
-  if table.Count(self.CenterHints) == 10 then
-    table.remove(self.CenterHints, 10)
-  end
-
-  if type(bNoSound) == 'string' then
-    surface.PlaySound(bNoSound)
-  elseif bNoSound == nil then
-    surface.PlaySound('hl1/fvox/blip.wav')
-  end
-
-  self.CenterHints[#self.CenterHints + 1] = {
-    startTime = SysTime(),
-    velocityX = -5,
-    velocityY = 0,
-    targetAlpha = 255,
-    alphaSpeed = 64,
-    color = color,
-    delay = delay,
-    alpha = 0,
-    text = text,
-    y = ScrH() * 0.6,
-    x = ScrW() * 0.5
-  }
-end
-
-local function UpdateCenterHint(index, hintInfo, iCount)
-  local hintsFont = cw.option:GetFont('hints_text')
-  local fontWidth, fontHeight = cw.core:GetCachedTextSize(
-    hintsFont, hintInfo.text
-  )
-  local height = fontHeight
-  local width = fontWidth
-  local alpha = 255
-  local x = hintInfo.x
-  local y = hintInfo.y
-
-  local idealY = (ScrH() * 0.4) + (height * (index - 1))
-  local idealX = (ScrW() * 0.5) - (width * 0.5)
-  local timeLeft = (hintInfo.startTime - (SysTime() - hintInfo.delay) + 2)
-
-  if timeLeft < 0.7 then
-    idealX = idealX - 50
-    alpha = 0
-  end
-
-  if timeLeft < 0.2 then
-    idealX = idealX + width * 2
-  end
-
-  local fSpeed = FrameTime() * 15
-    y = y + hintInfo.velocityY * fSpeed
-    x = x + hintInfo.velocityX * fSpeed
-  local distanceY = idealY - y
-  local distanceX = idealX - x
-  local distanceA = (alpha - hintInfo.alpha)
-
-  hintInfo.velocityY = hintInfo.velocityY + distanceY * fSpeed * 1
-  hintInfo.velocityX = hintInfo.velocityX + distanceX * fSpeed * 1
-
-  if math.abs(distanceY) < 2 and math.abs(hintInfo.velocityY) < 0.1 then
-    hintInfo.velocityY = 0
-  end
-
-  if math.abs(distanceX) < 2 and math.abs(hintInfo.velocityX) < 0.1 then
-    hintInfo.velocityX = 0
-  end
-
-  hintInfo.velocityX = hintInfo.velocityX * (0.95 - FrameTime() * 8)
-  hintInfo.velocityY = hintInfo.velocityY * (0.95 - FrameTime() * 8)
-  hintInfo.alpha = hintInfo.alpha + distanceA * fSpeed * 0.1
-  hintInfo.x = x
-  hintInfo.y = y
-
-  return (timeLeft < 0.1)
+  AddHint(self.CenterHints, text, delay, color, bNoSound, showDuplicated, ScrW() * 0.5, ScrH() * 0.6)
 end
 
 --- Shows a hint in the top right corner of the screen.
 --
 -- At most 10 top hints are shown; identical hints already on screen are skipped unless
--- `showDuplicated` is set.
+-- `showDuplicated` is set. Does nothing when `text` is `nil`.
 -- @param text [String The hint text]
--- @param delay [Number Seconds the hint stays before fading]
+-- @param delay=5 [Number Seconds the hint stays before fading]
 -- @param color=nil [Color Text color, or the name of a color option; defaults to white]
 -- @param bNoSound=nil [String Sound to play; `nil` plays a blip and `false` plays nothing]
 -- @param showDuplicated=false [Boolean Show the hint even when the same text is on screen]
 -- @see cw.core:AddCenterHint
 function cw.core:AddTopHint(text, delay, color, bNoSound, showDuplicated)
-  local colorWhite = cw.option:GetColor('white')
-
-  if color then
-    if type(color) == 'string' then
-      color = cw.option:GetColor(color)
-    end
-  else
-    color = colorWhite
-  end
-
-  if !showDuplicated then
-    for k, v in pairs(self.Hints) do
-      if v.text == text then
-        return
-      end
-    end
-  end
-
-  if table.Count(self.Hints) == 10 then
-    table.remove(self.Hints, 10)
-  end
-
-  if type(bNoSound) == 'string' then
-    surface.PlaySound(bNoSound)
-  elseif bNoSound == nil then
-    surface.PlaySound('hl1/fvox/blip.wav')
-  end
-
-  self.Hints[#self.Hints + 1] = {
-    startTime = SysTime(),
-    velocityX = -5,
-    velocityY = 0,
-    targetAlpha = 255,
-    alphaSpeed = 64,
-    color = color,
-    delay = delay,
-    alpha = 0,
-    text = text,
-    y = ScrH() * 0.2,
-    x = ScrW()
-  }
+  AddHint(self.Hints, text, delay, color, bNoSound, showDuplicated, ScrW(), ScrH() * 0.2)
 end
 
-local function UpdateHint(index, hintInfo, iCount)
-  local hintsFont = cw.option:GetFont('hints_text')
-  local fontWidth, fontHeight = cw.core:GetCachedTextSize(
-    hintsFont, hintInfo.text
-  )
-  local height = fontHeight
-  local width = fontWidth
+-- Moves a hint towards its place in its list and returns whether it has expired.
+local function UpdateHint(index, hintInfo, bCenter)
+  local width, height = cw.core:GetCachedTextSize(cw.option:GetFont('hints_text'), hintInfo.text)
+  local frameTime = FrameTime()
   local alpha = 255
-  local x = hintInfo.x
-  local y = hintInfo.y
+  local idealX, idealY
 
-  local idealY = 24 + (height * (index - 1))
-  local idealX = ScrW() - width - 48
+  if bCenter then
+    idealY = (ScrH() * 0.4) + (height * (index - 1))
+    idealX = (ScrW() * 0.5) - (width * 0.5)
+  else
+    idealY = 24 + (height * (index - 1))
+    idealX = ScrW() - width - 48
+  end
+
   local timeLeft = (hintInfo.startTime - (SysTime() - hintInfo.delay) + 2)
 
   if timeLeft < 0.7 then
@@ -861,15 +863,15 @@ local function UpdateHint(index, hintInfo, iCount)
     idealX = idealX + width * 2
   end
 
-  local fSpeed = FrameTime() * 15
-    y = y + hintInfo.velocityY * fSpeed
-    x = x + hintInfo.velocityX * fSpeed
+  local fSpeed = frameTime * 15
+  local y = hintInfo.y + hintInfo.velocityY * fSpeed
+  local x = hintInfo.x + hintInfo.velocityX * fSpeed
   local distanceY = idealY - y
   local distanceX = idealX - x
   local distanceA = (alpha - hintInfo.alpha)
 
-  hintInfo.velocityY = hintInfo.velocityY + distanceY * fSpeed * 1
-  hintInfo.velocityX = hintInfo.velocityX + distanceX * fSpeed * 1
+  hintInfo.velocityY = hintInfo.velocityY + distanceY * fSpeed
+  hintInfo.velocityX = hintInfo.velocityX + distanceX * fSpeed
 
   if math.abs(distanceY) < 2 and math.abs(hintInfo.velocityY) < 0.1 then
     hintInfo.velocityY = 0
@@ -879,8 +881,8 @@ local function UpdateHint(index, hintInfo, iCount)
     hintInfo.velocityX = 0
   end
 
-  hintInfo.velocityX = hintInfo.velocityX * (0.95 - FrameTime() * 8)
-  hintInfo.velocityY = hintInfo.velocityY * (0.95 - FrameTime() * 8)
+  hintInfo.velocityX = hintInfo.velocityX * (0.95 - frameTime * 8)
+  hintInfo.velocityY = hintInfo.velocityY * (0.95 - frameTime * 8)
   hintInfo.alpha = hintInfo.alpha + distanceA * fSpeed * 0.1
   hintInfo.x = x
   hintInfo.y = y
@@ -888,20 +890,20 @@ local function UpdateHint(index, hintInfo, iCount)
   return (timeLeft < 0.1)
 end
 
+local function UpdateHints(hints, bCenter)
+  -- Backwards, so that removing a hint does not skip the one after it.
+  for i = #hints, 1, -1 do
+    if UpdateHint(i, hints[i], bCenter) then
+      table.remove(hints, i)
+    end
+  end
+end
+
 --- Animates the top and center hints and removes the ones that have expired.
 -- @warning [Internal] Called every frame by the kernel.
 function cw.core:CalculateHints()
-  for k, v in pairs(self.Hints) do
-    if UpdateHint(k, v, #self.Hints) then
-      table.remove(self.Hints, k)
-    end
-  end
-
-  for k, v in pairs(self.CenterHints) do
-    if UpdateCenterHint(k, v, #self.CenterHints) then
-      table.remove(self.CenterHints, k)
-    end
-  end
+  UpdateHints(self.Hints, false)
+  UpdateHints(self.CenterHints, true)
 end
 
 -- A utility function to draw text within an info block.
@@ -945,6 +947,7 @@ do
   -- @warning [Internal] Called by the kernel once the options are available.
   function cw.core:CacheLimbs()
     texInfo = {
+      shouldDisplay = true,
       textures = {
         [HITGROUP_RIGHTARM] = cw.limb:GetTexture(HITGROUP_RIGHTARM),
         [HITGROUP_RIGHTLEG] = cw.limb:GetTexture(HITGROUP_RIGHTLEG),
@@ -1061,7 +1064,14 @@ do
       local timeString = cw.time:GetString()
 
       if dateString and timeString then
-        local dayName = L(cw.option:GetKey('default_days')[tonumber(os.date('%w'))])
+        local weekDay = tonumber(os.date('%w'))
+
+        -- os.date counts the days from Sunday as 0, the day names start at Monday.
+        if weekDay == 0 then
+          weekDay = 7
+        end
+
+        local dayName = L(cw.option:GetKey('default_days')[weekDay])
         local text = string.upper(dateString..'. '..dayName..', '..timeString..'.')
 
         self:OverrideMainFont(dateTimeFont)
@@ -1100,19 +1110,20 @@ do
         surface.SetMaterial(texInfo.textures[k])
         surface.DrawTexturedRect(x, y, width, height)
 
-        local idx = table.insert(limbInfo, {
-          color = limbColor,
-          text = L(texInfo.names[k])..': '..limbHealth..'%'
-        })
+        local limbText = L(texInfo.names[k])..': '..limbHealth..'%'
+        local textWidth, textHeight = self:GetCachedTextSize(mainTextFont, limbText)
 
-        local textWidth, textHeight = self:GetCachedTextSize(mainTextFont, limbInfo[idx].text)
         tipHeight = tipHeight + textHeight + 4
 
         if textWidth > tipWidth then
           tipWidth = textWidth
         end
 
-        limbInfo[idx].textHeight = textHeight
+        limbInfo[#limbInfo + 1] = {
+          textHeight = textHeight,
+          color = limbColor,
+          text = limbText
+        }
       end
 
       local mouseX = gui.MouseX()
@@ -1146,23 +1157,26 @@ end
 -- Each kind is only drawn when `PlayerCanSeeHints` or `PlayerCanSeeCenterHints` returns `true`.
 -- @warning [Internal] Called by the kernel while the HUD is drawn.
 function cw.core:DrawHints()
-  if hook.Run('PlayerCanSeeHints') and #self.Hints > 0 then
-    local hintsFont = cw.option:GetFont('hints_text')
+  local bDrawTop = #self.Hints > 0 and hook.Run('PlayerCanSeeHints')
+  local bDrawCenter = #self.CenterHints > 0 and hook.Run('PlayerCanSeeCenterHints')
 
-    for k, v in pairs(self.Hints) do
-      self:OverrideMainFont(hintsFont)
-        self:DrawInfo(v.text, v.x, v.y, v.color, v.alpha, true)
-      self:OverrideMainFont(false)
+  if !bDrawTop and !bDrawCenter then return end
+
+  self:OverrideMainFont(cw.option:GetFont('hints_text'))
+
+  if bDrawTop then
+    for k, v in ipairs(self.Hints) do
+      self:DrawInfo(v.text, v.x, v.y, v.color, v.alpha, true)
     end
   end
 
-  if hook.Run('PlayerCanSeeCenterHints') and #self.CenterHints > 0 then
-    for k, v in pairs(self.CenterHints) do
-      self:OverrideMainFont(hintsFont)
-        self:DrawInfo(v.text, v.x, v.y, v.color, v.alpha, true)
-      self:OverrideMainFont(false)
+  if bDrawCenter then
+    for k, v in ipairs(self.CenterHints) do
+      self:DrawInfo(v.text, v.x, v.y, v.color, v.alpha, true)
     end
   end
+
+  self:OverrideMainFont(false)
 end
 
 --- Draws every registered top bar from `cw.bars.stored` below a position.
@@ -1188,6 +1202,13 @@ function cw.core:DrawBars(info, class)
     cw.option:SetFont('bar_text', cw.option:GetFont('auto_bar_text'))
 
       for k, v in ipairs(cw.bars.stored) do
+        -- DrawBar writes the layout into the table it is given, so the stored bar is not passed directly.
+        local barInfo = {}
+
+        for key, value in pairs(v) do
+          barInfo[key] = value
+        end
+
         cw.bars.y = self:DrawBar(
           cw.bars.x,
           cw.bars.y,
@@ -1198,7 +1219,7 @@ function cw.core:DrawBars(info, class)
           v.value,
           v.maximum,
           v.flash,
-          table.Copy(v)
+          barInfo
         ) + (cw.bars.padding + 2)
       end
 
@@ -1225,138 +1246,197 @@ do
   local color_lightred = Color(255, 100, 100)
   local color_lightblue = Color(200, 200, 255)
   local vector_salesman_offset = Vector(0, 0, 80)
+  local espEntities = {}
+  local espOptions = nil
+  local nextESPScan = 0
+
+  -- Lists the entities the entity ESP labels. Going through every entity is slow, so the list is only rebuilt
+  -- every `cwESPTime` seconds, or when the ESP options change.
+  local function GetESPEntities(drawSalesmen, drawItems, drawProps)
+    local options = (drawSalesmen and 1 or 0) + (drawItems and 2 or 0) + (drawProps and 4 or 0)
+    local realTime = RealTime()
+
+    if options == espOptions and realTime < nextESPScan then
+      return espEntities
+    end
+
+    espEntities = {}
+    espOptions = options
+    nextESPScan = realTime + CW_CONVAR_ESPTIME:GetFloat()
+
+    for k, v in ipairs(ents.GetAll()) do
+      if !IsValid(v) then continue end
+
+      local entClass = v:GetClass()
+
+      if (drawItems and entClass == 'cw_item') or (drawSalesmen and entClass == 'cw_salesman')
+      or (drawProps and v:GetPersistent()) then
+        espEntities[#espEntities + 1] = v
+      end
+    end
+
+    return espEntities
+  end
 
   --- Draws the admin ESP when the `CW_CONVAR_ADMINESP` ConVar is on.
   --
-  -- Shows every other player's name, Steam name, weapon, status, bounding box and health and armor
-  -- bars, plus persistent props, items and salesmen when their ESP ConVars are on.
+  -- Shows the name, Steam name, weapon, status and bounding box of every other player in front of the
+  -- view, their health and armor bars when `cwESPBars` is on, plus persistent props, items and salesmen
+  -- when their ESP ConVars are on. The entities are looked up again every `cwESPTime` seconds.
   -- @warning [Internal] Called by the kernel while the HUD is drawn.
   function cw.core:DrawAdminESP()
-    if CW_CONVAR_ADMINESP:GetInt() == 1 then
-      if IsValid(cw.client) and cw.client:Alive() then
-        local scrW, scrH = ScrW(), ScrH()
-        local font = cw.option:GetFont('esp_text')
-        local smallFont = cw.fonts:GetSize(font, 12)
+    if CW_CONVAR_ADMINESP:GetInt() != 1 or !IsValid(cw.client) or !cw.client:Alive() then
+      return
+    end
 
-        for k, v in ipairs(_player.GetAll()) do
-          if v == cw.client then continue end
-          if !v:HasInitialized() then continue end
+    local font = cw.option:GetFont('esp_text')
+    local smallFont = cw.fonts:GetSize(font, 12)
+    local noWeaponText = L('#AdminESPInfo_NoWeapon')
+    local drawBars = (CW_CONVAR_ESPBARS:GetInt() == 1)
+    local clientPos = cw.client:GetPos()
+    local eyeVector = EyeVector()
+    local eyePos = EyePos()
 
-          local pos = v:GetPos()
-          local head = Vector(pos.x, pos.y, pos.z + 60)
-          local screenPos = pos:ToScreen()
-          local headPos = head:ToScreen()
-          local textPos = Vector(head.x, head.y, head.z + 30):ToScreen()
-          local distance = cw.client:GetPos():Distance(v:GetPos())
-          local x, y = headPos.x, headPos.y
-          local f = math.abs(350 / distance)
-          local size = 52 * f
-          local teamColor = team.GetColor(v:Team()) or color_white
-          local offset = 0
+    for k, v in ipairs(_player.GetAll()) do
+      if v == cw.client then continue end
+      if !v:HasInitialized() then continue end
 
-          local w, h = util.GetTextSize(font, v:Name())
-          draw.SimpleText(v:Name(), font, textPos.x - w / 2, textPos.y, teamColor)
+      local pos = v:GetPos()
+      local head = Vector(pos.x, pos.y, pos.z + 60)
 
-          local icon = cw.player:GetChatIcon(v)
+      -- A position behind the view projects onto the screen mirrored, so it is not drawn.
+      if (head.x - eyePos.x) * eyeVector.x + (head.y - eyePos.y) * eyeVector.y
+      + (head.z - eyePos.z) * eyeVector.z <= 0 then
+        continue
+      end
 
-          if icon then
-            surface.SetDrawColor(255, 255, 255, 255)
-            surface.SetMaterial(cw.core:GetMaterial(icon))
-            surface.DrawTexturedRect(textPos.x - w / 2 - 18, textPos.y, 16, 16)
-          end
+      local screenPos = pos:ToScreen()
+      local headPos = head:ToScreen()
+      local textPos = Vector(head.x, head.y, head.z + 30):ToScreen()
+      local distance = clientPos:Distance(pos)
+      local x, y = headPos.x, headPos.y
+      local f = math.abs(350 / distance)
+      local size = 52 * f
+      local teamColor = team.GetColor(v:Team()) or color_white
+      local offset = 0
 
-          offset = offset + 14
+      local name = v:Name()
+      local nameWidth = self:GetCachedTextSize(font, name)
 
-          local w, h = util.GetTextSize(smallFont, v:SteamName())
-          draw.SimpleText(v:SteamName(), smallFont, textPos.x - w / 2, textPos.y + offset, color_lightblue)
+      draw.SimpleText(name, font, textPos.x - nameWidth / 2, textPos.y, teamColor)
 
-          offset = offset + 12
+      local icon = cw.player:GetChatIcon(v)
 
-          local activeWeapon = v:GetActiveWeapon()
-          local weaponName = L('#AdminESPInfo_NoWeapon')
+      if icon then
+        surface.SetDrawColor(255, 255, 255, 255)
+        surface.SetMaterial(self:GetMaterial(icon))
+        surface.DrawTexturedRect(textPos.x - nameWidth / 2 - 18, textPos.y, 16, 16)
+      end
 
-          if IsValid(activeWeapon) then
-            weaponName = '['..activeWeapon:GetClass()..']'
-          end
+      offset = offset + 14
 
-          local w, h = util.GetTextSize(smallFont, weaponName)
-          draw.SimpleText(weaponName, smallFont, textPos.x - w / 2, textPos.y + offset, color_lightblue)
+      local steamName = v:SteamName()
+      local steamNameWidth = self:GetCachedTextSize(smallFont, steamName)
 
-          offset = offset + 12
+      draw.SimpleText(steamName, smallFont, textPos.x - steamNameWidth / 2, textPos.y + offset, color_lightblue)
 
-          local statusInfo = {}
-          hook.Run('GetStatusInfo', v, statusInfo)
-          local infoText = statusInfo[1]
+      offset = offset + 12
 
-          if v:Alive() then
-            surface.SetDrawColor(teamColor)
-            surface.DrawOutlinedRect(x - size / 2, y - size / 2, size, (screenPos.y - y) * 1.25)
-          end
+      local activeWeapon = v:GetActiveWeapon()
+      local weaponName = noWeaponText
 
-          if infoText then
-            local w, h = util.GetTextSize(smallFont, cw.lang:TranslateText(infoText))
+      if IsValid(activeWeapon) then
+        weaponName = '['..activeWeapon:GetClass()..']'
+      end
 
-            draw.SimpleText(infoText, smallFont, textPos.x - w / 2, textPos.y + offset, color_lightred)
-          end
+      local weaponNameWidth = self:GetCachedTextSize(smallFont, weaponName)
 
-          local bx, by = x - size / 2, y - size / 2 + (screenPos.y - y) * 1.25
-          local hpM = math.Clamp((v:Health() or 0) / v:GetMaxHealth(), 0, 1)
+      draw.SimpleText(weaponName, smallFont, textPos.x - weaponNameWidth / 2, textPos.y + offset, color_lightblue)
 
-          if hpM > 0 then
-            draw.RoundedBox(0, bx, by, size, 2, color_grey)
-            draw.RoundedBox(0, bx, by, size * hpM, 2, color_red)
-          end
+      offset = offset + 12
 
-          local arM = math.Clamp((v:Armor() or 0) / 100, 0, 1)
+      local statusInfo = {}
+      hook.Run('GetStatusInfo', v, statusInfo)
+      local infoText = statusInfo[1]
 
-          if arM > 0 then
-            draw.RoundedBox(0, bx, by + 3, size, 2, color_grey)
-            draw.RoundedBox(0, bx, by + 3, size * arM, 2, color_blue)
-          end
+      if v:Alive() then
+        surface.SetDrawColor(teamColor)
+        surface.DrawOutlinedRect(x - size / 2, y - size / 2, size, (screenPos.y - y) * 1.25)
+      end
+
+      if infoText then
+        local infoWidth = self:GetCachedTextSize(smallFont, infoText)
+
+        draw.SimpleText(infoText, smallFont, textPos.x - infoWidth / 2, textPos.y + offset, color_lightred)
+      end
+
+      if drawBars then
+        local bx, by = x - size / 2, y - size / 2 + (screenPos.y - y) * 1.25
+        local hpM = math.Clamp((v:Health() or 0) / v:GetMaxHealth(), 0, 1)
+
+        if hpM > 0 then
+          draw.RoundedBox(0, bx, by, size, 2, color_grey)
+          draw.RoundedBox(0, bx, by, size * hpM, 2, color_red)
         end
 
-        local drawSalesmen = (CW_CONVAR_SALEESP:GetInt() == 1)
-        local drawItems = (CW_CONVAR_ITEMESP:GetInt() == 1)
-        local drawProps = (CW_CONVAR_PROPESP:GetInt() == 1)
+        local arM = math.Clamp((v:Armor() or 0) / 100, 0, 1)
 
-        if drawSalesmen or drawItems or drawProps then
-          for k, v in ipairs(ents.GetAll()) do
-            if !IsValid(v) then continue end
-
-            local pos = v:GetPos()
-            local entClass = v:GetClass()
-
-            if drawProps and v:GetPersistent() then
-              local entText = L('#AdminESPInfo_StaticEntLabel')..' ['..tostring(v:GetModel())..']'
-              local position = pos:ToScreen()
-              local ws, hs = util.GetTextSize(font, entText)
-
-              draw.SimpleText(entText, smallFont, position.x - ws / 2, position.y, color_props)
-            elseif drawItems and entClass == 'cw_item' then
-              local itemTable = cw.entity:FetchItemTable(v)
-
-              if itemTable then
-                local entText = L('#AdminESPInfo_ItemLabel')..' ['..itemTable.name..']'
-                local position = pos:ToScreen()
-                local ws, hs = util.GetTextSize(smallFont, entText)
-
-                draw.SimpleText(entText, smallFont, position.x - ws / 2, position.y, color_items)
-              end
-            elseif drawSalesmen and entClass == 'cw_salesman' then
-              pos = pos + vector_salesman_offset
-
-              local entText = L('#AdminESPInfo_SalesmanLabel')..' ['..v:GetNWString('Name')..']'
-              local position = pos:ToScreen()
-              local ws, hs = util.GetTextSize(font, entText)
-
-              draw.SimpleText(entText, smallFont, position.x - ws / 2, position.y, color_salesmen)
-            end
-          end
+        if arM > 0 then
+          draw.RoundedBox(0, bx, by + 3, size, 2, color_grey)
+          draw.RoundedBox(0, bx, by + 3, size * arM, 2, color_blue)
         end
+      end
+    end
+
+    local drawSalesmen = (CW_CONVAR_SALEESP:GetInt() == 1)
+    local drawItems = (CW_CONVAR_ITEMESP:GetInt() == 1)
+    local drawProps = (CW_CONVAR_PROPESP:GetInt() == 1)
+
+    if !drawSalesmen and !drawItems and !drawProps then
+      return
+    end
+
+    local salesmanLabel = drawSalesmen and L('#AdminESPInfo_SalesmanLabel')
+    local itemLabel = drawItems and L('#AdminESPInfo_ItemLabel')
+    local propLabel = drawProps and L('#AdminESPInfo_StaticEntLabel')
+
+    for k, v in ipairs(GetESPEntities(drawSalesmen, drawItems, drawProps)) do
+      if !IsValid(v) then continue end
+
+      local pos = v:GetPos()
+      local entClass = v:GetClass()
+
+      if drawProps and v:GetPersistent() then
+        local entText = propLabel..' ['..tostring(v:GetModel())..']'
+        local position = pos:ToScreen()
+        local textWidth = self:GetCachedTextSize(smallFont, entText)
+
+        draw.SimpleText(entText, smallFont, position.x - textWidth / 2, position.y, color_props)
+      elseif drawItems and entClass == 'cw_item' then
+        local itemTable = cw.entity:FetchItemTable(v)
+
+        if itemTable then
+          local entText = itemLabel..' ['..itemTable.name..']'
+          local position = pos:ToScreen()
+          local textWidth = self:GetCachedTextSize(smallFont, entText)
+
+          draw.SimpleText(entText, smallFont, position.x - textWidth / 2, position.y, color_items)
+        end
+      elseif drawSalesmen and entClass == 'cw_salesman' then
+        pos = pos + vector_salesman_offset
+
+        local entText = salesmanLabel..' ['..v:GetNWString('Name')..']'
+        local position = pos:ToScreen()
+        local textWidth = self:GetCachedTextSize(smallFont, entText)
+
+        draw.SimpleText(entText, smallFont, position.x - textWidth / 2, position.y, color_salesmen)
       end
     end
   end
 end
+
+local colorBarLimit = Color(213, 173, 39, 255)
+local colorBarLimitText = Color(255, 255, 255, 255)
 
 --- Draws a progress bar with a value and a maximum.
 --
@@ -1373,11 +1453,10 @@ end
 -- @param value [Number Current value]
 -- @param maximum [Number Maximum value]
 -- @param flash [Boolean Make the bar pulse]
--- @param barInfo [Map Extra bar options, such as `maxValue`, `limitText` or `drawBackground`]
+-- @param barInfo=nil [Map Extra bar options, such as `maxValue`, `limitText` or `drawBackground`]
 -- @return [Number The bar's y position]
 function cw.core:DrawBar(x, y, width, height, color, text, value, maximum, flash, barInfo)
   local backgroundColor = cw.option:GetColor('background')
-  local foregroundColor = cw.option:GetColor('foreground')
   local progressWidth = math.Clamp(((width - 4) / maximum) * value, 0, width - 4)
   local colorWhite = cw.option:GetColor('white')
   local newBarInfo = {
@@ -1392,8 +1471,6 @@ function cw.core:DrawBar(x, y, width, height, color, text, value, maximum, flash
     value = value,
     flash = flash,
     text = text,
-    maxValue = barInfo.maxValue,
-    limitText = barInfo.limitText,
     x = x,
     y = y,
     isBlocky = false,
@@ -1425,8 +1502,10 @@ function cw.core:DrawBar(x, y, width, height, color, text, value, maximum, flash
       local alpha = math.Clamp(math.abs(math.sin(UnPredictedCurTime()) * 50), 0, 50)
 
       if alpha > 0 then
-        draw.RoundedBox(0, barInfo.x + 2, barInfo.y + 2, barInfo.width - 4, barInfo.height - 4,
-        Color(colorWhite.r, colorWhite.g, colorWhite.b, alpha))
+        draw.RoundedBox(
+          0, barInfo.x + 2, barInfo.y + 2, barInfo.width - 4, barInfo.height - 4,
+          ScratchColor(colorWhite.r, colorWhite.g, colorWhite.b, alpha)
+        )
       end
     end
   end
@@ -1436,7 +1515,7 @@ function cw.core:DrawBar(x, y, width, height, color, text, value, maximum, flash
       self:OverrideMainFont(cw.option:GetFont('bar_text'))
         self:DrawSimpleText(
           barInfo.text, barInfo.x + (barInfo.width / 2), barInfo.y + (barInfo.height / 2),
-          Color(colorWhite.r, colorWhite.g, colorWhite.b, alpha), 1, 1
+          ScratchColor(colorWhite.r, colorWhite.g, colorWhite.b, 255), 1, 1
         )
       self:OverrideMainFont(false)
     end
@@ -1447,11 +1526,12 @@ function cw.core:DrawBar(x, y, width, height, color, text, value, maximum, flash
       local width = barInfo.width
       local length = width * ((barInfo.maximum - barInfo.maxValue) / barInfo.maximum)
 
-      draw.RoundedBox(2, barInfo.x + width - length, barInfo.y, length, barInfo.height, Color('#D5AD27'))
+      draw.RoundedBox(2, barInfo.x + width - length, barInfo.y, length, barInfo.height, colorBarLimit)
 
       if barInfo.limitText then
         local limitText = cw.lang:TranslateText(barInfo.limitText)
-        local textWide = util.GetTextSize(cw.fonts:GetSize('hl2_BarsFont', 15), limitText)
+        local limitFont = cw.fonts:GetSize('hl2_BarsFont', 15)
+        local textWide = self:GetCachedTextSize(limitFont, limitText)
 
         render.SetScissorRect(
           barInfo.x + width - length,
@@ -1462,10 +1542,10 @@ function cw.core:DrawBar(x, y, width, height, color, text, value, maximum, flash
         )
           draw.SimpleText(
             limitText,
-            cw.fonts:GetSize('hl2_BarsFont', 15),
+            limitFont,
             barInfo.x + barInfo.width - textWide - 8,
             barInfo.y - 1,
-            Color('white')
+            colorBarLimitText
           )
         render.SetScissorRect(0, 0, 0, 0, false)
       end
@@ -1535,19 +1615,53 @@ function cw.core:DrawSimpleText(text, x, y, color, alignX, alignY, shadowless, s
   local realX = math.Round(x)
   local realY = math.Round(y)
 
+  text = tostring(text)
+
+  -- The text is drawn several times for the outline, so it is translated once here and then drawn as it is.
+  if surface.bTranslating and string.find(text, '#', 1, true) then
+    text = cw.lang:TranslateText(text)
+  end
+
+  local width, height = self:GetCachedTextSize(mainTextFont, text)
+  local DrawText = surface.OldDrawText or surface.DrawText
+  local textX = realX
+  local textY = realY
+
+  if alignX == TEXT_ALIGN_CENTER then
+    textX = textX - width / 2
+  elseif alignX == TEXT_ALIGN_RIGHT then
+    textX = textX - width
+  end
+
+  if alignY == TEXT_ALIGN_CENTER then
+    textY = textY - height / 2
+  elseif alignY == TEXT_ALIGN_BOTTOM then
+    textY = textY - height
+  end
+
+  textX = math.ceil(textX)
+  textY = math.ceil(textY)
+
+  surface.SetFont(mainTextFont)
+
   if !shadowless then
-    local outlineColor = Color(25, 25, 25, math.min(225, color.a))
+    surface.SetTextColor(25, 25, 25, math.min(225, color.a))
 
     for i = 1, (shadowDepth or 1) do
-      draw.SimpleText(text, mainTextFont, realX + -i, realY + -i, outlineColor, alignX, alignY)
-      draw.SimpleText(text, mainTextFont, realX + -i, realY + i, outlineColor, alignX, alignY)
-      draw.SimpleText(text, mainTextFont, realX + i, realY + -i, outlineColor, alignX, alignY)
-      draw.SimpleText(text, mainTextFont, realX + i, realY + i, outlineColor, alignX, alignY)
+      surface.SetTextPos(textX - i, textY - i)
+      DrawText(text)
+      surface.SetTextPos(textX - i, textY + i)
+      DrawText(text)
+      surface.SetTextPos(textX + i, textY - i)
+      DrawText(text)
+      surface.SetTextPos(textX + i, textY + i)
+      DrawText(text)
     end
   end
 
-  draw.SimpleText(text, mainTextFont, realX, realY, color, alignX, alignY)
-  local width, height = self:GetCachedTextSize(mainTextFont, text)
+  surface.SetTextColor(color.r, color.g, color.b, color.a)
+  surface.SetTextPos(textX, textY)
+  DrawText(text)
 
   return realY + height + 2, width
 end
@@ -1609,21 +1723,30 @@ end
 -- @param text [String The text]
 -- @return [Number Width in pixels, Number Height in pixels]
 function cw.core:GetCachedTextSize(font, text)
-  if !cw.CachedTextSizes then
-    cw.CachedTextSizes = {}
+  local cachedTextSizes = cw.CachedTextSizes
+
+  if !cachedTextSizes then
+    cachedTextSizes = {}
+    cw.CachedTextSizes = cachedTextSizes
   end
 
-  if !cw.CachedTextSizes[font] then
-    cw.CachedTextSizes[font] = {}
+  local fontSizes = cachedTextSizes[font]
+
+  if !fontSizes then
+    fontSizes = {}
+    cachedTextSizes[font] = fontSizes
   end
 
-  if !cw.CachedTextSizes[font][text] then
+  local size = fontSizes[text]
+
+  if !size then
     surface.SetFont(font)
 
-    cw.CachedTextSizes[font][text] = { surface.GetTextSize(text) }
+    size = { surface.GetTextSize(text) }
+    fontSizes[text] = size
   end
 
-  return cw.CachedTextSizes[font][text][1], cw.CachedTextSizes[font][text][2]
+  return size[1], size[2]
 end
 
 --- Draws information text with the main font scaled; see `cw.core:DrawInfo`.
@@ -1652,7 +1775,8 @@ end
 
 --- Draws outlined information text in the `main_text` font.
 --
--- The text is translated first and centered on `x` unless `bAlignLeft` is set.
+-- The text is translated first and centered on `x` unless `bAlignLeft` is set. Nothing is drawn
+-- when the text is `nil`.
 --
 -- ```
 -- y = cw.core:DrawInfo('#Hint_Example', x, y, Color(255, 255, 255), 200, true, function(x, y, w, h)
@@ -1671,30 +1795,34 @@ end
 -- @return [Number Y position below the text, Number Width of the text]
 -- @see cw.core:OverrideMainFont
 function cw.core:DrawInfo(text, x, y, color, alpha, bAlignLeft, Callback, shadowDepth)
-  text = cw.lang:TranslateText(text)
+  if text == nil then
+    return y, 0
+  end
+
+  if string.find(text, '#', 1, true) then
+    text = cw.lang:TranslateText(text)
+  end
 
   local width, height = self:GetCachedTextSize(cw.option:GetFont('main_text'), text)
 
-  if width and height then
-    if !bAlignLeft then
-      x = x - (width / 2)
-    end
-
-    if Callback then
-      x, y = Callback(x, y, width, height)
-    end
-
-    return self:DrawSimpleText(
-      text,
-      x,
-      y,
-      Color(color.r, color.g, color.b, alpha or color.a),
-      nil,
-      nil,
-      nil,
-      shadowDepth
-    )
+  if !bAlignLeft then
+    x = x - (width / 2)
   end
+
+  if Callback then
+    x, y = Callback(x, y, width, height)
+  end
+
+  return self:DrawSimpleText(
+    text,
+    x,
+    y,
+    ScratchColor(color.r, color.g, color.b, alpha or color.a),
+    nil,
+    nil,
+    nil,
+    shadowDepth
+  )
 end
 
 --- Returns the layout of the player info box from the last time it was drawn.
@@ -1931,16 +2059,7 @@ end
 -- @param maxAlpha=100 [Number Unused]
 -- @see cw.core:DrawTexturedGradientBox
 function cw.core:DrawSimpleGradientBox(cornerSize, x, y, width, height, color, maxAlpha)
-  local gradientAlpha = math.min(color.a, maxAlpha or 100)
-
-  draw.RoundedBox(cornerSize, x, y, width, height, Color(color.r, color.g, color.b, color.a * 0.75))
-
-  -- Let's face it: gradients are UGLY.
-  /*if (x + cornerSize < x + width and y + cornerSize < y + height) then
-    surface.SetDrawColor(gradientAlpha, gradientAlpha, gradientAlpha, gradientAlpha)
-    surface.SetMaterial(self:GetGradientTexture())
-    surface.DrawTexturedRect(x + cornerSize, y + cornerSize, width - (cornerSize * 2), height - (cornerSize * 2))
-  end*/
+  draw.RoundedBox(cornerSize, x, y, width, height, ScratchColor(color.r, color.g, color.b, color.a * 0.75))
 end
 
 --- Draws a rounded box at three quarters of the color's alpha with the gradient texture over it.
@@ -1955,7 +2074,7 @@ end
 function cw.core:DrawTexturedGradientBox(cornerSize, x, y, width, height, color, maxAlpha)
   local gradientAlpha = math.min(color.a, maxAlpha or 100)
 
-  draw.RoundedBox(cornerSize, x, y, width, height, Color(color.r, color.g, color.b, color.a * 0.75))
+  draw.RoundedBox(cornerSize, x, y, width, height, ScratchColor(color.r, color.g, color.b, color.a * 0.75))
 
   if x + cornerSize < x + width and y + cornerSize < y + height then
     surface.SetDrawColor(gradientAlpha, gradientAlpha, gradientAlpha, gradientAlpha)
@@ -2057,8 +2176,6 @@ function cw.core:HandleItemSpawnIconClick(itemTable, spawnIcon, Callback)
         if arguments.Callback then
           arguments.Callback()
         end
-      elseif arguments == 'function' then
-        arguments()
       end
 
       timer.Simple(FrameTime(), function()
@@ -2177,7 +2294,7 @@ function cw.core:HandleItemSpawnIconRightClick(itemTable, spawnIcon)
 
       if customFunctions and table.HasValue(customFunctions, functionName) then
         if itemTable.OnCustomFunction then
-          itemTable:OnCustomFunction(v)
+          itemTable:OnCustomFunction(functionName)
         end
       end
 
@@ -2290,9 +2407,9 @@ function cw.core:OverrideMarkupDraw(markupObject, sCustomFont)
 
       x = x + v.offset.x
 
-      if hAlign == TEXT_ALIGN_CENTER then
+      if vAlign == TEXT_ALIGN_CENTER then
         y = y - (self.totalHeight / 2)
-      elseif hAlign == TEXT_ALIGN_BOTTOM then
+      elseif vAlign == TEXT_ALIGN_BOTTOM then
         y = y - self.totalHeight
       end
 
@@ -2301,7 +2418,9 @@ function cw.core:OverrideMarkupDraw(markupObject, sCustomFont)
       end
 
       cw.core:OverrideMainFont(sCustomFont or v.font)
-        cw.core:DrawSimpleText(v.text, x, y, Color(v.colour.r or 255, v.colour.g or 255, v.colour.b or 255, alpha))
+        cw.core:DrawSimpleText(
+          v.text, x, y, ScratchColor(v.colour.r or 255, v.colour.g or 255, v.colour.b or 255, alpha)
+        )
       cw.core:OverrideMainFont(false)
     end
   end
@@ -2451,7 +2570,7 @@ end
 function cw.core:DrawHealthBar()
   local health = math.Clamp(cw.client:Health(), 0, cw.client:GetMaxHealth())
 
-  if !self.armor then
+  if !self.health then
     self.health = health
   else
     self.health = math.Approach(self.health, health, 1)
@@ -2499,7 +2618,11 @@ function cw.core:DrawBackgroundBlurs()
   end
 
   for k, v in pairs(cw.BackgroundBlurs) do
-    if type(k) == 'string' or (IsValid(k) and k:IsVisible()) then
+    local bIsPanel = type(k) != 'string'
+
+    if bIsPanel and !IsValid(k) then
+      cw.BackgroundBlurs[k] = nil
+    elseif !bIsPanel or k:IsVisible() then
       local fraction = math.Clamp((sysTime - v) / 1, 0, 1)
       local x, y = 0, 0
 
@@ -2510,7 +2633,7 @@ function cw.core:DrawBackgroundBlurs()
         cw.ScreenBlur:SetFloat('$blur', fraction * 5 * i)
         cw.ScreenBlur:Recompute()
 
-        if render then render.UpdateScreenEffectTexture() end
+        render.UpdateScreenEffectTexture()
 
         surface.DrawTexturedRect(x, y, scrW, scrH)
       end
@@ -2563,23 +2686,17 @@ end
 --- Returns whether the local player is holding the toolgun.
 -- @return [Boolean Whether the active weapon is `gmod_tool`]
 function cw.core:IsUsingTool()
-  if IsValid(cw.client:GetActiveWeapon())
-  and cw.client:GetActiveWeapon():GetClass() == 'gmod_tool' then
-    return true
-  else
-    return false
-  end
+  local weapon = cw.client:GetActiveWeapon()
+
+  return IsValid(weapon) and weapon:GetClass() == 'gmod_tool'
 end
 
 --- Returns whether the local player is holding the camera.
 -- @return [Boolean Whether the active weapon is `gmod_camera`]
 function cw.core:IsUsingCamera()
-  if IsValid(cw.client:GetActiveWeapon())
-  and cw.client:GetActiveWeapon():GetClass() == 'gmod_camera' then
-    return true
-  else
-    return false
-  end
+  local weapon = cw.client:GetActiveWeapon()
+
+  return IsValid(weapon) and weapon:GetClass() == 'gmod_camera'
 end
 
 --- Returns the target ID data of the entity the local player is looking at.
@@ -2604,7 +2721,7 @@ function cw.core:CalculateScreenFading()
 
     cw.BlackFadeIn = math.Clamp(cw.BlackFadeIn + (FrameTime() * 20), 0, 255)
     cw.BlackFadeOut = nil
-    self:DrawSimpleGradientBox(0, 0, 0, ScrW(), ScrH(), Color(0, 0, 0, cw.BlackFadeIn))
+    self:DrawSimpleGradientBox(0, 0, 0, ScrW(), ScrH(), ScratchColor(0, 0, 0, cw.BlackFadeIn))
   else
     if cw.BlackFadeIn then
       cw.BlackFadeOut = cw.BlackFadeIn
@@ -2614,7 +2731,7 @@ function cw.core:CalculateScreenFading()
 
     if cw.BlackFadeOut then
       cw.BlackFadeOut = math.Clamp(cw.BlackFadeOut - (FrameTime() * 40), 0, 255)
-      self:DrawSimpleGradientBox(0, 0, 0, ScrW(), ScrH(), Color(0, 0, 0, cw.BlackFadeOut))
+      self:DrawSimpleGradientBox(0, 0, 0, ScrW(), ScrH(), ScratchColor(0, 0, 0, cw.BlackFadeOut))
 
       if cw.BlackFadeOut == 0 then
         cw.BlackFadeOut = nil
@@ -2791,10 +2908,11 @@ function cw.core:DrawCinematicInfo()
     local textPosY = (scrH * 0.35) - ((scrH * 0.15) * textPosScale)
     local textPosX = scrW * 0.3
 
+    local cinematicIntroText = cinematicInfo.text and string.upper(cinematicInfo.text)
+    local introTextSmallFont = cw.option:GetFont('intro_text_small')
+
     if cinematicInfo.title then
       local cinematicInfoTitle = string.upper(cinematicInfo.title)
-      local cinematicIntroText = string.upper(cinematicInfo.text)
-      local introTextSmallFont = cw.option:GetFont('intro_text_small')
       local introTextBigFont = cw.option:GetFont('intro_text_big')
       local textWidth, textHeight = self:GetCachedTextSize(introTextBigFont, cinematicInfoTitle)
       local boxAlpha = math.Clamp(cw.CinematicInfoAlpha, 0, 130)
@@ -2859,28 +2977,46 @@ function cw.core:DrawCinematicInfo()
   end
 end
 
---- Draws a door's name and text on both sides of the door.
---
--- The text comes from the `GetDoorInfo` hook. Nothing is drawn for invisible doors, doors whose
--- text position hits the world, or when the door is more than 256 units away.
--- @param entity [Entity The door]
--- @param eyePos [Vector Position of the viewer's eyes]
--- @param eyeAngles [Angle Angles of the viewer's eyes; unused]
--- @param font [String Font of the text]
--- @param nameColor [Color Color of the door name]
--- @param textColor [Color Color of the door text]
-function cw.core:DrawDoorText(entity, eyePos, eyeAngles, font, nameColor, textColor)
-  local entityColor = entity:GetColor()
+do
+  local boxColor = Color(0, 0, 0, 0)
+  local edgeColor = Color(220, 220, 220, 0)
 
-  if entityColor.a <= 0 or entity:IsEffectActive(EF_NODRAW) then
-    return
+  -- Working out where the text goes takes an entity search and a trace, so for a door that is not moving it is
+  -- only done once a second.
+  local function GetDoorTextData(entity)
+    local position = entity:GetPos()
+    local angles = entity:GetAngles()
+    local realTime = RealTime()
+    local cached = entity.cwDoorTextData
+
+    if !cached or realTime >= cached.expireTime or cached.doorPosition != position or cached.doorAngles != angles then
+      cached = cw.entity:CalculateDoorTextPosition(entity)
+      cached.doorPosition = position
+      cached.doorAngles = angles
+      cached.expireTime = realTime + 1
+      entity.cwDoorTextData = cached
+    end
+
+    return cached
   end
 
-  local doorData = cw.entity:CalculateDoorTextPosition(entity)
+  --- Draws a door's name and text on both sides of the door.
+  --
+  -- The text comes from the `GetDoorInfo` hook. Nothing is drawn for invisible doors, doors whose
+  -- text position hits the world, or when the door is more than 256 units away.
+  -- @param entity [Entity The door]
+  -- @param eyePos [Vector Position of the viewer's eyes]
+  -- @param eyeAngles [Angle Angles of the viewer's eyes; unused]
+  -- @param font [String Font of the text]
+  -- @param nameColor [Color Color of the door name]
+  -- @param textColor [Color Color of the door text]
+  function cw.core:DrawDoorText(entity, eyePos, eyeAngles, font, nameColor, textColor)
+    local entityColor = entity:GetColor()
 
-  if !doorData.hitWorld then
-    local frontY = -26
-    local backY = -26
+    if entityColor.a <= 0 or entity:IsEffectActive(EF_NODRAW) then
+      return
+    end
+
     local alpha = self:CalculateAlphaFromDistance(256, eyePos, entity:GetPos())
 
     if alpha <= 0 then
@@ -2890,70 +3026,75 @@ function cw.core:DrawDoorText(entity, eyePos, eyeAngles, font, nameColor, textCo
     local name = hook.Run('GetDoorInfo', entity, DOOR_INFO_NAME)
     local text = hook.Run('GetDoorInfo', entity, DOOR_INFO_TEXT)
 
-    if name or text then
-      local nameWidth, nameHeight = self:GetCachedTextSize(font, name or '')
-      local textWidth, textHeight = self:GetCachedTextSize(font, text or '')
-      local boxAlpha = math.min(alpha, 255)
-
-      if textWidth > nameWidth then
-        nameWidth = textWidth
-      end
-
-      local scale = math.abs((doorData.width * 0.75) / nameWidth)
-      local nameScale = math.min(scale, 0.05)
-      local textScale = math.min(scale, 0.03)
-      local longHeight = (nameHeight + textHeight + 8)
-      local backX = -nameWidth / 2 - 32
-      local blackCol = Color(0, 0, 0, math.Clamp(boxAlpha, 0, 130))
-      local whiteCol = Color(220, 220, 220, boxAlpha)
-      local boxWidth = nameWidth + 64
-
-      nameWidth = math.Clamp(nameWidth, 0, 1500)
-
-      cam.Start3D2D(doorData.position, doorData.angles, 0.03)
-        draw.RoundedBox(0, backX, frontY - 5, boxWidth, longHeight + 14, blackCol)
-        draw.RoundedBox(0, backX, frontY - 8, boxWidth, 3, whiteCol)
-        draw.RoundedBox(0, backX, frontY + longHeight + 8, boxWidth, 3, whiteCol)
-      cam.End3D2D()
-
-      cam.Start3D2D(doorData.positionBack, doorData.anglesBack, 0.03)
-        draw.RoundedBox(0, backX, frontY - 5, boxWidth, longHeight + 14, blackCol)
-        draw.RoundedBox(0, backX, frontY - 8, boxWidth, 3, whiteCol)
-        draw.RoundedBox(0, backX, frontY + longHeight + 8, boxWidth, 3, whiteCol)
-      cam.End3D2D()
-
-      if name then
-        if !text or text == '' then
-          nameColor = textColor or nameColor
-        end
-
-        cam.Start3D2D(doorData.position, doorData.angles, nameScale)
-          self:OverrideMainFont(font)
-          frontY = self:DrawInfo(name, 0, frontY, nameColor, alpha, nil, nil, 3)
-          self:OverrideMainFont(false)
-        cam.End3D2D()
-
-        cam.Start3D2D(doorData.positionBack, doorData.anglesBack, nameScale)
-          self:OverrideMainFont(font)
-          backY = self:DrawInfo(name, 0, backY, nameColor, alpha, nil, nil, 3)
-          self:OverrideMainFont(false)
-        cam.End3D2D()
-      end
-
-      if text then
-        cam.Start3D2D(doorData.position, doorData.angles, textScale)
-          self:OverrideMainFont(font)
-          frontY = self:DrawInfo(text, 0, frontY, textColor, alpha, nil, nil, 3)
-          self:OverrideMainFont(false)
-        cam.End3D2D()
-
-        cam.Start3D2D(doorData.positionBack, doorData.anglesBack, textScale)
-          self:OverrideMainFont(font)
-          backY = self:DrawInfo(text, 0, backY, textColor, alpha, nil, nil, 3)
-          self:OverrideMainFont(false)
-        cam.End3D2D()
-      end
+    if !name and !text then
+      return
     end
+
+    local doorData = GetDoorTextData(entity)
+
+    if doorData.hitWorld then
+      return
+    end
+
+    local frontY = -26
+    local backY = -26
+    local nameWidth, nameHeight = self:GetCachedTextSize(font, name or '')
+    local textWidth, textHeight = self:GetCachedTextSize(font, text or '')
+    local boxAlpha = math.min(alpha, 255)
+
+    if textWidth > nameWidth then
+      nameWidth = textWidth
+    end
+
+    local scale = math.abs((doorData.width * 0.75) / nameWidth)
+    local nameScale = math.min(scale, 0.05)
+    local textScale = math.min(scale, 0.03)
+    local longHeight = (nameHeight + textHeight + 8)
+    local backX = -nameWidth / 2 - 32
+    local boxWidth = nameWidth + 64
+
+    boxColor.a = math.Clamp(boxAlpha, 0, 130)
+    edgeColor.a = boxAlpha
+
+    cam.Start3D2D(doorData.position, doorData.angles, 0.03)
+      draw.RoundedBox(0, backX, frontY - 5, boxWidth, longHeight + 14, boxColor)
+      draw.RoundedBox(0, backX, frontY - 8, boxWidth, 3, edgeColor)
+      draw.RoundedBox(0, backX, frontY + longHeight + 8, boxWidth, 3, edgeColor)
+    cam.End3D2D()
+
+    cam.Start3D2D(doorData.positionBack, doorData.anglesBack, 0.03)
+      draw.RoundedBox(0, backX, frontY - 5, boxWidth, longHeight + 14, boxColor)
+      draw.RoundedBox(0, backX, frontY - 8, boxWidth, 3, edgeColor)
+      draw.RoundedBox(0, backX, frontY + longHeight + 8, boxWidth, 3, edgeColor)
+    cam.End3D2D()
+
+    self:OverrideMainFont(font)
+
+    if name then
+      if !text or text == '' then
+        nameColor = textColor or nameColor
+      end
+
+      cam.Start3D2D(doorData.position, doorData.angles, nameScale)
+        frontY = self:DrawInfo(name, 0, frontY, nameColor, alpha, nil, nil, 3)
+      cam.End3D2D()
+
+      cam.Start3D2D(doorData.positionBack, doorData.anglesBack, nameScale)
+        backY = self:DrawInfo(name, 0, backY, nameColor, alpha, nil, nil, 3)
+      cam.End3D2D()
+    end
+
+    if text then
+      cam.Start3D2D(doorData.position, doorData.angles, textScale)
+        self:DrawInfo(text, 0, frontY, textColor, alpha, nil, nil, 3)
+      cam.End3D2D()
+
+      cam.Start3D2D(doorData.positionBack, doorData.anglesBack, textScale)
+        self:DrawInfo(text, 0, backY, textColor, alpha, nil, nil, 3)
+      cam.End3D2D()
+    end
+
+    self:OverrideMainFont(false)
   end
 end
 
@@ -3015,7 +3156,7 @@ end
 -- @param directory [String Search pattern inside the schema data folder, such as `'logs/*'`]
 -- @return [List<String> File names, List<String> Folder names]
 function cw.core:FindSchemaDataInDir(directory)
-  return _file.Find('clockwork/schemas/'..self:GetSchemaFolder()..'/'..directory, 'LUA', 'namedesc')
+  return _file.Find('clockwork/schemas/'..self:GetSchemaFolder()..'/'..directory, 'DATA', 'namedesc')
 end
 
 --- Loads a table saved with `cw.core:SaveSchemaData`.
@@ -3073,7 +3214,7 @@ function cw.core:RestoreClockworkData(fileName, failSafe)
       else
         MsgC(
           Color(255, 100, 0, 255),
-          "[CW:Kernel] '"..fileName.."' clockwork data has failed to restore.\n"..value..'\n'
+          "[CW:Kernel] '"..fileName.."' clockwork data has failed to restore.\n"..tostring(value)..'\n'
         )
 
         self:DeleteClockworkData(fileName)
@@ -3286,7 +3427,7 @@ function weaponMeta:GetPrintName()
   local itemTable = item.GetByWeapon(self)
 
   if itemTable then
-    return cw.lang:TranslateText(itemTable.PrintName) or itemTable.name
+    return cw.lang:TranslateText(itemTable.PrintName or itemTable.name)
   else
     return self:OldGetPrintName()
   end
@@ -3345,7 +3486,8 @@ end
 function playerMeta:GetForcedAnimation()
   local forcedAnimation = self:GetNetVar('ForceAnim')
 
-  if forcedAnimation != 0 then
+  -- The variable is not set until the server has spawned the player.
+  if forcedAnimation and forcedAnimation != 0 then
     return {
       animation = forcedAnimation
     }
@@ -3384,8 +3526,6 @@ end
 --- Returns the gender of the player's character.
 -- @return [String `GENDER_FEMALE` or `GENDER_MALE`]
 function playerMeta:GetGender()
-  if self:GetNetVar('Gender') == nil then return GENDER_MALE end
-
   if self:GetNetVar('Gender') == 1 then
     return GENDER_FEMALE
   else
@@ -3396,10 +3536,10 @@ end
 --- Returns the name of the player's faction.
 -- @return [String The faction name, or `'Unknown'`]
 function playerMeta:GetFaction()
-  local index = self:GetNetVar('Faction')
+  local factionTable = faction.FindByID(self:GetNetVar('Faction'))
 
-  if faction.FindByID(index) then
-    return faction.FindByID(index).name
+  if factionTable then
+    return factionTable.name
   else
     return 'Unknown'
   end
@@ -3413,8 +3553,8 @@ end
 
 --- Returns a networked player data value.
 --
--- The default is returned when the key is not registered player data, or is player-only and
--- the player is not the local player.
+-- The default is returned when the value is not set, the key is not registered player data, or it
+-- is player-only and the player is not the local player.
 -- @param key [String The data key]
 -- @param default=nil [Any Fallback value]
 -- @return [Any The value]
@@ -3423,7 +3563,7 @@ function playerMeta:GetData(key, default)
   local playerData = cw.player:GetPlayerData(key)
 
   if playerData and (!playerData.playerOnly or self == cw.client) then
-    return self:GetNetVar(key)
+    return self:GetNetVar(key, default)
   end
 
   return default
@@ -3431,8 +3571,8 @@ end
 
 --- Returns a networked character data value.
 --
--- The default is returned when the key is not registered character data (see
--- `cw.player:AddCharacterData`), or is player-only and the player is not the local player.
+-- The default is returned when the value is not set, the key is not registered character data
+-- (see `cw.player:AddCharacterData`), or it is player-only and the player is not the local player.
 -- @param key [String The data key]
 -- @param default=nil [Any Fallback value]
 -- @return [Any The value]
@@ -3440,7 +3580,7 @@ function playerMeta:GetCharacterData(key, default)
   local characterData = cw.player:GetCharacterData(key)
 
   if characterData and (!characterData.playerOnly or self == cw.client) then
-    return self:GetNetVar(key)
+    return self:GetNetVar(key, default)
   end
 
   return default

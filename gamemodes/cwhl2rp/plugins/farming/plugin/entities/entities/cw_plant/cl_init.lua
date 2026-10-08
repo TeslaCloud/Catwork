@@ -9,16 +9,21 @@ function ENT:HUDPaintTargetID(x, y, alpha)
   local colorWhite = cw.option:GetColor('white')
   local itemTable = item.FindByID(self:GetItem())
 
+  -- The seed item is unknown until the plant's networked variables have arrived.
+  if !itemTable or !itemTable.PlantName then return end
+
   y = cw.core:DrawInfo(itemTable.PlantName, x, y, colorTargetID, alpha)
 
-  if cw.attributes:Fraction(ATB_FARM, 100) > 25 then
-    local GrowthPercent =
-      math.Clamp(
-        math.Round((CurTime() - self:GetSpawnTime()) / (self:GetGrowTime() - self:GetSpawnTime()) * 100),
-        0,
-        100
-      )
-    y = cw.core:DrawInfo(L('#Farming_Maturity:'..GrowthPercent..';'), x, y, Color(255, 255, 255), alpha)
+  if (cw.attributes:Fraction(ATB_FARM, 100) or 0) > 25 then
+    local spawnTime = self:GetSpawnTime()
+    local growTime = self:GetGrowTime()
+    local growthPercent = 100
+
+    if growTime > spawnTime then
+      growthPercent = math.Clamp(math.Round((CurTime() - spawnTime) / (growTime - spawnTime) * 100), 0, 100)
+    end
+
+    y = cw.core:DrawInfo(L('#Farming_Maturity:'..growthPercent..';'), x, y, colorWhite, alpha)
   end
 end
 

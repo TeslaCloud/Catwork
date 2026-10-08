@@ -179,13 +179,7 @@ function GM:GetEntityMenuOptions(entity, options)
   local class = entity:GetClass()
 
   if class == 'cw_item' then
-    local itemTable = nil
-
-    if entity.GetItemTable then
-      itemTable = entity:GetItemTable()
-    else
-      debug.Trace()
-    end
+    local itemTable = entity.GetItemTable and entity:GetItemTable()
 
     if itemTable then
       local useText = itemTable.useText or '#EntityMenuOptions_useText'
@@ -238,7 +232,8 @@ end
 -- @param key [Number The key released (`IN_*`)]
 function GM:KeyRelease(player, key)
   if config.Get('use_opens_entity_menus'):Get() then
-    if key == IN_USE then
+    -- The hook runs again each time the command is predicted anew, the menu must only open once.
+    if key == IN_USE and IsFirstTimePredicted() then
       local activeWeapon = player:GetActiveWeapon()
       local trace = cw.client:GetEyeTraceNoCursor()
 
@@ -328,16 +323,22 @@ function GM:Initialize()
 
   item.Initialize()
 
-  if !cw.option:GetKey('top_bars') then
+  local bAlwaysTopBars = cw.option:GetKey('top_bars')
+
+  if !bAlwaysTopBars then
     CW_CONVAR_TOPBARS = cw.core:CreateClientConVar('cwTopBars', 1, true, true)
-  else
-    cw.setting:RemoveByConVar('cwTopBars')
   end
 
   hook.Run('ClockworkInitialized')
 
   cw.theme:Initialize()
   cw.setting:AddSettings()
+
+  -- Has to follow AddSettings, which adds the setting again.
+  if bAlwaysTopBars then
+    cw.setting:RemoveByConVar('cwTopBars')
+  end
+
   cw.core:CacheLimbs()
 
   hook.Remove('PostDrawEffects', 'RenderWidgets')
@@ -461,7 +462,9 @@ function GM:PlayerBindPress(player, bind, bPress, break_cycle)
   -- The engine passes the button code as the fourth argument, only an explicit `true` breaks the cycle.
   if break_cycle == true then return end
 
-  if player:GetRagdollState() == RAGDOLL_FALLENOVER and string.find(bind, '+jump') then
+  local bJump = string.find(bind, '+jump', 1, true)
+
+  if bJump and player:GetRagdollState() == RAGDOLL_FALLENOVER then
     cw.core:RunCommand('CharGetUp')
   elseif string.find(bind, 'toggle_zoom') then
     return true
@@ -471,13 +474,13 @@ function GM:PlayerBindPress(player, bind, bPress, break_cycle)
     end
   end
 
-  if !player:IsNoClipping() and !cw.player:HasFlags(player, 'B') and bind:find('+jump') then
+  if bJump and !player:IsNoClipping() and !cw.player:HasFlags(player, 'B') then
     if player:GetNetVar('Stamina', 100) < 2 then
       return true
     end
   end
 
-  if string.find(bind, '+attack') or string.find(bind, '+attack2') then
+  if string.find(bind, '+attack', 1, true) then
     if cw.storage:IsStorageOpen() then
       return true
     end
@@ -486,7 +489,10 @@ function GM:PlayerBindPress(player, bind, bPress, break_cycle)
   local bindText = string.lower(bind)
 
   if config.GetVal('block_inv_binds') then
-    if bindText:find(config.Get('command_prefix'):Get()..'invaction') or bindText:find('cwcmd invaction') then
+    -- The prefix is a config value, so it is searched for as plain text and not as a pattern.
+    local invAction = string.lower(tostring(config.GetVal('command_prefix', '/')))..'invaction'
+
+    if bindText:find(invAction, 1, true) or bindText:find('cwcmd invaction', 1, true) then
       return true
     end
   end
@@ -549,8 +555,6 @@ function GM:CreateMove(userCmd)
   end
 end
 
-local LAST_RAISED_TARGET = 0
-
 --- Called when the view should be calculated.
 --
 -- While ragdolled the view is from the ragdoll's eyes (or blacked out at full fade), dead players
@@ -573,7 +577,6 @@ function GM:CalcView(player, origin, angles, fov)
 
   if cw.client:IsRagdolled() then
     local ragdollEntity = cw.client:GetRagdollEntity()
-    local ragdollState = cw.client:GetRagdollState()
 
     if cw.BlackFadeIn == 255 then
       return { origin = Vector(20000, 0, 0), angles = Angle(0, 0, 0), fov = fov }
@@ -853,19 +856,12 @@ function GM:MenuItemsAdd(menuItems)
   local directoryName = cw.option:GetKey('name_directory')
   local inventoryName = cw.option:GetKey('name_inventory')
 
-  -- menuItems:Add("#Classes", "cwClasses", "#ClassesDesc", cw.option:GetKey("icon_data_classes"))
   menuItems:Add('#Settings', 'cwSettings', '#SettingsDesc', cw.option:GetKey('icon_data_settings'))
   menuItems:Add(systemName, 'cwSystem', '#SystemDesc', cw.option:GetKey('icon_data_system'))
   menuItems:Add(scoreboardName, 'cwScoreboard', '#ScoreboardDesc', cw.option:GetKey('icon_data_scoreboard'))
   menuItems:Add(inventoryName, 'cwInventory', '#InventoryDesc', cw.option:GetKey('icon_data_inventory'))
   menuItems:Add(directoryName, 'cwDirectory', '#DirectoryDesc', cw.option:GetKey('icon_data_directory'))
   menuItems:Add(attributesName, 'cwAttributes', '#AttributesDesc', cw.option:GetKey('icon_data_attributes'))
-
-  if config.Get('show_business'):GetBoolean() == true then
-    local businessName = cw.option:GetKey('name_business')
-    -- menuItems:Add(businessName, "cwBusiness", cw.option:GetKey("description_business"),
-    -- cw.option:GetKey("icon_data_business"))
-  end
 end
 
 --- Called after the main menu's items are added, so they can be removed; does nothing by default.
@@ -875,7 +871,6 @@ function GM:MenuItemsDestroy(menuItems) end
 --- Called every half second; every 3 seconds it fades timed attribute boosts and removes expired ones.
 function GM:HalfSecond()
   local realCurTime = CurTime()
-  local curTime = UnPredictedCurTime()
 
   if !cw.NextHandleAttributeBoosts or realCurTime >= cw.NextHandleAttributeBoosts then
     cw.NextHandleAttributeBoosts = realCurTime + 3
@@ -901,6 +896,24 @@ function GM:HalfSecond()
     end
   end
 end
+
+-- Bars without text come first, then the higher priority.
+local function SortBars(a, b)
+  local bEmptyA = (a.text == '')
+  local bEmptyB = (b.text == '')
+
+  if bEmptyA != bEmptyB then
+    return bEmptyA
+  end
+
+  return a.priority > b.priority
+end
+
+local function SortByPriority(a, b)
+  return a.priority > b.priority
+end
+
+local nextRagdollDecay = 0
 
 --- Called each tick on the client.
 --
@@ -939,19 +952,8 @@ function GM:Tick()
     hook.Run('GetPlayerInfoText', cw.PlayerInfoText)
     hook.Run('DestroyPlayerInfoText', cw.PlayerInfoText)
 
-    table.sort(cw.bars.stored, function(a, b)
-      if a.text == '' and b.text == '' then
-        return a.priority > b.priority
-      elseif a.text == '' then
-        return true
-      else
-        return a.priority > b.priority
-      end
-    end)
-
-    table.sort(cw.PlayerInfoText.subText, function(a, b)
-      return a.priority > b.priority
-    end)
+    table.sort(cw.bars.stored, SortBars)
+    table.sort(cw.PlayerInfoText.subText, SortByPriority)
 
     for k, v in pairs(cw.PlayerInfoText.text) do
       cw.PlayerInfoText.width = cw.core:AdjustMaximumWidth(font, v.text, cw.PlayerInfoText.width)
@@ -963,8 +965,11 @@ function GM:Tick()
 
     cw.PlayerInfoText.width = cw.PlayerInfoText.width + 16
 
-    if config.Get('fade_dead_npcs'):Get() then
-      for k, v in pairs(ents.FindByClass('class C_ClientRagdoll')) do
+    -- A new ragdoll does not need to start fading within the same tick, so they are looked for once a second.
+    if RealTime() >= nextRagdollDecay and config.Get('fade_dead_npcs'):Get() then
+      nextRagdollDecay = RealTime() + 1
+
+      for k, v in ipairs(ents.FindByClass('class C_ClientRagdoll')) do
         if !cw.entity:IsDecaying(v) then
           cw.entity:Decay(v, 300)
         end
@@ -1093,6 +1098,11 @@ end
 
 local SCREEN_DAMAGE_OVERLAY = cw.core:GetMaterial('clockwork/screendamage.png')
 local VIGNETTE_OVERLAY = cw.core:GetMaterial('clockwork/vignette.png')
+local COLOR_WHITE = Color(255, 255, 255, 255)
+local COLOR_BLACK = Color(0, 0, 0, 255)
+local COLOR_SCREEN_BLUR = Color(40, 40, 40, 45)
+local COLOR_WEAPON_HINT = Color(200, 100, 50, 255)
+local TARGET_ID_OFFSET = Vector(0, 0, 16)
 
 --- Called when the local player's screen damage should be drawn; draws the damage overlay.
 -- @param damageFraction [Number How damaged the player is, from 0 to 1]
@@ -1159,27 +1169,26 @@ end
 -- allows, the `GetScreenTextInfo` text, the top bars and the death screen with the respawn
 -- countdown, then runs `HUDPaintTopScreen`.
 function GM:HUDPaintForeground()
-  local backgroundColor = cw.option:GetColor('background')
   local colorWhite = cw.option:GetColor('white')
   local info = hook.Run('GetProgressBarInfo')
   local scrW, scrH = ScrW(), ScrH()
   local curTime = CurTime()
 
-  if LocalPlayer().ErrorBoxTime and LocalPlayer().ErrorBoxTime > (curTime) then
+  if cw.client.ErrorBoxTime and cw.client.ErrorBoxTime > curTime then
     draw.RoundedBox(2, scrW - 300, 8, 292, 24, Color(math.Clamp(255 * (math.sin(curTime)), 150, 255), 90, 90))
     draw.SimpleText(
       L'#HookErrors',
       cw.fonts:GetSize(cw.option:GetFont('menu_text_small'), 18),
       scrW - 292,
       10,
-      Color(255, 255, 255)
+      COLOR_WHITE
     )
   end
 
   if cw.client:GetRagdollState() == RAGDOLL_FALLENOVER then
-    cdraw.DrawSimpleBlurBox(0, 0, scrW, scrH, Color(40, 40, 40, 45), 2)
+    cdraw.DrawSimpleBlurBox(0, 0, scrW, scrH, COLOR_SCREEN_BLUR, 2)
   elseif cw.client:WaterLevel() >= 3 then
-    cdraw.DrawSimpleBlurBox(0, 0, scrW, scrH, Color(40, 40, 40, 45), 4)
+    cdraw.DrawSimpleBlurBox(0, 0, scrW, scrH, COLOR_SCREEN_BLUR, 4)
   end
 
   if info then
@@ -1210,7 +1219,8 @@ function GM:HUDPaintForeground()
     end
   end
 
-  if cw.player:IsAdmin(cw.client) then
+  -- DrawAdminESP needs the ConVar as well, so it is checked before the costlier flag lookup.
+  if CW_CONVAR_ADMINESP:GetInt() == 1 and cw.player:IsAdmin(cw.client) then
     if hook.Run('PlayerCanSeeAdminESP') then
       cw.core:DrawAdminESP()
     end
@@ -1240,7 +1250,6 @@ function GM:HUDPaintForeground()
     cw.core:DrawBars(info, 'top')
 
   local action, percentage = cw.player:GetAction(cw.client, true)
-  local color_white = Color(255, 255, 255)
 
   if !cw.client:Alive() and action == 'spawn' and !cw.client:GetNetVar('permaKilled') then
     local respawnRounded = math.ceil(percentage)
@@ -1252,16 +1261,16 @@ function GM:HUDPaintForeground()
 
     draw.RoundedBox(0, 0, 0, scrW, scrH, Color(0, 0, 0, cw.client.respawnAlpha))
 
-    draw.SimpleText('#DeathScreen_YouDied', font, 16, 16, color_white)
+    draw.SimpleText('#DeathScreen_YouDied', font, 16, 16, COLOR_WHITE)
     draw.SimpleText(
       '#DeathScreen_SpawnPercentage:'..respawnRounded..';%',
       font,
       16,
       16 + draw.GetFontHeight(font),
-      color_white
+      COLOR_WHITE
     )
 
-    draw.RoundedBox(0, 0, 0, scrW / 100 * percentage, 2, color_white)
+    draw.RoundedBox(0, 0, 0, scrW / 100 * percentage, 2, COLOR_WHITE)
 
     if percentage >= 92 then
       cw.client.whiteAlpha = math.Clamp((51 * (percentage - 95)), 0, 255)
@@ -1276,7 +1285,13 @@ function GM:HUDPaintForeground()
     end
   end
 
-  draw.RoundedBox(0, 0, 0, scrW, scrH, ColorAlpha(color_white, cw.client.whiteAlpha or 0))
+  local whiteAlpha = cw.client.whiteAlpha
+
+  -- Below 1 nothing would show, so the screen is not filled at all.
+  if isnumber(whiteAlpha) and whiteAlpha >= 1 then
+    surface.SetDrawColor(255, 255, 255, whiteAlpha)
+    surface.DrawRect(0, 0, scrW, scrH)
+  end
 
   hook.Run('HUDPaintTopScreen', info)
 end
@@ -1418,7 +1433,7 @@ end
 -- @param class [Number The notification type (`NOTIFY_*`)]
 -- @param length [Number How long it stays]
 function GM:AddNotify(text, class, length)
-  if class != NOTIFY_HINT or string.utf8sub(text, 1, 6) != '#Hint_' then
+  if class != NOTIFY_HINT or string.sub(text, 1, 6) != '#Hint_' then
     if self.BaseClass.AddNotify then
       self.BaseClass:AddNotify(text, class, length)
     end
@@ -1492,7 +1507,7 @@ function GM:HUDDrawTargetID()
               if !cw.player:IsNoClipping(entity) then
                 if cw.client:GetShootPos():Distance(trace.HitPos) <= fadeDistance then
                   local flashAlpha = nil
-                  local toScreen = (trace.HitPos + Vector(0, 0, 16)):ToScreen()
+                  local toScreen = (trace.HitPos + TARGET_ID_OFFSET):ToScreen()
                   local x, y = toScreen.x, toScreen.y
 
                   if !cw.player:DoesTargetRecognise() then
@@ -1501,10 +1516,11 @@ function GM:HUDDrawTargetID()
 
                   if cw.player:DoesRecognise(entity, RECOGNISE_PARTIAL) then
                     local text = string.Explode('\n', hook.Run('GetTargetPlayerName', entity))
+                    local teamColor = _team.GetColor(entity:Team())
                     local newY
 
-                    for k, v in pairs(text) do
-                      newY = cw.core:DrawInfo(v, x, y, _team.GetColor(entity:Team()), alpha)
+                    for k, v in ipairs(text) do
+                      newY = cw.core:DrawInfo(v, x, y, teamColor, alpha)
 
                       if flashAlpha then
                         cw.core:DrawInfo(v, x, y, colorWhite, flashAlpha)
@@ -1540,7 +1556,7 @@ function GM:HUDDrawTargetID()
                     end
 
                     if result == true or isstring(result) then
-                      for k, v in pairs(wrappedTable) do
+                      for k, v in ipairs(wrappedTable) do
                         newY = cw.core:DrawInfo(v, x, y, teamColor, alpha)
 
                         if flashAlpha then
@@ -1582,30 +1598,21 @@ function GM:HUDDrawTargetID()
               end
             end
           elseif ent:IsWeapon() then
-            if cw.client:GetShootPos():Distance(trace.HitPos) <= fadeDistance then
-              local active = nil
+            -- A weapon in somebody's hands has an owner, the hint is for weapons lying in the world.
+            if cw.client:GetShootPos():Distance(trace.HitPos) <= fadeDistance and !IsValid(ent:GetOwner()) then
+              local toScreen = (trace.HitPos + TARGET_ID_OFFSET):ToScreen()
+              local x, y = toScreen.x, toScreen.y
 
-              for k, v in ipairs(_player.GetAll()) do
-                if v:GetActiveWeapon() == ent then
-                  active = true
-                end
-              end
-
-              if !active then
-                local toScreen = (trace.HitPos + Vector(0, 0, 16)):ToScreen()
-                local x, y = toScreen.x, toScreen.y
-
-                y = cw.core:DrawInfo('#HUDTargetID_Weapon_DrawInfo1', x, y, Color(200, 100, 50, 255), alpha)
-                y = cw.core:DrawInfo('#HUDTargetID_Weapon_DrawInfo2', x, y, colorWhite, alpha)
-              end
+              y = cw.core:DrawInfo('#HUDTargetID_Weapon_DrawInfo1', x, y, COLOR_WEAPON_HINT, alpha)
+              y = cw.core:DrawInfo('#HUDTargetID_Weapon_DrawInfo2', x, y, colorWhite, alpha)
             end
           elseif ent.HUDPaintTargetID then
-            local toScreen = (trace.HitPos + Vector(0, 0, 16)):ToScreen()
+            local toScreen = (trace.HitPos + TARGET_ID_OFFSET):ToScreen()
             local x, y = toScreen.x, toScreen.y
 
             ent:HUDPaintTargetID(x, y, alpha)
           else
-            local toScreen = (trace.HitPos + Vector(0, 0, 16)):ToScreen()
+            local toScreen = (trace.HitPos + TARGET_ID_OFFSET):ToScreen()
             local x, y = toScreen.x, toScreen.y
 
             hook.Run('HUDPaintEntityTargetID', ent, {
@@ -1884,12 +1891,21 @@ function GM:GetPlayerScoreboardText(player)
 
   if cw.player:DoesRecognise(player, RECOGNISE_PARTIAL) then
     local physDesc = cw.player:GetPhysDesc(player)
+    local characters = 0
+    local cutPosition
 
-    if string.utf8len(physDesc) > 64 then
-      return string.utf8sub(physDesc, 1, 61)..'...'
-    else
-      return physDesc
+    -- The description is another player's text; counting its characters this way cannot fail on malformed UTF-8.
+    for position in string.gmatch(physDesc, '()[%z\1-\127\194-\244][\128-\191]*') do
+      characters = characters + 1
+
+      if characters == 62 then
+        cutPosition = position
+      elseif characters > 64 then
+        return string.sub(physDesc, 1, cutPosition - 1)..'...'
+      end
     end
+
+    return physDesc
   else
     return '#Scoreboard_ScoreboardText:'..cw.lang:TranslateText(thirdPerson)..';'
   end
@@ -2159,6 +2175,38 @@ function GM:PostProcessPermitted(class)
   return false
 end
 
+local DOOR_TEXT_DISTANCE = 256
+local DOOR_SEARCH_MARGIN = 64
+local DOOR_SEARCH_INTERVAL = 0.25
+local nearbyDoors = {}
+local doorSearchOrigin = nil
+local nextDoorSearch = 0
+
+-- Returns the doors that can be within text distance of a view position.
+--
+-- Searching the entities and checking each for being a door is too much to do every frame, so the search covers
+-- a margin around the position and its result is kept for a moment while the view stays within that margin.
+local function GetNearbyDoors(eyePos)
+  local realTime = RealTime()
+
+  if doorSearchOrigin and realTime < nextDoorSearch
+  and eyePos:DistToSqr(doorSearchOrigin) <= DOOR_SEARCH_MARGIN * DOOR_SEARCH_MARGIN then
+    return nearbyDoors
+  end
+
+  nearbyDoors = {}
+  doorSearchOrigin = eyePos
+  nextDoorSearch = realTime + DOOR_SEARCH_INTERVAL
+
+  for k, v in ipairs(ents.FindInSphere(eyePos, DOOR_TEXT_DISTANCE + DOOR_SEARCH_MARGIN)) do
+    if cw.entity:IsDoor(v) then
+      nearbyDoors[#nearbyDoors + 1] = v
+    end
+  end
+
+  return nearbyDoors
+end
+
 --- Called after translucent renderables are drawn; draws the 3D2D text of doors within 256 units.
 -- @param bDrawingDepth [Boolean Whether this is a depth pass, skipped]
 -- @param bDrawingSkybox [Boolean Whether the skybox is being drawn]
@@ -2169,16 +2217,16 @@ function GM:PostDrawTranslucentRenderables(bDrawingDepth, bDrawingSkybox, bDrawi
 
   if !cw.core:IsChoosingCharacter() then
     local eyePos = EyePos()
-    local entities = ents.FindInSphere(eyePos, 256)
+    local doors = GetNearbyDoors(eyePos)
 
-    if #entities > 0 then
+    if #doors > 0 then
       local colorWhite = cw.option:GetColor('white')
       local colorInfo = cw.option:GetColor('information')
       local doorFont = cw.option:GetFont('large_3d_2d')
       local eyeAngles = EyeAngles()
 
-      for k, v in ipairs(entities) do
-        if cw.entity:IsDoor(v) then
+      for k, v in ipairs(doors) do
+        if IsValid(v) then
           cw.core:DrawDoorText(v, eyePos, eyeAngles, doorFont, colorInfo, colorWhite)
         end
       end
@@ -2186,12 +2234,29 @@ function GM:PostDrawTranslucentRenderables(bDrawingDepth, bDrawingSkybox, bDrawi
   end
 end
 
+local IS_OSX = system.IsOSX()
+local NEUTRAL_COLOR_MODIFY = {
+  ['$pp_colour_contrast'] = 1,
+  ['$pp_colour_colour'] = 1
+}
+
+-- Returns whether a colour modification would leave the picture as it is.
+local function IsColorModifyNeutral(colorModify)
+  for k, v in pairs(colorModify) do
+    if v != (NEUTRAL_COLOR_MODIFY[k] or 0) then
+      return false
+    end
+  end
+
+  return true
+end
+
 --- Called when screen space effects should be rendered.
 --
 -- Blurs the screen for head damage or low health, drains colour with lost health, draws the
 -- underwater fish eye effect and applies colour modification: the `Color Modify` system's override
 -- when enabled, otherwise `PlayerSetDefaultColorModify`. `PlayerAdjustColorModify` and
--- `PlayerAdjustMotionBlurs` can adjust the result.
+-- `PlayerAdjustMotionBlurs` can adjust the result. The colour pass is skipped while its values are neutral.
 function GM:RenderScreenspaceEffects()
   if IsValid(cw.client) then
     local frameTime = FrameTime()
@@ -2253,7 +2318,7 @@ function GM:RenderScreenspaceEffects()
       cw.ColorModify['$pp_colour_colour'] = overrideColorMod.color
       cw.ColorModify['$pp_colour_addr'] = overrideColorMod.addr * 0.025
       cw.ColorModify['$pp_colour_addg'] = overrideColorMod.addg * 0.025
-      cw.ColorModify['$pp_colour_addb'] = overrideColorMod.addg * 0.025
+      cw.ColorModify['$pp_colour_addb'] = overrideColorMod.addb * 0.025
       cw.ColorModify['$pp_colour_mulr'] = overrideColorMod.mulr * 0.1
       cw.ColorModify['$pp_colour_mulg'] = overrideColorMod.mulg * 0.1
       cw.ColorModify['$pp_colour_mulb'] = overrideColorMod.mulb * 0.1
@@ -2282,12 +2347,15 @@ function GM:RenderScreenspaceEffects()
       Hotfix for ColorModify issues on OS X.
     --]]
 
-    if system.IsOSX() then
+    if IS_OSX then
       cw.ColorModify['$pp_colour_brightness'] = 0
       cw.ColorModify['$pp_colour_contrast'] = 1
     end
 
-    DrawColorModify(cw.ColorModify)
+    -- The pass copies and redraws the whole screen, which is wasted when it would change nothing.
+    if !IsColorModifyNeutral(cw.ColorModify) then
+      DrawColorModify(cw.ColorModify)
+    end
   end
 end
 
@@ -2379,11 +2447,11 @@ function GM:PlayerAdjustClassModelInfo(class, info) end
 
 --- Called to adjust the local player's headbob.
 --
--- Speeds up and strengthens the bob while walking and running, scaled by `cwHeadbobScale`, and is
--- meant to exaggerate it while drunk.
+-- Speeds up and strengthens the bob while walking and running, scaled by `cwHeadbobScale`, and
+-- sways it further the more drunk the player is.
 -- @param info [Map `speed`, `yaw` and `roll` of the headbob, modified in place]
 function GM:PlayerAdjustHeadbobInfo(info)
-  local bisDrunk = cw.player:GetDrunk()
+  local isDrunk = cw.player:GetDrunk()
   local scale
 
   if CW_CONVAR_HEADBOBSCALE then
@@ -2477,6 +2545,8 @@ function GM:ShouldDrawCharacterFault(fault)
   return true
 end
 
+local bLoadingLogoExists = nil
+
 --- Called every frame to draw the full screen layers above the HUD.
 --
 -- Draws the character selection background and `HUDPaintCharacterSelection`, then for a loaded
@@ -2484,7 +2554,7 @@ end
 -- blurs (when `ShouldDrawBackgroundBlurs` allows), the Catwork intro splash, the loading and
 -- no-database screens and `HUDPaintCharacterLoading`, then `PostDrawBackgroundBlurs`.
 function GM:HUDDrawScoreBoard()
-  self.BaseClass:HUDDrawScoreBoard(player)
+  self.BaseClass:HUDDrawScoreBoard()
 
   local drawPendingScreenBlack = nil
   local drawCharacterLoading = nil
@@ -2497,7 +2567,7 @@ function GM:HUDDrawScoreBoard()
 
   if cw.core:IsChoosingCharacter() then
     if hook.Run('ShouldDrawCharacterBackground') then
-      cw.core:DrawSimpleGradientBox(0, 0, 0, scrW, scrH, Color(0, 0, 0, 255))
+      cw.core:DrawSimpleGradientBox(0, 0, 0, scrW, scrH, COLOR_BLACK)
     end
 
     hook.Run('HUDPaintCharacterSelection')
@@ -2509,10 +2579,10 @@ function GM:HUDDrawScoreBoard()
   end
 
   if hasClientInitialized then
-    if !cw.LastChatBoxCheck then
+    if !cw.CharacterLoadingFinishTime then
       local loadingTime = hook.Run('GetCharacterLoadingTime')
       cw.CharacterLoadingDelay = loadingTime
-      cw.LastChatBoxCheck = curTime + loadingTime
+      cw.CharacterLoadingFinishTime = curTime + loadingTime
     end
 
     if !cw.core:IsChoosingCharacter() then
@@ -2525,7 +2595,7 @@ function GM:HUDDrawScoreBoard()
       hook.Run('HUDPaintImportant')
     end
 
-    if cw.LastChatBoxCheck > curTime then
+    if cw.CharacterLoadingFinishTime > curTime then
       drawCharacterLoading = true
     elseif !cw.CinematicScreenDone then
       cw.core:DrawCinematicIntro(curTime)
@@ -2606,13 +2676,20 @@ function GM:HUDDrawScoreBoard()
     drawPendingScreenBlack = nil
   end
 
-  if netvars.GetNetVar('NoMySQL') and netvars.GetNetVar('NoMySQL') != '' then
-    cw.core:DrawSimpleGradientBox(0, 0, 0, scrW, scrH, Color(0, 0, 0, 255))
-    draw.SimpleText(netvars.GetNetVar('NoMySQL'), introTextSmallFont, scrW / 2, scrH / 2, Color(179, 46, 49, 255), 1, 1)
+  local noMySQL = netvars.GetNetVar('NoMySQL')
+
+  if noMySQL and noMySQL != '' then
+    cw.core:DrawSimpleGradientBox(0, 0, 0, scrW, scrH, COLOR_BLACK)
+    draw.SimpleText(noMySQL, introTextSmallFont, scrW / 2, scrH / 2, Color(179, 46, 49, 255), 1, 1)
   elseif cw.DataStreamedAlpha and cw.DataStreamedAlpha > 0 then
     local textString = '#MainMenu_Loading'
 
-    if _file.Exists('materials/clockwork/logo/002.png', 'GAME') then
+    -- Looked up once; this runs every frame and the file does not change.
+    if bLoadingLogoExists == nil then
+      bLoadingLogoExists = _file.Exists('materials/clockwork/logo/002.png', 'GAME')
+    end
+
+    if bLoadingLogoExists then
       surface.SetDrawColor(255, 255, 255, cw.DataStreamedAlpha)
       surface.SetMaterial(cw.core:GetMaterial('materials/clockwork/logo/002.png'))
       surface.DrawTexturedRect(scrW / 2 - 32, scrH / 2 - 16, 64, 32)
@@ -2635,13 +2712,13 @@ function GM:HUDDrawScoreBoard()
   if drawCharacterLoading then
     hook.Run(
       'HUDPaintCharacterLoading',
-      math.Clamp((255 / cw.CharacterLoadingDelay) * (cw.LastChatBoxCheck - curTime), 0, 255)
+      math.Clamp((255 / cw.CharacterLoadingDelay) * (cw.CharacterLoadingFinishTime - curTime), 0, 255)
     )
   elseif drawPendingScreenBlack then
-    cw.core:DrawSimpleGradientBox(0, 0, 0, scrW, scrH, Color(0, 0, 0, 255))
+    cw.core:DrawSimpleGradientBox(0, 0, 0, scrW, scrH, COLOR_BLACK)
   end
 
-  if cw.LastChatBoxCheck then
+  if cw.CharacterLoadingFinishTime then
     if !cw.CinematicInfoDrawn then
       cw.core:DrawCinematicInfo()
     end
@@ -2660,22 +2737,35 @@ function GM:ShouldDrawBackgroundBlurs()
   return true
 end
 
+local factionMaterialExists = {}
+
+-- Moves a menu's title to above the menu.
+local function PositionMenuTitle(x, y, width, height)
+  return x, y - height - 4
+end
+
 --- Called just after the background blurs have been drawn.
 --
 -- Draws the selected faction's image on the character screen, the title box of a titled menu and
 -- the date and time.
 function GM:PostDrawBackgroundBlurs()
-  local introTextSmallFont = cw.option:GetFont('intro_text_small')
   local backgroundColor = cw.option:GetColor('background')
   local colorWhite = cw.option:GetColor('white')
   local panelInfo = cw.CurrentFactionSelected
-  local menuPanel = cw.core:GetRecogniseMenu()
 
   if panelInfo and IsValid(panelInfo[1]) and panelInfo[1]:IsVisible() then
     local factionTable = faction.FindByID(panelInfo[2])
 
     if factionTable and factionTable.material then
-      if _file.Exists('materials/'..factionTable.material..'.png', 'GAME') then
+      local bExists = factionMaterialExists[factionTable.material]
+
+      -- Looked up once for each material; this runs every frame and the files do not change.
+      if bExists == nil then
+        bExists = _file.Exists('materials/'..factionTable.material..'.png', 'GAME')
+        factionMaterialExists[factionTable.material] = bExists
+      end
+
+      if bExists then
         if !panelInfo[3] then
           panelInfo[3] = cw.core:GetMaterial(factionTable.material..'.png')
         end
@@ -2703,10 +2793,7 @@ function GM:PostDrawBackgroundBlurs()
       backgroundColor
     )
     cw.core:OverrideMainFont(menuTextTiny)
-      cw.core:DrawInfo(menuTitle, menuPanel.x, menuPanel.y, colorWhite, 255, true, function(x, y, width, height)
-        return x, y - height - 4
-      end)
-
+      cw.core:DrawInfo(menuTitle, menuPanel.x, menuPanel.y, colorWhite, 255, true, PositionMenuTitle)
     cw.core:OverrideMainFont(false)
   end
 
@@ -2757,15 +2844,6 @@ function GM:HUDPaintPlayer(player) end
 -- `DrawPlayerCrosshair`.
 function GM:HUDPaint()
   if !cw.core:IsChoosingCharacter() and !cw.core:IsUsingCamera() then
-    if cw.event:CanRun('view', 'damage') and cw.client:Alive() then
-      local maxHealth = cw.client:GetMaxHealth()
-      local health = cw.client:Health()
-
-      if health < maxHealth * 0.5 then
-        -- hook.Run("DrawPlayerScreenDamage", 1 - ((1 / maxHealth) * health))
-      end
-    end
-
     if cw.event:CanRun('view', 'vignette') and config.GetVal('enable_vignette')
     and CW_CONVAR_VIGNETTE:GetInt() == 1 then
       hook.Run('DrawPlayerVignette')
@@ -2808,9 +2886,10 @@ function GM:GetPlayerCrosshairInfo(info)
   if config.GetVal('use_free_aiming') then
     -- Thanks to BlackOps7799 for this open source example.
 
+    local eyePos = cw.client:EyePos()
     local traceLine = util.TraceLine({
-      start = cw.client:EyePos(),
-      endpos = cw.client:EyePos() + (cw.client:GetAimVector() * 1024 * 1024),
+      start = eyePos,
+      endpos = eyePos + (cw.client:GetAimVector() * 1024 * 1024),
       filter = cw.client
     })
 
@@ -2859,7 +2938,9 @@ end
 -- @param flag [String A single flag]
 -- @return [Boolean `true` to grant the flag, `false` to deny it, `nil` to fall through]
 function GM:PlayerDoesHaveFlag(player, flag)
-  if string.find(config.GetVal('default_flags'), flag) then
+  local defaultFlags = config.GetVal('default_flags')
+
+  if isstring(defaultFlags) and string.find(defaultFlags, flag, 1, true) then
     return true
   end
 end
@@ -2916,7 +2997,7 @@ end
 -- @return [Boolean Always `true`]
 function GM:OnPlayerChat(player, text, teamOnly, playerIsDead)
   if !IsValid(player) then
-    chatbox.AddText(nil, '[color=red]#Console[/color]: '..text, { icon = 'icon16/shield.png' })
+    chatbox.AddText('[color=red]#Console[/color]: '..text, { icon = 'icon16/shield.png' })
   end
 
   return true

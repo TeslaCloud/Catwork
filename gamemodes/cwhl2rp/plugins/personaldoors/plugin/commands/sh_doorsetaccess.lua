@@ -22,17 +22,28 @@ COMMAND.optionalArguments = 1
 
 --- Gives the target character personal access to the door the player is looking at.
 --
--- The door becomes unownable and is saved; the optional second argument sets whether it starts locked.
+-- The door becomes unownable and is saved; the optional second argument sets whether it starts locked, and
+-- leaving it out keeps the door's current setting.
 function COMMAND:OnRun(player, arguments)
   local owningGuy = _player.Find(arguments[1])
-  local owningPerson = owningGuy:Name()
 
+  if !IsValid(owningGuy) then
+    return cw.player:Notify(player, L('NotValidPlayer', arguments[1]))
+  end
+
+  local owningPerson = owningGuy:Name()
   local door = player:GetEyeTraceNoCursor().Entity
   local lowerName = string.lower(owningPerson)
 
   if IsValid(door) and cw.entity:IsDoor(door) then
     if !door._OwningPersons or !door._OwningPersons[lowerName] then
-      local owners = {}
+      local doorData = PLUGIN.personalDoors[door]
+      local owners = doorData and doorData.owners or {}
+      local startLocked = doorData and doorData.startLocked or false
+
+      if arguments[2] != nil then
+        startLocked = cw.core:ToBool(arguments[2])
+      end
 
       if !door._OwningPersons then
         door._OwningPersons = {}
@@ -44,16 +55,12 @@ function COMMAND:OnRun(player, arguments)
         cw.entity:SetDoorUnownable(door, true)
       end
 
-      if PLUGIN.personalDoors[door] then
-        owners = PLUGIN.personalDoors[door]
-      end
-
       table.insert(owners, owningPerson)
 
       PLUGIN.personalDoors[door] = {
         owners = owners,
         position = door:GetPos(),
-        startLocked = cw.core:ToBool(arguments[2])
+        startLocked = startLocked
       }
       PLUGIN:SaveDoorData()
 

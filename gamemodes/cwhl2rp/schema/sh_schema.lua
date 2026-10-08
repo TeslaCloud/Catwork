@@ -211,7 +211,6 @@ end
 -- @param model [String Model shown for the permit in the business menu]
 function Schema:AddCustomPermit(name, flag, model)
   local formattedName = string.gsub(name, '[%s%p]', '')
-  local lowerName = string.lower(name)
 
   self.customPermits[string.lower(formattedName)] = {
     model = model,
@@ -271,7 +270,7 @@ function Schema:IsPlayerCombineRank(player, rank, realRank)
         return true
       end
     else
-      return string.find(name, '%p'..rank..'%p')
+      return string.find(name, '%p'..string.PatternSafe(rank)..'%p')
     end
   end
 end

@@ -93,7 +93,7 @@ function cw.command:SetHidden(name, bHidden)
   if !bHidden and hidden[uniqueID] then
     stored[uniqueID] = hidden[uniqueID]
     hidden[uniqueID] = nil
-  elseif hidden and stored[uniqueID] then
+  elseif bHidden and stored[uniqueID] then
     hidden[uniqueID] = stored[uniqueID]
     stored[uniqueID] = nil
   end
@@ -186,8 +186,9 @@ if SERVER then
   -- Checks, in order: the player has initialized, the command exists, the command's cooldown
   -- (skipped for admins), the `PlayerCanUseCommand` hook, the argument count, the player's access
   -- flags, faction or permission, and the command's `CMD_*` state flags. Then calls
-  -- `COMMAND:OnRun` in protected mode, prints errors to the console and logs successful use. The
-  -- player is notified when a check fails.
+  -- `COMMAND:OnRun` in protected mode, prints errors to the console, and on success logs the use
+  -- and runs the `PostCommandUsed` hook. The player is notified when a check fails. Does nothing
+  -- when run from the server console.
   --
   -- @param player [Player The player running the command]
   -- @param command [String Name of the console command, unused]
@@ -195,7 +196,9 @@ if SERVER then
   -- from the list]
   -- @return [Any The value returned by `OnRun`, or `false` while the command is on cooldown]
   function cw.command:ConsoleCommand(player, command, arguments)
-    if IsValid(player) and player:HasInitialized() then
+    if !IsValid(player) then return end
+
+    if player:HasInitialized() then
       if arguments and arguments[1] then
         local realCommand = string.lower(arguments[1])
         local commandTable = self:FindByAlias(realCommand)
@@ -225,9 +228,10 @@ if SERVER then
             player.cmdCooldowns[cmdID] = curTime + commandTable.cooldown
           end
 
+          -- Commands run from Lua can be handed values that are not strings.
           for k, v in pairs(arguments) do
-            arguments[k] = cw.core:Replace(arguments[k], " ' ", "'")
-            arguments[k] = cw.core:Replace(arguments[k], ' : ', ':')
+            v = cw.core:Replace(tostring(v), " ' ", "'")
+            arguments[k] = cw.core:Replace(v, ' : ', ':')
           end
 
           if hook.Run('PlayerCanUseCommand', player, commandTable, arguments) then
@@ -238,64 +242,45 @@ if SERVER then
               or player:HasPermission(commandTable.uniqueID) then
                 local flags = commandTable.flags
 
-                if cw.player:GetDeathCode(player, true) then
-                  if flags == 0 and CMD_DEATHCODE == 0 then
-                    cw.player:TakeDeathCode(player)
+                if (bit.band(flags, CMD_DEAD) > 0 and !player:Alive())
+                or (bit.band(flags, CMD_VEHICLE) > 0 and player:InVehicle())
+                or (bit.band(flags, CMD_RAGDOLLED) > 0 and player:IsRagdolled())
+                or (bit.band(flags, CMD_FALLENOVER) > 0 and player:GetRagdollState() == RAGDOLL_FALLENOVER)
+                or (bit.band(flags, CMD_KNOCKEDOUT) > 0 and player:GetRagdollState() == RAGDOLL_KNOCKEDOUT) then
+                  if !player.cwDeathCodeAuth then
+                    cw.player:Notify(player, L('CannotActionRightNow'))
                   end
-                end
 
-                if bit.band(flags, CMD_DEAD) > 0 and !player:Alive() then
-                  if !player.cwDeathCodeAuth then
-                    cw.player:Notify(player, L('CannotActionRightNow'))
-                  end return
-                elseif bit.band(flags, CMD_VEHICLE) > 0 and player:InVehicle() then
-                  if !player.cwDeathCodeAuth then
-                    cw.player:Notify(player, L('CannotActionRightNow'))
-                  end return
-                elseif bit.band(flags, CMD_RAGDOLLED) > 0 and player:IsRagdolled() then
-                  if !player.cwDeathCodeAuth then
-                    cw.player:Notify(player, L('CannotActionRightNow'))
-                  end return
-                elseif bit.band(flags, CMD_FALLENOVER) > 0 and player:GetRagdollState() == RAGDOLL_FALLENOVER then
-                  if !player.cwDeathCodeAuth then
-                    cw.player:Notify(player, L('CannotActionRightNow'))
-                  end return
-                elseif bit.band(flags, CMD_KNOCKEDOUT) > 0 and player:GetRagdollState() == RAGDOLL_KNOCKEDOUT then
-                  if !player.cwDeathCodeAuth then
-                    cw.player:Notify(player, L('CannotActionRightNow'))
-                  end return
+                  return
                 end
 
                 if commandTable.OnRun then
                   local bSuccess, value = pcall(commandTable.OnRun, commandTable, player, arguments)
 
-                  if !bSuccess then
-                    MsgC(
-                      Color(255, 100, 0, 255),
-                      "\n[CW:Command]\nThe '"..commandTable.name.."' command has failed to run.\n"..value..'\n'
-                    )
-                  elseif cw.player:GetDeathCode(player, true) then
-                    cw.player:UseDeathCode(player, commandTable.name, arguments)
-                  end
-
                   if bSuccess then
-                    if table.concat(arguments, ' ') != '' then
-                      cw.core:PrintLog(
-                        LOGTYPE_GENERIC,
-                        player:Name(true).." has used '"..commandPrefix..commandTable.name..' '..
-                          table.concat(arguments, ' ').."'."
-                      )
-                    else
-                      cw.core:PrintLog(
-                        LOGTYPE_GENERIC,
-                        player:Name(true).." has used '"..commandPrefix..commandTable.name.."'."
-                      )
+                    if cw.player:GetDeathCode(player, true) then
+                      cw.player:UseDeathCode(player, commandTable.name, arguments)
                     end
+
+                    local text = table.concat(arguments, ' ')
+
+                    if text != '' then
+                      text = ' '..text
+                    end
+
+                    cw.core:PrintLog(
+                      LOGTYPE_GENERIC, player:Name(true).." has used '"..commandPrefix..commandTable.name..text.."'."
+                    )
+
+                    hook.Run('PostCommandUsed', player, commandTable, arguments)
 
                     return value
                   end
 
-                  hook.Run('PostCommandUsed', player, commandTable, arguments)
+                  MsgC(
+                    Color(255, 100, 0, 255),
+                    "\n[CW:Command]\nThe '"..commandTable.name.."' command has failed to run.\n"..tostring(value)..'\n'
+                  )
                 end
               else
                 cw.player:Notify(player, L('Commands_cwLua_accessDenied', player:Name()))

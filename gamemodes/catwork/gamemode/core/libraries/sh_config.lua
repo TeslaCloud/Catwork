@@ -11,11 +11,11 @@ library.New('config', _G)
 local indexes = config.indexes or {}
 local stored = config.stored or {}
 local cache = config.cache or {}
-local map = config.map or {}
+local mapValues = config.map or {}
 config.indexes = indexes
 config.stored = stored
 config.cache = cache
-config.map = map
+config.map = mapValues
 
 --[[ Set the __index meta function of the class. --]]
 local CLASS_TABLE = { __index = CLASS_TABLE }
@@ -35,12 +35,9 @@ function CLASS_TABLE:__call(parameter, failSafe)
 end
 
 --- Converts the config object to a string of the form `CONFIG[key]`.
---
--- The function is declared without a `self` parameter, so it indexes the global `self` and errors
--- when called.
 -- @return [String The string representation]
-function CLASS_TABLE.__tostring()
-  return 'CONFIG['..self('key')..']'
+function CLASS_TABLE:__tostring()
+  return 'CONFIG['..tostring(self.key)..']'
 end
 
 --- Creates a new config object wrapping the stored entry for a key.
@@ -233,7 +230,7 @@ function config.Import(fileName)
           local isPrivate = string.find(class, 'private') != nil
           local needsRestart = string.find(class, 'restart') != nil
 
-          if value then
+          if value != nil then
             local cfg = config.Get(key)
 
             if !cfg:IsValid() then
@@ -338,7 +335,8 @@ function config.Parse(text)
     local value = config.Get(key):Get()
 
     if value != nil then
-      text = cw.core:Replace(text, '$'..key..'$', tostring(value))
+      -- A '%' in the value would be read as a capture reference by the replacement.
+      text = cw.core:Replace(text, '$'..key..'$', (string.gsub(tostring(value), '%%', '%%%%')))
     end
   end
 
@@ -603,8 +601,7 @@ if SERVER then
   -- stored as the next value instead once the config has initialized. Shared keys are sent to every
   -- player and `ClockworkConfigChanged` is fired when the value changes.
   --
-  -- The `map` parameter shadows the file's `config.map` table, so setting a map-specific value after
-  -- initialization indexes the map name string instead of that table.
+  -- A value set for a map is kept in `config.map` and saved to that map's own config file.
   -- @param value [Any The new value, or `'!default'`]
   -- @param map=nil [String Only apply the value on this map]
   -- @param forceSet=nil [Boolean Ignore the static and restart flags]
@@ -615,7 +612,7 @@ if SERVER then
       map = string.lower(map)
     end
 
-    if tostring(value) == '-1.#IND' then
+    if value != value then
       value = 0
     end
 
@@ -627,6 +624,11 @@ if SERVER then
         if !default then
           if isnumber(self.data.value) then
             value = tonumber(value) or self.data.value
+
+            -- tonumber('nan') is NaN.
+            if value != value then
+              value = self.data.value
+            end
           elseif isbool(self.data.value) then
             value = (value == true or value == 'true'
             or value == 'yes' or value == '1' or value == 1)
@@ -666,23 +668,23 @@ if SERVER then
 
             if self.data.map then
               if default then
-                if map[self.data.map] then
-                  map[self.data.map][self.key] = nil
+                if mapValues[self.data.map] then
+                  mapValues[self.data.map][self.key] = nil
                 end
               else
-                if !map[self.data.map] then
-                  map[self.data.map] = {}
+                if !mapValues[self.data.map] then
+                  mapValues[self.data.map] = {}
                 end
 
-                map[self.data.map][self.key] = {
+                mapValues[self.data.map][self.key] = {
                   default = self.data.default,
-                  global = self.data.isGlobal,
+                  isGlobal = self.data.isGlobal,
                   value = value
                 }
               end
 
               if !self.data.temporary then
-                config.Save('config/'..self.data.map, map[self.data.map])
+                config.Save('config/'..self.data.map, mapValues[self.data.map])
               end
             end
           end
@@ -803,7 +805,7 @@ else
   -- @param value [Any The new value, or `'!default'`]
   -- @return [Any The new value, or `nil` when the entry does not exist or the value is invalid]
   function CLASS_TABLE:Set(value)
-    if tostring(value) == '-1.#IND' then
+    if value != value then
       value = 0
     end
 

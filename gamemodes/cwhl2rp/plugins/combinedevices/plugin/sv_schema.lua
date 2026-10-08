@@ -7,6 +7,28 @@
 
 local PLUGIN = PLUGIN
 
+--- Spawns a saved device frozen in place.
+-- @param class [String The entity class]
+-- @param data [Map The saved device, with its `position` and `angles`]
+-- @return [Entity The device, or `nil` when it could not be created, such as when its class no longer exists]
+local function SpawnDevice(class, data)
+  local device = ents.Create(class)
+
+  if !IsValid(device) then return end
+
+  device:SetPos(data.position)
+  device:SetAngles(data.angles)
+  device:Spawn()
+
+  local physicsObject = device:GetPhysicsObject()
+
+  if IsValid(physicsObject) then
+    physicsObject:EnableMotion(false)
+  end
+
+  return device
+end
+
 --- Saves the Combine devices on the map to the schema data.
 --
 -- Writes access monitors (with their texts, access level and status), `hl2_info_citizen` and
@@ -73,31 +95,23 @@ function PLUGIN:LoadCombineDevices()
   local cmbMonitors = cw.core:RestoreSchemaData('plugins/combinedevices/monitors/'..game.GetMap())
 
   for k, v in pairs(cmbMonitors) do
-    local combineAMonitor = ents.Create('cw_combineaccessmonitor')
+    local combineAMonitor = SpawnDevice('cw_combineaccessmonitor', v)
 
     if combineAMonitor then
-      combineAMonitor:SetPos(v.position)
-      combineAMonitor:SetAngles(v.angles)
-      combineAMonitor:Spawn()
-      combineAMonitor:GetPhysicsObject():EnableMotion(false)
-      combineAMonitor:SetDTString(0, v.text1)
-      combineAMonitor:SetDTString(1, v.text2)
-      combineAMonitor:SetDTString(2, v.text3)
-      combineAMonitor:SetDTString(3, v.level)
-      combineAMonitor:SetStatus(v.status)
+      combineAMonitor:SetDTString(0, v.text1 or '')
+      combineAMonitor:SetDTString(1, v.text2 or '')
+      combineAMonitor:SetDTString(2, v.text3 or '')
+      combineAMonitor:SetDTString(3, v.level or '')
+      combineAMonitor:SetStatus(v.status or 0)
     end
   end
 
   local infoCitizen = cw.core:RestoreSchemaData('plugins/combinedevices/infocitizen/'..game.GetMap())
 
   for k, v in pairs(infoCitizen) do
-    local device = ents.Create('hl2_info_citizen')
+    local device = SpawnDevice('hl2_info_citizen', v)
 
     if device then
-      device:SetPos(v.position)
-      device:SetAngles(v.angles)
-      device:Spawn()
-      device:GetPhysicsObject():EnableMotion(false)
       device:SetNWBool('locked', v.locked)
     end
   end
@@ -105,13 +119,9 @@ function PLUGIN:LoadCombineDevices()
   local infoCard = cw.core:RestoreSchemaData('plugins/combinedevices/infocard/'..game.GetMap())
 
   for k, v in pairs(infoCard) do
-    local device = ents.Create('hl2_info_card')
+    local device = SpawnDevice('hl2_info_card', v)
 
     if device then
-      device:SetPos(v.position)
-      device:SetAngles(v.angles)
-      device:Spawn()
-      device:GetPhysicsObject():EnableMotion(false)
       device:SetNWBool('locked', v.locked)
     end
   end
@@ -119,13 +129,6 @@ function PLUGIN:LoadCombineDevices()
   local infoMonitor = cw.core:RestoreSchemaData('plugins/combinedevices/infomonitor/'..game.GetMap())
 
   for k, v in pairs(infoMonitor) do
-    local monitor = ents.Create('hl2_combinemonitor')
-
-    if monitor then
-      monitor:SetPos(v.position)
-      monitor:SetAngles(v.angles)
-      monitor:Spawn()
-      monitor:GetPhysicsObject():EnableMotion(false)
-    end
+    SpawnDevice('hl2_combinemonitor', v)
   end
 end

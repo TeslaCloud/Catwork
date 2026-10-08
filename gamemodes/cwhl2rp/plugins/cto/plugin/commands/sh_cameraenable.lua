@@ -16,9 +16,9 @@ function COMMAND:OnRun(player, arguments)
   if player:IsCombine() then
     if Schema:IsPlayerCombineRank(player, { 'SCN', 'OfC', 'EpU', 'DvL', 'SeC' }, true)
     or player:GetFaction() == FACTION_OTA then
-      local camera = Entity(arguments[1])
+      local camera = Entity(tonumber(arguments[1]) or -1)
 
-      if !IsEntity(camera) or camera:GetClass() != 'npc_combine_camera' then
+      if !IsValid(camera) or camera:GetClass() != 'npc_combine_camera' then
         cw.player:Notify(player, L('CTO_NoCamera'))
 
         return

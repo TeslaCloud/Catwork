@@ -42,6 +42,8 @@ function PANEL:Init()
   end
 
   timer.Simple(0, function()
+    if !IsValid(self) then return end
+
     self:Rebuild()
     self.info:SetText(self.name)
   end)
@@ -57,6 +59,7 @@ function PANEL:Rebuild()
   self.panelList:Clear()
   self.craft:Clear()
 
+  local colorGray = Color('gray')
   local categories = {}
   local blueprints = {}
 
@@ -79,7 +82,7 @@ function PANEL:Rebuild()
     return L(a.category) < L(b.category)
   end)
 
-  for k, v in pairs(categories) do
+  for k, v in ipairs(categories) do
     local categoryForm = vgui.Create('DCollapsibleCategory', self.panelList)
     categoryForm:SetLabel(L(v.category), nil, 'basic_form_highlight')
 
@@ -92,7 +95,7 @@ function PANEL:Rebuild()
       return a.name < b.name
     end)
 
-    for k2, v2 in pairs(v.blueprints) do
+    for k2, v2 in ipairs(v.blueprints) do
       local blueprintItem = vgui.Create('DButton', categoryForm)
       blueprintItem:Dock(TOP)
       blueprintItem:SetText(v2('name'))
@@ -164,10 +167,6 @@ function PANEL:Rebuild()
       self.craft.doCraft:SetShowIcon(false)
       self.craft.doCraft.DoClick = function(button)
         netstream.Start('Craft::CraftItem', self.bpData.uniqueID)
-
-        timer.Simple(0, function()
-          self:Rebuild()
-        end)
       end
     end
 
@@ -177,7 +176,7 @@ function PANEL:Rebuild()
       self.craft.requirements:SetSize(self.craft:GetWide() / 2 - 8, 128)
 
       self.craft.requirements.Paint = function(panel, w, h)
-        draw.RoundedBox(4, 0, 0, w, h, Color('gray'))
+        draw.RoundedBox(4, 0, 0, w, h, colorGray)
       end
 
       local label = vgui.Create('DLabel', self.craft.requirements)
@@ -211,7 +210,7 @@ function PANEL:Rebuild()
         if v then
           local bCheck, text = v(cw.client)
 
-          local label = vgui.Create('DLabel', self.craft.requirement)
+          local label = vgui.Create('DLabel', self.craft.requirements)
           label:Dock(TOP)
           label:DockMargin(4, -4, 4, 4)
           label:SetSize(self.craft:GetWide() / 2 - 8, 16)
@@ -244,11 +243,11 @@ function PANEL:Rebuild()
       self.craft.req:SetSize(0, 88)
       self.craft.req:SetOverlap(-4)
       self.craft.req.Paint = function(panel, w, h)
-        draw.RoundedBox(4, 0, 0, w, h, Color('gray'))
+        draw.RoundedBox(4, 0, 0, w, h, colorGray)
       end
 
       for k, v in pairs(self.bpData['recipe']) do
-        local itemTable = item.GetAll()[v[1]]
+        local itemTable = item.FindByID(v[1])
         local inventory = cw.inventory:GetClient()
 
         if itemTable then
@@ -296,11 +295,11 @@ function PANEL:Rebuild()
       self.craft.tools:SetSize(0, 88)
       self.craft.tools:SetOverlap(-4)
       self.craft.tools.Paint = function(panel, w, h)
-        draw.RoundedBox(4, 0, 0, w, h, Color('gray'))
+        draw.RoundedBox(4, 0, 0, w, h, colorGray)
       end
 
       for k, v in pairs(self.bpData['required']) do
-        local itemTable = item.GetAll()[v[1]]
+        local itemTable = item.FindByID(v[1])
         local inventory = cw.inventory:GetClient()
 
         if itemTable then

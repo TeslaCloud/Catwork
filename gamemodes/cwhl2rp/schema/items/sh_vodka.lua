@@ -16,11 +16,11 @@ ITEM.hunger = -20
 ITEM.fatigue = -30
 ITEM.description = '#Item_Vodka_Description'
 
---- Heals 15 health (up to 100), boosts strength by 15 for two minutes and gives back an empty glass bottle.
+--- Heals 15 health, boosts strength by 15 for two minutes and gives back an empty glass bottle.
 function ITEM:OnUse(player, itemEntity)
-  player:SetHealth(math.Clamp(player:Health() + 15, 0, 100))
+  player:SetHealth(math.Clamp(player:Health() + 15, 0, player:GetMaxHealth()))
 
-  player:BoostAttribute(self.name, 'str', 15, 120)
+  player:BoostAttribute(self.name, ATB_STRENGTH, 15, 120)
 
   player:GiveItem('empty_glass_bottle', true)
 end

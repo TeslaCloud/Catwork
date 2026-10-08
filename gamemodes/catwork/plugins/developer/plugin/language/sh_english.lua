@@ -4,6 +4,7 @@ local lang = cw.lang:GetTable('en')
 
 lang['#Developer_CannotSetTable'] = 'Cannot set table values!'
 lang['#Developer_CannotSetUserData'] = 'Cannot set UserData values!'
+lang['#Developer_NotANumber'] = 'This key holds a number, so the value must be a number!'
 lang['#Developer_ModifiedKey'] = 'You have modified a char data key'
 lang['#Developer_CreatedKey'] = 'You have created a new char data key'
 lang['#Developer_Value'] = 'value:'

@@ -1,7 +1,7 @@
 --- Registers the operator command `/KarmaTake` (aliases `/CharTakeKarma`, `/TakeKarma`, `/ReduceKarma` and
 -- `/KarmaReduce`) of the Karma plugin, which removes between 1 and 100 karma from the target character.
 
-COMMAND = cw.command:New('KarmaTake')
+local COMMAND = cw.command:New('KarmaTake')
 COMMAND.tip = '#Command_Karmatake_Description'
 COMMAND.text = '#Command_Karmatake_Syntax'
 COMMAND.flags = CMD_DEFAULT
@@ -16,8 +16,8 @@ function COMMAND:OnRun(player, arguments)
 
   if target then
     if karma and karma <= 100 and karma > 0 then
-      target:SetKarma(target:GetCharacterData('karma') - karma)
-      cw.player:Notify(player, L('Karma_SetTo', target:Name(), target:GetCharacterData('karma')))
+      target:SetKarma(target:GetCharacterData('karma', 0) - karma)
+      cw.player:Notify(player, L('Karma_SetTo', target:Name(), target:GetCharacterData('karma', 0)))
     else
       cw.player:Notify(player, L('Karma_InvalidLevel'))
     end

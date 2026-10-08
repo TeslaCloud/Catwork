@@ -15,11 +15,7 @@
 -- @param option [String The option's display text]
 -- @param arguments [String The option value, such as `cw_notepadReadOption`]
 function cwNotepad:EntityHandleMenuOption(player, entity, option, arguments)
-  local class = entity:GetClass()
-
-  local uniqueID = cw.entity:QueryProperty(entity, 'uniqueID')
-
-  if class == 'cw_notepad' then
+  if entity:GetClass() == 'cw_notepad' then
     if entity.text and arguments == 'cw_notepadReadOption' then
       if !player.notepadIDs or !player.notepadIDs[entity.uniqueID] then
         if !player.notepadIDs then
@@ -32,7 +28,7 @@ function cwNotepad:EntityHandleMenuOption(player, entity, option, arguments)
         netstream.Heavy(player, 'ViewNotepad', entity, entity.uniqueID)
       end
     elseif arguments == 'cw_notepadEditOption' then
-      if uniqueID == player:UniqueID() then
+      if cw.entity:QueryProperty(entity, 'uniqueID') == player:UniqueID() then
         if !player.notepadIDs or !player.notepadIDs[entity.uniqueID] then
           if !player.notepadIDs then
             player.notepadIDs = {}

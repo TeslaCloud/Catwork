@@ -2,7 +2,7 @@
 -- displays three lines of text and an access level.
 --
 -- `SetStatus` switches it between normal (0), destroyed (1) and error (2). It has 1 health, so any damage destroys the
--- screen with sparks and broken glass; the glow sprite it once had is commented out.
+-- screen with sparks and broken glass.
 
 include('shared.lua')
 
@@ -18,18 +18,6 @@ function ENT:Initialize()
   self:SetUseType(SIMPLE_USE)
   self:SetHealth(1)
   self:SetSolid(SOLID_VPHYSICS)
-
-  /*
-  self.glow = ents.Create("env_sprite")
-  self.glow:SetKeyValue("model","glow06.vmt")
-  self.glow:SetKeyValue("rendermode","9")
-  self.glow:SetKeyValue("renderalpha","0")
-  self.glow:SetKeyValue("scale","0.8")
-  self.glow:SetPos(self:GetPos() + self:GetForward() * 12 + self:GetUp() * 10)
-  self.glow:SetParent(self)
-  self.glow:Spawn()
-  self.glow:Activate()
-  */
 
   local physicsObject = self:GetPhysicsObject()
 
@@ -52,21 +40,7 @@ end
 --
 -- @param int [Number 0 for normal, 1 for destroyed (screen off) or 2 for the flashing error screen]
 function ENT:SetStatus(int)
-  // if int == 0 then
-  //	self.glow:SetKeyValue("rendercolor","96 190 255")
-  // elseif int == 1 then
-  //	self.glow:SetKeyValue("rendercolor","0 0 0")
-  // elseif int == 2 then
-  //	self.glow:SetKeyValue("rendercolor","255 0 0")
-  // end
-  // self.glow:SetKeyValue("renderalpha","0")
-
   self:SetDTInt(5, int)
-end
-
---- Thinks every 0.1 seconds without doing anything else.
-function ENT:Think()
-  self:NextThink(CurTime() + 0.1)
 end
 
 --- Allows every tool on the monitor.
@@ -92,7 +66,7 @@ function ENT:OnTakeDamage(damageInfo)
     effect:SetOrigin(self:GetPos() + self:GetForward() * 16 + self:GetUp() * 10)
     util.Effect('GlassImpact', effect)
 
-    local effect = EffectData()
+    effect = EffectData()
     effect:SetOrigin(self:GetPos() + self:GetForward() * 13 + self:GetUp() * 10)
     effect:SetNormal(self:GetForward())
     effect:SetRadius(10)
@@ -100,9 +74,4 @@ function ENT:OnTakeDamage(damageInfo)
     effect:SetScale(1)
     util.Effect('cball_bounce', effect)
   end
-end
-
---- Does nothing; the glow sprite it would remove is disabled.
-function ENT:OnRemove()
-  // self.glow:Remove()
 end

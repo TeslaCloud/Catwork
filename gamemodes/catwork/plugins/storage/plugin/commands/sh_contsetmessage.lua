@@ -1,10 +1,11 @@
---- Registers the `/ContSetMessage` command, which sets the message shown to players who open the prop the player is
--- looking at.
+--- Registers the `/ContSetMessage` admin command, which sets the message shown to players who open the prop the player
+-- is looking at.
 
 local COMMAND = cw.command:New('ContSetMessage')
 COMMAND.tip = '#Command_Contsetmessage_Description'
 COMMAND.text = '#Command_Contsetmessage_Syntax'
 COMMAND.flags = CMD_DEFAULT
+COMMAND.access = 'a'
 COMMAND.arguments = 1
 
 --- Sets the message shown when the physics entity the player is looking at is opened.

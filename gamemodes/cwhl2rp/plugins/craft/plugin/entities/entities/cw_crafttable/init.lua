@@ -2,7 +2,8 @@
 -- used.
 --
 -- `ENT:Use` sends the `Craft::OpenMenu` netstream with the entity's class and name, at most once a second per player,
--- so the menu lists the blueprints whose `craftplace` is that class. The other stations inherit this behaviour.
+-- so the menu lists the blueprints whose `craftplace` is that class, and remembers the station in
+-- `player.cwCraftStation` for the `Craft::CraftItem` handler to check. The other stations inherit this behaviour.
 
 include('shared.lua')
 
@@ -30,10 +31,13 @@ end
 --
 -- The menu lists the blueprints whose `craftplace` is this entity's class.
 function ENT:Use(activator)
+  if !IsValid(activator) or !activator:IsPlayer() then return end
+
   local curTime = CurTime()
 
   if !activator.nextUse or activator.nextUse <= curTime then
     netstream.Start(activator, 'Craft::OpenMenu', self:GetClass(), self.PrintName)
+    activator.cwCraftStation = self
     activator.nextUse = curTime + 1
   end
 end

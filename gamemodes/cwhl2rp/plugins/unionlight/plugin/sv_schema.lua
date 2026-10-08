@@ -8,11 +8,13 @@ local PLUGIN = PLUGIN
 --- Spawns the union lights saved for the current map.
 --
 -- Restores each light's owner, position and angles, and freezes the ones that were frozen
--- when saved.
+-- when saved. Entries without a position or angles are skipped.
 function PLUGIN:LoadUnionLights()
   local unionLights = cw.core:RestoreSchemaData('plugins/unionlights/'..game.GetMap())
 
   for k, v in pairs(unionLights) do
+    if !istable(v) or !isvector(v.position) or !isangle(v.angles) then continue end
+
     local entity = ents.Create('cw_unionlight')
 
     cw.player:GivePropertyOffline(v.key, v.uniqueID, entity)

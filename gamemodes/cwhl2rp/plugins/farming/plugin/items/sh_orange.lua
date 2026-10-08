@@ -14,7 +14,7 @@ ITEM.description = '#Item_Orange_Description'
 
 --- Peels the orange, giving the player an `orange_cleaned`.
 function ITEM:OnUse(player, itemEntity)
-  player:FastGiveItem('orange_cleaned')
+  player:GiveItem('orange_cleaned', true)
 end
 
 --- Lets the item be dropped, with no extra effect.

@@ -18,10 +18,10 @@ function COMMAND:OnRun(player, arguments)
   if player:GetNetVar('tied') == 0 then
     local itemTable = player:FindItemByID(arguments[1])
     local entity = player:GetEyeTraceNoCursor().Entity
-    local target = cw.entity:GetPlayer(entity)
+    local target = IsValid(entity) and cw.entity:GetPlayer(entity)
     local healed
 
-    if target then
+    if target and target:Alive() then
       if entity:GetPos():Distance(player:GetShootPos()) <= 192 then
         if !Schema.scanners[target] then
           if itemTable and arguments[1] == 'health_vial' then

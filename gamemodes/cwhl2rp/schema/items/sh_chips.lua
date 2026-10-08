@@ -1,4 +1,4 @@
---- Defines the Chips food item, which boosts agility and stamina by 3 for two minutes.
+--- Defines the Chips food item, which boosts agility by 3 for two minutes.
 
 ITEM.name = 'Chips'
 ITEM.PrintName = '#Item_Chips_PrintName'
@@ -13,10 +13,9 @@ ITEM.description = '#Item_Chips_Description'
 ITEM.hunger = 15
 ITEM.thirst = -10
 
---- Boosts agility and stamina by 3 for two minutes.
+--- Boosts agility by 3 for two minutes.
 function ITEM:OnUse(player, itemEntity)
   player:BoostAttribute(self.name, ATB_AGILITY, 3, 120)
-  player:BoostAttribute(self.name, ATB_STAMINA, 3, 120)
 end
 
 --- Lets the item be dropped; nothing else happens.

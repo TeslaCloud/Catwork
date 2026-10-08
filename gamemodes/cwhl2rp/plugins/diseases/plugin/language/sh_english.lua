@@ -19,6 +19,7 @@ lang['#Command_Charsetdisease_Syntax'] = '<string Name> <string Disease>'
 lang['#Diseases_SetByOther'] = '#1 has set your disease to #2.'
 lang['#Diseases_SetOther'] = "You have set #1's disease to #2."
 lang['#Diseases_SetSelf'] = 'You have set your own disease to #1.'
+lang['#Diseases_InvalidDisease'] = '#1 is not a valid disease!'
 
 -- Symptoms
 lang['#Diseases_Emote_PneumoniaCough'] = 'coughs violently, hacking up phlegm from the lungs.'

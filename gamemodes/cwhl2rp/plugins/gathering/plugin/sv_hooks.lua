@@ -1,8 +1,8 @@
 --- Server-side hooks of the Gathering plugin that respawn resource nodes at their spawn points and reward players for
 -- breaking wooden props.
 --
--- `OneSecond` spawns a node at every point whose `nodes_respawn_delay` has passed and that `CanSpawnNode` allows. A
--- `PropBreak` hook passes broken wooden props to `cwGather:PlayerBreaksWood`.
+-- `OneSecond` spawns a node at every point whose node has been gone for `nodes_respawn_delay` seconds and that
+-- `CanSpawnNode` allows. A `PropBreak` hook passes broken wooden props to `cwGather:PlayerBreaksWood`.
 
 --- Called after Catwork has loaded the map entities; loads the resource node spawn points.
 function cwGather:ClockworkInitPostEntity()
@@ -11,17 +11,28 @@ end
 
 --- Called every second; respawns resource nodes whose respawn delay has passed.
 --
--- A point only spawns when `CanSpawnNode` allows it, then waits for the
--- `nodes_respawn_delay` config before the next node.
+-- The `nodes_respawn_delay` config runs from the moment a point's node is found gone. The
+-- point then spawns a new node when `CanSpawnNode` allows it, and is looked at again five
+-- seconds later when it does not or the node cannot be created.
 function cwGather:OneSecond()
-  local curTime = CurTime()
+  local points = self.nodePoints
 
-  for k, v in ipairs(self.nodePoints) do
-    if curTime > v.nextSpawn then
-      if hook.Run('CanSpawnNode', v.position, v.class) then
-        self:SpawnNode(v)
+  if !points then return end
+
+  local curTime = CurTime()
+  local nodes = self.nodes
+
+  for k, v in ipairs(points) do
+    local node = nodes[v]
+
+    if node != nil then
+      if !IsValid(node) then
+        nodes[v] = nil
         v.nextSpawn = curTime + math.Round(config.GetVal('nodes_respawn_delay'))
       end
+    elseif curTime > v.nextSpawn
+    and (!hook.Run('CanSpawnNode', v.position, v.class) or !self:SpawnNode(v)) then
+      v.nextSpawn = curTime + 5
     end
   end
 end
@@ -46,7 +57,7 @@ function cwGather:CanSpawnNode(position, class)
 end
 
 hook.Add('PropBreak', 'cwGather_wood', function(ply, ent)
-  if ent:GetMaterialType() == MAT_WOOD then
+  if IsValid(ply) and ply:IsPlayer() and ent:GetMaterialType() == MAT_WOOD then
     cwGather:PlayerBreaksWood(ply, ent)
   end
 end)

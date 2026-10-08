@@ -77,18 +77,22 @@ do
     return self.cachedKarmaString
   end
 
-  --- Sets the player's karma, clamped to -100 to 100, and saves and networks it.
+  --- Sets the player's karma, rounded and clamped to -100 to 100, and saves and networks it.
   --
   -- Fades the player's screen red when karma goes down and blue otherwise. Server only, since it
-  -- uses `ScreenFade` and `SetCharacterData`; the character must already have `karma` data.
+  -- uses `ScreenFade` and `SetCharacterData`. Does nothing when `karma` is not a number.
   -- @param karma [Number The new karma value]
   -- @see Player:GetKarma
   function playerMeta:SetKarma(karma)
-    local oldKarma = self:GetCharacterData('karma')
-    local diff = oldKarma - tonumber(karma)
-    local color
+    karma = tonumber(karma)
 
-    karma = math.Clamp(karma, -100, 100)
+    if !karma or karma != karma then return end
+
+    -- The karma levels cover whole numbers only.
+    karma = math.Clamp(math.Round(karma), -100, 100)
+
+    local diff = (tonumber(self:GetCharacterData('karma')) or 0) - karma
+    local color
 
     if diff > 0 then
       color = Color(255, 0, 0, 100)

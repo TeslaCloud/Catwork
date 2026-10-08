@@ -4,6 +4,13 @@
 -- Has `FadeIn` and `FadeOut` animations that play the theme's click and rollover sounds, `OverrideTextColor`, and
 -- `SetCallback` to set the click handler. The character menu and the quiz use it for their buttons.
 
+local colorShadow = Color(0, 0, 0, 150)
+local colorBackground = Color(160, 160, 160, 80)
+local colorBackgroundHovered = Color(255, 255, 255, 80)
+
+-- The disabled text color, kept in step with the theme's white each frame instead of being allocated anew.
+local colorDisabled = Color(205, 205, 205, 255)
+
 local PANEL = {}
 
 PANEL.BackgroundColor = Color(100, 100, 100)
@@ -60,9 +67,6 @@ function PANEL:SetDrawBackground(bDraw)
 end
 
 --- Sets the size of the background box, or makes it follow the text size.
---
--- The size is only stored once the box has been drawn, since the size table is created then.
---
 -- @param w=nil [Number Width of the box; leave out with `h` to fit the text]
 -- @param h=nil [Number Height of the box; leave out with `w` to fit the text]
 function PANEL:SetBackgroundSize(w, h)
@@ -71,6 +75,7 @@ function PANEL:SetBackgroundSize(w, h)
     return
   end
 
+  self.BackgroundSize = self.BackgroundSize or {}
   self.BackgroundSize.w = w
   self.BackgroundSize.h = h
 end
@@ -177,13 +182,11 @@ function PANEL:Think()
   end
 
   local colorWhite = cw.option:GetColor('white')
-  local colorDisabled = Color(
-    math.max(colorWhite.r - 50, 0),
-    math.max(colorWhite.g - 50, 0),
-    math.max(colorWhite.b - 50, 0),
-    255
-  )
   local colorInfo = cw.option:GetColor('information')
+
+  colorDisabled.r = math.max(colorWhite.r - 50, 0)
+  colorDisabled.g = math.max(colorWhite.g - 50, 0)
+  colorDisabled.b = math.max(colorWhite.b - 50, 0)
 
   if self.ShouldDrawBackground then
     self.BackgroundSize = self.BackgroundSize or {}
@@ -211,7 +214,7 @@ function PANEL:Think()
     self:SetTextColor(self.OverrideColorNormal or colorWhite)
   end
 
-  self:SetExpensiveShadow(1, Color(0, 0, 0, 150))
+  self:SetExpensiveShadow(1, colorShadow)
 end
 
 --- Draws the background box, when enabled, lighter while hovered.
@@ -220,9 +223,9 @@ function PANEL:Paint(w, h)
 
     if self.ShouldDrawBackground and self.BackgroundSize then
       if self.Hovered then
-        draw.RoundedBox(0, -2, -2, self.BackgroundSize.w + 4, h + 4, Color(255, 255, 255, 80))
+        draw.RoundedBox(0, -2, -2, self.BackgroundSize.w + 4, h + 4, colorBackgroundHovered)
       else
-        draw.RoundedBox(0, -2, -2, self.BackgroundSize.w + 4, h + 4, Color(160, 160, 160, 80))
+        draw.RoundedBox(0, -2, -2, self.BackgroundSize.w + 4, h + 4, colorBackground)
       end
     end
 

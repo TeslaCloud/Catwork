@@ -10,13 +10,8 @@ COMMAND.arguments = 0
 
 --- Sets the start corner of the box zone being placed to the position the player is looking at.
 function COMMAND:OnRun(player, arguments)
-  local trace = player:GetEyeTraceNoCursor()
-
-  if !player.cwRadSystemBoxInfo then player.cwRadSystemBoxInfo = {} end
-
-  if player.cwRadSystemBoxInfo then
-    player.cwRadSystemBoxInfo.startpos = trace.HitPos
-  end
+  player.cwRadSystemBoxInfo = player.cwRadSystemBoxInfo or {}
+  player.cwRadSystemBoxInfo.startpos = player:GetEyeTraceNoCursor().HitPos
 
   cw.player:Notify(player, L('Containment_StartPointSet'))
 end

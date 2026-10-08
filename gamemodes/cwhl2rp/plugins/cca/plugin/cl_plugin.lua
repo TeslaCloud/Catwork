@@ -93,9 +93,9 @@ function PLUGIN:AddCombinePDAButons(pda)
     if Schema:PlayerIsCombine(cw.client) then
       Derma_Query('#Status_Desc', '#Status_Title',
         '#Status_Unverified', function() plugin.Call('HandleCitizenStatusButton', pda, 'Unverified') end,
-        '#Status_Citizen', 		function() plugin.Call('HandleCitizenStatusButton', pda, 'Citizen') end,
+        '#Status_Citizen', function() plugin.Call('HandleCitizenStatusButton', pda, 'Citizen') end,
         '#Status_AntiCitizen', function() plugin.Call('HandleCitizenStatusButton', pda, 'AntiCitizen') end,
-        '#Status_NoData', 		function() plugin.Call('HandleCitizenStatusButton', pda, 'NoData') end
+        '#Status_NoData', function() plugin.Call('HandleCitizenStatusButton', pda, 'NoData') end
       )
     else
       Derma_Query('#Status_Desc', '#Status_Title',
@@ -111,7 +111,7 @@ function PLUGIN:AddCombinePDAButons(pda)
   end)
 
   pda:AddButton('job', '#PDA_ChangeJob', false, function()
-    Derma_StringRequest('#Job_Title', '#Job_Desc', Schema:GetResidence(pda.player),
+    Derma_StringRequest('#Job_Title', '#Job_Desc', Schema:GetJob(pda.player),
     function(text) plugin.Call('HandleJobChangeButton', pda, text) end, nil, '#OK', '#Cancel')
   end)
 

@@ -450,8 +450,8 @@ end
 --- Returns the animation a model uses for an activity and hold type.
 --
 -- Unknown hold types fall back to `normal` and unknown activities to `ACT_MP_STAND_IDLE`, unless
--- `bNoFallbacks` is set. Overrides from `cw.animation:AddOverride` take precedence. Prints a stack
--- trace and returns nothing when `model` is `nil`.
+-- `bNoFallbacks` is set. Overrides from `cw.animation:AddOverride` take precedence. Returns nothing
+-- for models without an animation table, and prints a stack trace when `model` is `nil`.
 --
 -- ```
 -- local attackAnimation = cw.animation:GetForModel(model, weaponHoldType, 'attack', true)
@@ -473,17 +473,19 @@ function cw.animation:GetForModel(model, holdType, key, bNoFallbacks)
   local animTable = self:GetTable(lowerModel)
   local overrideTable = override[lowerModel]
 
+  if !animTable then return end
+
   if !bNoFallbacks then
     if !animTable[holdType] then
       holdType = 'normal'
     end
 
-    if !animTable[holdType][key] then
+    if animTable[holdType] and !animTable[holdType][key] then
       key = ACT_MP_STAND_IDLE
     end
   end
 
-  local finalAnimation = animTable[holdType][key]
+  local finalAnimation = animTable[holdType] and animTable[holdType][key]
 
   if overrideTable and overrideTable[holdType] and overrideTable[holdType][key] then
     finalAnimation = overrideTable[holdType][key]
@@ -620,6 +622,10 @@ do
     ['sxbase_mp7_s_micro_ls'] = 'smg'
   }
 
+  -- This runs for every player on every frame, so the lookups are remembered per weapon class and hold type.
+  local classHoldTypes = {}
+  local holdTypes = {}
+
   --- Returns the hold type used to animate a weapon.
   --
   -- Known weapon classes have a fixed hold type. Otherwise the weapon's `HoldType` is used,
@@ -629,20 +635,32 @@ do
   -- @param weapon [Weapon The weapon]
   -- @return [String The lowercased hold type; `'normal'` when the weapon has none]
   function cw.animation:GetWeaponHoldType(player, weapon)
-    local class = string.lower(weapon:GetClass())
-    local holdType = 'normal'
+    local class = weapon:GetClass()
+    local holdType = classHoldTypes[class]
 
-    if weaponHoldTypes[class] then
-      holdType = weaponHoldTypes[class]
-    elseif weapon and weapon.HoldType then
-      if translateHoldTypes[weapon.HoldType] then
-        holdType = translateHoldTypes[weapon.HoldType]
-      else
-        holdType = weapon.HoldType
-      end
+    if holdType == nil then
+      holdType = weaponHoldTypes[string.lower(class)] or false
+      classHoldTypes[class] = holdType
     end
 
-    return string.lower(holdType)
+    if holdType then
+      return holdType
+    end
+
+    local weaponHoldType = weapon.HoldType
+
+    if !weaponHoldType then
+      return 'normal'
+    end
+
+    holdType = holdTypes[weaponHoldType]
+
+    if !holdType then
+      holdType = string.lower(translateHoldTypes[weaponHoldType] or weaponHoldType)
+      holdTypes[weaponHoldType] = holdType
+    end
+
+    return holdType
   end
 end
 
@@ -656,7 +674,7 @@ end
 function cw.animation:GetTable(model)
   local lowerModel = string.lower(model)
 
-  if string.find(model, '/player/') then
+  if string.find(lowerModel, '/player/', 1, true) then
     return nil
   end
 
@@ -776,12 +794,15 @@ function cw.animation:CheckHands(model, animTable)
   end
 
   for k, v in pairs(handsModels) do
-    if string.find(model, k) then
+    if string.find(model, k, 1, true) then
       info = v
 
       break
     end
   end
+
+  -- The info is adjusted in place, which must not reach the tables it was picked from.
+  info = table.Copy(info)
 
   self:AdjustHandsInfo(model, info)
 
@@ -799,7 +820,7 @@ end
 function cw.animation:AdjustHandsInfo(model, info)
   if info.model == 'models/weapons/c_arms_citizen.mdl' or info.model == 'models/weapons/c_arms_refugee.mdl' then
     for k, v in pairs(blackModels) do
-      if string.find(model, k) then
+      if string.find(model, k, 1, true) then
         info.skin = 1
 
         break

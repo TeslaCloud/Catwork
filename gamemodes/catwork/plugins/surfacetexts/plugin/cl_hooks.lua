@@ -10,8 +10,15 @@
 -- While the local player holds the `texts` tool, a faded preview of the configured text is drawn where
 -- they are looking. Every stored text within 1024 units plus its `fadeOffset` is drawn, fading out over
 -- its last 256 units. Styles add layers: 2 and up a darkened copy behind the text (except style 3), 3
--- and up a black shadow, 5 and up a background box, and 6 makes the box pulse.
-function cwSurfaceTexts:PostDrawOpaqueRenderables()
+-- and up a black shadow, 5 and up a background box, and 6 makes the box pulse. Skips the depth and 3D skybox
+-- passes.
+--
+-- @param bDrawingDepth [Boolean Whether this is the depth pass]
+-- @param bDrawingSkybox [Boolean Whether the skybox is being drawn]
+-- @param bDrawing3DSkybox [Boolean Whether the 3D skybox is being drawn]
+function cwSurfaceTexts:PostDrawOpaqueRenderables(bDrawingDepth, bDrawingSkybox, bDrawing3DSkybox)
+  if bDrawing3DSkybox or bDrawingDepth then return end
+
   local weapon = cw.client:GetActiveWeapon()
   local font = cw.option:GetFont('surface_text_font')
 
@@ -40,9 +47,10 @@ function cwSurfaceTexts:PostDrawOpaqueRenderables()
     cam.End3D2D()
   end
 
+  local clientPos = cw.client:GetPos()
+
   for k, v in pairs(self.stored) do
     local pos = v.pos
-    local clientPos = cw.client:GetPos()
     local distance = clientPos:Distance(pos)
     local fadeOffset = v.fadeOffset or 1000
     local drawDistance = (1024 + fadeOffset)
@@ -64,7 +72,7 @@ function cwSurfaceTexts:PostDrawOpaqueRenderables()
     local textColor = v.color
     local backColor = v.extraColor
     local style = v.style
-    local w, h = util.GetTextSize(font, text)
+    local w, h = cw.core:GetCachedTextSize(font, text)
     local posX, posY = -w / 2, -h / 2
 
     if style >= 2 then

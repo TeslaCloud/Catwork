@@ -108,6 +108,8 @@ function ENT:ActivateRation(activator, duration, force)
   local curTime = CurTime()
 
   local loyalityPoints = activator:GetCharacterData('civ_reputation') or 0
+  -- Locals, so that a dispenser used meanwhile cannot change what this one hands out when its timer ends.
+  local entModel, rationType
 
   if loyalityPoints > 50 or Schema:PlayerIsCWU(activator) then
     entModel = 'models/weapons/w_packatp.mdl'
@@ -126,8 +128,6 @@ function ENT:ActivateRation(activator, duration, force)
     rationType = 'ration_normal'
     duration = 26
   end
-
-  if !duration then duration = 24 end
 
   if force or !self.nextActivateRation or curTime >= self.nextActivateRation then
     self.nextActivateRation = curTime + duration + 2

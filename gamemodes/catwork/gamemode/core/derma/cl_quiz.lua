@@ -3,6 +3,8 @@
 -- `Populate` adds a combo box for each question from `cw.quiz:GetQuestions`; picking an answer sends the `QuizAnswer`
 -- netstream and the Continue button sends `QuizCompleted`, after which the server decides whether the answers pass.
 
+local backdropColor = Color(0, 0, 0, 255)
+
 local PANEL = {}
 
 --- Builds the full-screen quiz with its question list and the Disconnect and Continue buttons.
@@ -57,20 +59,22 @@ end
 --- Blurs the background and draws a black backdrop over the screen.
 function PANEL:Paint(w, h)
   cw.core:RegisterBackgroundBlur(self, self.createTime)
-  cw.core:DrawSimpleGradientBox(0, 0, 0, ScrW(), ScrH(), Color(0, 0, 0, 255))
+  cw.core:DrawSimpleGradientBox(0, 0, 0, ScrW(), ScrH(), backdropColor)
 
   return true
+end
+
+--- Removes the quiz's background blur along with it.
+function PANEL:OnRemove()
+  cw.core:RemoveBackgroundBlur(self)
 end
 
 --- Fills the quiz with a combo box for each question from `cw.quiz:GetQuestions`, sorted by question text.
 --
 -- Each answer is sent to the server with the `QuizAnswer` netstream as soon as it is picked.
 function PANEL:Populate()
-  local smallTextFont = cw.option:GetFont('menu_text_small')
   local quizQuestions = cw.quiz:GetQuestions()
   local questions = {}
-  local scrH = ScrH()
-  local scrW = ScrW()
 
   self.questionsForm = vgui.Create('DForm')
   self.questionsForm:SetName(cw.quiz:GetName())
@@ -85,15 +89,16 @@ function PANEL:Populate()
 
   self.panelList:AddItem(self.questionsForm)
 
+  -- The questions are keyed by a CRC, so they go into a list to be sortable.
   for k, v in pairs(quizQuestions) do
-    questions[k] = { k, v }
+    questions[#questions + 1] = { k, v }
   end
 
   table.sort(questions, function(a, b)
     return a[2].question < b[2].question
   end)
 
-  for k, v in pairs(questions) do
+  for k, v in ipairs(questions) do
     local panel = vgui.Create('DComboBox', self.questionsForm)
     local question = vgui.Create('DLabel', self.questionsForm)
     local key = v[1]

@@ -8,8 +8,6 @@
 
 PLUGIN:SetGlobalAlias('cwForceField')
 
-cwForceField.Blocked = {}
-
 cwForceField.modes = {
   '#ForceField_Mode_NoOne',
   '#ForceField_Mode_CWU',
@@ -54,35 +52,33 @@ local allowedEnts = {
 -- @param b [Entity The second entity]
 -- @return [Boolean Whether the entities collide, or `nil` for the default]
 function cwForceField:ShouldCollide(a, b)
-  local player
-  local entity
+  local field, other
 
-  if a:IsPlayer() then
-    player = a
-    entity = b
-  elseif b:IsPlayer() then
-    player = b
-    entity = a
-  elseif allowedEnts[a:GetClass()] and b:GetClass() == 'cw_forcefield' then
-    return false
-  elseif allowedEnts[b:GetClass()] and a:GetClass() == 'cw_forcefield' then
-    return false
+  -- This runs for every pair of entities that may touch, so pairs without a forcefield leave as early as possible.
+  if a:GetClass() == 'cw_forcefield' then
+    field, other = a, b
+  elseif b:GetClass() == 'cw_forcefield' then
+    field, other = b, a
+  else
+    return
   end
 
-  if IsValid(entity) and entity:GetClass() == 'cw_forcefield' then
-    if IsValid(player) then
-      -- if the player is pressing "use" key they should always collide so that using works.
-      if player:KeyDown(IN_USE) then return true end
-
-      if player:IsCombine() or player:GetNetVar('ShouldForceFieldCollide') == false then
-        return false
-      end
-
-      return plugin.Call('ShouldForcefieldCollide', player, entity, entity:GetDTInt(0) or 1)
-    else
-      return true
+  if !other:IsPlayer() then
+    if allowedEnts[other:GetClass()] then
+      return false
     end
+
+    return
   end
+
+  -- if the player is pressing "use" key they should always collide so that using works.
+  if other:KeyDown(IN_USE) then return true end
+
+  if other:IsCombine() or other:GetNetVar('ShouldForceFieldCollide') == false then
+    return false
+  end
+
+  return plugin.Call('ShouldForcefieldCollide', other, field, field:GetDTInt(0) or 1)
 end
 
 --- Called to check whether a forcefield blocks a player, by the field's mode.

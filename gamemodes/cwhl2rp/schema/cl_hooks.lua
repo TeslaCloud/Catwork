@@ -26,11 +26,7 @@ end
 -- @param panel [Panel The business menu panel]
 -- @param categories [List<Map> The orderable item categories, each with `category` and `itemsList`]
 function Schema:PlayerBusinessRebuilt(panel, categories)
-  local businessName = cw.option:GetKey('name_business', true)
-
-  if !self.businessPanel then
-    self.businessPanel = panel
-  end
+  self.businessPanel = panel
 
   if config.Get('permits'):Get() and cw.client:GetFaction() == FACTION_CITIZEN then
     local permits = {}
@@ -148,7 +144,7 @@ function Schema:GetEntityMenuOptions(entity, options)
     end
 
     options[L'Set Frequency'] = function()
-      Derma_StringRequest('#Radio_Frequency_Title', '#Radio_Frequency_Request', frequency, function(text)
+      Derma_StringRequest('#Radio_Frequency_Title', '#Radio_Frequency_Request', entity:GetFrequency(), function(text)
         if IsValid(entity) then
           cw.entity:ForceMenuOption(entity, 'Set Frequency', text)
         end
@@ -170,7 +166,6 @@ function Schema:GetPlayerTypingDisplayPosition(player)
   if IsValid(scannerEntity) then
     local position = nil
     local physBone = scannerEntity:LookupBone('Scanner.Body')
-    local curTime = CurTime()
 
     if physBone then
       position = scannerEntity:GetBonePosition(physBone)
@@ -184,28 +179,27 @@ function Schema:GetPlayerTypingDisplayPosition(player)
   end
 end
 
+local colorNPCName = Color(255, 255, 100, 255)
+
 --- Called when an entity's target ID should be painted.
 --
 -- Draws the physical description of props and the name and title of named NPCs.
 -- @param entity [Entity The entity being looked at]
 -- @param info [Map Drawing state with `x`, `y` and `alpha`; `y` is advanced past each drawn line]
 function Schema:HUDPaintEntityTargetID(entity, info)
-  local colorTargetID = cw.option:GetColor('target_id')
-  local colorWhite = cw.option:GetColor('white')
-
   if entity:GetClass() == 'prop_physics' then
     local physDesc = entity:GetNWString('physDesc')
 
     if physDesc != '' then
-      info.y = cw.core:DrawInfo(physDesc, info.x, info.y, colorWhite, info.alpha)
+      info.y = cw.core:DrawInfo(physDesc, info.x, info.y, cw.option:GetColor('white'), info.alpha)
     end
   elseif entity:IsNPC() then
     local name = entity:GetNWString('cw_Name')
     local title = entity:GetNWString('cw_Title')
 
     if name != '' and title != '' then
-      info.y = cw.core:DrawInfo(name, info.x, info.y, Color(255, 255, 100, 255), info.alpha)
-      info.y = cw.core:DrawInfo(title, info.x, info.y, Color(255, 255, 255, 255), info.alpha)
+      info.y = cw.core:DrawInfo(name, info.x, info.y, colorNPCName, info.alpha)
+      info.y = cw.core:DrawInfo(title, info.x, info.y, color_white, info.alpha)
     end
   end
 end
@@ -222,6 +216,18 @@ function Schema:OnTextEntryLoseFocus(panel)
   self.textEntryFocused = nil
 end
 
+local flashColorModify = {
+  ['$pp_colour_brightness'] = 0,
+  ['$pp_colour_contrast'] = 1,
+  ['$pp_colour_colour'] = 1,
+  ['$pp_colour_addr'] = 0,
+  ['$pp_colour_addg'] = 0,
+  ['$pp_colour_addb'] = 0,
+  ['$pp_colour_mulr'] = 1,
+  ['$pp_colour_mulg'] = 0,
+  ['$pp_colour_mulb'] = 0
+}
+
 --- Called when screen space effects should be rendered.
 --
 -- Draws the colour shift and motion blur of an active flash effect and the Combine visor overlay
@@ -235,19 +241,11 @@ function Schema:RenderScreenspaceEffects()
       local incrementer = 1 / self.flashEffect[2]
 
       if timeLeft > 0 then
-        modify = {}
+        flashColorModify['$pp_colour_contrast'] = 1 + (timeLeft * incrementer)
+        flashColorModify['$pp_colour_colour'] = 1 - (incrementer * timeLeft)
+        flashColorModify['$pp_colour_addr'] = incrementer * timeLeft
 
-        modify['$pp_colour_brightness'] = 0
-        modify['$pp_colour_contrast'] = 1 + (timeLeft * incrementer)
-        modify['$pp_colour_colour'] = 1 - (incrementer * timeLeft)
-        modify['$pp_colour_addr'] = incrementer * timeLeft
-        modify['$pp_colour_addg'] = 0
-        modify['$pp_colour_addb'] = 0
-        modify['$pp_colour_mulr'] = 1
-        modify['$pp_colour_mulg'] = 0
-        modify['$pp_colour_mulb'] = 0
-
-        DrawColorModify(modify)
+        DrawColorModify(flashColorModify)
 
         if !self.flashEffect[3] then
           DrawMotionBlur(1 - (incrementer * timeLeft), incrementer * timeLeft, self.flashEffect[2])
@@ -365,32 +363,29 @@ end
 -- @param options [Map Option names mapped to callbacks or sub-option maps, filled in place]
 -- @param menu [Panel The scoreboard menu]
 function Schema:GetPlayerScoreboardOptions(player, options, menu)
-  if cw.command:FindByID('PlyAddServerWhitelist')
-  or cw.command:FindByID('PlyRemoveServerWhitelist') then
-    if cw.player:HasFlags(cw.client, cw.command:FindByID('PlyAddServerWhitelist').access) then
-      options['#ScoreboardOptions_ServerWhitelist'] = {}
+  -- The remove command is registered under this misspelt name.
+  local addWhitelist = cw.command:FindByID('PlyAddServerWhitelist')
+  local removeWhitelist = cw.command:FindByID('PlyRemoveSeverWhitelist')
+  local whitelistOptions = {}
 
-      if cw.command:FindByID('PlyAddServerWhitelist') then
-        options['#ScoreboardOptions_ServerWhitelist']['#ScoreboardOptions_ServerWhitelist_Add'] = function()
-          Derma_StringRequest(player:Name(), '#ScoreboardOptions_ServerWhitelist_Add_StringRequest', '', function(text)
-            cw.core:RunCommand('PlyAddServerWhitelist', player:Name(), text)
-          end)
-        end
-      end
-
-      if cw.command:FindByID('PlyRemoveServerWhitelist') then
-        options['#ScoreboardOptions_ServerWhitelist']['#ScoreboardOptions_ServerWhitelist_Remove'] = function()
-          Derma_StringRequest(
-            player:Name(),
-            '#ScoreboardOptions_ServerWhitelist_Remove_StringRequest',
-            '',
-            function(text)
-              cw.core:RunCommand('PlyRemoveServerWhitelist', player:Name(), text)
-            end
-          )
-        end
-      end
+  if addWhitelist and cw.player:HasFlags(cw.client, addWhitelist.access) then
+    whitelistOptions['#ScoreboardOptions_ServerWhitelist_Add'] = function()
+      Derma_StringRequest(player:Name(), '#ScoreboardOptions_ServerWhitelist_Add_StringRequest', '', function(text)
+        cw.core:RunCommand('PlyAddServerWhitelist', player:Name(), text)
+      end)
     end
+  end
+
+  if removeWhitelist and cw.player:HasFlags(cw.client, removeWhitelist.access) then
+    whitelistOptions['#ScoreboardOptions_ServerWhitelist_Remove'] = function()
+      Derma_StringRequest(player:Name(), '#ScoreboardOptions_ServerWhitelist_Remove_StringRequest', '', function(text)
+        cw.core:RunCommand('PlyRemoveSeverWhitelist', player:Name(), text)
+      end)
+    end
+  end
+
+  if next(whitelistOptions) then
+    options['#ScoreboardOptions_ServerWhitelist'] = whitelistOptions
   end
 
   if cw.command:FindByID('CharSetCustomClass') then
@@ -470,7 +465,6 @@ end
 -- @param colorModify [Map `$pp_colour_*` values, adjusted in place]
 function Schema:PlayerAdjustColorModify(colorModify)
   local antiDepressants = cw.client:GetNetVar('antidepressants')
-  local frameTime = FrameTime()
   local interval = FrameTime() / 10
   local curTime = CurTime()
 
@@ -539,7 +533,6 @@ function Schema:DrawTargetPlayerStatus(target, alpha, x, y)
   local informationColor = cw.option:GetColor('information')
   local thirdPerson = L('#TargetStatus_Him')
   local mainStatus
-  local untieText
   local gender = L('#TargetStatus_He')
   local action = cw.player:GetAction(target)
 
@@ -707,22 +700,28 @@ end
 
 --- Called when the foreground HUD should be painted; draws the white flash of active stun effects.
 function Schema:HUDPaintForeground()
+  local stunEffects = self.stunEffects
+
+  if !stunEffects or #stunEffects == 0 or !cw.client:Alive() then return end
+
   local curTime = CurTime()
+  local scrW, scrH = ScrW(), ScrH()
 
-  if cw.client:Alive() then
-    if self.stunEffects then
-      for k, v in pairs(self.stunEffects) do
-        local alpha = math.Clamp((255 / v[2]) * (v[1] - curTime), 0, 255)
+  -- Backwards, so that removing an expired effect does not skip the one after it.
+  for i = #stunEffects, 1, -1 do
+    local v = stunEffects[i]
+    local alpha = math.Clamp((255 / v[2]) * (v[1] - curTime), 0, 255)
 
-        if alpha != 0 then
-          draw.RoundedBox(0, 0, 0, ScrW(), ScrH(), Color(255, 255, 255, alpha))
-        else
-          table.remove(self.stunEffects, k)
-        end
-      end
+    if alpha != 0 then
+      surface.SetDrawColor(255, 255, 255, alpha)
+      surface.DrawRect(0, 0, scrW, scrH)
+    else
+      table.remove(stunEffects, i)
     end
   end
 end
+
+local displayLineColor = Color(255, 255, 255, 255)
 
 --- Called when the top of the screen HUD should be painted.
 --
@@ -730,28 +729,52 @@ end
 -- removing it when it expires.
 -- @param info [Map Drawing state with `x` and `y`; `y` is advanced past each line]
 function Schema:HUDPaintTopScreen(info)
-  local blackFadeAlpha = cw.core:GetBlackFadeAlpha()
+  local lines = self.combineDisplayLines
+
+  if !lines or #lines == 0 or !self:PlayerIsCombine(cw.client) then return end
+
   local colorWhite = cw.option:GetColor('white')
   local curTime = CurTime()
+  local height = draw.GetFontHeight('BudgetLabel')
+  local index = 1
 
-  if self:PlayerIsCombine(cw.client) and self.combineDisplayLines then
-    local height = draw.GetFontHeight('BudgetLabel')
+  displayLineColor.a = 255 - cw.core:GetBlackFadeAlpha()
 
-    for k, v in ipairs(self.combineDisplayLines) do
-      if curTime >= v[2] then
-        table.remove(self.combineDisplayLines, k)
-      else
-        local color = v[4] or colorWhite
-        local textColor = Color(color.r, color.g, color.b, 255 - blackFadeAlpha)
+  while index <= #lines do
+    local v = lines[index]
 
-        draw.SimpleText(string.sub(v[1], 1, v[3]), 'BudgetLabel', info.x, info.y, textColor)
+    if curTime >= v[2] then
+      table.remove(lines, index)
+    else
+      local color = v[4] or colorWhite
+      local text = v[1]
+      local shown = v[3]
+      local length = #text
 
-        if v[3] < string.len(v[1]) then
-          v[3] = v[3] + 1
+      displayLineColor.r = color.r
+      displayLineColor.g = color.g
+      displayLineColor.b = color.b
+
+      if shown < length then
+        draw.SimpleText(string.sub(text, 1, shown), 'BudgetLabel', info.x, info.y, displayLineColor)
+
+        shown = shown + 1
+
+        -- Step over UTF-8 continuation bytes, so a character is never drawn half typed.
+        local byte = string.byte(text, shown + 1)
+
+        while byte and byte >= 128 and byte < 192 do
+          shown = shown + 1
+          byte = string.byte(text, shown + 1)
         end
 
-        info.y = info.y + height
+        v[3] = shown
+      else
+        draw.SimpleText(text, 'BudgetLabel', info.x, info.y, displayLineColor)
       end
+
+      info.y = info.y + height
+      index = index + 1
     end
   end
 end

@@ -16,10 +16,12 @@ ITEM.customFunctions = { 'Inject' }
 
 --- Cures the slow lethal poison (`slow_deathinjection`); the fast one is not affected.
 function ITEM:OnUse(player, itemEntity)
-  if player:GetCharacterData('diseases') == 'slow_deathinjection' then
+  local disease = player:GetCharacterData('diseases')
+
+  if disease == 'slow_deathinjection' then
     player:SetCharacterData('diseases', 'none')
     cw.player:Notify(player, L('Diseases_Antidote_Self'))
-  elseif player:GetCharacterData('diseases') == 'fast_deathinjection' then
+  elseif disease == 'fast_deathinjection' then
     cw.player:Notify(player, L('Diseases_Antidote_SelfNoEffect'))
   end
 end
@@ -30,23 +32,23 @@ if SERVER then
   -- Cures `slow_deathinjection` only. Returns `false` when no player is looked at.
   function ITEM:OnCustomFunction(player, name)
     if name == 'Inject' then
-      local lookingPly = player:GetEyeTrace().Entity
+      local lookingPly = cwDiseases:FindPatient(player, self)
 
-      if lookingPly:IsPlayer() then
-        if lookingPly:GetCharacterData('diseases') == 'slow_deathinjection' then
-          lookingPly:SetCharacterData('diseases', 'none')
-        elseif lookingPly:GetCharacterData('diseases') == 'fast_deathinjection' then
-          cw.player:Notify(player, L('Diseases_Antidote_OtherNoEffect'))
-        end
+      if !lookingPly then return false end
 
-        cw.player:Notify(player, L('Diseases_Antidote_Other'))
+      local disease = lookingPly:GetCharacterData('diseases')
 
-        return true
-      else
-        cw.player:Notify(player, L('Diseases_MustLookAtPerson'))
-
-        return false
+      if disease == 'slow_deathinjection' then
+        lookingPly:SetCharacterData('diseases', 'none')
       end
+
+      if disease == 'fast_deathinjection' then
+        cw.player:Notify(player, L('Diseases_Antidote_OtherNoEffect'))
+      else
+        cw.player:Notify(player, L('Diseases_Antidote_Other'))
+      end
+
+      player:TakeItem(self)
     end
   end
 end

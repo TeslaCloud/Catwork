@@ -5,8 +5,6 @@
 -- `chasecam 0` to match it.
 
 local PLUGIN = PLUGIN
-local Clockwork = Clockwork
-cw.core = cw.core
 
 --- Called when the client initializes; creates the `cwThirdPerson` client convar as `CW_CONVAR_THIRDPERSON`.
 function PLUGIN:Initialize()
@@ -14,7 +12,12 @@ function PLUGIN:Initialize()
 end
 
 --- Called when a Catwork client convar changes; runs `chasecam` to match the `cwThirdPerson` setting.
-function PLUGIN:ClockworkConVarChanged()
+-- @param name [String The convar name]
+-- @param previousValue [String The previous value]
+-- @param newValue [String The new value]
+function PLUGIN:ClockworkConVarChanged(name, previousValue, newValue)
+  if name != 'cwThirdPerson' then return end
+
   if CW_CONVAR_THIRDPERSON:GetInt() == 1 then
     RunConsoleCommand('chasecam', '1')
   else

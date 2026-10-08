@@ -50,8 +50,9 @@ end
 -- Call this from the `DestroyTargetPlayerText` hook.
 -- @param uniqueID [String Unique ID of the line]
 function cw.TargetPlayerText:Destroy(uniqueID)
-  for k, v in pairs(self.stored) do
-    if v.uniqueID == uniqueID then
+  -- Backwards, so that removing an entry does not skip the one after it.
+  for k = #self.stored, 1, -1 do
+    if self.stored[k].uniqueID == uniqueID then
       table.remove(self.stored, k)
     end
   end

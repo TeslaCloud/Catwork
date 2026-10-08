@@ -1,6 +1,11 @@
 --- Defines `cwSpawnIcon`, a `SpawnIcon` that draws a colored border set with `SetColor` and a fading cooldown overlay
 -- set with `SetCooldown`.
 
+-- Reused every frame by the paint function below instead of allocating new objects.
+local cooldownColor = Color(255, 255, 255, 255)
+local borderVector = Vector(1, 1, 1)
+local whiteVector = Vector(1, 1, 1)
+
 local PANEL = {}
 
 --- Draws the cooldown overlay and the colored border over the icon.
@@ -12,28 +17,32 @@ function PANEL:Init()
       local timeLeft = self.Cooldown.expireTime - curTime
       local progress = 100 - ((100 / self.Cooldown.duration) * timeLeft)
 
+      cooldownColor.a = 255 - ((255 / 100) * progress)
+
       cw.cooldown:DrawBox(
         self.x,
         self.y,
         self:GetWide(),
         self:GetTall(),
-        progress, Color(255, 255, 255, 255 - ((255 / 100) * progress)),
+        progress, cooldownColor,
         self.Cooldown.textureID
       )
     end
 
     if self.BorderColor then
       local alpha = math.min(self.BorderColor.a, self:GetAlpha())
-      cw.SpawnIconMaterial:SetVector(
-        '$color',
-        Vector(self.BorderColor.r / 255, self.BorderColor.g / 255, self.BorderColor.b / 255)
-      )
+
+      borderVector.x = self.BorderColor.r / 255
+      borderVector.y = self.BorderColor.g / 255
+      borderVector.z = self.BorderColor.b / 255
+
+      cw.SpawnIconMaterial:SetVector('$color', borderVector)
       cw.SpawnIconMaterial:SetFloat('$alpha', alpha / 255)
         surface.SetDrawColor(self.BorderColor.r, self.BorderColor.g, self.BorderColor.b, alpha)
         surface.SetMaterial(cw.SpawnIconMaterial)
         self:DrawTexturedRect()
       cw.SpawnIconMaterial:SetFloat('$alpha', 1)
-      cw.SpawnIconMaterial:SetVector('$color', Vector(1, 1, 1))
+      cw.SpawnIconMaterial:SetVector('$color', whiteVector)
     end
   end
 end

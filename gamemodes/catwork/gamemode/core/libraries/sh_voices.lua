@@ -107,25 +107,9 @@ end
 -- lines to the directory.
 function cw.voices:ClockworkInitialized()
   for k, v in pairs(faction.GetAll()) do
-    local FACTION = faction.FindByID(v.name)
-
-    if IsValid(FACTION.models.female and FACTION.models.male) then
-      self:RegisterGroup(v.name, true, function(ply)
-        if ply:GetFaction() == v.name then
-          return true
-        else
-          return false
-        end
-      end)
-    else
-      self:RegisterGroup(k, false, function(ply)
-        if ply:GetFaction() == v.name then
-          return true
-        else
-          return false
-        end
-      end)
-    end
+    self:RegisterGroup(k, v.models.female != nil and v.models.male != nil, function(ply)
+      return ply:GetFaction() == v.name
+    end)
   end
 
   hook.Run('RegisterVoiceGroups', self)
@@ -165,9 +149,11 @@ function cw.voices:ChatboxAdjustMessageInfo(info)
     and ((info.sender.voiceCooldown or 0) < CurTime() or info.sender:IsAdmin()) then
       info.text = string.utf8upper(string.utf8sub(info.text, 1, 1))..string.utf8sub(info.text, 2)
 
+      local command = info.text:Replace('"', ''):utf8lower()
+
       for k, v in pairs(groups) do
         if v.IsPlayerMember(info.sender) then
-          local voiceData = v.voices[info.text:Replace('"', ''):utf8lower()]
+          local voiceData = v.voices[command]
 
           if voiceData then
             local voice = {

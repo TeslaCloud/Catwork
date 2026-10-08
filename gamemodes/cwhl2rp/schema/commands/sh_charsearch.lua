@@ -10,7 +10,8 @@ COMMAND.flags = CMD_DEFAULT
 
 --- Opens the inventory of the tied, motionless character being looked at as storage; takes no arguments.
 function COMMAND:OnRun(player, arguments)
-  local target = cw.entity:GetPlayer(player:GetEyeTraceNoCursor().Entity)
+  local entity = player:GetEyeTraceNoCursor().Entity
+  local target = IsValid(entity) and cw.entity:GetPlayer(entity)
 
   if target then
     if target:GetShootPos():Distance(player:GetShootPos()) <= 192 then
@@ -40,7 +41,7 @@ function COMMAND:OnRun(player, arguments)
 
                   if target then
                     if target:GetCharacterData('clothes') == itemTable.index then
-                      if !target:HasItemByID(itemTable.index) then
+                      if !target:HasItemByID(itemTable.uniqueID) then
                         target:SetCharacterData('clothes', nil)
 
                         itemTable:OnChangeClothes(target, false)
@@ -50,7 +51,7 @@ function COMMAND:OnRun(player, arguments)
                 end,
                 OnGiveItem = function(player, storageTable, itemTable)
                   if player:GetCharacterData('clothes') == itemTable.index then
-                    if !player:HasItemByID(itemTable.index) then
+                    if !player:HasItemByID(itemTable.uniqueID) then
                       player:SetCharacterData('clothes', nil)
 
                       itemTable:OnChangeClothes(player, false)

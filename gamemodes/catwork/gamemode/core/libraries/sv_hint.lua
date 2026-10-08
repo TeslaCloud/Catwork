@@ -52,7 +52,6 @@ end
 -- @see cw.hint:Get
 function cw.hint:Distribute()
   local hintText, Callback = self:Get()
-  local hintInterval = config.Get('hint_interval'):Get()
 
   if !hintText then return end
 

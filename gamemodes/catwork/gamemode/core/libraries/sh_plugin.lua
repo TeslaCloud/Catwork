@@ -147,6 +147,38 @@ PLUGIN_META.__tostring = function(PLUGIN_META)
   return 'Plugin ['..PLUGIN_META.name..']'
 end
 
+--- Returns whether a plugin is disabled because a plugin containing it is unloaded.
+--
+-- Unloaded plugins are looked up with `plugin.FindByID` by folder name, so this only finds parents
+-- whose folder name matches their name.
+-- @param name [String Name of the plugin, or its folder name when `bFolder` is set]
+-- @param bFolder=nil [Boolean Treat `name` as a folder name]
+-- @return [Boolean Whether the plugin is disabled]
+function plugin.IsDisabled(name, bFolder)
+  local folderName = name
+
+  if !bFolder then
+    local pluginTable = plugin.FindByID(name)
+
+    if !pluginTable or pluginTable == Schema then
+      return false
+    end
+
+    folderName = pluginTable.folderName
+  end
+
+  for k, v in pairs(unloaded) do
+    local parent = plugin.FindByID(k)
+
+    if parent and parent != Schema and folderName != parent.folderName
+    and table.HasValue(parent.plugins, folderName) then
+      return true
+    end
+  end
+
+  return false
+end
+
 if SERVER then
   --- Sets whether a plugin is unloaded and saves the list of unloaded plugins.
   --
@@ -166,44 +198,6 @@ if SERVER then
 
       cw.core:SaveSchemaData('plugins', unloaded)
       return true
-    end
-
-    return false
-  end
-
-  --- Returns whether a plugin is disabled because a plugin containing it is unloaded.
-  --
-  -- Unloaded plugins are looked up with `plugin.FindByID` by folder name, so this only finds parents
-  -- whose folder name matches their name.
-  -- @param name [String Name of the plugin, or its folder name when `bFolder` is set]
-  -- @param bFolder=nil [Boolean Treat `name` as a folder name]
-  -- @return [Boolean Whether the plugin is disabled]
-  function plugin.IsDisabled(name, bFolder)
-    if !bFolder then
-      local pluginTable = plugin.FindByID(name)
-
-      if pluginTable and pluginTable != Schema then
-        for k, v in pairs(unloaded) do
-          local unloaded = plugin.FindByID(k)
-
-          if unloaded and unloaded != Schema
-          and pluginTable.folderName != unloaded.folderName then
-            if table.HasValue(unloaded.plugins, pluginTable.folderName) then
-              return true
-            end
-          end
-        end
-      end
-    else
-      for k, v in pairs(unloaded) do
-        local unloaded = plugin.FindByID(k)
-
-        if unloaded and unloaded != Schema and name != unloaded.folderName then
-          if table.HasValue(unloaded.plugins, name) then
-            return true
-          end
-        end
-      end
     end
 
     return false
@@ -240,45 +234,6 @@ else
     if pluginTable then
       plugin.override[pluginTable.folderName] = isUnloaded
     end
-  end
-
-  --- Returns whether a plugin is disabled because a plugin containing it is unloaded.
-  --
-  -- Unloaded plugins are looked up with `plugin.FindByID` by folder name, so this only finds parents
-  -- whose folder name matches their name.
-  -- @param name [String Name of the plugin, or its folder name when `bFolder` is set]
-  -- @param bFolder=nil [Boolean Treat `name` as a folder name]
-  -- @return [Boolean Whether the plugin is disabled]
-  function plugin.IsDisabled(name, bFolder)
-    if !bFolder then
-      local pluginTable = plugin.FindByID(name)
-
-      if pluginTable and pluginTable != Schema then
-        for k, v in pairs(unloaded) do
-          local unloaded = plugin.FindByID(k)
-
-          if unloaded and unloaded != Schema
-          and pluginTable.folderName != unloaded.folderName then
-            if table.HasValue(unloaded.plugins, pluginTable.folderName) then
-              return true
-            end
-          end
-        end
-      end
-    else
-      for k, v in pairs(unloaded) do
-        local unloaded = plugin.FindByID(k)
-
-        if unloaded and unloaded != Schema
-        and name != unloaded.folderName then
-          if table.HasValue(unloaded.plugins, name) then
-            return true
-          end
-        end
-      end
-    end
-
-    return false
   end
 
   --- Returns whether a plugin is unloaded, taking overrides set with `plugin.SetUnloaded` into account.
@@ -656,7 +611,7 @@ do
         local uniqueID = (string.GetFileFromFilename(path) or ''):Replace('.lua', ''):MakeID()
         local var = data.table
 
-        _G[var] = table.Copy(data.defaultData)
+        _G[var] = table.Copy(data.defaultData or {})
         _G[var].ClassName = uniqueID
 
         util.Include(path)
@@ -787,9 +742,14 @@ do
     -- @param ... [Any Arguments passed to the hook]
     -- @return [Any Up to six values returned by the first hook that returned anything]
     function hook.Call(name, gamemode, ...)
-      if hooksCache[name] then
-        for k, v in ipairs(hooksCache[name]) do
-          if v != nil then
+      local cache = hooksCache[name]
+
+      if cache then
+        for i = 1, #cache do
+          local v = cache[i]
+
+          -- A hook can remove entries from the cache while it is being run.
+          if v then
             local a, b, c, d, e, f = v[1](v[2], ...)
 
             if a != nil then
@@ -803,7 +763,10 @@ do
     end
   end
 
-  --- Calls a hook on every loaded plugin, module, the schema and the gamemode.
+  --- Calls a hook on every loaded plugin, module and the schema, then on the hooks added with `hook.Add`.
+  --
+  -- No gamemode table is passed on, so the gamemode's own function of that name is not called; use
+  -- `hook.Run` for that.
   --
   -- ```
   -- local canSpawn = plugin.Call('PlayerCanSpawnItem', player, itemTable)

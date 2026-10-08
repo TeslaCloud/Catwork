@@ -10,6 +10,12 @@ include('shared.lua')
 
 local glowMaterial = Material('sprites/glow04_noz')
 
+-- Reused every frame; only the alpha changes.
+local colorDispensing = Color(0, 0, 255)
+local colorUnlocked = Color(0, 255, 0)
+local colorLocked = Color(255, 150, 0)
+local colorDenied = Color(255, 0, 0)
+
 --- Draws the dispenser's name and ration count for Combine players looking at it.
 function ENT:HUDPaintTargetID(x, y, alpha)
   local colorTargetID = cw.option:GetColor('target_id')
@@ -33,8 +39,10 @@ function ENT:Draw()
   local up = self:GetUp() * 13
 
   if rationTime > curTime then
-    local glowColor = Color(0, 0, 255, a)
+    local glowColor = colorDispensing
     local timeLeft = rationTime - curTime
+
+    glowColor.a = a
 
     if !self.nextFlash or curTime >= self.nextFlash or (self.flashUntil and self.flashUntil > curTime) then
       cam.Start3D(EyePos(), EyeAngles())
@@ -49,15 +57,17 @@ function ENT:Draw()
       end
     end
   else
-    local glowColor = Color(0, 255, 0, a)
+    local glowColor = colorUnlocked
 
     if self:IsLocked() then
-      glowColor = Color(255, 150, 0, a)
+      glowColor = colorLocked
     end
 
     if flashTime and flashTime >= curTime then
-      glowColor = Color(255, 0, 0, a)
+      glowColor = colorDenied
     end
+
+    glowColor.a = a
 
     cam.Start3D(EyePos(), EyeAngles())
       render.SetMaterial(glowMaterial)

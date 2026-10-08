@@ -75,6 +75,48 @@ function SWEP:Holster(switchingTo)
   return true
 end
 
+--- Starts a timed `lock` or `unlock` action on the entity the owner looks at within 192 units.
+--
+-- Does nothing while the owner is already locking or unlocking. The info hook supplies the duration, callback
+-- and sound flag; the permission hook must allow the action and keep allowing it until the timer ends.
+-- @param action [String Name of the action, `lock` or `unlock`]
+-- @param infoHook [String Hook that returns the action's info, such as `PlayerGetLockInfo`]
+-- @param canHook [String Hook that allows the action, such as `PlayerCanLockEntity`]
+function SWEP:StartKeyAction(action, infoHook, canHook)
+  local owner = self:GetOwner()
+  local currentAction = cw.player:GetAction(owner)
+  local trace = owner:GetEyeTraceNoCursor()
+  local entity = trace.Entity
+
+  if owner:GetPos():Distance(trace.HitPos) > 192 or !IsValid(entity)
+  or currentAction == 'lock' or currentAction == 'unlock' then
+    return
+  end
+
+  local info = hook.Run(infoHook, owner, entity)
+
+  if info and hook.Run(canHook, owner, entity) then
+    cw.player:SetAction(owner, action, info.duration)
+    cw.player:EntityConditionTimer(owner, entity, nil, info.duration, 192,
+      function()
+        return (hook.Run(canHook, owner, entity)
+        and owner:Alive() and !owner:IsRagdolled() and owner:IsUsingKeys())
+      end,
+      function(success)
+        if success then
+          info.Callback(owner, entity)
+
+          if !info.noSound then
+            owner:EmitSound('doors/door_latch3.wav')
+          end
+        elseif IsValid(owner) then
+          cw.player:SetAction(owner, action, false)
+        end
+      end
+    )
+  end
+end
+
 --- Starts locking the entity the owner looks at within 192 units.
 --
 -- `PlayerGetLockInfo` supplies the lock duration, callback and sound flag; `PlayerCanLockEntity` must allow it
@@ -83,41 +125,7 @@ function SWEP:PrimaryAttack()
   self:SetNextPrimaryFire(CurTime() + 1)
 
   if SERVER then
-    local action = cw.player:GetAction(self:GetOwner())
-    local trace = self:GetOwner():GetEyeTraceNoCursor()
-
-    if self:GetOwner():GetPos():Distance(trace.HitPos) > 192
-    or !IsValid(trace.Entity) then
-      return
-    end
-
-    local info = hook.Run('PlayerGetLockInfo', self:GetOwner(), trace.Entity)
-
-    if info and hook.Run('PlayerCanLockEntity', self:GetOwner(), trace.Entity) then
-      local isNotUnlocking = (action != 'unlock')
-      local isNotLocking = (action != 'lock')
-
-      if isNotLocking or isNotUnlocking then
-        cw.player:SetAction(self:GetOwner(), 'lock', info.duration)
-        cw.player:EntityConditionTimer(self:GetOwner(), trace.Entity, nil, info.duration, 192,
-          function()
-            return (hook.Run('PlayerCanLockEntity', self:GetOwner(), trace.Entity)
-            and self:GetOwner():Alive() and !self:GetOwner():IsRagdolled() and self:GetOwner():IsUsingKeys())
-          end,
-          function(success)
-            if success then
-              info.Callback(self:GetOwner(), trace.Entity)
-
-              if !info.noSound then
-                self:GetOwner():EmitSound('doors/door_latch3.wav')
-              end
-            else
-              cw.player:SetAction(self:GetOwner(), 'lock', false)
-            end
-          end
-        )
-      end
-    end
+    self:StartKeyAction('lock', 'PlayerGetLockInfo', 'PlayerCanLockEntity')
   end
 end
 
@@ -129,40 +137,6 @@ function SWEP:SecondaryAttack()
   self:SetNextSecondaryFire(CurTime() + 1)
 
   if SERVER then
-    local action = cw.player:GetAction(self:GetOwner())
-    local trace = self:GetOwner():GetEyeTraceNoCursor()
-
-    if self:GetOwner():GetPos():Distance(trace.HitPos) > 192
-    or !IsValid(trace.Entity) then
-      return
-    end
-
-    local info = hook.Run('PlayerGetUnlockInfo', self:GetOwner(), trace.Entity)
-
-    if info and hook.Run('PlayerCanUnlockEntity', self:GetOwner(), trace.Entity) then
-      local isNotUnlocking = (action != 'unlock')
-      local isNotLocking = (action != 'lock')
-
-      if isNotLocking or isNotUnlocking then
-        cw.player:SetAction(self:GetOwner(), 'unlock', info.duration)
-        cw.player:EntityConditionTimer(self:GetOwner(), trace.Entity, nil, info.duration, 192,
-          function()
-            return (hook.Run('PlayerCanUnlockEntity', self:GetOwner(), trace.Entity)
-            and self:GetOwner():Alive() and !self:GetOwner():IsRagdolled() and self:GetOwner():IsUsingKeys())
-          end,
-          function(success)
-            if success then
-              info.Callback(self:GetOwner(), trace.Entity)
-
-              if !info.noSound then
-                self:GetOwner():EmitSound('doors/door_latch3.wav')
-              end
-            else
-              cw.player:SetAction(self:GetOwner(), 'unlock', false)
-            end
-          end
-        )
-      end
-    end
+    self:StartKeyAction('unlock', 'PlayerGetUnlockInfo', 'PlayerCanUnlockEntity')
   end
 end

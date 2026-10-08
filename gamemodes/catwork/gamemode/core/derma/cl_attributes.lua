@@ -4,6 +4,12 @@
 -- Each row shows an attribute with an animated points bar and its boosted value out of the maximum. The tab stores
 -- itself as `cw.attributes.panel` and rebuilds when it is opened or selected in the menu.
 
+local barBackgroundColor = Color(50, 50, 50, 255)
+local barMainColor = Color(100, 100, 100, 255)
+local barHinderColor = Color(255, 50, 50, 255)
+local barBoostColor = Color(50, 255, 50, 255)
+local barProgressColor = Color(175, 175, 175, 255)
+
 local PANEL = {}
 
 --- Sizes the attributes menu tab to the menu, creates its list and registers itself as `cw.attributes.panel`.
@@ -65,27 +71,6 @@ function PANEL:Rebuild()
   end)
 
   if #categories > 0 or #miscellaneous > 0 then
-    local attributeName = string.lower(cw.option:GetKey('name_attribute'))
-
-    --[[
-    local label = vgui.Create("cwInfoText", self)
-      label:SetText("The top bar represents the points and the bottom represents progress.")
-      label:SetInfoColor("blue")
-    self.panelList:AddItem(label)
-
-    local label = vgui.Create("cwInfoText", self)
-      label:SetText("A green bar means that the "..attributeName.." has been boosted.")
-      label:SetInfoColor("green")
-      label:SetShowIcon(false)
-    self.panelList:AddItem(label)
-
-    local label = vgui.Create("cwInfoText", self)
-      label:SetText("A red bar means that the "..attributeName.." has been hindered.")
-      label:SetInfoColor("red")
-      label:SetShowIcon(false)
-    self.panelList:AddItem(label)
-    --]]
-
     for k, v in pairs(miscellaneous) do
       local categoryForm = vgui.Create('cwBasicForm', self)
       categoryForm:SetPadding(0)
@@ -160,10 +145,7 @@ end
 function PANEL:OnSelected() self:Rebuild() end
 
 --- Does nothing; the list lays itself out.
-function PANEL:PerformLayout(w, h)
-  -- self.panelList:StretchToParent(4, 4, 4, 4)
-  -- self:SetSize(w, math.min(self.panelList.pnlCanvas:GetTall() + 32, ScrH() * 0.75))
-end
+function PANEL:PerformLayout(w, h) end
 
 --- Draws the outlined panel background.
 function PANEL:Paint(w, h)
@@ -206,36 +188,16 @@ function PANEL:Init()
 
   -- Called when the panel should be painted.
   function self.baseBar.Paint(baseBar)
-    local hinderColor = Color(255, 50, 50, 255)
-    local boostColor = Color(50, 255, 50, 255)
     local attributes = cw.attributes.panel.attributes
-    local mainColor = Color(100, 100, 100, 255)
     local frameTime = FrameTime() * 10
     local uniqueID = self.attribute.uniqueID
-    local curTime = CurTime()
+    local maximum = self.attribute.maximum
     local default = cw.attributes.stored[uniqueID]
     local boosts = cw.attributes.panel.boosts
+    local target = default and default.amount or 0
     local boost = 0
 
-    if !boosts[uniqueID] then
-      boosts[uniqueID] = 0
-    end
-
-    if !attributes[uniqueID] then
-      if default then
-        attributes[uniqueID] = default.amount
-      else
-        attributes[uniqueID] = 0
-      end
-    end
-
-    if default then
-      attributes[uniqueID] = math.Approach(
-        attributes[uniqueID], default.amount, frameTime
-      )
-    else
-      attributes[uniqueID] = math.Approach(attributes[uniqueID], 0, frameTime)
-    end
+    attributes[uniqueID] = math.Approach(attributes[uniqueID] or target, target, frameTime)
 
     if cw.attributes.boosts[uniqueID] then
       for k, v in pairs(cw.attributes.boosts[uniqueID]) do
@@ -243,106 +205,91 @@ function PANEL:Init()
       end
     end
 
-    if boost > self.attribute.maximum then
-      boost = self.attribute.maximum
-    elseif boost < -self.attribute.maximum then
-      boost = -self.attribute.maximum
-    end
+    boost = math.Clamp(boost, -maximum, maximum)
+    boosts[uniqueID] = math.Approach(boosts[uniqueID] or 0, boost, frameTime)
 
-    boosts[uniqueID] = math.Approach(boosts[uniqueID], boost, frameTime)
-
-    local color = Color(50, 50, 50, 255)
-    local width = (baseBar:GetWide() / self.attribute.maximum) * attributes[uniqueID]
-    local boostData = {
-      negative = boosts[uniqueID] < 0,
-      boost = math.abs(boosts[uniqueID]),
-      width = math.ceil((baseBar:GetWide() / self.attribute.maximum) * math.abs(boosts[uniqueID]))
-    }
+    local barWidth, barHeight = baseBar:GetWide(), baseBar:GetTall()
+    local width = (barWidth / maximum) * attributes[uniqueID]
+    local boostAmount = math.abs(boosts[uniqueID])
+    local boostWidth = math.ceil((barWidth / maximum) * boostAmount)
     local barLineWidth = width
 
-    surface.SetDrawColor(color.r, color.g, color.b, color.a)
-    surface.DrawRect(0, 0, baseBar:GetWide(), baseBar:GetTall())
-    self:SetPercentageText(self.attribute.maximum, attributes[uniqueID], boosts[uniqueID])
+    surface.SetDrawColor(barBackgroundColor)
+    surface.DrawRect(0, 0, barWidth, barHeight)
+    self:SetPercentageText(maximum, attributes[uniqueID], boosts[uniqueID])
 
-    if boostData.negative then
-      if attributes[uniqueID] - boostData.boost >= 0 then
-        boostData.width = math.min(boostData.width, width)
-        barLineWidth = math.max(width - boostData.width, 0)
+    if boosts[uniqueID] < 0 then
+      if attributes[uniqueID] - boostAmount >= 0 then
+        boostWidth = math.min(boostWidth, width)
+        barLineWidth = math.max(width - boostWidth, 0)
 
-        surface.SetDrawColor(cw.core:UnpackColor(mainColor))
-        surface.DrawRect(0, 0, barLineWidth, baseBar:GetTall())
+        surface.SetDrawColor(barMainColor)
+        surface.DrawRect(0, 0, barLineWidth, barHeight)
 
-        local hinderX = math.max(width - boostData.width, 0)
-          surface.SetDrawColor(cw.core:UnpackColor(hinderColor))
-          surface.DrawRect(hinderX, 0, boostData.width, baseBar:GetTall())
+        local hinderX = barLineWidth
+
+        surface.SetDrawColor(barHinderColor)
+        surface.DrawRect(hinderX, 0, boostWidth, barHeight)
         surface.SetDrawColor(255, 255, 255, 255)
 
-        if boostData.width > 4 and hinderX + boostData.width < baseBar:GetWide() - 2 then
-          surface.DrawRect(hinderX + boostData.width, 0, 1, baseBar:GetTall())
+        if boostWidth > 4 and hinderX + boostWidth < barWidth - 2 then
+          surface.DrawRect(hinderX + boostWidth, 0, 1, barHeight)
         end
       else
-        surface.SetDrawColor(cw.core:UnpackColor(hinderColor))
-        surface.DrawRect(0, 0, boostData.width, baseBar:GetTall())
+        surface.SetDrawColor(barHinderColor)
+        surface.DrawRect(0, 0, boostWidth, barHeight)
 
-        if boostData.width > 4 and boostData.width < baseBar:GetWide() - 2 then
-          surface.DrawRect(boostData.width, 0, 1, baseBar:GetTall())
+        if boostWidth > 4 and boostWidth < barWidth - 2 then
+          surface.DrawRect(boostWidth, 0, 1, barHeight)
         end
       end
     else
-      surface.SetDrawColor(cw.core:UnpackColor(mainColor))
-      surface.DrawRect(0, 0, width, baseBar:GetTall())
+      surface.SetDrawColor(barMainColor)
+      surface.DrawRect(0, 0, width, barHeight)
 
-      local boostWidth = math.min(boostData.width, baseBar:GetWide())
-      surface.SetDrawColor(cw.core:UnpackColor(boostColor))
-      surface.DrawRect(width, 0, boostWidth, baseBar:GetTall())
+      local clampedWidth = math.min(boostWidth, barWidth)
 
-      if boostData.width > 4 and boostWidth < baseBar:GetWide() - 2 then
+      surface.SetDrawColor(barBoostColor)
+      surface.DrawRect(width, 0, clampedWidth, barHeight)
+
+      if boostWidth > 4 and clampedWidth < barWidth - 2 then
         surface.SetDrawColor(255, 255, 255, 255)
-        surface.DrawRect(width + boostWidth, 0, 1, baseBar:GetTall())
+        surface.DrawRect(width + clampedWidth, 0, 1, barHeight)
       end
     end
 
-    if barLineWidth > 4 and barLineWidth < baseBar:GetWide() - 2 then
+    if barLineWidth > 4 and barLineWidth < barWidth - 2 then
       surface.SetDrawColor(255, 255, 255, 255)
-      surface.DrawRect(barLineWidth, 0, 1, baseBar:GetTall())
+      surface.DrawRect(barLineWidth, 0, 1, barHeight)
     end
 
     surface.SetDrawColor(255, 255, 255, 255)
-    surface.DrawRect(0, baseBar:GetTall() - 1, baseBar:GetWide(), 1)
+    surface.DrawRect(0, barHeight - 1, barWidth, 1)
   end
 
   -- Called when the panel should be painted.
   function self.progressBar.Paint(progressBar)
-    local progressColor = Color(175, 175, 175, 255)
     local uniqueID = self.attribute.uniqueID
     local progress = cw.attributes.panel.progress
     local default = cw.attributes.stored[uniqueID]
 
-    if !progress[uniqueID] then
-      if default then
-        progress[uniqueID] = default.progress
-      else
-        progress[uniqueID] = 0
-      end
-    end
-
     if default then
-      progress[uniqueID] = math.Approach(progress[uniqueID], default.progress, 1)
+      progress[uniqueID] = math.Approach(progress[uniqueID] or default.progress, default.progress, 1)
     else
-      progress[uniqueID] = math.Approach(progress[uniqueID], 0, FrameTime() * 2)
+      progress[uniqueID] = math.Approach(progress[uniqueID] or 0, 0, FrameTime() * 2)
     end
 
-    local width = math.ceil((progressBar:GetWide() / 100) * progress[uniqueID])
-    local color = Color(100, 100, 100, 255)
+    local barWidth, barHeight = progressBar:GetWide(), progressBar:GetTall()
+    local width = math.ceil((barWidth / 100) * progress[uniqueID])
 
-    surface.SetDrawColor(cw.core:UnpackColor(color))
-    surface.DrawRect(0, 0, progressBar:GetWide(), progressBar:GetTall(), color)
-    surface.SetDrawColor(cw.core:UnpackColor(progressColor))
-    surface.DrawRect(0, 0, width, progressBar:GetTall(), progressColor)
+    surface.SetDrawColor(barMainColor)
+    surface.DrawRect(0, 0, barWidth, barHeight)
+    surface.SetDrawColor(barProgressColor)
+    surface.DrawRect(0, 0, width, barHeight)
 
-    if width > 4 and width < progressBar:GetWide() - 2 then
+    if width > 4 and width < barWidth - 2 then
       surface.SetDrawColor(255, 255, 255, 255)
-      surface.DrawRect(width, 0, 1, progressBar:GetTall())
+      surface.DrawRect(width, 0, 1, barHeight)
     end
   end
 
@@ -365,10 +312,16 @@ end
 -- @param default [Number Current base value of the attribute]
 -- @param boost [Number Total boost applied to the attribute; negative when hindered]
 function PANEL:SetPercentageText(maximum, default, boost)
-  -- local percentage = math.Clamp(math.Round((100 / maximum) * (default + boost)), -100, 100)
+  local value = math.Round(default + boost)
 
-  self.percentageText:SetText(math.Round(default + boost)..'/'..maximum)
-  self.percentageText:SizeToContents()
+  if self.shownValue != value or self.shownMaximum != maximum then
+    self.shownValue = value
+    self.shownMaximum = maximum
+
+    self.percentageText:SetText(value..'/'..maximum)
+    self.percentageText:SizeToContents()
+  end
+
   self.percentageText:SetPos(
     self:GetWide() - self.percentageText:GetWide() - 16,
     self.baseBar.y + (self.baseBar:GetTall() / 2) - (self.percentageText:GetTall() / 2)

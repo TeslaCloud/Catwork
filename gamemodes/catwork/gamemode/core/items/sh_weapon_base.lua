@@ -124,9 +124,7 @@ function ITEM:OnPlayerUnequipped(player, extraData)
 
   if !IsValid(weapon) then return end
 
-  local itemTable = item.GetByWeapon(weapon)
-
-  if itemTable:IsTheSameAs(self) then
+  if self:IsTheSameAs(item.GetByWeapon(weapon)) then
     local class = weapon:GetClass()
 
     if extraData != 'drop' then

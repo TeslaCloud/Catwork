@@ -6,10 +6,6 @@
 -- hard-coded in Russian.
 
 if SERVER then
-  -- resource.AddFile("models/weapons/v_vortbeamvm.mdl")
-  -- resource.AddFile("materials/vgui/entities/swep_vortigaunt_beam.vmt")
-  -- resource.AddFile("materials/vgui/killicons/swep_vortigaunt_beam.vmt")
-
   AddCSLuaFile('shared.lua')
 
   SWEP.AutoSwitchTo = true
@@ -59,7 +55,7 @@ SWEP.Primary.Automatic = false
 
 SWEP.Secondary.ClipSize = -1
 SWEP.Secondary.DefaultClip = -1
-SWEP.Secondary.Ammo = false
+SWEP.Secondary.Ammo = ''
 SWEP.Secondary.Automatic = false
 
 --- Resets the charge and heal state, sets the shotgun hold type and creates the looping sounds
@@ -100,7 +96,7 @@ end
 function SWEP:DispatchEffect(EFFECTSTR)
   local pPlayer = self.Owner
 
-  if !pPlayer then return end
+  if !IsValid(pPlayer) then return end
 
   local view
   if CLIENT then view = GetViewEntity() else view = pPlayer:GetViewEntity() end
@@ -123,7 +119,7 @@ end
 -- @param endpos [Vector End of the tracer]
 function SWEP:ShootEffect(EFFECTSTR, startpos, endpos)
   local pPlayer = self.Owner
-  if !pPlayer then return end
+  if !IsValid(pPlayer) then return end
 
   local view
   if CLIENT then view = GetViewEntity() else view = pPlayer:GetViewEntity() end
@@ -141,9 +137,12 @@ function SWEP:ShootEffect(EFFECTSTR, startpos, endpos)
       pPlayer:GetViewModel():LookupAttachment('muzzle')
     )
   else
+    -- Not every model the owner can wear has the claw attachment.
+    local attachment = pPlayer:GetAttachment(pPlayer:LookupAttachment('rightclaw'))
+
     util.ParticleTracerEx(
       EFFECTSTR,
-      pPlayer:GetAttachment(pPlayer:LookupAttachment('rightclaw')).Pos,
+      attachment and attachment.Pos or startpos,
       endpos,
       true,
       pPlayer:EntIndex(),
@@ -167,14 +166,8 @@ function SWEP:ImpactEffect(traceHit)
   self:CreateBlast(rand, traceHit.HitPos)
   self:CreateBlast(rand, traceHit.HitPos)
 
-  if SERVER and traceHit.Entity and IsValid(traceHit.Entity) and string.find(traceHit.Entity:GetClass(), 'ragdoll') then
+  if SERVER and IsValid(traceHit.Entity) and string.find(traceHit.Entity:GetClass(), 'ragdoll', 1, true) then
     traceHit.Entity:Fire('StartRagdollBoogie')
-
-    --[[	local boog=ents.Create("env_ragdoll_boogie")
-      boog:SetPos(traceHit.Entity:GetPos())
-      boog:SetParent(traceHit.Entity)
-      boog:Spawn()
-    boog:SetParent(traceHit.Entity)]] --
   end
 end
 
@@ -209,7 +202,7 @@ end
 function SWEP:Shoot(dmg, effect)
   local pPlayer = self.Owner
 
-  if !pPlayer then return end
+  if !IsValid(pPlayer) then return end
 
   local traceres = util.QuickTrace(self.Owner:EyePos(), self.Owner:GetAimVector() * self.Range, self.Owner)
 
@@ -260,14 +253,16 @@ function SWEP:StopEveryThing()
 
   local pPlayer = self.LastOwner
 
-  if !pPlayer then
-    return
+  if !IsValid(pPlayer) then return end
+
+  if CLIENT and pPlayer == LocalPlayer() then
+    local viewModel = pPlayer:GetViewModel()
+
+    if IsValid(viewModel) then
+      viewModel:StopParticles()
+    end
   end
 
-  if !IsValid(pPlayer) then return end
-  if !pPlayer:GetViewModel() then return end
-
-  if CLIENT then if pPlayer == LocalPlayer() then pPlayer:GetViewModel():StopParticles()end end
   pPlayer:StopParticles()
 end
 
@@ -291,7 +286,7 @@ function SWEP:Think()
       self:SendWeaponAnim(ACT_VM_SECONDARYATTACK)
       self:DispatchEffect('vortigaunt_charge_token') -- this effect lags a lot,but we see it for 0.75 seconds,who cares
       timer.Simple(0.75, function()
-        if !IsValid(self.Owner) or self.Owner:GetActiveWeapon() != self or !IsValid(self) then return end
+        if !IsValid(self) or !IsValid(self.Owner) or self.Owner:GetActiveWeapon() != self then return end
 
         self:SendWeaponAnim(ACT_VM_IDLE)
       end)

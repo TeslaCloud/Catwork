@@ -9,6 +9,8 @@ if CLIENT then
   SYSTEM.toolTip = '#System_ManagePlugins_ToolTip'
   SYSTEM.doesCreateForm = false
 
+  local pluginButtons = {}
+
   --- Shows the Manage Plugins system to players who may use `PluginLoad` or `PluginUnload`.
   -- @return [Boolean Whether the player has either command's access flags]
   function SYSTEM:HasAccess()
@@ -124,6 +126,8 @@ if CLIENT then
   -- Disabled plugins turn orange and stop being clickable, unloaded ones red and loaded ones green.
   function SYSTEM:UpdatePluginButtons()
     for k, v in pairs(pluginButtons) do
+      if !IsValid(v) then continue end
+
       if plugin.IsDisabled(k) then
         v:SetInfoColor('orange')
         v:SetButton(false)
@@ -169,19 +173,44 @@ if CLIENT then
     end
   end)
 else
+  --- Returns whether a player has the access flags of the `PluginLoad` or `PluginUnload` command.
+  -- @param player [Player The player to check]
+  -- @param loadTable [Command The `PluginLoad` command]
+  -- @param unloadTable [Command The `PluginUnload` command]
+  -- @return [Boolean Whether the player may load or unload plugins]
+  local function CanManagePlugins(player, loadTable, unloadTable)
+    if cw.player:HasFlags(player, loadTable.access) or cw.player:HasFlags(player, unloadTable.access) then
+      return true
+    end
+
+    return false
+  end
+
   netstream.Hook('SystemPluginGet', function(player, data)
-    netstream.Start(player, 'SystemPluginGet', plugin.GetUnloaded())
+    local unloadTable = cw.command:FindByID('PluginUnload')
+    local loadTable = cw.command:FindByID('PluginLoad')
+
+    if loadTable and unloadTable and CanManagePlugins(player, loadTable, unloadTable) then
+      netstream.Start(player, 'SystemPluginGet', plugin.GetUnloaded())
+    end
   end)
 
   netstream.Hook('SystemPluginSet', function(player, data)
-    local unloadTable = cw.command:FindByID('PluginLoad')
-    local loadTable = cw.command:FindByID('PluginLoad')
+    if !istable(data) or !isstring(data[1]) or !isbool(data[2]) then
+      return
+    end
 
-    if data[2] == true and (!loadTable or !cw.player:HasFlags(player, loadTable.access)) then
+    local unloadTable = cw.command:FindByID('PluginUnload')
+    local loadTable = cw.command:FindByID('PluginLoad')
+    local isUnloaded = data[2]
+
+    if !loadTable or !unloadTable then
       return
-    elseif data[2] == false and (!unloadTable or !cw.player:HasFlags(player, unloadTable.access)) then
+    end
+
+    if isUnloaded and !cw.player:HasFlags(player, unloadTable.access) then
       return
-    elseif type(data[2]) != 'boolean' then
+    elseif !isUnloaded and !cw.player:HasFlags(player, loadTable.access) then
       return
     end
 
@@ -193,29 +222,26 @@ else
     end
 
     if !plugin.IsDisabled(pluginTable.name) then
-      local bSuccess = plugin.SetUnloaded(pluginTable.name, data[2])
+      local bSuccess = plugin.SetUnloaded(pluginTable.name, isUnloaded)
       local recipients = {}
 
       if bSuccess then
-        if data[2] then
+        if isUnloaded then
           cw.player:NotifyAll(L('PluginManage_Unloaded', player:Name(), pluginTable.name))
         else
           cw.player:NotifyAll(L('PluginManage_Loaded', player:Name(), pluginTable.name))
         end
 
         for k, v in ipairs(_player.GetAll()) do
-          if v:HasInitialized() then
-            if cw.player:HasFlags(v, loadTable.access)
-            or cw.player:HasFlags(v, unloadTable.access) then
-              recipients[#recipients + 1] = v
-            end
+          if v:HasInitialized() and CanManagePlugins(v, loadTable, unloadTable) then
+            recipients[#recipients + 1] = v
           end
         end
 
         if #recipients > 0 then
-          netstream.Start(recipients, 'SystemPluginSet', { pluginTable.name, data[2] })
+          netstream.Start(recipients, 'SystemPluginSet', { pluginTable.name, isUnloaded })
         end
-      elseif data[2] then
+      elseif isUnloaded then
         cw.player:Notify(player, L('PluginManage_CouldNotUnload'))
       else
         cw.player:Notify(player, L('PluginManage_CouldNotLoad'))

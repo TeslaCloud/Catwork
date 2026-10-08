@@ -19,11 +19,7 @@ ITEM.attachmentOffsetVector = Vector(0, 3, 3)
 --- Called when a player puts the accessory on or takes it off; does nothing in the base.
 -- @param player [Player The player wearing the accessory]
 -- @param bIsWearing [Boolean `true` when the accessory was put on, `false` when it was taken off]
-function ITEM:OnWearAccessory(player, bIsWearing)
-  if bIsWearing then
-  else
-  end
-end
+function ITEM:OnWearAccessory(player, bIsWearing) end
 
 --- Returns whether the player is wearing this accessory; on the client it checks the local player.
 -- @return [Boolean Whether the accessory is worn]

@@ -46,8 +46,8 @@ SWEP.NoIronSightAttack = true
 SWEP.IronSightPos = Vector(0, 0, 0)
 SWEP.IronSightAng = Vector(0, 0, 0)
 
---- Throws the grenade once the attack key is released and, after the throw, uses up one
--- grenade, stripping the weapon when none are left.
+--- Throws the grenade once the attack key is released, using up one grenade, and strips the
+-- weapon after the throw when none are left.
 function SWEP:Think()
   local curTime = CurTime()
 
@@ -64,6 +64,11 @@ function SWEP:Think()
       self:CreateGrenade(math.Clamp(curTime - self.AttackTime, 0, 10) * 40)
       self:EmitSound('WeaponFrag.Throw')
 
+      -- Used up as it leaves the hand, so that unequipping the item right after cannot give it back.
+      if SERVER then
+        self.Owner:RemoveAmmo(1, 'grenade')
+      end
+
       self:SendWeaponAnim(ACT_VM_THROW)
       self:SetNextPrimaryFire(curTime + self.Primary.Delay)
 
@@ -75,12 +80,8 @@ function SWEP:Think()
 
       self:SendWeaponAnim(ACT_VM_DRAW)
 
-      if SERVER then
-        self.Owner:RemoveAmmo(1, 'grenade')
-
-        if self.Owner:GetAmmoCount('grenade') == 0 then
-          self.Owner:StripWeapon(self:GetClass())
-        end
+      if SERVER and self.Owner:GetAmmoCount('grenade') == 0 then
+        self.Owner:StripWeapon(self:GetClass())
       end
     end
   end
@@ -102,8 +103,13 @@ function SWEP:Deploy()
 end
 
 --- Plays the holster animation and cancels any throw in progress.
--- @return [Boolean Always `true` to allow the holster]
+--
+-- Refused right after a throw, until `SWEP:Think` has stripped the weapon if it was the last grenade;
+-- an empty weapon that was put away could otherwise be drawn and thrown again.
+-- @return [Boolean Whether the weapon may be holstered]
 function SWEP:Holster(switchingTo)
+  if type(self.Attacking) == 'number' then return false end
+
   self:SendWeaponAnim(ACT_VM_HOLSTER)
 
   self.PulledBack = nil

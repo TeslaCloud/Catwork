@@ -1,8 +1,6 @@
 --- Registers the `/DropCash` command (alias `/DropTokens`), which drops the given amount of the caller's cash as a cash
 -- entity where they are looking.
 
-local NAME_CASH = cw.option:GetKey('name_cash')
-
 local COMMAND = cw.command:New('DropCash')
 COMMAND.tip = '#Command_Dropcash_Tip'
 COMMAND.text = '#Command_Givecash_Syntax'
@@ -16,7 +14,7 @@ function COMMAND:OnRun(player, arguments)
   local trace = player:GetEyeTraceNoCursor()
   local cash = tonumber(arguments[1])
 
-  if cash and cash > 1 then
+  if cash and cash >= 1 then
     cash = math.floor(cash)
 
     if player:GetShootPos():Distance(trace.HitPos) <= 192 then

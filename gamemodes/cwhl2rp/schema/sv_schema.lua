@@ -33,14 +33,14 @@ Schema.cwuProps = {
   'models/props_interiors/furniture_lamp01a.mdl',
   'models/props_c17/furniturecupboard001a.mdl',
   'models/props_c17/furnituredresser001a.mdl',
-  'props/props_c17/furniturefridge001a.mdl',
+  'models/props_c17/furniturefridge001a.mdl',
   'models/props_c17/furniturestove001a.mdl',
   'models/props_interiors/radiator01a.mdl',
-  'props/props_c17/furniturecouch001a.mdl',
+  'models/props_c17/furniturecouch001a.mdl',
   'models/props_combine/breenclock.mdl',
-  'props/props_combine/breenchair.mdl',
+  'models/props_combine/breenchair.mdl',
   'models/props_c17/shelfunit01a.mdl',
-  'props/props_combine/breendesk.mdl',
+  'models/props_combine/breendesk.mdl',
   'models/props_lab/monitor01b.mdl',
   'models/props_lab/monitor01a.mdl',
   'models/props_lab/monitor02.mdl',
@@ -126,52 +126,67 @@ cw.hint:Add('FearRP', '#Hints_HL2RP_FearRP')
 cw.hint:Add('Original', '#Hints_HL2RP_Original')
 
 netstream.Hook('EditObjectives', function(player, data)
-  if player.editObjectivesAuthorised and type(data) == 'string' then
-    if Schema.combineObjectives != data then
-      Schema:AddCombineDisplayLine(L('CombineDisplay_ObjectivesUpdated'), Color(255, 100, 255, 255))
-      Schema.combineObjectives = string.sub(data, 0, 500)
+  if !player.editObjectivesAuthorised or type(data) != 'string' then return end
 
-      cw.core:SaveSchemaData('objectives', {
-        text = Schema.combineObjectives
-      })
+  player.editObjectivesAuthorised = nil
 
-      timer.Simple(0.1, function()
-        local players = {}
+  -- The player may have switched to a non-Combine character since running the command.
+  if !player:IsCombine() then return end
 
-        for k, v in ipairs(_player.GetAll()) do
-          if v:IsCombine() and v != exclude and !v:GetSharedVar('IsBiosignalGone') then
-            players[#players + 1] = v
-          end
-        end
+  data = string.sub(data, 1, 500)
 
-        netstream.Start(players, 'RecalculateHUDObjectives', { cwCTO.socioStatus, Schema.combineObjectives })
-      end)
+  if Schema.combineObjectives == data then return end
+
+  Schema:AddCombineDisplayLine(L('CombineDisplay_ObjectivesUpdated'), Color(255, 100, 255, 255))
+  Schema.combineObjectives = data
+
+  cw.core:SaveSchemaData('objectives', {
+    text = Schema.combineObjectives
+  })
+
+  if !cwCTO then return end
+
+  timer.Simple(0.1, function()
+    local players = {}
+
+    for k, v in ipairs(_player.GetAll()) do
+      if v:IsCombine() and !v:GetSharedVar('IsBiosignalGone') then
+        players[#players + 1] = v
+      end
     end
 
-    player.editObjectivesAuthorised = nil
-  end
+    netstream.Start(players, 'RecalculateHUDObjectives', { cwCTO.socioStatus, Schema.combineObjectives })
+  end)
 end)
 
 netstream.Hook('ObjectPhysDesc', function(player, data)
-  if type(data) == 'table' and type(data[1]) == 'string' then
-    if player.objectPhysDesc == data[2] then
-      local physDesc = data[1]
+  if type(data) != 'table' or type(data[1]) != 'string' then return end
 
-      if string.len(physDesc) > 80 then
-        physDesc = string.sub(physDesc, 1, 80)..'...'
-      end
+  local entity = player.objectPhysDesc
 
-      data[2]:SetNWString('physDesc', physDesc)
-    end
+  if !IsValid(entity) or entity != data[2] then return end
+
+  player.objectPhysDesc = nil
+
+  local physDesc = data[1]
+
+  if string.utf8len(physDesc) > 80 then
+    physDesc = string.utf8sub(physDesc, 1, 80)..'...'
   end
+
+  entity:SetNWString('physDesc', physDesc)
 end)
 
 netstream.Hook('EditData', function(player, data)
-  if player.editDataAuthorised == data[1] and type(data[2]) == 'string' then
-    data[1]:SetCharacterData('combinedata', string.sub(data[2], 0, 500))
+  if type(data) != 'table' or type(data[2]) != 'string' then return end
 
-    player.editDataAuthorised = nil
-  end
+  local target = player.editDataAuthorised
+
+  if !IsValid(target) or target != data[1] then return end
+
+  player.editDataAuthorised = nil
+
+  target:SetCharacterData('combinedata', string.sub(data[2], 1, 500))
 end)
 
 --- Sends custom scoreboard icons over the `PlayerSetCustomIcon` netstream message.
@@ -202,11 +217,22 @@ function Schema:SendIconData(player, bOneWay)
   end
 end
 
+-- Rounds a points value; nil for anything that is not a finite number, which must never reach the character data.
+local function ToPoints(value)
+  value = tonumber(value)
+
+  if value and value > -math.huge and value < math.huge then
+    return math.Round(value)
+  end
+end
+
 --- Sets a player's loyalty points, rounded, in their character data and `LoyaltyPoints` net var.
 -- @param player [Player The player]
--- @param amt [Number The new amount; numeric strings are converted]
+-- @param amt [Number The new amount; numeric strings are converted, anything else is ignored]
 function Schema:SetLP(player, amt)
-  amt = math.Round(tonumber(amt))
+  amt = ToPoints(amt)
+
+  if !amt then return end
 
   player:SetCharacterData('LoyaltyPoints', amt)
   player:SetNetVar('LoyaltyPoints', amt)
@@ -214,9 +240,11 @@ end
 
 --- Sets a player's criminal points, rounded, in their character data and `CriminalPoints` net var.
 -- @param player [Player The player]
--- @param amt [Number The new amount; numeric strings are converted]
+-- @param amt [Number The new amount; numeric strings are converted, anything else is ignored]
 function Schema:SetCP(player, amt)
-  amt = math.Round(tonumber(amt))
+  amt = ToPoints(amt)
+
+  if !amt then return end
 
   player:SetCharacterData('CriminalPoints', amt)
   player:SetNetVar('CriminalPoints', amt)
@@ -226,14 +254,22 @@ end
 -- @param player [Player The player]
 -- @param amt [Number The amount to add; may be negative]
 function Schema:AddLP(player, amt)
-  self:SetLP(player, self:GetLP(player) + tonumber(amt))
+  amt = ToPoints(amt)
+
+  if amt then
+    self:SetLP(player, self:GetLP(player) + amt)
+  end
 end
 
 --- Adds to a player's criminal points with `Schema:SetCP`.
 -- @param player [Player The player]
 -- @param amt [Number The amount to add; may be negative]
 function Schema:AddCP(player, amt)
-  self:SetCP(player, self:GetCP(player) + tonumber(amt))
+  amt = ToPoints(amt)
+
+  if amt then
+    self:SetCP(player, self:GetCP(player) + amt)
+  end
 end
 
 --- Subtracts from a player's loyalty points with `Schema:AddLP`.
@@ -252,9 +288,9 @@ end
 
 --- Sets a player's citizen status in their character data and `CitizenStatus` net var.
 -- @param player [Player The player]
--- @param status [String A key of `Schema.CitizenStates`; any other value is stored as `'unknown'`]
+-- @param status [String A key of `Schema.CitizenStates`; any other value is stored as `'Unknown'`]
 function Schema:SetCitizenStatus(player, status)
-  status = (self.CitizenStates[status] and status) or 'unknown'
+  status = (self.CitizenStates[status] and status) or 'Unknown'
 
   player:SetCharacterData('CitizenStatus', status)
   player:SetNetVar('CitizenStatus', status)
@@ -288,9 +324,11 @@ end
 
 --- Sets a player's work points, rounded, in their character data and `WorkPoints` net var.
 -- @param player [Player The player]
--- @param value [Number The new amount; numeric strings are converted]
+-- @param value [Number The new amount; numeric strings are converted, anything else is ignored]
 function Schema:SetWorkPoints(player, value)
-  value = math.Round(tonumber(value))
+  value = ToPoints(value)
+
+  if !value then return end
 
   player:SetCharacterData('WorkPoints', value)
   player:SetNetVar('WorkPoints', value)
@@ -300,7 +338,11 @@ end
 -- @param player [Player The player]
 -- @param amt [Number The amount to add; may be negative]
 function Schema:AddWorkPoints(player, amt)
-  self:SetWorkPoints(player, self:GetWorkPoints(player) + tonumber(amt))
+  amt = ToPoints(amt)
+
+  if amt then
+    self:SetWorkPoints(player, self:GetWorkPoints(player) + amt)
+  end
 end
 
 --- Keeps a scanner player in sync with their scanner; does nothing for other players.
@@ -349,6 +391,8 @@ function Schema:ResetPlayerScanner(player, noMessage)
     end
 
     self.scanners[player] = nil
+
+    player:SetNetVar('scanner', nil)
 
     if !noMessage then
       player:SetMoveType(MOVETYPE_WALK)
@@ -504,7 +548,7 @@ function Schema:SaveNPCs()
 
       npcs[#npcs + 1] = {
         spawnFlags = keyValues['spawnflags'],
-        equipment = keyValues['additionequipment'],
+        equipment = keyValues['additionalequipment'],
         position = v:GetPos(),
         angles = v:GetAngles(),
         model = v:GetModel(),
@@ -652,38 +696,43 @@ end
 -- @param text [String The message]
 function Schema:SayRequest(player, text)
   local isCitizen = (player:GetFaction() == FACTION_CITIZEN)
-  local listeners = { request = {}, eavesdrop = {} }
+  local shootPos = player:GetShootPos()
+  local talkRadius = config.Get('talk_radius'):Get()
+  local senderListens = false
+  local eavesdroppers = {}
+  local listeners = {}
 
   for k, v in ipairs(_player.GetAll()) do
     if v:HasInitialized() then
       if v:GetFaction() == FACTION_CITIZEN and isCitizen and player != v then
-        if v:GetShootPos():Distance(player:GetShootPos()) <= config.Get('talk_radius'):Get() then
-          listeners.eavesdrop[v] = v
+        if v:GetShootPos():Distance(shootPos) <= talkRadius then
+          eavesdroppers[#eavesdroppers + 1] = v
         end
       else
         local isCityAdmin = (v:GetFaction() == FACTION_ADMIN or v:GetFaction() == FACTION_CWU)
-        local isCombine = v:IsCombine()
 
-        if v:HasItemByID('request_device') or isCombine or isCityAdmin then
-          listeners.request[v] = v
+        if v:HasItemByID('request_device') or v:IsCombine() or isCityAdmin then
+          listeners[#listeners + 1] = v
+
+          if v == player then
+            senderListens = true
+          end
         end
       end
     end
   end
 
-  local cid
+  local citizenID = player:GetCharacterData('citizenid', 0)
 
-  local ciD = player:GetCharacterData('citizenid', 0)
-
-  if ciD == 0 then
-    cid = 'N/A'
-  else
-    cid = ciD
+  if citizenID == 0 then
+    citizenID = 'N/A'
   end
 
-  self:AddCombineDisplayLine(L('CombineDisplay_Request', player:Name(), ciD)..' '..text, Color(218, 165, 32, 255))
+  self:AddCombineDisplayLine(
+    L('CombineDisplay_Request', player:Name(), citizenID)..' '..text, Color(218, 165, 32, 255)
+  )
 
-  local info = chatbox.AddText(listeners.request, '"'..text..'"', {
+  local info = chatbox.AddText(listeners, '"'..text..'"', {
     suffix = ' #Suffix_Request ',
     sender = player,
     isPlayerMessage = true,
@@ -694,7 +743,8 @@ function Schema:SayRequest(player, text)
   })
 
   if info and IsValid(info.sender) then
-    chatbox.AddText(listeners.eavesdrop, '"'..info.text..'"', {
+    -- info.text is already quoted.
+    local eavesdropInfo = {
       suffix = ' #Suffix_Request ',
       sender = info.sender,
       isPlayerMessage = true,
@@ -702,16 +752,15 @@ function Schema:SayRequest(player, text)
       radius = 0,
       textColor = Color(255, 255, 150, 255),
       data = { request = true }
-    })
-    chatbox.AddText(player, info.text..'"', {
-      suffix = ' #Suffix_Request ',
-      sender = info.sender,
-      isPlayerMessage = true,
-      filter = 'ic',
-      radius = 0,
-      textColor = Color(255, 255, 150, 255),
-      data = { request = true }
-    })
+    }
+
+    if #eavesdroppers > 0 then
+      chatbox.AddText(eavesdroppers, info.text, eavesdropInfo)
+    end
+
+    if !senderListens then
+      chatbox.AddText(player, info.text, eavesdropInfo)
+    end
   end
 end
 
@@ -723,33 +772,33 @@ end
 -- @return [String The area name, or `'#Location_Unknown'` without the plugin or any areas]
 function Schema:PlayerGetLocation(player)
   local areaNames = plugin.FindByID('Area Names')
-  local closest
 
   if areaNames then
+    local shootPos = player:GetShootPos()
+    local closestDistance
+    local name
+
     for k, v in pairs(areaNames.areaNames) do
       if cw.entity:IsInBox(player, v.minimum, v.maximum) then
-        if string.sub(string.lower(v.name), 1, 4) == 'the ' then
-          return string.sub(v.name, 5)
-        else
-          return v.name
-        end
-      else
-        local distance = player:GetShootPos():Distance(v.minimum)
+        name = v.name
 
-        if !closest or distance < closest[1] then
-          closest = { distance, v.name }
-        end
+        break
+      end
+
+      local distance = shootPos:DistToSqr(v.minimum)
+
+      if !closestDistance or distance < closestDistance then
+        closestDistance = distance
+        name = v.name
       end
     end
 
-    if !completed then
-      if closest then
-        if string.sub(string.lower(closest[2]), 1, 4) == 'the ' then
-          return string.sub(closest[2], 5)
-        else
-          return closest[2]
-        end
+    if name then
+      if string.sub(string.lower(name), 1, 4) == 'the ' then
+        return string.sub(name, 5)
       end
+
+      return name
     end
   end
 

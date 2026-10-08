@@ -13,10 +13,9 @@ ITEM.business = true
 ITEM.description = '#ITEM_Milk_Jug_Desc'
 ITEM.thirst = 35
 
---- Heals 10 health (up to 100), boosts endurance and strength by 2 for two minutes and gives back an empty
--- jug.
+--- Heals 10 health, boosts endurance and strength by 2 for two minutes and gives back an empty jug.
 function ITEM:OnUse(player, itemEntity)
-  player:SetHealth(math.Clamp(player:Health() + 10, 0, 100))
+  player:SetHealth(math.Clamp(player:Health() + 10, 0, player:GetMaxHealth()))
 
   player:BoostAttribute(self.name, ATB_ENDURANCE, 2, 120)
   player:BoostAttribute(self.name, ATB_STRENGTH, 2, 120)

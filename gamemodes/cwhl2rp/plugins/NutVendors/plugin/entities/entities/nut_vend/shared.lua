@@ -18,10 +18,33 @@ ENT.AdminOnly = true
 ENT.PhysgunDisable = true
 ENT.PhysgunAllowAdmin = true
 
+local machineModel = 'models/props_interiors/vendingmachinesoda01a.mdl'
+
+-- How far up from the machine's origin each of the four buttons sits.
+local buttonHeights = { 5.3, 3.35, 1.35, -0.7 }
+
+-- A button is aimed at when a 96 unit trace from the eyes ends within 2 units of it, and every button is within 31
+-- units of the machine's origin, so nobody further away than this can be aiming at one.
+local maxAimDistanceSqr = 130 * 130
+
+--- Recomputes the world positions of the four buttons from the machine's current position and angles.
+-- @param entity [Entity The vending machine]
+local function UpdateButtons(entity)
+  local buttons = entity.buttons or {}
+  local base = entity:GetPos() + entity:GetForward() * 18 + entity:GetRight() * -24.4
+  local up = entity:GetUp()
+
+  for k, v in ipairs(buttonHeights) do
+    buttons[k] = base + up * v
+  end
+
+  entity.buttons = buttons
+end
+
 --- Spawns a vending machine at the trace hit position, facing the spawning player.
 --
 -- The yaw is snapped to 45 degrees. If a soda machine prop already sits in the new machine's
--- bounds, the machine takes over that prop's position and angles and the prop is removed.
+-- bounds, `ENT:Initialize` makes the machine take over that prop's position and angles.
 -- @param client [Player The player spawning the machine]
 -- @param trace [Map Trace result whose `HitPos` is the spawn position]
 -- @return [Entity The new vending machine]
@@ -38,16 +61,6 @@ function ENT:SpawnFunction(client, trace)
   entity:Spawn()
   entity:Activate()
 
-  for k, v in pairs(ents.FindInBox(entity:LocalToWorld(entity:OBBMins()), entity:LocalToWorld(entity:OBBMaxs()))) do
-    if string.find(v:GetClass(), 'prop') and v:GetModel() == 'models/props_interiors/vendingmachinesoda01a.mdl' then
-      entity:SetPos(v:GetPos())
-      entity:SetAngles(v:GetAngles())
-      SafeRemoveEntity(v)
-
-      break
-    end
-  end
-
   return entity
 end
 
@@ -60,30 +73,26 @@ end
 function ENT:GetNearestButton(client)
   client = client or (CLIENT and LocalPlayer())
 
-  if self.buttons then
-    if SERVER then
-      local position = self:GetPos()
-      local f, r, u = self:GetForward(), self:GetRight(), self:GetUp()
+  if !self.buttons or !IsValid(client) then return end
 
-      self.buttons[1] = position + f * 18 + r * -24.4 + u * 5.3
-      self.buttons[2] = position + f * 18 + r * -24.4 + u * 3.35
-      self.buttons[3] = position + f * 18 + r * -24.4 + u * 1.35
-      self.buttons[4] = position + f * 18 + r * -24.4 + u * (-0.7)
-    end
+  local start = client:GetShootPos()
 
-    local data = {}
-      data.start = client:GetShootPos()
-      data.endpos = data.start + client:GetAimVector() * 96
-      data.filter = client
-    local trace = util.TraceLine(data)
-    local hitPos = trace.HitPos
+  if start:DistToSqr(self:GetPos()) > maxAimDistanceSqr then return end
 
-    if hitPos then
-      for k, v in pairs(self.buttons) do
-        if v:Distance(hitPos) <= 2 then
-          return k
-        end
-      end
+  if SERVER then
+    UpdateButtons(self)
+  end
+
+  local trace = util.TraceLine({
+    start = start,
+    endpos = start + client:GetAimVector() * 96,
+    filter = client
+  })
+  local hitPos = trace.HitPos
+
+  for k, v in ipairs(self.buttons) do
+    if v:DistToSqr(hitPos) <= 4 then
+      return k
     end
   end
 end
@@ -91,30 +100,21 @@ end
 if SERVER then
   --- Sets up the machine's model, frozen physics, button positions, full stock and active state.
   --
-  -- Like `ENT:SpawnFunction`, it replaces a soda machine prop found inside its bounds.
+  -- A soda machine prop found inside its bounds is removed, and the machine takes over its position and angles.
   function ENT:Initialize()
     self.buttons = {}
 
-    local position = self:GetPos()
-    local f, r, u = self:GetForward(), self:GetRight(), self:GetUp()
-
-    self.buttons[1] = position + f * 18 + r * -24.4 + u * 5.3
-    self.buttons[2] = position + f * 18 + r * -24.4 + u * 3.35
-    self.buttons[3] = position + f * 18 + r * -24.4 + u * 1.35
-    self.buttons[4] = position + f * 18 + r * -24.4 + u * (-0.7)
-
-    self:SetModel('models/props_interiors/vendingmachinesoda01a.mdl')
+    self:SetModel(machineModel)
     self:PhysicsInit(SOLID_VPHYSICS)
     self:SetSolid(SOLID_VPHYSICS)
     self:SetUseType(SIMPLE_USE)
 
-    -- self:SetSharedVar("stocks", {10, 5, 5})
     self:SetDTFloat(1, 10)
     self:SetDTFloat(2, 5)
     self:SetDTFloat(3, 5)
     self:SetDTFloat(4, 5)
-    -- self:SetSharedVar("active", true)
     self:SetDTBool(0, true)
+
     local physObj = self:GetPhysicsObject()
 
     if IsValid(physObj) then
@@ -122,15 +122,22 @@ if SERVER then
       physObj:Sleep()
     end
 
-    for k, v in pairs(ents.FindInBox(self:LocalToWorld(self:OBBMins()), self:LocalToWorld(self:OBBMaxs()))) do
-      if string.find(v:GetClass(), 'prop') and v:GetModel() == 'models/props_interiors/vendingmachinesoda01a.mdl' then
+    local mins, maxs = self:LocalToWorld(self:OBBMins()), self:LocalToWorld(self:OBBMaxs())
+
+    -- ents.FindInBox needs ordered corners, which a rotated machine does not have.
+    OrderVectors(mins, maxs)
+
+    for k, v in ipairs(ents.FindInBox(mins, maxs)) do
+      if string.find(v:GetClass(), 'prop') and v:GetModel() == machineModel then
         self:SetPos(v:GetPos())
         self:SetAngles(v:GetAngles())
         SafeRemoveEntity(v)
 
-        return
+        break
       end
     end
+
+    UpdateButtons(self)
   end
 
   --- Handles a player pressing a button on the machine.
@@ -139,6 +146,8 @@ if SERVER then
   -- sprint. Other players buy the button's item (water, sparkling water, lemonade or supplements)
   -- if the machine is active, the button has stock and they can afford the price.
   function ENT:Use(activator)
+    if !IsValid(activator) or !activator:IsPlayer() then return end
+
     activator:EmitSound('buttons/lightswitch2.wav', 55, 125)
 
     if (self.nextUse or 0) < CurTime() then
@@ -148,12 +157,10 @@ if SERVER then
     end
 
     local button = self:GetNearestButton(activator)
-    -- local stocks = self:GetSharedVar("stocks")
 
     if Schema:PlayerIsCombine(activator) then
-      if activator:KeyDown(IN_SPEED) and button and self:GetDTFloat(button) then
+      if activator:KeyDown(IN_SPEED) and button then
         if self:GetDTFloat(button) > 0 then
-          -- return activator:SendOverlayText("NO REFILL IS REQUIRED FOR THIS MACHINE.")
           cw.player:Notify(activator, L('NutVend_Full'))
           return
         end
@@ -161,10 +168,8 @@ if SERVER then
         self:EmitSound('buttons/button5.wav')
 
         if !cw.player:CanAfford(activator, 25) then
-          -- return activator:SendOverlayText("INSUFFICIENT FUNDS (25 TOKENS) TO REFILL MACHINE.")
           return cw.player:Notify(activator, L('NutVend_NeedTokensToRefill', 25))
         else
-          -- activator:SendOverlayText("25 TOKENS HAVE BEEN TAKEN TO REFILL MACHINE.")
           cw.player:GiveCash(activator, -25, L('NutVend_CashReason_Refill'))
         end
 
@@ -172,14 +177,12 @@ if SERVER then
           if !IsValid(self) then return end
 
           self:SetDTFloat(button, (button == 1 and 10 or 5))
-          -- self:SetSharedVar("stocks", stocks)
         end)
 
         return
       else
-        -- self:SetSharedVar("active", !self:GetSharedVar("active"))
         self:SetDTBool(0, !self:GetDTBool(0))
-        self:EmitSound('buttons/combine_button1.wav' or 'buttons/combine_button2.wav')
+        self:EmitSound('buttons/combine_button1.wav')
 
         return
       end
@@ -189,7 +192,7 @@ if SERVER then
       return
     end
 
-    if button and self:GetDTFloat(button) and self:GetDTFloat(button) > 0 then
+    if button and self:GetDTFloat(button) > 0 then
       local itemName = 'breens_water'
       local price = 5
 
@@ -212,7 +215,6 @@ if SERVER then
       local position = self:GetPos()
       local f, r, u = self:GetForward(), self:GetRight(), self:GetUp()
       local itemPosition = position + f * 19 + r * 4 + u * -26
-      -- local entity = nut.item.Spawn(itemPosition, nil, item)
       local entity = cw.entity:CreateItem(activator, item.CreateInstance(itemName), itemPosition, self:GetAngles())
 
       if IsValid(entity) then
@@ -235,18 +237,11 @@ else
   local color_green = Color(0, 255, 0, 255)
   local color_red = Color(255, 0, 0, 255)
   local color_orange = Color(255, 125, 0, 255)
+  local color_pressed = Color(255, 255, 255, 255)
 
   --- Computes the button positions used for drawing the button sprites.
   function ENT:Initialize()
-    self.buttons = {}
-
-    local position = self:GetPos()
-    local f, r, u = self:GetForward(), self:GetRight(), self:GetUp()
-
-    self.buttons[1] = position + f * 18 + r * -24.4 + u * 5.3
-    self.buttons[2] = position + f * 18 + r * -24.4 + u * 3.35
-    self.buttons[3] = position + f * 18 + r * -24.4 + u * 1.35
-    self.buttons[4] = position + f * 18 + r * -24.4 + u * (-0.7)
+    UpdateButtons(self)
   end
 
   --- Draws the machine with its product labels and a glowing sprite per button.
@@ -272,45 +267,40 @@ else
 
     render.SetMaterial(glowMaterial)
 
-    if self.buttons then
-      local position = self:GetPos()
-      local f, r, u = self:GetForward(), self:GetRight(), self:GetUp()
+    -- Initialize does not always run on the client, and admins can move the machine, so recompute every frame.
+    UpdateButtons(self)
 
-      self.buttons[1] = position + f * 18 + r * -24.4 + u * 5.3
-      self.buttons[2] = position + f * 18 + r * -24.4 + u * 3.35
-      self.buttons[3] = position + f * 18 + r * -24.4 + u * 1.35
-      self.buttons[4] = position + f * 18 + r * -24.4 + u * (-0.7)
+    local closest = self:GetNearestButton()
+    local bActive = self:GetDTBool(0) != false
+    local bUsing = closest and LocalPlayer():KeyDown(IN_USE)
 
-      local closest = self:GetNearestButton()
-      -- local stocks = self:GetSharedVar("stocks")
+    for k, v in ipairs(self.buttons) do
+      local color = color_green
 
-      for k, v in pairs(self.buttons) do
-        local color = color_green
-
-        if self:GetDTBool(0) != false then
-          if self:GetDTFloat(k) and self:GetDTFloat(k) < 1 then
-            color = color_red
-            color.a = 200
-          end
-
-          if closest != k then
-            color.a = color == color_red and 100 or 75
-          else
-            color.a = 230 + (math.sin(RealTime() * 7.5) * 25)
-          end
-
-          if LocalPlayer():KeyDown(IN_USE) and closest == k then
-            color = table.Copy(color)
-            color.r = math.min(color.r + 100, 255)
-            color.g = math.min(color.g + 100, 255)
-            color.b = math.min(color.b + 100, 255)
-          end
-        else
-          color = color_orange
+      if bActive then
+        if self:GetDTFloat(k) < 1 then
+          color = color_red
         end
 
-        render.DrawSprite(v, 4, 4, color)
+        if closest != k then
+          color.a = color == color_red and 100 or 75
+        else
+          color.a = 230 + (math.sin(RealTime() * 7.5) * 25)
+
+          if bUsing then
+            color_pressed.r = math.min(color.r + 100, 255)
+            color_pressed.g = math.min(color.g + 100, 255)
+            color_pressed.b = math.min(color.b + 100, 255)
+            color_pressed.a = color.a
+
+            color = color_pressed
+          end
+        end
+      else
+        color = color_orange
       end
+
+      render.DrawSprite(v, 4, 4, color)
     end
   end
 end

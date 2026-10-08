@@ -12,18 +12,15 @@ COMMAND.arguments = 0
 --
 -- Requires the start corner to be set first with `/ContainmentBoxStartPos`.
 function COMMAND:OnRun(player, arguments)
-  local trace = player:GetEyeTraceNoCursor()
+  local boxInfo = player.cwRadSystemBoxInfo
 
-  if !player.cwRadSystemBoxInfo then player.cwRadSystemBoxInfo = {} end
-
-  if !player.cwRadSystemBoxInfo.startpos then
+  if !boxInfo or !boxInfo.startpos then
     cw.player:Notify(player, L('Containment_NoStartPoint'))
+
     return
   end
 
-  if player.cwRadSystemBoxInfo then
-    player.cwRadSystemBoxInfo.endpos = trace.HitPos
-  end
+  boxInfo.endpos = player:GetEyeTraceNoCursor().HitPos
 
   cw.player:Notify(player, L('Containment_EndPointSet'))
 end

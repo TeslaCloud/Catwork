@@ -10,17 +10,10 @@ function COMMAND:OnRun(player, arguments)
 
   if IsValid(target) then
     if target:GetClass() == 'cw_salesman' then
-      for k, v in pairs(cwSalesmen.salesmen) do
-        if target == v then
-          target:Remove()
-          cwSalesmen.salesmen[k] = nil
-          cwSalesmen:SaveSalesmen()
+      cwSalesmen:RemoveSalesman(target)
+      cwSalesmen:SaveSalesmen()
 
-          cw.player:Notify(player, L('Salesman_Removed'))
-
-          return
-        end
-      end
+      cw.player:Notify(player, L('Salesman_Removed'))
     else
       cw.player:Notify(player, L('Salesman_NotSalesman'))
     end

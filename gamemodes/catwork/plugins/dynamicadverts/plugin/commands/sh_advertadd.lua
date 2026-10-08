@@ -13,16 +13,26 @@ COMMAND.optionalArguments = 1
 --- Adds an image advert from a URL where the player is looking, sends it to every client and saves it.
 function COMMAND:OnRun(player, arguments)
   local trace = player:GetEyeTraceNoCursor()
+  local url = arguments[1]
   local scale = tonumber(arguments[4])
   local width = tonumber(arguments[2]) or 256
   local height = tonumber(arguments[3]) or 256
+  local fileName = string.match(url, '[^/]*$')
+  local extension = (string.GetExtensionFromFilename(fileName) or ''):lower():match('^%a+')
+
+  -- Every client downloads the image itself, so only take what `cwDynamicAdverts:CacheMaterial` is able to show.
+  if extension != 'png' and extension != 'jpg' and extension != 'jpeg' then
+    cw.player:Notify(player, L('DynamicAdverts_InvalidURL'))
+
+    return
+  end
 
   if scale then
     scale = scale * 0.25
   end
 
   local data = {
-    url = arguments[1],
+    url = url,
     scale = scale,
     width = width,
     height = height,

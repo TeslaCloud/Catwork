@@ -1,24 +1,43 @@
---- Server-side functions of the Books plugin that save and restore the placed `cw_book` entities, plus the `TakeBook`
--- netstream handler.
+--- Server-side functions of the Books plugin that pick up, save and restore the placed `cw_book` entities, plus the
+-- `TakeBook` netstream handler.
 --
 -- Books are kept per map in the schema data under `plugins/books/<map>` with their item, owner, position, angles and
 -- whether they were frozen.
 
 local PLUGIN = PLUGIN
 
-netstream.Hook('TakeBook', function(player, data)
-  if IsValid(data) then
-    if data:GetClass() == 'cw_book' then
-      if player:GetPos():Distance(data:GetPos()) <= 192 and player:GetEyeTraceNoCursor().Entity == data then
-        local success, fault = player:GiveItem(item.CreateInstance(data.book.uniqueID))
+--- Gives a placed book's item to a player and removes the book, or tells the player why it failed.
+--
+-- A book can only be taken once, however many requests arrive before the entity is gone.
+--
+-- @param player [Player The player picking the book up]
+-- @param entity [Entity The `cw_book` entity]
+function PLUGIN:TakeBook(player, entity)
+  if entity.cwTaken or !entity.book then return end
 
-        if !success then
-          cw.player:Notify(player, fault)
-        else
-          data:Remove()
-        end
-      end
-    end
+  local success, fault = player:GiveItem(item.CreateInstance(entity.book.uniqueID))
+
+  if !success then
+    cw.player:Notify(player, fault)
+  else
+    entity.cwTaken = true
+    entity:Remove()
+  end
+end
+
+netstream.Hook('TakeBook', function(player, data)
+  if !isentity(data) or !IsValid(data) or data:GetClass() != 'cw_book' then return end
+  if !player:HasInitialized() or !player:Alive() or player:IsRagdolled() then return end
+
+  local curTime = CurTime()
+
+  if player.cwNextBookTake and player.cwNextBookTake > curTime then return end
+
+  player.cwNextBookTake = curTime + 1
+
+  if player:GetPos():Distance(data:GetPos()) <= 192 and player:GetEyeTraceNoCursor().Entity == data
+  and hook.Run('PlayerUse', player, data) then
+    PLUGIN:TakeBook(player, data)
   end
 end)
 
@@ -58,7 +77,7 @@ end
 function PLUGIN:SaveBooks()
   local books = {}
 
-  for k, v in pairs(ents.FindByClass('cw_book')) do
+  for k, v in ipairs(ents.FindByClass('cw_book')) do
     local physicsObject = v:GetPhysicsObject()
     local moveable
 
@@ -66,14 +85,16 @@ function PLUGIN:SaveBooks()
       moveable = physicsObject:IsMoveable()
     end
 
-    books[#books + 1] = {
-      key = cw.entity:QueryProperty(v, 'key'),
-      book = v.book.uniqueID,
-      angles = v:GetAngles(),
-      moveable = moveable,
-      uniqueID = cw.entity:QueryProperty(v, 'uniqueID'),
-      position = v:GetPos()
-    }
+    if v.book then
+      books[#books + 1] = {
+        key = cw.entity:QueryProperty(v, 'key'),
+        book = v.book.uniqueID,
+        angles = v:GetAngles(),
+        moveable = moveable,
+        uniqueID = cw.entity:QueryProperty(v, 'uniqueID'),
+        position = v:GetPos()
+      }
+    end
   end
 
   cw.core:SaveSchemaData('plugins/books/'..game.GetMap(), books)

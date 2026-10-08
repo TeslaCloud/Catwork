@@ -10,17 +10,13 @@ local PLUGIN = PLUGIN
 if CLIENT then
   local render = render
 
-  local coeff = 0.02
-  local AlphaAdditive = 1.5
-  local AlphaPasses = 1.8
-  local Bloom_Multiply = 0.5
-  local Bloom_Darken = 0.5
-  local Bloom_Blur = 0.1
-  local Bloom_ColorMul = 0.25
-  local Bloom_Passes = 1
-  local CurScale = 0.5
-  local DrawNightVision = false
-  local oldNight = false
+  local fadeRate = 0.02
+  local bloomMultiply = 0.5
+  local bloomDarken = 0.5
+  local bloomBlur = 0.1
+  local bloomColorMul = 0.25
+  local curScale = 0.5
+  local bWasActive = false
   local matNightVision = CreateMaterial('NightVisionMaterial', 'UnlitTwoTexture', {
     ['$additive'] = '1',
     ['$basetexture'] = '_rt_FullFrameFB',
@@ -35,7 +31,7 @@ if CLIENT then
       }
     }
   })
-  matNightVision:SetFloat('$alpha', AlphaAdditive)
+  matNightVision:SetFloat('$alpha', 1.5)
 
   local colorTable = {
     ['$pp_colour_addr'] = -1,
@@ -49,60 +45,39 @@ if CLIENT then
     ['$pp_colour_mulb'] = 0
   }
 
-  if render.GetDXLevel() < 80 then
-    AlphaPasses = 1
-    AlphaAdditive = 0.6
-  end
-
   local function NightVisionFX()
-    if oldNight != LocalPlayer():GetNWBool('nightvisionfx') then
-      coeff = 0.02
-      AlphaAdditive = 1.5
-      AlphaPasses = 1.8
-      Bloom_Multiply = 0.5
-      Bloom_Darken = 0.5
-      Bloom_Blur = 0.1
-      Bloom_ColorMul = 0.25
-      Bloom_Passes = 1
-      CurScale = 0.5
-      oldNight = LocalPlayer():GetNWBool('nightvisionfx')
+    local bActive = LocalPlayer():GetNWBool('nightvisionfx')
+
+    -- The effect brightens up from half strength every time it is switched on.
+    if bWasActive != bActive then
+      bWasActive = bActive
+      curScale = 0.5
     end
 
-    if LocalPlayer():GetNWBool('nightvisionfx') then
-      if CurScale < 0.995 then
-        CurScale = CurScale + coeff * (1 - CurScale)
-      end
+    if !bActive then return end
 
-      for i = 1, AlphaPasses do
-        render.UpdateScreenEffectTexture()
-        render.SetMaterial(matNightVision)
-        render.DrawScreenQuad()
-      end
-
-      colorTable['$pp_colour_brightness'] = CurScale * 0.8
-      colorTable['$pp_colour_contrast'] = CurScale * 2
-      DrawColorModify(colorTable)
-      DrawBloom(
-        Bloom_Darken,
-        CurScale * Bloom_Multiply,
-        Bloom_Blur,
-        Bloom_Blur,
-        Bloom_Passes,
-        CurScale * Bloom_ColorMul,
-        0,
-        1,
-        0
-      ) -- Blue
+    if curScale < 0.995 then
+      curScale = curScale + fadeRate * (1 - curScale)
     end
+
+    render.UpdateScreenEffectTexture()
+    render.SetMaterial(matNightVision)
+    render.DrawScreenQuad()
+
+    colorTable['$pp_colour_brightness'] = curScale * 0.8
+    colorTable['$pp_colour_contrast'] = curScale * 2
+    DrawColorModify(colorTable)
+    DrawBloom(bloomDarken, curScale * bloomMultiply, bloomBlur, bloomBlur, 1, curScale * bloomColorMul, 0, 1, 0)
   end
 
   hook.Add('RenderScreenspaceEffects', 'NightVisionFX', NightVisionFX)
 else
   --- Called at an interval while a player is connected; turns night vision off for players no longer allowed to use it.
   -- @param player [Player The player being updated]
-  -- @param infoTable [Number Second hook argument, which is the current `CurTime()` despite the name]
+  -- @param curTime [Number The current `CurTime()`]
+  -- @param infoTable [Map The player's info table for this think]
   -- @see Schema:PlayerCanUseNightvision
-  function PLUGIN:PlayerThink(player, infoTable)
+  function PLUGIN:PlayerThink(player, curTime, infoTable)
     if player:GetNWBool('nightvisionfx') then
       if !Schema:PlayerCanUseNightvision(player) then
         player:SetNWBool('nightvisionfx', false)

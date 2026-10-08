@@ -7,7 +7,7 @@
 --]]
 
 --- Registers the operator command `/DoorUnsetAccess` of the Personal Doors plugin, which removes the target character's
--- personal access to the door the player is looking at.
+-- personal access to the door the player is looking at, or everyone's when no name is given.
 
 local PLUGIN = PLUGIN
 
@@ -18,39 +18,57 @@ COMMAND.flags = CMD_DEFAULT
 COMMAND.access = 'o'
 COMMAND.optionalArguments = 1
 
---- Removes the target character's personal access to the door the player is looking at and saves the change.
+--- Removes personal access to the door the player is looking at and saves the change.
+--
+-- With a name, only that character loses access: the name is either the full name of one of the door's owners,
+-- who may be offline, or part of the name of a player who is online. Without a name every owner is removed.
 function COMMAND:OnRun(player, arguments)
-  local owningGuy = _player.Find(arguments[1])
-  local owningPerson = owningGuy:Name()
   local door = player:GetEyeTraceNoCursor().Entity
+  local doorData = IsValid(door) and cw.entity:IsDoor(door) and PLUGIN.personalDoors[door]
 
-  if IsValid(door) and cw.entity:IsDoor(door) and PLUGIN.personalDoors[door] then
-    local msg = L('PersonalDoors_AccessRemovedAll')
+  if !doorData then
+    return cw.player:Notify(player, L('PersonalDoors_NotValidDoor'))
+  end
 
-    if owningPerson then
-      door._OwningPersons[string.lower(owningPerson)] = nil
+  local msg = L('PersonalDoors_AccessRemovedAll')
 
-      for k, v in pairs(PLUGIN.personalDoors[door].owners)do
-        if v == owningPerson then
-          table.remove(PLUGIN.personalDoors[door].owners, k)
+  if arguments[1] then
+    local owningPerson = arguments[1]
+    local lowerName = string.lower(owningPerson)
 
-          break
-        end
+    if !door._OwningPersons or !door._OwningPersons[lowerName] then
+      local owningGuy = _player.Find(owningPerson)
+
+      if !IsValid(owningGuy) then
+        return cw.player:Notify(player, L('NotValidPlayer', owningPerson))
       end
 
-      msg = L('PersonalDoors_AccessRemoved', owningPerson)
-    else
-      door._OwningPersons = nil
-
-      PLUGIN.personalDoors = {}
+      owningPerson = owningGuy:Name()
+      lowerName = string.lower(owningPerson)
     end
 
-    PLUGIN:SaveDoorData()
+    if door._OwningPersons then
+      door._OwningPersons[lowerName] = nil
+    end
 
-    cw.player:Notify(player, msg)
+    for k, v in ipairs(doorData.owners) do
+      if string.lower(v) == lowerName then
+        table.remove(doorData.owners, k)
+
+        break
+      end
+    end
+
+    msg = L('PersonalDoors_AccessRemoved', owningPerson)
   else
-    cw.player:Notify(player, L('PersonalDoors_NotValidDoor'))
+    door._OwningPersons = nil
+
+    PLUGIN.personalDoors[door] = nil
   end
+
+  PLUGIN:SaveDoorData()
+
+  cw.player:Notify(player, msg)
 end
 
 COMMAND:Register()

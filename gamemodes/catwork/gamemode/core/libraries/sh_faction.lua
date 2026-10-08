@@ -173,9 +173,9 @@ end
 function faction.IsModelValid(faction, gender, model)
   if gender and model then
     local factionTable = _faction.FindByID(faction)
+    local models = factionTable and isstring(gender) and factionTable.models[string.lower(gender)]
 
-    if factionTable
-    and table.HasValue(factionTable.models[string.lower(gender)], model) then
+    if models and table.HasValue(models, model) then
       return true
     end
   end
@@ -183,7 +183,7 @@ end
 
 --- Finds a faction by index, exact name or part of its name.
 --
--- Partial matches are case-insensitive Lua patterns; the faction with the shortest matching name
+-- Partial matches are case-insensitive plain text; the faction with the shortest matching name
 -- wins.
 --
 -- @param identifier [Any Faction index (Number or numeric String), name or part of the name]
@@ -200,8 +200,8 @@ function faction.FindByID(identifier)
     local shortestLength = math.huge
     local lowerIdentifier = string.lower(identifier)
 
-    for k, v in pairs(faction.GetAll())do
-      if string.find(string.lower(k), lowerIdentifier)
+    for k, v in pairs(stored) do
+      if string.find(string.lower(k), lowerIdentifier, 1, true)
         and string.utf8len(k) < shortestLength then
         shortestLength = string.utf8len(k)
         shortest = v
@@ -239,15 +239,13 @@ end
 
 --- Returns the faction's highest rank, the one with the lowest `position`.
 --
--- Errors if the faction cannot be found.
---
 -- @param factionID [Any Faction name, index or part of the name]
--- @return [String The rank's name, or `nil` if the faction has no ranks, Map The rank table]
+-- @return [String The rank's name, or `nil` if the faction is not found or has no ranks, Map The rank table]
 -- @see faction.GetLowestRank
 function faction.GetHighestRank(factionID)
   local faction = _faction.FindByID(factionID)
 
-  if istable(faction.ranks) then
+  if faction and istable(faction.ranks) then
     local lowestPos
     local highestRank
     local rankTable
@@ -274,15 +272,13 @@ end
 
 --- Returns the faction's lowest rank, the one with the highest `position`.
 --
--- Errors if the faction cannot be found.
---
 -- @param factionID [Any Faction name, index or part of the name]
--- @return [String The rank's name, or `nil` if the faction has no ranks, Map The rank table]
+-- @return [String The rank's name, or `nil` if the faction is not found or has no ranks, Map The rank table]
 -- @see faction.GetHighestRank
 function faction.GetLowestRank(factionID)
   local faction = _faction.FindByID(factionID)
 
-  if istable(faction.ranks) then
+  if faction and istable(faction.ranks) then
     local highestPos
     local lowestRank
     local rankTable
@@ -309,20 +305,16 @@ end
 
 --- Returns the rank one step above a rank, the one whose `position` is one lower.
 --
--- Reads `ranks` from the `faction` library table instead of the faction found by `factionID`, so
--- it currently always returns nothing.
---
 -- @param factionID [Any Faction name, index or part of the name]
 -- @param rank [Map The current rank table]
--- @return [String The higher rank's name, Map The higher rank table]
+-- @return [String The higher rank's name, or `nil` if `rank` is already the highest, Map The higher
+-- rank table]
 -- @see faction.GetLowerRank
 function faction.GetHigherRank(factionID, rank)
   local highestRank, rankTable = faction.GetHighestRank(factionID)
 
-  factionID = faction.FindByID(factionID)
-
-  if istable(faction.ranks) and istable(rank) and rank.position and rank.position != rankTable.position then
-    for k, v in pairs(faction.ranks) do
+  if rankTable and istable(rank) and rank.position and rank.position != rankTable.position then
+    for k, v in pairs(faction.FindByID(factionID).ranks) do
       if v.position == (rank.position - 1) then
         return k, v
       end
@@ -340,10 +332,8 @@ end
 function faction.GetLowerRank(factionID, rank)
   local lowestRank, rankTable = faction.GetLowestRank(factionID)
 
-  factionID = faction.FindByID(factionID)
-
-  if istable(factionID.ranks) and istable(rank) and rank.position and rank.position != rankTable.position then
-    for k, v in pairs(factionID.ranks) do
+  if rankTable and istable(rank) and rank.position and rank.position != rankTable.position then
+    for k, v in pairs(faction.FindByID(factionID).ranks) do
       if v.position == (rank.position + 1) then
         return k, v
       end
@@ -353,17 +343,13 @@ end
 
 --- Returns the faction's default rank, the first rank with `default` set.
 --
--- Errors if the faction cannot be found.
---
 -- @param factionID [Any Faction name, index or part of the name]
--- @return [String The rank's name, or `nil` if there is no default rank, Map The rank table]
+-- @return [String The rank's name, or `nil` if the faction is not found or has no default rank, Map The
+-- rank table]
 function faction.GetDefaultRank(factionID)
   local faction = faction.FindByID(factionID)
 
-  if istable(faction.ranks) then
-    local lowestPos
-    local highestRank
-
+  if faction and istable(faction.ranks) then
     for k, v in pairs(faction.ranks) do
       if v.default then
         return k, v

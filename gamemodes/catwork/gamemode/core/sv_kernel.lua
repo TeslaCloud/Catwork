@@ -39,35 +39,12 @@ if system.IsLinux() then
   function file.Read(fileName, pathName)
     local contents = ClockworkFileRead(fileName, pathName)
 
-    if contents and string.utf8sub(contents, -1) == '\n' then
-      contents = string.utf8sub(contents, 1, -2)
+    if contents and string.sub(contents, -1) == '\n' then
+      contents = string.sub(contents, 1, -2)
     end
 
     return contents
   end
-end
-
---- Escapes a value for an SQLite query, replacing the stock `sql.SQLStr`.
---
--- Converts the value with `tostring` and cuts it at the first NULL character. Unlike the stock version it
--- does not double single quotes, which used to duplicate `'` characters.
--- @param str_in [Any Value to escape]
--- @param bNoQuotes=nil [Boolean Whether to return the string without surrounding single quotes]
--- @return [String The value as a string, wrapped in single quotes unless `bNoQuotes` is set]
-function sql.SQLStr(str_in, bNoQuotes)
-  local str = tostring(str_in)
-
-  local null_chr = string.find(str, '\0')
-
-  if null_chr then
-    str = string.utf8sub(str, 1, null_chr - 1)
-  end
-
-  if bNoQuotes then
-    return str
-  end
-
-  return "'"..str.."'"
 end
 
 -- File.write creates missing folders itself, File.append does not and
@@ -150,16 +127,35 @@ cw.WorkshopMaps = {
   rp_gc_city8 = 760771478
 }
 
+--- Returns whether a data file name stays inside its data folder, printing an error when it does not.
+--
+-- Names may contain subfolders but no `..`, since `File` reads and writes anywhere under `garrysmod`.
+-- @param fileName [Any The file name to check]
+-- @return [Boolean Whether the name is a string without `..`]
+local function IsDataFileNameSafe(fileName)
+  if isstring(fileName) and !string.find(fileName, '..', 1, true) then
+    return true
+  end
+
+  MsgC(Color(255, 100, 0, 255), "[CW:Kernel] '"..tostring(fileName).."' is not a valid data file name.\n")
+
+  return false
+end
+
 --- Serializes a table and writes it to the current schema's data folder.
 --
 -- The file is `settings/catwork/schemas/<schema>/<fileName>.cw`, encoded with `cw.core:Serialize`.
--- Prints an error and saves nothing when `data` is not a table.
+-- Prints an error and saves nothing when `data` is not a table or the file name contains `..`.
 -- @param fileName [String File name without extension; may contain subfolders]
 -- @param data [Map Table to save]
 -- @param bForceJSON=nil [Boolean Whether to encode as JSON instead of pON]
--- @return [Boolean The result of `File.write`, or `nil` when `data` is not a table]
+-- @return [Boolean The result of `File.write`, or `nil` when nothing was saved]
 -- @see cw.core:RestoreSchemaData
 function cw.core:SaveSchemaData(fileName, data, bForceJSON)
+  if !IsDataFileNameSafe(fileName) then
+    return
+  end
+
   if type(data) != 'table' then
     MsgC(
       Color(255, 100, 0, 255),
@@ -176,6 +172,10 @@ end
 -- @param fileName [String File name without extension, as passed to `cw.core:SaveSchemaData`]
 -- @return [Boolean The result of `File.delete`]
 function cw.core:DeleteSchemaData(fileName)
+  if !IsDataFileNameSafe(fileName) then
+    return false
+  end
+
   return File.delete('settings/catwork/schemas/'..cw.Schema..'/'..fileName..'.cw')
 end
 
@@ -183,6 +183,10 @@ end
 -- @param fileName [String File name without extension, as passed to `cw.core:SaveSchemaData`]
 -- @return [Boolean Whether the file exists]
 function cw.core:SchemaDataExists(fileName)
+  if !IsDataFileNameSafe(fileName) then
+    return false
+  end
+
   return _file.Exists('settings/catwork/schemas/'..cw.Schema..'/'..fileName..'.cw', 'GAME')
 end
 
@@ -203,9 +207,8 @@ function cw.core:GetSchemaGamemodeInfo()
   if SCHEMA_GAMEMODE_INFO then return SCHEMA_GAMEMODE_INFO end
 
   local schemaFolder = string.lower(self:GetSchemaFolder())
-  local schemaData = util.KeyValuesToTable(
-    File.read('gamemodes/'..schemaFolder..'/'..schemaFolder..'.txt')
-  )
+  local contents = File.read('gamemodes/'..schemaFolder..'/'..schemaFolder..'.txt')
+  local schemaData = contents and util.KeyValuesToTable(contents)
 
   if !schemaData then
     schemaData = {}
@@ -246,6 +249,10 @@ end
 -- @param directory [String Path and wildcard relative to the schema data folder, e.g. `'plugins/*'`]
 -- @return [List<String> File names, List<String> Folder names, as returned by `file.Find`]
 function cw.core:FindSchemaDataInDir(directory)
+  if !IsDataFileNameSafe(directory) then
+    return {}, {}
+  end
+
   return _file.Find('settings/catwork/schemas/'..self:GetSchemaFolder()..'/'..directory, 'GAME')
 end
 
@@ -301,7 +308,10 @@ function cw.core:RestoreClockworkData(fileName, failSafe)
       if bSuccess and value != nil then
         return value
       else
-        MsgC(Color(255, 100, 0, 255), "[CW:Kernel] '"..fileName.."' catwork data has failed to restore.\n"..value..'\n')
+        MsgC(
+          Color(255, 100, 0, 255),
+          "[CW:Kernel] '"..fileName.."' catwork data has failed to restore.\n"..tostring(value)..'\n'
+        )
 
         self:DeleteClockworkData(fileName)
       end
@@ -318,12 +328,16 @@ end
 --- Serializes a table with pON and writes it to `settings/clockwork/<fileName>.cw`.
 --
 -- Unlike schema data, this data is shared by every schema. Prints an error and saves nothing when `data`
--- is not a table.
+-- is not a table or the file name contains `..`.
 -- @param fileName [String File name without extension]
 -- @param data [Map Table to save]
--- @return [Boolean The result of `File.write`, or `nil` when `data` is not a table]
+-- @return [Boolean The result of `File.write`, or `nil` when nothing was saved]
 -- @see cw.core:RestoreClockworkData
 function cw.core:SaveClockworkData(fileName, data)
+  if !IsDataFileNameSafe(fileName) then
+    return
+  end
+
   if type(data) != 'table' then
     MsgC(
       Color(255, 100, 0, 255),
@@ -341,6 +355,10 @@ end
 -- @param fileName [String File name without extension]
 -- @return [Boolean Whether the file exists]
 function cw.core:ClockworkDataExists(fileName)
+  if !IsDataFileNameSafe(fileName) then
+    return false
+  end
+
   return _file.Exists('settings/clockwork/'..fileName..'.cw', 'GAME')
 end
 
@@ -348,6 +366,10 @@ end
 -- @param fileName [String File name without extension]
 -- @return [Boolean The result of `File.delete`]
 function cw.core:DeleteClockworkData(fileName)
+  if !IsDataFileNameSafe(fileName) then
+    return false
+  end
+
   return File.delete('settings/clockwork/'..fileName..'.cw')
 end
 
@@ -602,7 +624,7 @@ function cw.core:GetRagdollHitGroup(entity, position)
     if bone then
       local bonePosition = entity:GetBonePosition(bone)
 
-      if position then
+      if bonePosition and position then
         local distance = bonePosition:Distance(position)
 
         if !closest[1] or distance < closest[1] then
@@ -713,13 +735,13 @@ function cw.core:PerformDateTimeThink()
     hook.Run('TimePassed', TIME_YEAR)
   end
 
-  local month = self:ZeroNumberToDigits(cw.date:GetMonth(), 2)
-  local day = self:ZeroNumberToDigits(cw.date:GetDay(), 2)
+  local dateMonth = self:ZeroNumberToDigits(cw.date:GetMonth(), 2)
+  local dateDay = self:ZeroNumberToDigits(cw.date:GetDay(), 2)
 
-  netvars.SetNetVar('minute', minute)
-  netvars.SetNetVar('hour', hour)
-  netvars.SetNetVar('date', day..'/'..month..'/'..year)
-  netvars.SetNetVar('day', day)
+  netvars.SetNetVar('minute', cw.time:GetMinute())
+  netvars.SetNetVar('hour', cw.time:GetHour())
+  netvars.SetNetVar('date', dateDay..'/'..dateMonth..'/'..cw.date:GetYear())
+  netvars.SetNetVar('day', cw.time:GetDay())
 end
 
 --- Creates a console variable and runs the `ClockworkConVarChanged` hook whenever it changes.
@@ -801,16 +823,17 @@ function cw.core:PrintLog(logType, text)
   local plyTable = _player.GetAll()
 
   for k, v in ipairs(plyTable) do
-    if v:HasInitialized() and v:GetInfoNum('cwShowLog', 0) == 1 then
-      if cw.player:IsAdmin(v) then
-        listeners[#listeners + 1] = v
-      end
+    if v:HasInitialized() and v:GetInfoNum('cwShowLog', 0) == 1 and cw.player:IsAdmin(v) then
+      listeners[#listeners + 1] = v
     end
   end
 
-  netstream.Start(listeners, 'Log', {
-    logType = (logType or 5), text = text
-  })
+  -- netstream encodes the message before it looks at the recipients.
+  if #listeners > 0 then
+    netstream.Start(listeners, 'Log', {
+      logType = (logType or 5), text = text
+    })
+  end
 
   if CW_CONVAR_LOG:GetInt() == 1 and game.IsDedicated() then
     self:ServerLog(text)
@@ -851,8 +874,8 @@ end
 -- Fetches the collection page asynchronously and calls `resource.AddWorkshop` for each item on it.
 -- @param id [String The collection's Workshop ID]
 function cw.core:AddWorkshopCollection(id)
-  http.Fetch('http://steamcommunity.com/sharedfiles/filedetails/?id='..id, function(page)
-    for k in string.gmatch(page, [[<div id="sharedfile_(.-)" class="collectionItem">]]) do
+  http.Fetch('https://steamcommunity.com/sharedfiles/filedetails/?id='..id, function(page)
+    for k in string.gmatch(page, [[<div id="sharedfile_(%d+)" class="collectionItem">]]) do
       resource.AddWorkshop(k)
     end
   end)
@@ -890,12 +913,6 @@ function cw.core:DoEntityTakeDamageHook(entity, damageInfo)
 
   local inflictor = damageInfo:GetInflictor()
   local attacker = damageInfo:GetAttacker()
-  local amount = damageInfo:GetDamage()
-
-  if amount != damageInfo:GetDamage() then
-    amount = damageInfo:GetDamage()
-  end
-
   local player = cw.entity:GetPlayer(entity)
 
   if player then
@@ -931,7 +948,8 @@ function cw.core:DoEntityTakeDamageHook(entity, damageInfo)
             return true
           end
 
-          amount = hook.Run('GetFallDamage', player, velocity)
+          local amount = hook.Run('GetFallDamage', player, velocity)
+
           entity.cwNextFallDamage = curTime + 1
           damageInfo:SetDamage(amount)
         end
@@ -942,6 +960,8 @@ end
 
 --[[ Disable game saving and admin cleanup. --]]
 concommand.Add('gm_save', function(player, command, arguments)
+  if !IsValid(player) then return end
+
   ErrorNoHalt(
     '[Catwork] '..player:Name()..' ('..player:SteamID()..
       ') has attempted to use gm_save command to potentially crash the server!\n'
@@ -949,6 +969,8 @@ concommand.Add('gm_save', function(player, command, arguments)
 end)
 
 concommand.Add('gmod_admin_cleanup', function(player, command, arguments)
+  if !IsValid(player) then return end
+
   ErrorNoHalt(
     '[Catwork] '..player:Name()..' ('..player:SteamID()..
       ') has attempted to use gmod_admin_cleanup command to wipe all props from the server!\n'
@@ -1322,8 +1344,9 @@ end
 --
 -- True while the player is alive, not ragdolled, crouching or in a vehicle, holds the sprint key and moves
 -- at least at walking speed.
+-- @param bNoWalkSpeed=nil [Boolean Whether to skip the walking speed check]
 -- @return [Boolean Whether the player is running]
-function playerMeta:IsRunning()
+function playerMeta:IsRunning(bNoWalkSpeed)
   if self:Alive() and !self:IsRagdolled() and !self:InVehicle()
   and !self:Crouching() and self:KeyDown(IN_SPEED) then
     if self:GetVelocity():Length() >= self:GetWalkSpeed()
@@ -1354,7 +1377,7 @@ function playerMeta:StripWeapon(weaponClass)
 
     for k, v in pairs(ragdollWeapons) do
       if v.weaponData['class'] == weaponClass then
-        weapons[k] = nil
+        ragdollWeapons[k] = nil
       end
     end
   else
@@ -1444,64 +1467,45 @@ function playerMeta:IsInGodMode()
   return self.godMode
 end
 
-do
-  local meleeWeapons = {
-    ['weapon_hl2axe'] = 10,
-    ['weapon_hl2bottle'] = 5,
-    ['weapon_hl2brokenbottle'] = 5,
-    ['weapon_hl2hook'] = 15,
-    ['weapon_knife'] = 5,
-    ['weapon_hl2pan'] = 10,
-    ['weapon_hl2pickaxe'] = 15,
-    ['weapon_hl2pipe'] = 10,
-    ['weapon_hl2pot'] = 10,
-    ['weapon_hl2shovel'] = 15
-  }
+--- Detects whether the player's active weapon fired since the last check by comparing its clips.
+--
+-- Runs the `PlayerFireWeapon` hook with the weapon, `CLIP_ONE` or `CLIP_TWO` and the ammo type when a clip
+-- went down.
+-- @warning [Internal] Called by the kernel from `PlayerThink`.
+function playerMeta:UpdateWeaponFired()
+  local activeWeapon = self:GetActiveWeapon()
 
-  --- Detects whether the player's active weapon fired since the last check by comparing its clips.
-  --
-  -- Runs the `PlayerFireWeapon` hook with the weapon, `CLIP_ONE` or `CLIP_TWO` and the ammo type when a clip
-  -- went down. Firing a listed melee weapon is meant to drain stamina.
-  -- @warning [Internal] Called by the kernel from `PlayerThink`.
-  function playerMeta:UpdateWeaponFired()
-    local activeWeapon = self:GetActiveWeapon()
+  if !IsValid(activeWeapon) then
+    return
+  end
 
-    if IsValid(activeWeapon) then
-      local weaponClass = activeWeapon:GetClass()
+  -- The stored clip follows reloads as well, or shots fired after one would go unnoticed.
+  if self.cwClipOneInfo.weapon == activeWeapon then
+    local clipOne = activeWeapon:Clip1()
+    local bFired = clipOne < self.cwClipOneInfo.ammo
 
-      if self.cwClipOneInfo.weapon == activeWeapon then
-        local clipOne = activeWeapon:Clip1()
+    self.cwClipOneInfo.ammo = clipOne
 
-        if clipOne < self.cwClipOneInfo.ammo then
-          self.cwClipOneInfo.ammo = clipOne
-          hook.Run('PlayerFireWeapon', self, activeWeapon, CLIP_ONE, activeWeapon:GetPrimaryAmmoType())
-        end
-      else
-        self.cwClipOneInfo.weapon = activeWeapon
-        self.cwClipOneInfo.ammo = activeWeapon:Clip1()
-      end
-
-      if self.cwClipTwoInfo.weapon == activeWeapon then
-        local clipTwo = activeWeapon:Clip2()
-
-        if clipTwo < self.cwClipTwoInfo.ammo then
-          self.cwClipTwoInfo.ammo = clipTwo
-          hook.Run('PlayerFireWeapon', self, activeWeapon, CLIP_TWO, activeWeapon:GetSecondaryAmmoType())
-        end
-      else
-        self.cwClipTwoInfo.weapon = activeWeapon
-        self.cwClipTwoInfo.ammo = activeWeapon:Clip2()
-      end
-
-      if meleeWeapons[weaponClass] and player.GetCharacterData and player.SetCharacterData then
-        player:SetCharacterData(
-          'Stamina',
-          math.Clamp(player:GetCharacterData('Stamina', 0) - meleeWeapons[weaponClass]),
-          0,
-          100 - player:GetCharacterData('Fatigue', 0)
-        )
-      end
+    if bFired then
+      hook.Run('PlayerFireWeapon', self, activeWeapon, CLIP_ONE, activeWeapon:GetPrimaryAmmoType())
     end
+  else
+    self.cwClipOneInfo.weapon = activeWeapon
+    self.cwClipOneInfo.ammo = activeWeapon:Clip1()
+  end
+
+  if self.cwClipTwoInfo.weapon == activeWeapon then
+    local clipTwo = activeWeapon:Clip2()
+    local bFired = clipTwo < self.cwClipTwoInfo.ammo
+
+    self.cwClipTwoInfo.ammo = clipTwo
+
+    if bFired then
+      hook.Run('PlayerFireWeapon', self, activeWeapon, CLIP_TWO, activeWeapon:GetSecondaryAmmoType())
+    end
+  else
+    self.cwClipTwoInfo.weapon = activeWeapon
+    self.cwClipTwoInfo.ammo = activeWeapon:Clip2()
   end
 end
 
@@ -1593,9 +1597,13 @@ end
 function playerMeta:Kick(reason)
   if !self:IsKicked() then
     timer.Simple(FrameTime() * 0.5, function()
+      if !IsValid(self) then
+        return
+      end
+
       local isKicked = self:IsKicked()
 
-      if IsValid(self) and isKicked then
+      if isKicked then
         if self:HasSpawned() then
           -- Not `kickid` through the console: the reason would be parsed as console commands.
           self:ClockworkKick(isKicked)
@@ -2025,7 +2033,7 @@ function playerMeta:GetMaxSpace()
     end
   end
 
-  hook.Run('PlayerAdjustMaxSpace', player, space)
+  hook.Run('PlayerAdjustMaxSpace', self, space)
 
   return space
 end
@@ -2276,7 +2284,7 @@ end
 -- @see Player:GiveItem
 function playerMeta:GiveItems(itemTables)
   for _, itemTable in pairs(itemTables) do
-    self:GiveItem(itemTables)
+    self:GiveItem(itemTable)
   end
 end
 
@@ -2658,6 +2666,8 @@ concommand.Add('cwc', function(player, command, arguments)
 
   --  if called from console
   if !IsValid(player) then
+    local targetName = tostring(arguments[2])
+
     -- PlySetGroup
     if arguments[1] == cmdTable.sg then
       local target = _player.Find(arguments[2])
@@ -2679,7 +2689,7 @@ concommand.Add('cwc', function(player, command, arguments)
           MsgC(Color(255, 100, 0, 255), target:Name()..' is protected!\n')
         end
       else
-        MsgC(Color(255, 100, 0, 255), arguments[2]..' is not a valid player!\n')
+        MsgC(Color(255, 100, 0, 255), targetName..' is not a valid player!\n')
       end
 
       return
@@ -2703,30 +2713,28 @@ concommand.Add('cwc', function(player, command, arguments)
           MsgC(Color(255, 100, 0, 255), target:Name()..' is protected!\n')
         end
       else
-        MsgC(Color(255, 100, 0, 255), arguments[2]..' is not a valid player!\n')
+        MsgC(Color(255, 100, 0, 255), targetName..' is not a valid player!\n')
       end
 
       return
     -- SetCash
     elseif arguments[1] == cmdTable.sc then
       local target = _player.Find(arguments[2])
-      local cash = math.floor(tonumber((arguments[3] or 0)))
+      local cash = math.floor(tonumber(arguments[3]) or 0)
 
       if target then
-        if cash and cash >= 1 then
-          local playerName = 'Console'
-          local targetName = target:Name()
+        if cash >= 1 and cash < math.huge then
           local giveCash = cash - target:GetCash()
 
           cw.player:GiveCash(target, giveCash)
 
-          print('Console has set '..targetName.."'s cash to "..cw.core:FormatCash(cash, nil, true)..'.')
+          print('Console has set '..target:Name().."'s cash to "..cw.core:FormatCash(cash, nil, true)..'.')
           cw.player:Notify(target, L('Console_SetCash', cw.core:FormatCash(cash, nil, true)))
         else
           MsgC(Color(255, 100, 0, 255), 'This is not a valid amount!\n')
         end
       else
-        MsgC(Color(255, 100, 0, 255), arguments[2]..' is not a valid player!\n')
+        MsgC(Color(255, 100, 0, 255), targetName..' is not a valid player!\n')
       end
 
       return
@@ -2755,7 +2763,7 @@ concommand.Add('cwc', function(player, command, arguments)
           MsgC(Color(255, 100, 0, 255), table.concat(arguments, ' ', 3)..' is not a valid faction!\n')
         end
       else
-        MsgC(Color(255, 100, 0, 255), arguments[2]..' is not a valid player!\n')
+        MsgC(Color(255, 100, 0, 255), targetName..' is not a valid player!\n')
       end
 
       return
@@ -2781,16 +2789,15 @@ concommand.Add('cwc', function(player, command, arguments)
             MsgC(Color(255, 100, 0, 255), factionTable.name..' does not have a whitelist!\n')
           end
         else
-          MsgC(Color(255, 100, 0, 255), factionTable.name..' is not a valid faction!\n')
+          MsgC(Color(255, 100, 0, 255), table.concat(arguments, ' ', 3)..' is not a valid faction!\n')
         end
       else
-        MsgC(Color(255, 100, 0, 255), arguments[2]..' is not a valid player!\n')
+        MsgC(Color(255, 100, 0, 255), targetName..' is not a valid player!\n')
       end
 
       return
     -- PlyBan
     elseif arguments[1] == cmdTable.b then
-      local schemaFolder = cw.core:GetSchemaFolder()
       local duration = tonumber(arguments[3])
       local reason = table.concat(arguments, ' ', 4)
 
@@ -2798,31 +2805,35 @@ concommand.Add('cwc', function(player, command, arguments)
         reason = nil
       end
 
+      if !arguments[2] then
+        MsgC(Color(255, 100, 0, 255), 'This is not a valid identifier!\n')
+
+        return
+      end
+
       if !cw.player:IsProtected(arguments[2]) then
         if duration then
           cw.bans:Add(arguments[2], duration * 60, reason, function(steamName, duration, reason)
-            if IsValid(player) then
-              if steamName then
-                if duration > 0 then
-                  local hours = math.Round(duration / 3600)
+            if steamName then
+              if duration > 0 then
+                local hours = math.Round(duration / 3600)
 
-                  if hours >= 1 then
-                    print("Console has banned '"..steamName.."' for "..hours..' hour(s) ('..reason..').')
-                    cw.player:NotifyAll(L('Console_BannedHours', steamName, hours)..' '..reason)
-                  else
-                    print(
-                      "Console has banned '"..steamName.."' for "..math.Round(duration / 60)..' minute(s) ('..reason..
-                        ').'
-                    )
-                    cw.player:NotifyAll(L('Console_BannedMinutes', steamName, math.Round(duration / 60))..' '..reason)
-                  end
+                if hours >= 1 then
+                  print("Console has banned '"..steamName.."' for "..hours..' hour(s) ('..reason..').')
+                  cw.player:NotifyAll(L('Console_BannedHours', steamName, hours)..' '..reason)
                 else
-                  print("Console has banned '"..steamName.."' permanently ("..reason..').')
-                  cw.player:NotifyAll(L('Console_BannedPermanently', steamName)..' '..reason)
+                  print(
+                    "Console has banned '"..steamName.."' for "..math.Round(duration / 60)..' minute(s) ('..reason..
+                      ').'
+                  )
+                  cw.player:NotifyAll(L('Console_BannedMinutes', steamName, math.Round(duration / 60))..' '..reason)
                 end
               else
-                MsgC(Color(255, 100, 0, 255), 'This is not a valid identifier!\n')
+                print("Console has banned '"..steamName.."' permanently ("..reason..').')
+                cw.player:NotifyAll(L('Console_BannedPermanently', steamName)..' '..reason)
               end
+            else
+              MsgC(Color(255, 100, 0, 255), 'This is not a valid identifier!\n')
             end
           end)
         else
@@ -2858,7 +2869,7 @@ concommand.Add('cwc', function(player, command, arguments)
           MsgC(Color(255, 100, 0, 255), target:Name()..' is protected!\n')
         end
       else
-        MsgC(Color(255, 100, 0, 255), arguments[1]..' is not a valid player!\n')
+        MsgC(Color(255, 100, 0, 255), targetName..' is not a valid player!\n')
       end
 
       return
@@ -2867,7 +2878,7 @@ concommand.Add('cwc', function(player, command, arguments)
       local target = _player.Find(arguments[2])
 
       if target then
-        if arguments[3] == 'nil' then
+        if !arguments[3] or arguments[3] == 'nil' then
           MsgC(
             Color(255, 100, 0, 255),
             "You have to specify the name as the last argument, it also has to be 'quoted'.\n"
@@ -2883,7 +2894,7 @@ concommand.Add('cwc', function(player, command, arguments)
           cw.player:SetName(target, name)
         end
       else
-        MsgC(Color(255, 100, 0, 255), arguments[2]..' is not a valid character!\n')
+        MsgC(Color(255, 100, 0, 255), targetName..' is not a valid character!\n')
       end
 
       return
@@ -2894,23 +2905,25 @@ concommand.Add('cwc', function(player, command, arguments)
       if target then
         local model = table.concat(arguments, ' ', 3)
 
+        if model == '' then
+          MsgC(Color(255, 100, 0, 255), 'You have to specify the model as the last argument.\n')
+
+          return
+        end
+
         target:SetCharacterData('Model', model, true)
         target:SetModel(model)
 
         print('Console has set '..target:Name().."'s model to "..model..'.')
         cw.player:NotifyAll(L('Console_SetModel', target:Name(), model))
       else
-        MsgC(Color(255, 100, 0, 255), arguments[2]..' is not a valid character!\n')
+        MsgC(Color(255, 100, 0, 255), targetName..' is not a valid character!\n')
       end
 
       return
     -- MapRestart
     elseif arguments[1] == cmdTable.r then
-      local delay = tonumber(arguments[2]) or 10
-
-      if type(arguments[2]) == 'number' then
-        delay = arguments[2]
-      end
+      local delay = math.max(tonumber(arguments[2]) or 10, 0)
 
       print('Console is restarting the map in '..delay..' seconds!')
       cw.player:NotifyAll(L('Console_MapRestart', delay))
@@ -2925,20 +2938,20 @@ concommand.Add('cwc', function(player, command, arguments)
       local target = _player.Find(arguments[2])
 
       if target then
+        if !arguments[3] then print("You haven't entered any flags!") return end
+
         if string.find(arguments[3], 'a') or string.find(arguments[3], 's') or string.find(arguments[3], 'o') then
           MsgC(Color(255, 100, 0, 255), "You cannot give 'o', 'a' or 's' flags!\n")
 
           return
         end
 
-        if !arguments[3] then print("You haven't entered any flags!") return end
-
         cw.player:GiveFlags(target, arguments[3])
 
         print('Console gave '..target:Name().." '"..arguments[3].."' flags.")
         cw.player:NotifyAll(L('Console_GaveFlags', target:Name(), arguments[3]))
       else
-        MsgC(Color(255, 100, 0, 255), arguments[2]..' is not a valid character!\n')
+        MsgC(Color(255, 100, 0, 255), targetName..' is not a valid character!\n')
       end
 
       return
@@ -2947,36 +2960,36 @@ concommand.Add('cwc', function(player, command, arguments)
       local target = _player.Find(arguments[2])
 
       if target then
+        if !arguments[3] then print("You haven't entered any flags!") return end
+
         if string.find(arguments[3], 'a') or string.find(arguments[3], 's') or string.find(arguments[3], 'o') then
-          cw.player:Notify(player, L('Command_CannotTakeAdminFlags'))
+          MsgC(Color(255, 100, 0, 255), "You cannot take 'o', 'a' or 's' flags!\n")
 
           return
         end
-
-        if !arguments[3] then print("You haven't entered any flags!") return end
 
         cw.player:TakeFlags(target, arguments[3])
 
         print("Console took '"..arguments[3].."' flags from "..target:Name()..'.')
         cw.player:NotifyAll(L('Console_TookFlags', target:Name(), arguments[3]))
       else
-        MsgC(Color(255, 100, 0, 255), arguments[2]..' is not a valid character!\n')
+        MsgC(Color(255, 100, 0, 255), targetName..' is not a valid character!\n')
       end
 
       return
     -- Everything else
     else
-      MsgC(Color(255, 100, 0, 255), "'"..arguments[1].."' command not found!\n")
+      MsgC(Color(255, 100, 0, 255), "'"..tostring(arguments[1]).."' command not found!\n")
     end
 
   -- if not too bad, players are not allowed to use this swag
   else
-    cw.player.Notify(player, L('Console_NotAllowed'))
+    cw.player:Notify(player, L('Console_NotAllowed'))
   end
 end)
 
 concommand.Add('cwDeathCode', function(player, command, arguments)
-  if player.cwDeathCodeIdx then
+  if IsValid(player) and player.cwDeathCodeIdx then
     if arguments and tonumber(arguments[1]) == player.cwDeathCodeIdx then
       player.cwDeathCodeAuth = true
     end

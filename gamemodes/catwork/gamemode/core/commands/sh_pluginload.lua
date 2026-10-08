@@ -14,7 +14,7 @@ COMMAND.arguments = 1
 function COMMAND:OnRun(player, arguments)
   local pluginTable = plugin.FindByID(arguments[1])
 
-  if !plugin then
+  if !pluginTable then
     cw.player:Notify(player, L('PluginManage_NotValid'))
     return
   end

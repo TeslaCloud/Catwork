@@ -31,6 +31,8 @@ function ENT:Think()
   if !self:IsInWorld() then
     self:Remove()
   end
+
+  return true
 end
 
 --- Always transmits the shipment to every client.

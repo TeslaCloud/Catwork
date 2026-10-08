@@ -23,7 +23,7 @@ function COMMAND:OnRun(player, arguments)
       and (forcedAnimation.animation == 'd1_t03_tenements_look_out_window_idle'
       or forcedAnimation.animation == 'd1_t03_lookoutwindow') then
         cwEmoteAnims:MakePlayerExitStance(player)
-      elseif !forcedAnimation or !cwEmoteAnims.stanceList[forcedAnimation] then
+      elseif !forcedAnimation or !cwEmoteAnims.stanceList[forcedAnimation.animation] then
         if player:Crouching() then
           cw.player:Notify(player, L('EmoteAnims_CannotWhileCrouching'))
         else

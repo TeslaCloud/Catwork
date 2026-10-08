@@ -13,16 +13,23 @@ end
 
 --- Called every second; spawns garbage at the spawn points whose respawn delay has passed.
 --
--- A point only spawns when `CanSpawnGarbage` allows it, then waits for the
--- `garbage_respawn_delay` config before the next pile.
+-- A point only spawns when its last pile is gone and `CanSpawnGarbage` allows it, then waits
+-- for the `garbage_respawn_delay` config before the next pile. A point that something else
+-- blocks is looked at again five seconds later.
 function cwGarbage:OneSecond()
+  local points = self.garbagePoints
+
+  if !points then return end
+
   local curTime = CurTime()
 
-  for k, v in pairs(self.garbagePoints) do
-    if v and curTime > v.nextSpawn then
+  for k, v in ipairs(points) do
+    if curTime > v.nextSpawn and !IsValid(self.piles[v]) then
       if hook.Run('CanSpawnGarbage', v.position) then
         self:SpawnGarbage(v)
         v.nextSpawn = curTime + math.Round(config.GetVal('garbage_respawn_delay'))
+      else
+        v.nextSpawn = curTime + 5
       end
     end
   end
@@ -76,7 +83,7 @@ function cwGarbage:PlayerTakeGarbage(player, entity)
   end
 
   local chosenEnt = self.stored[math.random(1, #self.stored)]
-  local chance = math.random(1, 100) - cw.attributes:Get(player, ATB_SCAVENGER, nil, true)
+  local chance = math.random(1, 100) - (cw.attributes:Get(player, ATB_SCAVENGER, nil, true) or 0)
 
   local roll, roll2, roll3 = math.random(0, 100), math.random(0, 100), math.random(0, 100)
 
@@ -86,9 +93,7 @@ function cwGarbage:PlayerTakeGarbage(player, entity)
     chosenEnt = math.random(200, 1500)
   elseif roll == 33 and roll2 == 78 and roll3 == 0 and math.random(0, 100) == 99 then
     for i = 1, 10 do
-      local itemTable = item.CreateInstance('weapon_rpg')
-
-      local success, value = player:GiveItem(itemTable, true)
+      player:GiveItem('weapon_rpg', true)
     end
 
     cw.player:Notify(player, L('Garbage_Jackpot'))

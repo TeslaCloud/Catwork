@@ -13,7 +13,7 @@ ITEM.description = '#ITEM_Paracetamol_Desc'
 
 --- Sets stamina to 100 and boosts endurance by 30 for two minutes.
 function ITEM:OnUse(player, itemEntity)
-  player:SetCharacterData('stamina', 100)
+  player:SetCharacterData('Stamina', 100)
   player:BoostAttribute(self.name, ATB_ENDURANCE, 30, 120)
 end
 

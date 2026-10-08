@@ -649,7 +649,10 @@ local faCodes = {
   ['fa-google-plus-official'] = 'f2b3',
   ['fa-font-awesome'] = 'f2b4'
 }
+
+-- The characters of the icons used so far, by icon name.
 local buffer = {}
+local colorWhite = Color(255, 255, 255)
 
 cw.fonts:Add('cwFontAwesome', {
   font = 'FontAwesome',
@@ -666,16 +669,20 @@ cw.fonts:Add('cwFontAwesome', {
 -- @return [String The icon's UTF-8 character, or `id` unchanged if it is not a known icon]
 -- @see cw.FontIcons:Draw
 function cw.FontIcons:GetIcon(id)
-  if faCodes[id] then
-    if !buffer[id] then
-      local rawCode = faCodes[id]
-      buffer[id] = util.HexToDecimal(rawCode)
+  local icon = buffer[id]
+
+  if !icon then
+    local rawCode = faCodes[id]
+
+    if !rawCode then
+      return id
     end
 
-    return string.utf8char(buffer[id])
+    icon = string.utf8char(util.HexToDecimal(rawCode))
+    buffer[id] = icon
   end
 
-  return id
+  return icon
 end
 
 --- Draws a Font Awesome icon.
@@ -704,8 +711,5 @@ function cw.FontIcons:Draw(id, x, y, size, color)
 
   if !faCodes[id] then return end
 
-  size = size or 16
-  color = color or Color(255, 255, 255)
-
-  draw.SimpleText(self:GetIcon(id), cw.fonts:GetSize('cwFontAwesome', size), x, y, color)
+  draw.SimpleText(self:GetIcon(id), cw.fonts:GetSize('cwFontAwesome', size or 16), x, y, color or colorWhite)
 end

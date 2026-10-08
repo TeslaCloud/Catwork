@@ -2,8 +2,6 @@
 
 include('shared.lua')
 
-local glowMaterial = Material('sprites/glow04_noz')
-
 --- Draws the lock model.
 function ENT:Draw()
   self:DrawModel()

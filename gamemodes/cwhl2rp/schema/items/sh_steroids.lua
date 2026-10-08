@@ -13,7 +13,7 @@ ITEM.description = '#ITEM_Steroids_Desc'
 
 --- Sets stamina to 100 and boosts strength by 30 for seven minutes.
 function ITEM:OnUse(player, itemEntity)
-  player:SetCharacterData('stamina', 100)
+  player:SetCharacterData('Stamina', 100)
   player:BoostAttribute(self.name, ATB_STRENGTH, 30, 420)
 end
 

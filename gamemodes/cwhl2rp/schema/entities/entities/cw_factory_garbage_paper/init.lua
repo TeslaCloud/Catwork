@@ -19,7 +19,7 @@ function ENT:Initialize()
   self:SetMaterial('models/props_combine/tprotato2_sheet')
   local phys = self:GetPhysicsObject()
 
-  if phys then
+  if IsValid(phys) then
     phys:SetMass(120)
     phys:Wake()
   end
@@ -57,11 +57,15 @@ function ENT:CanGarbageUsed(item)
 end
 
 --- Returns the corners of the box above the recycler that garbage is collected from.
--- @return [List<Vector> The two opposite corners, as passed to `ents.FindInBox`]
+-- @return [List<Vector> The minimum and maximum corners, as passed to `ents.FindInBox`]
 function ENT:GetSearchPos()
   local up, right, forward = self:GetUp(), self:GetRight(), self:GetForward()
   local pos1 = self:GetPos() + (up * 23) + (right * 18) + (forward * 22)
   local pos2 = self:GetPos() + (up * -0.5) + (right * -18) + (forward * 6)
+
+  -- ents.FindInBox needs the corners sorted, whichever way the recycler is turned.
+  OrderVectors(pos1, pos2)
+
   return { pos1, pos2 }
 end
 
@@ -81,6 +85,7 @@ function ENT:StartWork()
     local i = self.WORK_TIME - self:GetStopWorkTime()
     self:SetStartWorkTime(CurTime() - i)
     self:SetNextWorkTime((CurTime() + self.WORK_TIME) - i)
+    self.NextGarbageDecrease = CurTime() + (self:GetStopWorkTime() - 5) / self.METAL_GARBAGE_COUNT_START
   end
 
   self:SetIsWorking(true)
@@ -91,11 +96,12 @@ end
 --- Moves the collected garbage into the eject storage entity and empties the recycler.
 --
 -- The storage is found by the creation ID set with `SetEjectStorage`. Does nothing while working or
--- paused, or when the storage does not exist. Items that would push a known container over its weight
--- limit are dropped on top of it instead.
+-- paused, when the storage does not exist or without the Storage plugin. Items that would push a known
+-- container over its weight limit are dropped on top of it instead.
 function ENT:Eject()
   if self:GetIsWorking() then return end
   if self:GetStopWorkTime() > 0 then return end
+  if !cwStorage then return end
 
   local id = self:GetEjectStorage()
   local ent = nil
@@ -115,18 +121,18 @@ function ENT:Eject()
     ent.cwInventory = {}
   end
 
+  local container = cwStorage.containerList[string.lower(ent:GetModel() or '')]
+
   for k, v in pairs(self.Garbages) do
     local itemTable = item.FindByID(v)
 
-    local weight = itemTable.storageWeight or itemTable.weight
-    local space = itemTable.storageSpace or itemTable.space
+    -- Saved garbage may name an item that is no longer registered.
+    if !itemTable then continue end
 
-    local model = string.lower(ent:GetModel())
+    if container then
+      local weight = itemTable.storageWeight or itemTable.weight
 
-    if cwStorage.containerList[model] then
-      local containerWeight = cwStorage.containerList[model][1]
-
-      if cw.inventory:CalculateWeight(ent.cwInventory) + math.max(weight, 0) > containerWeight then
+      if cw.inventory:CalculateWeight(ent.cwInventory) + math.max(weight, 0) > container[1] then
         cw.entity:CreateItem(nil, v, ent:GetPos() + ent:GetUp() * 20)
         continue
       end
@@ -141,22 +147,36 @@ end
 
 --- Pauses the current cycle, remembering the time left, and stops the work sounds.
 function ENT:StopWork()
-  self:SetStopWorkTime(self:GetNextWorkTime() - CurTime())
+  -- A time left above zero is what marks the recycler as paused.
+  self:SetStopWorkTime(math.max(self:GetNextWorkTime() - CurTime(), 0.01))
   self:SetIsWorking(false)
-  self.WorkSound:Stop()
+
+  if self.WorkSound then
+    self.WorkSound:Stop()
+  end
+
   self:EmitSound('plats/elevator_large_stop1.wav')
+  self.NextWorkSound = nil
   self.NextRandomSound = nil
   self.NextGarbageDecrease = nil
 end
 
---- Finishes the cycle, stops the work sounds and spawns a `paper` item at the product position.
+--- Finishes the cycle: stops the work sounds, uses up the collected garbage and spawns a `paper` item at the
+-- product position.
 function ENT:EndWork()
   self:SetIsWorking(false)
-  self.WorkSound:Stop()
+
+  if self.WorkSound then
+    self.WorkSound:Stop()
+  end
+
   self:EmitSound('plats/elevator_large_stop1.wav')
+  self.NextWorkSound = nil
   self.NextRandomSound = nil
   self.NextGarbageDecrease = nil
   self:SetStopWorkTime(0)
+  self:SetGarbageCount(0)
+  self.Garbages = {}
 
   cw.entity:CreateItem(nil, self.WORK_ITEM, self:GetProductPos())
 end

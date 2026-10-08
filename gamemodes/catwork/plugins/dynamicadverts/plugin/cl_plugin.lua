@@ -20,23 +20,30 @@ netstream.Hook('DynamicAdvertAdd', function(data)
 end)
 
 netstream.Hook('DynamicAdvertRemove', function(data)
-  for k, v in ipairs(cwDynamicAdverts.storedList) do
-    if v.position == data then
-      table.remove(cwDynamicAdverts.storedList, k)
+  local storedList = cwDynamicAdverts.storedList
+
+  for k = #storedList, 1, -1 do
+    if storedList[k].position == data then
+      table.remove(storedList, k)
     end
   end
 end)
+
+-- The first bytes of the image formats that `Material` can load from `data/`.
+local pngSignature = '\137PNG'
+local jpgSignature = '\255\216\255'
 
 --- Downloads an advert's image and stores it as a material on the advert.
 --
 -- The image is cached under `data/catwork/schemas/<schema>/plugins/adverts/<map>/` by the CRC of its URL
 -- and reused from there when present. Only `png` and `jpg`/`jpeg` URLs are supported; other extensions,
 -- and adverts that already have a material, are left alone. The download is asynchronous, so
--- `data.material` is set some time after the call.
+-- `data.material` is set some time after the call. A response that is not a `png` or `jpg` image is not
+-- cached.
 --
 -- @param data [Map The advert: `url` is read, `material` (an `IMaterial`) is set once loaded]
 function cwDynamicAdverts:CacheMaterial(data)
-  if data.material then return end
+  if data.material or !isstring(data.url) then return end
 
   local exploded = string.Explode('/', data.url)
   local extension = (string.GetExtensionFromFilename(exploded[#exploded]) or ''):lower():match('^%a+')
@@ -68,6 +75,11 @@ function cwDynamicAdverts:CacheMaterial(data)
   end
 
   http.Fetch(data.url, function(body, length, headers, code)
+    -- An error page saved as an image would be cached and shown as a missing texture from then on.
+    if code != 200 or (string.sub(body, 1, 4) != pngSignature and string.sub(body, 1, 3) != jpgSignature) then
+      return
+    end
+
     file.Write(path, body)
     data.material = Material('../data/'..path, 'noclamp smooth')
   end)

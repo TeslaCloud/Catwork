@@ -15,12 +15,10 @@ ITEM.business = true
 ITEM.description = '#Item_AllergyTablet_Description'
 ITEM.customFunctions = { 'Give' }
 
---- Cures the player's gastritis after 30 to 60 seconds and fires `PlayerHealed`.
+--- Cures the player's allergy after 30 to 60 seconds and fires `PlayerHealed`.
 function ITEM:OnUse(player, itemEntity)
-  if player:GetCharacterData('diseases') == 'gastrits' then
-    timer.Simple(math.random(30, 60), function()
-      player:SetCharacterData('diseases', 'none')
-    end)
+  if player:GetCharacterData('diseases') == 'allergy' then
+    cwDiseases:SetDiseaseDelayed(player, math.random(30, 60), 'allergy', 'none')
   end
 
   hook.Run('PlayerHealed', player, player, self)
@@ -32,24 +30,18 @@ if SERVER then
   -- Fires `PlayerHealed` with the giver as the healer. Returns `false` when no player is looked at.
   function ITEM:OnCustomFunction(player, name)
     if name == 'Give' then
-      local lookingPly = player:GetEyeTrace().Entity
+      local lookingPly = cwDiseases:FindPatient(player, self)
 
-      if lookingPly:IsPlayer() then
-        if lookingPly:GetCharacterData('diseases') == 'allergy' then
-          timer.Simple(math.random(30, 60), function()
-            lookingPly:SetCharacterData('diseases', 'none')
-          end)
-        end
+      if !lookingPly then return false end
 
-        player:TakeItem(player:FindItemByID('allergy_tablet'))
-        cw.player:Notify(player, L('Diseases_Gave_AllergyTablet'))
-
-        hook.Run('PlayerHealed', lookingPly, player, self)
-      else
-        cw.player:Notify(player, L('Diseases_MustLookAtPerson'))
-
-        return false
+      if lookingPly:GetCharacterData('diseases') == 'allergy' then
+        cwDiseases:SetDiseaseDelayed(lookingPly, math.random(30, 60), 'allergy', 'none')
       end
+
+      player:TakeItem(self)
+      cw.player:Notify(player, L('Diseases_Gave_AllergyTablet'))
+
+      hook.Run('PlayerHealed', lookingPly, player, self)
     end
   end
 end

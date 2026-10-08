@@ -15,10 +15,10 @@ function COMMAND:OnRun(player, arguments)
       local model = string.lower(trace.Entity:GetModel())
 
       if cwStorage.containerList[model] then
-        if !trace.Entity.inventory then
+        if !trace.Entity.cwInventory then
           cwStorage.storage[trace.Entity] = trace.Entity
 
-          trace.Entity.inventory = {}
+          trace.Entity.cwInventory = {}
           cwStorage:SaveStorage()
         end
 

@@ -46,11 +46,16 @@ cw.icon:PlayerSet('STEAM_0:0:26343107', 'Helly', 'data/catwork/icon_luna.png')
 --[[  (нет)  ]] --
 
 netstream.Hook('PlayerSetCustomIcon', function(player, iconData, bReset)
-  if IsValid(player) and player:IsPlayer() then
+  if IsValid(player) and player:IsPlayer() and istable(iconData) then
     local icon = iconData.icon
     local path = iconData.path
 
+    if !isstring(icon) or !isstring(path) then return end
+
     if icon:find('^http[s]?://') then
+      -- Downloaded icons are only ever written to, and deleted from, the gamemode's own data folder.
+      if !path:find('^catwork/[%w_%-%.]+$') then return end
+
       if bReset then
         if file.Exists(path, 'DATA') then
           file.Delete(path)
@@ -142,9 +147,15 @@ end)
 -- @param path [String The destination, relative to the `DATA` folder]
 function Schema:DownloadMaterial(url, path)
   if !file.Exists(path, 'DATA') then
-    http.Fetch(url, function(result)
-      if result then
+    http.Fetch(url, function(result, size, headers, code)
+      -- An error page must not be saved as the image, or it would never be downloaded again.
+      if result and code == 200 then
         file.Write(path, result)
+
+        -- Anything drawn before the download finished has cached the missing material.
+        if cw.core.CachedMaterial then
+          cw.core.CachedMaterial['data/'..path] = nil
+        end
       end
     end)
   end
@@ -228,10 +239,11 @@ function Schema:AddCombineDisplayLine(text, color)
     end
 
     if color or !cw.client:GetSharedVar('IsBiosignalGone') then
-      table.insert(self.combineDisplayLines, { '<:: '..cw.lang:TranslateText(text)..' ::>', CurTime() + 8, 5, color })
+      -- The third value is how many bytes are typed out so far, starting with the opening bracket.
+      table.insert(self.combineDisplayLines, { '<:: '..cw.lang:TranslateText(text)..' ::>', CurTime() + 8, 4, color })
     end
 
-    if color == nil then
+    if color == nil and cwCTO then
       cwCTO:UpdateBiosignalLocations()
     end
   end

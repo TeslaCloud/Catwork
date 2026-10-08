@@ -7,6 +7,11 @@
 -- sub-panel such as `cw.characterList`. The community and forum buttons are driven by the `community_*` and `forum_*`
 -- config keys, and most steps can be overridden by theme hooks like `PreCharacterMenuInit`.
 
+-- Reused every frame by `PANEL:Paint` instead of allocating new colors.
+local barColor = Color(0, 0, 0, 100)
+local progressBarColor = Color(0, 0, 0, 100)
+local stepTextColor = Color(255, 255, 255, 200)
+
 local PANEL = {}
 
 --- Builds the main menu with its title, buttons and character model preview.
@@ -161,6 +166,10 @@ function PANEL:Init()
     self.previousButton:SetFont(tinyTextFont)
     self.previousButton:SetText(cw.lang:TranslateText('#CharCreation_Previous'):utf8upper())
     self.previousButton:SetCallback(function(panel)
+      if IsValid(self.fadingPanel) then
+        return
+      end
+
       if !cw.character:IsCreationProcessActive() then
         local activePanel = cw.character:GetActivePanel()
 
@@ -180,6 +189,10 @@ function PANEL:Init()
     self.nextButton:SetFont(tinyTextFont)
     self.nextButton:SetText(cw.lang:TranslateText('#CharCreation_Next'):utf8upper())
     self.nextButton:SetCallback(function(panel)
+      if IsValid(self.fadingPanel) then
+        return
+      end
+
       if !cw.character:IsCreationProcessActive() then
         local activePanel = cw.character:GetActivePanel()
 
@@ -289,17 +302,11 @@ function PANEL:ReturnToMainMenu()
   local panel = cw.character:GetActivePanel()
 
   if panel then
-  --	if (CW_CONVAR_FADEPANEL:GetInt() == 1) then
     panel:FadeOut(0.5, function()
       cw.character.activePanel = nil
-        panel:Remove()
+      panel:Remove()
       self:FadeInTitle()
     end)
-
---		else
---			cw.character.activePanel = nil
-  --		panel:Remove()
---		end
   else
     self:FadeInTitle()
   end
@@ -338,6 +345,8 @@ function PANEL:FadeOutTitle()
     self.loadButton:FadeOut(0.5)
     self.forumButton:FadeOut(0.5)
     self.disconnectButton:FadeOut(0.5)
+
+    self.bTitleHidden = true
   end
 end
 
@@ -353,6 +362,8 @@ function PANEL:FadeInTitle()
     self.loadButton:FadeIn(0.5)
     self.forumButton:FadeIn(0.5)
     self.disconnectButton:FadeIn(0.5)
+
+    self.bTitleHidden = false
   end
 end
 
@@ -382,47 +393,45 @@ function PANEL:OpenPanel(vguiName, childData, Callback)
       y = ScrH() * 0.11
     end
 
-    if panel then
-      panel:FadeOut(0.5, function()
-        panel:Remove() self.childData = childData
-
-        cw.character.activePanel = vgui.Create(vguiName, self)
-        cw.character.activePanel:SetAlpha(0)
-        cw.character.activePanel:FadeIn(0.5)
-        cw.character.activePanel:MakePopup()
-
-        cw.character.activePanel:SetPos(ScrW() * 0.2, y)
-
-        if Callback then
-          Callback(cw.character.activePanel)
-        end
-
-        if childData then
-          cw.character.activePanel.bIsCreationProcess = true
-          cw.character:FadeInNavigation()
-        end
-      end)
-    else
+    local function ShowPanel()
       self.childData = childData
-      self:FadeOutTitle()
 
-      cw.character.activePanel = vgui.Create(vguiName, self)
-      cw.character.activePanel:SetAlpha(0)
-      cw.character.activePanel:FadeIn(0.5)
-      cw.character.activePanel:MakePopup()
-      cw.character.activePanel:SetPos(ScrW() * 0.2, y)
+      local activePanel = vgui.Create(vguiName, self)
+
+      cw.character.activePanel = activePanel
+
+      activePanel:SetAlpha(0)
+      activePanel:FadeIn(0.5)
+      activePanel:MakePopup()
+      activePanel:SetPos(ScrW() * 0.2, y)
 
       if Callback then
-        Callback(cw.character.activePanel)
+        Callback(activePanel)
       end
 
       if childData then
-        cw.character.activePanel.bIsCreationProcess = true
+        activePanel.bIsCreationProcess = true
         cw.character:FadeInNavigation()
       end
     end
 
-    --[[Fade out the model panel, we probably don't need it now! --]]
+    if panel then
+      -- The navigation buttons ignore clicks until the old panel is gone, or a second click would skip a step.
+      self.fadingPanel = panel
+
+      panel:FadeOut(0.5, function()
+        self.fadingPanel = nil
+        panel:Remove()
+
+        ShowPanel()
+      end)
+    else
+      self:FadeOutTitle()
+
+      ShowPanel()
+    end
+
+    --[[ Fade out the model panel, we probably don't need it now! --]]
     self:FadeOutModelPanel()
 
     cw.theme:Call('PostCharacterMenuOpenPanel', self)
@@ -451,15 +460,14 @@ function PANEL:Paint(w, h)
     local backgroundColor = cw.option:GetColor('background')
     local foregroundColor = cw.option:GetColor('foreground')
     local colorTargetID = cw.option:GetColor('target_id')
-    local tinyTextFont = cw.option:GetFont('menu_text_tiny')
     local colorWhite = cw.option:GetColor('white')
-    local scrW, scrH = ScrW(), ScrH()
+    local scrW = ScrW()
     local height = (self.createButton.y * 2) + self.createButton:GetTall()
-    local x, y = x, 0
+    local y = 0
 
-    cw.core:DrawSimpleGradientBox(0, 0, y, scrW, height, Color(
-      backgroundColor.r, backgroundColor.g, backgroundColor.b, 100
-    ))
+    barColor.r, barColor.g, barColor.b = backgroundColor.r, backgroundColor.g, backgroundColor.b
+
+    cw.core:DrawSimpleGradientBox(0, 0, y, scrW, height, barColor)
 
     surface.SetDrawColor(
       foregroundColor.r, foregroundColor.g, foregroundColor.b, 200
@@ -473,21 +481,20 @@ function PANEL:Paint(w, h)
       local progressHeight = 20
       local creationInfo = cw.character:GetCreationInfo()
       local progressY = y + height + 1
-      local boxColor = Color(
-        math.min(backgroundColor.r + 50, 255),
-        math.min(backgroundColor.g + 50, 255),
-        math.min(backgroundColor.b + 50, 255),
-        100
+
+      progressBarColor.r = math.min(backgroundColor.r + 50, 255)
+      progressBarColor.g = math.min(backgroundColor.g + 50, 255)
+      progressBarColor.b = math.min(backgroundColor.b + 50, 255)
+
+      cw.core:DrawSimpleGradientBox(0, 0, progressY, scrW, progressHeight, progressBarColor)
+
+      surface.SetDrawColor(
+        foregroundColor.r, foregroundColor.g, foregroundColor.b, 150
       )
 
-      cw.core:DrawSimpleGradientBox(0, 0, progressY, scrW, progressHeight, boxColor)
-
-        for i = 1, numCreationPanels do
-          surface.SetDrawColor(
-            foregroundColor.r, foregroundColor.g, foregroundColor.b, 150
-          )
-          surface.DrawRect((scrW / numCreationPanels) * i, progressY, 1, progressHeight)
-        end
+      for i = 1, numCreationPanels do
+        surface.DrawRect((scrW / numCreationPanels) * i, progressY, 1, progressHeight)
+      end
 
       cw.core:DrawSimpleGradientBox(
         0, 0, progressY, (scrW / 100) * creationProgress, progressHeight, colorTargetID
@@ -500,17 +507,20 @@ function PANEL:Paint(w, h)
         surface.DrawRect((scrW / 100) * creationProgress, progressY, 1, progressHeight)
       end
 
+      stepTextColor.r, stepTextColor.g, stepTextColor.b = colorWhite.r, colorWhite.g, colorWhite.b
+
       for i = 1, numCreationPanels do
         local Condition = creationPanels[i].Condition
         local textX = (scrW / numCreationPanels) * (i - 0.5)
         local textY = progressY + (progressHeight / 2)
-        local color = Color(colorWhite.r, colorWhite.g, colorWhite.b, 200)
 
         if Condition and !Condition(creationInfo) then
-          color = Color(colorWhite.r, colorWhite.g, colorWhite.b, 100)
+          stepTextColor.a = 100
+        else
+          stepTextColor.a = 200
         end
 
-        cw.core:DrawSimpleText(creationPanels[i].friendlyName, textX, textY - 1, color, 1, 1)
+        cw.core:DrawSimpleText(creationPanels[i].friendlyName, textX, textY - 1, stepTextColor, 1, 1)
       end
 
       surface.SetDrawColor(
@@ -535,7 +545,6 @@ function PANEL:Think()
     local bIsLoading = cw.character:IsPanelLoading()
     local schemaLogo = cw.option:GetKey('schema_logo')
     local activePanel = cw.character:GetActivePanel()
-    local fault = cw.character:GetFault()
 
     if hook.Run('ShouldDrawCharacterBackgroundBlur') then
       cw.core:RegisterBackgroundBlur(self, self.createTime)
@@ -584,32 +593,32 @@ function PANEL:Think()
       self.titleLabel:SetVisible(false)
     end
 
-    if config.GetVal('community_button_enable') then
-      self.communityButton:SetVisible(true)
-    else
-      self.communityButton:SetVisible(false)
+    local bCommunityEnabled = config.GetVal('community_button_enable') and true or false
+    local bForumEnabled = config.GetVal('forum_button_enable') and true or false
+    local communityButton = self.communityButton
+    local forumButton = self.forumButton
+
+    -- Once the title has faded out these two stay hidden, or they would be invisible but still clickable.
+    communityButton:SetVisible(bCommunityEnabled and (!self.bTitleHidden or communityButton:GetAlpha() > 0))
+    forumButton:SetVisible(bForumEnabled and (!self.bTitleHidden or forumButton:GetAlpha() > 0))
+
+    -- The leave button takes the forum button's place while that one is disabled.
+    if self.bForumEnabled != bForumEnabled then
+      self.bForumEnabled = bForumEnabled
+
+      if bForumEnabled then
+        self.disconnectButton:SetPos(ScrW() * 0.1, forumButton.y + (ScrH() * 0.07))
+      else
+        self.disconnectButton:SetPos(ScrW() * 0.1, forumButton.y)
+      end
     end
 
-    if config.GetVal('forum_button_enable') then
-      self.forumButton:SetVisible(true)
-    else
-      self.forumButton:SetVisible(false)
-    end
+    local communityName = config.GetVal('community_name')
 
-    if !config.GetVal('forum_button_enable') then
-      self.disconnectButton:SetPos(ScrW() * 0.1, self.forumButton.y)
-    end
+    if isstring(communityName) and self.communityName != communityName then
+      self.communityName = communityName
 
-    if config.GetVal('community_name') then
-      self.communityButton:SetText(string.utf8upper(config.GetVal('community_name')))
-    elseif config.GetVal('community_link') then
-      self.communityButton:SetCallback(function(panel)
-        gui.OpenURL(string.lower(config.GetVal('community_link')))
-      end)
-    elseif config.GetVal('community_link') then
-      self.forumButton:SetCallback(function(panel)
-        gui.OpenURL(string.lower(config.GetVal('forum_link')))
-      end)
+      communityButton:SetText(string.utf8upper(communityName))
     end
 
     if characters == 0 or bIsLoading then
@@ -625,11 +634,15 @@ function PANEL:Think()
       self.createButton:SetDisabled(false)
     end
 
+    local disconnectText = '#MainMenu_Leave'
+
     if cw.client:HasInitialized() and !cw.character:IsMenuReset() then
-      self.disconnectButton:SetText('#CharCreation_Cancel')
-      self.disconnectButton:SizeToContents()
-    else
-      self.disconnectButton:SetText('#MainMenu_Leave')
+      disconnectText = '#CharCreation_Cancel'
+    end
+
+    if self.disconnectText != disconnectText then
+      self.disconnectText = disconnectText
+      self.disconnectButton:SetText(disconnectText)
       self.disconnectButton:SizeToContents()
     end
 

@@ -288,12 +288,12 @@ end
 
 --- Removes a page from a category, or the whole category.
 --
--- Removing the last page also removes the category. Rebuilds the directory
--- panel if it is open. Does nothing once the client has finished booting.
+-- Removing the last page also removes the category, unless it has child
+-- categories. Rebuilds the directory panel if it is open. Does nothing once the
+-- client has finished booting.
 -- @param category [String Name of the category]
 -- @param uniqueID=nil [Number ID returned by `cw.directory:AddCode`; when `nil` the category is removed]
--- @param forceRemove=nil [Boolean Whether to skip the check for child categories; the check does not
--- currently keep a category with children, so it is removed either way]
+-- @param forceRemove=nil [Boolean Whether to remove the category even when it has child categories]
 function cw.directory:RemoveCode(category, uniqueID, forceRemove)
   if _G['ClockworkClientsideBooted'] then return end
 
@@ -317,7 +317,7 @@ function cw.directory:RemoveCode(category, uniqueID, forceRemove)
         if !forceRemove and !categoryTable.isHTML then
           for k, v in pairs(self.stored) do
             if v.parent == category then
-              removeCategory = true
+              removeCategory = false
 
               break
             end

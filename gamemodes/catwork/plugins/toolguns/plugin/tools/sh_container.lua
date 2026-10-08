@@ -21,68 +21,32 @@ TOOL.ClientConVar['contpassword'] = 'password'
 
 --- Fills the container a trace hit with random items from the tool's fill category.
 --
--- Only works on props whose model is in `cwStorage.containerList`; props without an inventory are made
--- into storage first. Items from `cwStorage:GetRandomItem` are added until the inventory weighs at least
--- the container's capacity divided by `6 - scale`, where the `contfillscale` setting (1-5) is the scale.
--- The owner is notified of the result. Does nothing on the client.
+-- Only works on props whose model is in `cwStorage.containerList`. `cwStorage:FillContainer` adds the items,
+-- with the `contfillscale` setting (1-5) as the scale. The owner is notified of the result. Does nothing on
+-- the client.
 --
 -- @param entity [Map The trace result whose `Entity` is the container]
 -- @return [Boolean True on the client, otherwise nil]
 function TOOL:AddItems(entity)
-  local trace = entity
-  local scale = self:GetClientNumber('contfillscale', 1)
-  local category = self:GetClientInfo('fillcategory')
+  local container = entity.Entity
   local player = self:GetOwner()
 
   if CLIENT then return true end
 
-  if scale then
-    scale = math.Clamp(math.Round(scale), 1, 5)
+  if !IsValid(container) or !cw.entity:IsPhysicsEntity(container)
+  or !cwStorage.containerList[string.lower(container:GetModel())] then
+    cw.player:Notify(player, L('Container_NotValid'))
 
-    if IsValid(trace.Entity) then
-      if cw.entity:IsPhysicsEntity(trace.Entity) then
-        local model = string.lower(trace.Entity:GetModel())
+    return
+  end
 
-        if cwStorage.containerList[model] then
-          if !trace.Entity.cwInventory then
-            cwStorage.storage[trace.Entity] = trace.Entity
+  local scale = self:GetClientNumber('contfillscale', 1)
+  local category = self:GetClientInfo('fillcategory')
 
-            trace.Entity.cwInventory = {}
-          end
-
-          local containerWeight = cwStorage.containerList[model][1] / (6 - scale)
-          local weight = cw.inventory:CalculateWeight(trace.Entity.cwInventory)
-
-          if !category or cwStorage:CategoryExists(category) then
-            while weight < containerWeight do
-              local randomItem = cwStorage:GetRandomItem(category)
-
-              if randomItem then
-                cw.inventory:AddInstance(
-                  trace.Entity.cwInventory, item.CreateInstance(randomItem[1])
-                )
-
-                weight = weight + randomItem[2]
-              end
-            end
-
-            cw.player:Notify(player, L('Container_Filled'))
-            return
-          else
-            cw.player:Notify(player, L('Container_CategoryNotExist'))
-            return
-          end
-        end
-
-        cw.player:Notify(player, L('Container_NotValid'))
-      else
-        cw.player:Notify(player, L('Container_NotValid'))
-      end
-    else
-      cw.player:Notify(player, L('Container_NotValid'))
-    end
+  if cwStorage:FillContainer(container, scale, category) then
+    cw.player:Notify(player, L('Container_Filled'))
   else
-    cw.player:Notify(player, L('Container_NotValidScale'))
+    cw.player:Notify(player, L('Container_CategoryNotExist'))
   end
 end
 
@@ -191,13 +155,13 @@ end
 
 --- Runs the selected mode on the container the owner is looking at: fill, set message, name or password.
 --
--- Admins only.
+-- Admins only; filling is for superadmins only, like `/ContFill`.
 function TOOL:LeftClick(trace)
   local mode = self:GetClientNumber('mode')
   local player = self:GetOwner()
   local container = player:GetEyeTraceNoCursor()
 
-  if !player:IsAdmin() then
+  if !player:IsAdmin() or (mode == 1 and !player:IsSuperAdmin()) then
     return false
   end
 
@@ -314,7 +278,7 @@ if CLIENT then
   -- @param tool [String The console command name]
   -- @param args [List<String> Command arguments; the first is the mode number (1-4)]
   function cont_setmode(player, tool, args)
-    if LocalPlayer():GetInfoNum('containertool_mode', 3) != args[1] then
+    if LocalPlayer():GetInfoNum('containertool_mode', 3) != tonumber(args[1]) then
       RunConsoleCommand('containertool_mode', args[1])
       timer.Simple(0.05, function() cont_updatepanel() end)
     end

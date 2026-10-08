@@ -24,21 +24,24 @@ end
 -- lists the seed and crop IDs]
 function PLUGIN:PlayerHarvest(player, uniqueID)
   local itemTable = item.FindByID(uniqueID)
-  local chance = math.random(1, 100) + math.Round(cw.attributes:Fraction(player, ATB_FARM, 50))
+
+  if !itemTable or !itemTable.Harvest then return end
+
+  local chance = math.random(1, 100) + math.Round(cw.attributes:Fraction(player, ATB_FARM, 50) or 0)
 
   if chance >= 40 then
     local seed = itemTable.Harvest[1]
     local harvest = itemTable.Harvest[2]
 
-    player:FastGiveItem(seed)
+    player:GiveItem(seed, true)
 
     if chance > 100 then
-      player:FastGiveItem(seed)
+      player:GiveItem(seed, true)
     end
 
     if chance >= 50 then
       for i = 1, math.Clamp(math.Round((chance - 50) / 25), 1, 4) do
-        player:FastGiveItem(harvest)
+        player:GiveItem(harvest, true)
       end
     end
 

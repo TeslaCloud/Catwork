@@ -4,6 +4,11 @@
 -- sets what a click does. A collapsible button toggles between showing and hiding its text when clicked, and `FadeIn`
 -- and `FadeOut` animate its alpha. It is the base of the main menu's buttons, such as `cw.menuButton`.
 
+local colorWhite = Color(255, 255, 255)
+local colorOutline = Color(8, 8, 8)
+local colorBackground = Color(35, 35, 35)
+local colorBackgroundHovered = Color(60, 60, 60)
+
 local PANEL = {}
 
 PANEL.isCollapsible = false
@@ -122,33 +127,36 @@ end
 
 --- Draws the background, when enabled, then the icon and text, highlighted when hovered.
 function PANEL:Paint(w, h)
-  if self.drawBackground then
-    local drawColor = Color(35, 35, 35)
+  local bHovered = self:IsHovered() and self.shouldHover
 
-    if self:IsHovered() and self.shouldHover then
-      drawColor = Color(60, 60, 60)
+  if self.drawBackground then
+    local drawColor = colorBackground
+
+    if bHovered then
+      drawColor = colorBackgroundHovered
     else
-      self:OverrideTextColor(Color(255, 255, 255))
+      self:OverrideTextColor(colorWhite)
     end
 
-    draw.RoundedBox(0, 0, 0, w, h, Color(8, 8, 8))
+    draw.RoundedBox(0, 0, 0, w, h, colorOutline)
     draw.RoundedBox(0, 1, 1, w - 2, h - 2, drawColor)
   end
 
-  local textColor = Color(255, 255, 255)
+  local textColor = colorWhite
 
-  if self:IsHovered() and self.shouldHover then
-    textColor = cw.option:GetColor('information')
+  if bHovered then
+    textColor = cw.option:GetColor('information') or colorWhite
   end
 
+  textColor = self.overrideColor or textColor
+
   if self.iconID then
-    // draw.RoundedBox(0, self.iconX, self.iconY, self.iconSize, self.iconSize, Color(255, 0, 0)) --debug
     cw.FontIcons:Draw(
       self.iconID,
       (self.iconX or 0) + 1,
       (self.iconY or 0) - 1,
       (self.iconH or 16),
-      (self.overrideColor or textColor or Color(255, 255, 255))
+      textColor
     )
   end
 
@@ -165,30 +173,15 @@ function PANEL:Paint(w, h)
         (self.m_Font or 'Derma16'),
         (self.textOX or offsetX),
         (self.textOY or 0),
-        (self.overrideColor or textColor or Color(255, 255, 255))
+        textColor
       )
     end
   end
 end
 
-PANEL.wasOpen = true
-
 --- Shows the text only while the button is open.
 function PANEL:Think()
-  if self.isOpen then
-    self.shouldDrawText = true
-
-    if !self.wasOpen then
-      // self:SizeToText()
-    end
-  else
-    self.shouldDrawText = false
-    self.wasOpen = false
-
-    if self.iconW then
-      // self:SetSize((self.iconW + self.iconX * 2) or 32, (self.iconH + self.iconY * 2) or 32)
-    end
-  end
+  self.shouldDrawText = self.isOpen and true or false
 end
 
 --- Starts fading the button out and hiding it, playing the rollover sound.
@@ -247,20 +240,3 @@ function PANEL:OverrideTextColor(color)
 end
 
 vgui.Register('cwFAButton', PANEL, 'Panel')
-
-concommand.Add('cw_testButton', function()
-  local frame = vgui.Create('DFrame')
-  frame:SetSize(500, 500)
-  frame:SetPos(200, 200)
-  frame:MakePopup()
-
-  local button = vgui.Create('cwFAButton', frame)
-  button:SetDrawBackground(true)
-  button:SetSize(100, 32)
-  button:SetPos(100, 100)
-  button:SetIcon('bars')
-  button:SetIconSize(24, 24, 4, 4)
-  button:SetText('It works even if I put in a bunch of text!')
-  button:SizeToText()
-  button:SetOpen(false)
-end)

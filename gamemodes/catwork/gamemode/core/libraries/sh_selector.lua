@@ -11,7 +11,8 @@ cw.selector.COLOR_GREEN = Color(150, 215, 50, 255)
 cw.selector.COLOR_RED = Color(215, 50, 50, 255)
 
 --[[ Set the __index meta function of the class. --]]
-local CLASS_TABLE = { __index = CLASS_TABLE }
+local CLASS_TABLE = {}
+CLASS_TABLE.__index = CLASS_TABLE
 
 --- Creates a new selector, a numbered list of options the player picks with number keys.
 --
@@ -151,12 +152,11 @@ if SERVER then
 
   --- Sends the selector to its players and waits for their choice.
   --
-  -- Falls back to every player when `CLASS_TABLE:SetPlayer` was not called, but does so through the
-  -- undefined `g_Player`, which errors. Choosing an option other than Back, Next or Exit ends the
-  -- selector for that player.
+  -- Falls back to every player when `CLASS_TABLE:SetPlayer` was not called. Choosing an option other
+  -- than Back, Next or Exit ends the selector for that player.
   function CLASS_TABLE:Create()
     if !self.player then
-      self.player = g_Player.GetAll()
+      self.player = _player.GetAll()
     end
 
     netstream.Start(self.player, 'Selector', {
@@ -171,6 +171,8 @@ if SERVER then
   end
 
   netstream.Hook('Selector', function(player, data)
+    if !istable(data) then return end
+
     local text = data[3]
     local page = data[1]
     local key = data[2]

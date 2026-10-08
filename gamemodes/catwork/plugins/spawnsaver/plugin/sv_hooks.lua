@@ -48,10 +48,13 @@ function cwSpawnSaver:PostPlayerSpawn(player, bLightSpawn, bChangeClass, bFirstS
     local spawnPos = player:GetCharacterData('SpawnPoint')
 
     if spawnPos and config.GetVal('spawn_where_left') then
-      if spawnPos.map == game.GetMap() then
-        player:SetPos(Vector(spawnPos.x, spawnPos.y, spawnPos.z))
-        player:SetEyeAngles(spawnPos.angles)
+      if istable(spawnPos) and spawnPos.map == game.GetMap() then
         player:SetCharacterData('SpawnPoint', nil)
+        player:SetPos(Vector(spawnPos.x, spawnPos.y, spawnPos.z))
+
+        if isangle(spawnPos.angles) then
+          player:SetEyeAngles(spawnPos.angles)
+        end
       end
     end
   end

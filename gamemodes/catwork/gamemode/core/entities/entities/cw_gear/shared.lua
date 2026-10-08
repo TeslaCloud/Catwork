@@ -28,9 +28,9 @@ function ENT:GetRealPosition()
   local offsetAngle = self:GetOffsetAngle()
   local itemTable = self:GetItemTable()
   local player = self:GetPlayer()
-  local bone = player:LookupBone(self:GetBone())
+  local bone = player and player:LookupBone(self:GetBone())
 
-  if offsetVector and offsetAngle and player and bone then
+  if offsetVector and offsetAngle and bone then
     local position, angles = player:GetBonePosition(bone)
     local ragdollEntity = player:GetRagdollEntity()
 
@@ -48,6 +48,8 @@ function ENT:GetRealPosition()
     if ragdollEntity then
       position, angles = ragdollEntity:GetBonePosition(bone)
     end
+
+    if !position or !angles then return end
 
     local x = angles:Up() * offsetVector.x
     local y = angles:Right() * offsetVector.y

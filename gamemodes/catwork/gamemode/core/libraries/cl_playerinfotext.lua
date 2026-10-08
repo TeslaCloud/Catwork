@@ -81,8 +81,9 @@ end
 -- Call this from the `DestroyPlayerInfoText` hook.
 -- @param uniqueID [String Unique ID of the line]
 function cw.PlayerInfoText:Destroy(uniqueID)
-  for k, v in pairs(self.text) do
-    if v.uniqueID == uniqueID then
+  -- Backwards, so that removing an entry does not skip the one after it.
+  for k = #self.text, 1, -1 do
+    if self.text[k].uniqueID == uniqueID then
       table.remove(self.text, k)
     end
   end
@@ -93,8 +94,8 @@ end
 -- Call this from the `DestroyPlayerInfoText` hook.
 -- @param uniqueID [String Unique ID of the line]
 function cw.PlayerInfoText:DestroySub(uniqueID)
-  for k, v in pairs(self.subText) do
-    if v.uniqueID == uniqueID then
+  for k = #self.subText, 1, -1 do
+    if self.subText[k].uniqueID == uniqueID then
       table.remove(self.subText, k)
     end
   end

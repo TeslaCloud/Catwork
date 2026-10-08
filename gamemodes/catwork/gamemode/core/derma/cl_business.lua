@@ -4,6 +4,8 @@
 -- Items are grouped by category and filtered with the `PlayerCanSeeBusinessItem` hook; their cost is scaled by the
 -- class or faction `costScale`. Clicking an item runs the `OrderShipment` command.
 
+local customBackgroundColor = Color(255, 255, 255, 150)
+
 local PANEL = {}
 
 --- Sizes the business menu tab to the menu, creates its list and builds it.
@@ -189,7 +191,7 @@ end
 
 --- Draws the custom entry's translucent white background.
 function PANEL:Paint(width, height)
-  cdraw.DrawBox(0, 0, width, height, Color(255, 255, 255, 150))
+  cdraw.DrawBox(0, 0, width, height, customBackgroundColor)
 
   return true
 end
@@ -210,7 +212,7 @@ local PANEL = {}
 function PANEL:Init()
   local FACTION = faction.FindByID(cw.client:GetFaction())
   local CLASS = cw.class:FindByID(cw.client:Team())
-  local costScale = CLASS.costScale or FACTION.costScale or 1
+  local costScale = (CLASS and CLASS.costScale) or (FACTION and FACTION.costScale) or 1
   local itemData = self:GetParent().itemData
     self:SetSize(48, 48)
     self.itemTable = itemData.itemTable

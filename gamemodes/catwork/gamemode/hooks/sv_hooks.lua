@@ -1,12 +1,22 @@
 --- Server-side gamemode hooks of the Catwork framework, defined on `GM`.
 --
 -- Covers start-up and the database connection (`Initialize`, `ClockworkInitialized`), the player lifecycle
--- (`PlayerInitialSpawn`, `PlayerSpawn`, `PlayerCharacterLoaded`, `PlayerDeath`), the `Tick`-driven `PlayerThink`,
--- `OnePlayerSecond` and `OneSecond`, damage (`EntityTakeDamage`), saving, Sandbox spawning, tool and physgun
--- permissions and `EntityHandleMenuOption`. Most of the rest is the default implementation of the framework's own
--- `PlayerCan*` and `PlayerAdjust*` hooks, which schemas and plugins override.
+-- (`PlayerInitialSpawn`, `PlayerSpawn`, `PlayerCharacterLoaded`, `PlayerDeath`), the `Tick`-driven `PlayerThink`
+-- and `OnePlayerSecond`, the timer-driven `OneSecond`, damage (`EntityTakeDamage`), saving, Sandbox spawning, tool
+-- and physgun permissions and `EntityHandleMenuOption`. Most of the rest is the default implementation of the
+-- framework's own `PlayerCan*` and `PlayerAdjust*` hooks, which schemas and plugins override.
 
 DEFINE_BASECLASS('gamemode_base')
+
+-- Dispositions for the values of a faction's `entRelationship` table.
+local relationTypes = {
+  like = D_LI,
+  fear = D_FR,
+  hate = D_HT
+}
+
+-- What NPC classes thought of each player before a faction relationship was applied, by Steam ID and class.
+local prevRelation
 
 --- Called when the server has initialized.
 --
@@ -29,12 +39,12 @@ function GM:Initialize()
   local database = config.GetVal('mysql_database')
   local dateInfo = os.date('*t')
   -- Matches at beginning of string, matches http:// or https://, no need to check twice
-  local host = string.gsub(config.GetVal('mysql_host'), '^http[s]?://', '', 1)
+  local host = string.gsub(config.GetVal('mysql_host') or '', '^http[s]?://', '', 1)
   local port = config.GetVal('mysql_port')
 
   cw.database.Module = 'mysqloo'
 
-  if !host or host == '' or host == ' ' or host == 'example.com' or host == 'sqlite' or host == 'example' then
+  if host == '' or host == ' ' or host == 'example.com' or host == 'sqlite' or host == 'example' then
     cw.database.Module = 'sqlite'
   end
 
@@ -71,10 +81,10 @@ function GM:Initialize()
   if useLocalMachineDate then
     dateInfo.year = dateInfo.year + (defaultDate.year - dateInfo.year)
 
-    table.Merge(cw.time, {
+    table.Merge(cw.date, {
       month = dateInfo.month,
       year = dateInfo.year,
-      day = dateInfo.yday
+      day = dateInfo.day
     })
   else
     table.Merge(cw.date, cw.core:RestoreSchemaData('date'))
@@ -90,17 +100,23 @@ function GM:Initialize()
 end
 
 timer.Create('CW:PlayerWaterChecker', 1, 0, function()
+  local curTime = CurTime()
+
   for k, v in ipairs(_player.GetAll()) do
-    if v.submerged then
-      local timeInWater = CurTime() - v.waterStartTime
-      local decrease = 6
+    if v.submerged and v:HasInitialized() and v:Alive() then
+      local stamina = v:GetCharacterData('Stamina')
 
-      if timeInWater > 5 then
-        v:SetCharacterData('Stamina', math.Clamp(v:GetCharacterData('Stamina') - decrease, 0, 100))
-      end
+      -- Stamina is character data of the stamina plugin; without it nobody runs out of breath.
+      if stamina then
+        if curTime - (v.waterStartTime or curTime) > 5 then
+          stamina = math.Clamp(stamina - 6, 0, 100)
 
-      if v:GetCharacterData('Stamina') <= 0 then
-        v:TakeDamage(7)
+          v:SetCharacterData('Stamina', stamina)
+        end
+
+        if stamina <= 0 then
+          v:TakeDamage(7)
+        end
       end
     end
   end
@@ -110,16 +126,14 @@ end)
 --
 -- Handles attribute progress and boosts, networks the player's flags, model, name, cash and
 -- drunk level, networks or removes clothes, runs `PlayerHealthRegenerate` when health
--- regeneration is enabled and `PlayerShouldHealthRegenerate` allows it, strips empty grenades
--- and expires drunk entries. When cash is disabled it zeroes the character's cash and wages.
+-- regeneration is enabled and `PlayerShouldHealthRegenerate` allows it and expires drunk
+-- entries. When cash is disabled it zeroes the character's cash and wages.
 -- @param player [Player The player being updated]
 -- @param curTime [Number The current `CurTime()`]
 -- @param infoTable [Map The player's per-think info table (`player.cwInfoTable`); fields such as
 -- `wages`, `runSpeed` and `inventoryWeight` can be changed to affect the player]
 function GM:OnePlayerSecond(player, curTime, infoTable)
-  local weaponClass = cw.player:GetWeaponClass(player)
   local color = player:GetColor()
-  local isDrunk = cw.player:GetDrunk(player)
 
   player:HandleAttributeProgress(curTime)
   player:HandleAttributeBoosts(curTime)
@@ -138,34 +152,24 @@ function GM:OnePlayerSecond(player, curTime, infoTable)
   end
 
   if config.GetVal('health_regeneration_enabled') and hook.Run('PlayerShouldHealthRegenerate', player) then
-    hook.Run('PlayerHealthRegenerate', player, health, maxHealth)
+    hook.Run('PlayerHealthRegenerate', player, player:Health(), player:GetMaxHealth())
   end
 
   if color.r == 255 and color.g == 0 and color.b == 0 and color.a == 0 then
     player:SetColor(Color(255, 255, 255, 255))
   end
 
-  for k, v in pairs(player:GetWeapons()) do
-    local ammoType = v:GetPrimaryAmmoType()
+  local drunkTab = player.cwDrunkTab
 
-    if ammoType == 'grenade' and player:GetAmmoCount(ammoType) == 0 then
-      player:StripWeapon(v:GetClass())
-    end
-  end
-
-  if player.cwDrunkTab then
-    for k, v in pairs(player.cwDrunkTab) do
-      if curTime >= v then
-        table.remove(player.cwDrunkTab, k)
+  if drunkTab then
+    for i = #drunkTab, 1, -1 do
+      if curTime >= drunkTab[i] then
+        table.remove(drunkTab, i)
       end
     end
   end
 
-  if isDrunk then
-    player:SetNetVar('IsDrunk', isDrunk)
-  else
-    player:SetNetVar('IsDrunk', 0)
-  end
+  player:SetNetVar('IsDrunk', cw.player:GetDrunk(player) or 0)
 
   if !config.GetVal('cash_enabled') then
     player:SetCharacterData('Cash', 0, true)
@@ -278,9 +282,10 @@ end
 --
 -- Hides the cash commands and zeroes prop and door costs when cash is disabled, hides the group
 -- commands when `use_own_group_system` is set, adds the gradient, schema logo and intro image
--- materials to the download list and registers Catwork tools with `gmod_tool`.
+-- materials to the download list, registers Catwork tools with `gmod_tool` and sets `sv_maxrate`
+-- to 80000.
 function GM:ClockworkInitialized()
-  local cashName = cw.option:GetKey('name_cash')
+  RunConsoleCommand('sv_maxrate', '80000')
 
   if !config.GetVal('cash_enabled') then
     cw.command:SetHidden('GiveCash', true)
@@ -337,8 +342,8 @@ end
 function GM:PlayerModelChanged(player, model)
   local hands = player:GetHands()
 
-  if IsValid(hands) and hands:IsValid() then
-    self:PlayerSetHandsModel(player, player:GetHands())
+  if IsValid(hands) then
+    self:PlayerSetHandsModel(player, hands)
   end
 end
 
@@ -578,7 +583,8 @@ end
 -- @param character [Character The character being created]
 -- @param inventory [Inventory The inventory to add items to]
 function GM:GetPlayerDefaultInventory(player, character, inventory)
-  local startingInv = faction.FindByID(character.faction).startingInv
+  local factionTable = faction.FindByID(character.faction)
+  local startingInv = factionTable and factionTable.startingInv
 
   if istable(startingInv) then
     for k, v in pairs(startingInv) do
@@ -752,8 +758,8 @@ end
 
 --- Called for each config key once the config has initialized, from `GM:Initialize`.
 --
--- Zeroes every item's cost when `cash_enabled` is off, turns off `sv_alltalk` when `local_voice`
--- is on, and sets `sv_maxrate` to 80000.
+-- Zeroes every item's cost when `cash_enabled` is off and turns off `sv_alltalk` when
+-- `local_voice` is on.
 -- @param key [String The config key]
 -- @param value [Any The config value]
 function GM:ClockworkConfigInitialized(key, value)
@@ -766,8 +772,6 @@ function GM:ClockworkConfigInitialized(key, value)
       RunConsoleCommand('sv_alltalk', '0')
     end
   end
-
-  RunConsoleCommand('sv_maxrate', '80000')
 end
 
 --- Called when a ConVar created with `cw.core:CreateConVar` has changed.
@@ -1061,24 +1065,28 @@ function GM:PlayerSpawn(player)
 
       if istable(FACTION.respawnInv) then
         local inventory = player:GetInventory()
-        local itemQuantity
 
         for k, v in pairs(FACTION.respawnInv) do
-          for i = 1, (v or 1) do
-            itemQuantity = table.Count(inventory[k])
+          local itemTable = item.FindByID(k)
 
-            if itemQuantity < v then
+          if itemTable then
+            local owned = inventory[itemTable.uniqueID]
+
+            -- Top the item up to the faction's amount.
+            for i = (owned and table.Count(owned) or 0) + 1, v do
               player:GiveItem(item.CreateInstance(k), true)
             end
           end
         end
       end
 
-      if prevRelation then
-        for k, v in pairs(ents.GetAll()) do
+      local steamID = player:SteamID()
+      local prevRelations = prevRelation and prevRelation[steamID]
+
+      if prevRelations then
+        for k, v in ipairs(ents.GetAll()) do
           if v:IsNPC() then
-            prevRelation[player:SteamID()] = prevRelation[player:SteamID()] or {}
-            local prevRelationVal = prevRelation[player:SteamID()][v:GetClass()]
+            local prevRelationVal = prevRelations[v:GetClass()]
 
             if prevRelationVal then
               v:AddEntityRelationship(player, prevRelationVal, 1)
@@ -1088,32 +1096,22 @@ function GM:PlayerSpawn(player)
       end
 
       if istable(relation) then
-        local relationEnts
-
         prevRelation = prevRelation or {}
-        prevRelation[player:SteamID()] = prevRelation[player:SteamID()] or {}
+        prevRelation[steamID] = prevRelation[steamID] or {}
 
         for k, v in pairs(relation) do
-          relationEnts = ents.FindByClass(k)
+          local disposition = relationTypes[string.lower(v)]
 
-          if relationEnts then
-            for k2, v2 in pairs(relationEnts) do
-              if string.lower(v) == 'like' then
-                prevRelation[player:SteamID()][k] = v2:Disposition(player)
-                v2:AddEntityRelationship(player, D_LI, 1)
-              elseif string.lower(v) == 'fear' then
-                prevRelation[player:SteamID()][k] = v2:Disposition(player)
-                v2:AddEntityRelationship(player, D_FR, 1)
-              elseif string.lower(v) == 'hate' then
-                prevRelation[player:SteamID()][k] = v2:Disposition(player)
-                v2:AddEntityRelationship(player, D_HT, 1)
-              else
-                ErrorNoHalt(
-                  "Attempting to add relationship using invalid relation '"..v.."' towards faction '"..FACTION.name..
-                    "'.\r\n"
-                )
-              end
+          if disposition then
+            for k2, v2 in ipairs(ents.FindByClass(k)) do
+              prevRelation[steamID][k] = v2:Disposition(player)
+              v2:AddEntityRelationship(player, disposition, 1)
             end
+          else
+            ErrorNoHalt(
+              "Attempting to add relationship using invalid relation '"..v.."' towards faction '"..FACTION.name..
+                "'.\r\n"
+            )
           end
         end
       end
@@ -1198,54 +1196,56 @@ end
 
 --- Called when a player attempts to connect; refuses banned players.
 --
--- Looks the player up by IP and Steam ID in `cw.bans.stored`. Temporary bans show the
--- `banned_message` config with `!t`/`!f` replaced by the time left, permanent bans show the
--- reason, and expired bans are removed.
--- @param steamID [String The connecting player's 64-bit Steam ID]
--- @param ipAddress [String The player's IP address]
+-- Looks the player up by IP (with and without the port) and Steam ID in `cw.bans.stored`.
+-- Temporary bans show the `banned_message` config with `!t`/`!f` replaced by the time left,
+-- permanent bans show the reason, and expired bans are removed. Everyone else is checked
+-- against the server password by the base gamemode.
+-- @param steamID64 [String The connecting player's 64-bit Steam ID]
+-- @param ipAddress [String The player's IP address and port]
 -- @param svPassword [String The server password]
 -- @param clPassword [String The password the client sent]
 -- @param name [String The player's Steam name]
--- @return [Boolean `false` when banned, String The kick message]
-function GM:CheckPassword(steamID, ipAddress, svPassword, clPassword, name)
-  steamID = util.SteamIDFrom64(steamID)
-  local banTable = cw.bans.stored[ipAddress] or cw.bans.stored[steamID]
+-- @return [Boolean Whether the player may join, String The kick message when banned]
+function GM:CheckPassword(steamID64, ipAddress, svPassword, clPassword, name)
+  local steamID = util.SteamIDFrom64(steamID64)
+  -- The engine passes `ip:port`, while a ban on an offline player's IP is stored without the port.
+  local ip = string.match(ipAddress, '^[^:]+') or ipAddress
+  local unixTime = os.time()
 
-  if banTable then
-    local unixTime = os.time()
-    local unbanTime = tonumber(banTable.unbanTime)
-    local timeLeft = unbanTime - unixTime
-    local hoursLeft = math.Round(math.max(timeLeft / 3600, 0))
-    local minutesLeft = math.Round(math.max(timeLeft / 60, 0))
+  -- Each identifier is judged on its own, so an expired ban never lifts a live one.
+  for _, identifier in ipairs({ ipAddress, ip, steamID }) do
+    local banTable = cw.bans.stored[identifier]
 
-    if unbanTime > 0 and unixTime < unbanTime then
-      local bannedMessage = config.Get('banned_message'):Get()
+    if banTable then
+      local unbanTime = tonumber(banTable.unbanTime) or 0
 
-      if hoursLeft >= 1 then
-        hoursLeft = tostring(hoursLeft)
+      if unbanTime == 0 then
+        return false, banTable.reason
+      elseif unixTime < unbanTime then
+        local timeLeft = unbanTime - unixTime
+        local hoursLeft = math.Round(timeLeft / 3600)
+        local minutesLeft = math.Round(timeLeft / 60)
+        local bannedMessage = config.Get('banned_message'):Get()
 
-        bannedMessage = string.gsub(bannedMessage, '!t', hoursLeft)
-        bannedMessage = string.gsub(bannedMessage, '!f', 'hour(s)')
-      elseif minutesLeft >= 1 then
-        minutesLeft = tostring(minutesLeft)
+        if hoursLeft >= 1 then
+          bannedMessage = string.gsub(bannedMessage, '!t', tostring(hoursLeft))
+          bannedMessage = string.gsub(bannedMessage, '!f', 'hour(s)')
+        elseif minutesLeft >= 1 then
+          bannedMessage = string.gsub(bannedMessage, '!t', tostring(minutesLeft))
+          bannedMessage = string.gsub(bannedMessage, '!f', 'minute(s)')
+        else
+          bannedMessage = string.gsub(bannedMessage, '!t', tostring(timeLeft))
+          bannedMessage = string.gsub(bannedMessage, '!f', 'second(s)')
+        end
 
-        bannedMessage = string.gsub(bannedMessage, '!t', minutesLeft)
-        bannedMessage = string.gsub(bannedMessage, '!f', 'minute(s)')
+        return false, bannedMessage
       else
-        timeLeft = tostring(timeLeft)
-
-        bannedMessage = string.gsub(bannedMessage, '!t', timeLeft)
-        bannedMessage = string.gsub(bannedMessage, '!f', 'second(s)')
+        cw.bans:Remove(identifier)
       end
-
-      return false, bannedMessage
-    elseif unbanTime == 0 then
-      return false, banTable.reason
-    else
-      cw.bans:Remove(ipAddress)
-      cw.bans:Remove(steamID)
     end
   end
+
+  return BaseClass.CheckPassword(self, steamID64, ipAddress, svPassword, clPassword, name)
 end
 
 --- Called when Catwork data is saved.
@@ -1279,7 +1279,7 @@ end
 -- @return [Any `false` or a fault string to refuse, anything else to allow]
 function GM:PlayerCanInteractCharacter(player, action, character)
   if cw.quiz:GetEnabled() and !cw.quiz:GetCompleted(player) then
-    return false, L'CharFault_QuizFailed'
+    return L'CharFault_QuizFailed'
   else
     return true
   end
@@ -1331,8 +1331,7 @@ function GM:InitPostEntity()
     local model = v:GetModel()
 
     if !v:IsPlayer() and model and (model:find('wood') or model:find('table') or model:find('bench')
-    or model:find('table') or model:find('chair') or model:find('box') or model:find('cardboard')
-    or model:find('pallet')) then
+    or model:find('chair') or model:find('box') or model:find('cardboard') or model:find('pallet')) then
       v:SetKeyValue('negated', '1')
     end
   end
@@ -1377,8 +1376,6 @@ end
 -- @param player [Player The dead player]
 -- @return [Boolean `true` to keep the player dead this frame]
 function GM:PlayerDeathThink(player)
-  local action = cw.player:GetAction(player)
-
   if !player:HasInitialized() or player:GetCharacterData('CharBanned') then
     return true
   end
@@ -1387,7 +1384,7 @@ function GM:PlayerDeathThink(player)
     return true
   end
 
-  if action == 'spawn' then
+  if cw.player:GetAction(player) == 'spawn' then
     return true
   else
     player:Spawn()
@@ -1505,9 +1502,12 @@ function GM:GetFallDamage(player, velocity)
 
   if damage > 30 then
     timer.Simple(0, function()
-      cw.player:SetRagdollState(player, RAGDOLL_FALLENOVER, nil)
+      -- The fall may have killed the player, and a knocked out player must not get to stand up.
+      if IsValid(player) and player:Alive() and player:GetRagdollState() != RAGDOLL_KNOCKEDOUT then
+        cw.player:SetRagdollState(player, RAGDOLL_FALLENOVER, nil)
 
-      player:SetDTBool(BOOL_FALLENOVER, true)
+        player:SetDTBool(BOOL_FALLENOVER, true)
+      end
     end)
   end
 
@@ -1741,7 +1741,7 @@ function GM:ModifyWagesInterval(info) end
 -- @param info [Map Has `wages`, the amount to pay, which can be changed]
 function GM:PlayerModifyWagesInfo(player, info) end
 
---- Called once a second on the server, from `GM:Tick`.
+--- Called once a second on the server, from the `cw.OneSecondTimer` timer.
 --
 -- Distributes hints every `hint_interval` and wages every `wages_interval` (adjustable through
 -- `ModifyWagesInterval`), advances the in-game clock every `minute_time`, runs `PreSaveData`,
@@ -1795,22 +1795,24 @@ function GM:OneSecond()
 end
 
 do
-  local defaultInvWeight = config.GetVal('default_inv_weight')
-  local defaultInvSpace = config.GetVal('default_inv_weight')
   local thinkRate = 0.150
   local cwNextThink = 0
   local cwNextSecond = 0
 
   --- Called each tick; drives the per-player think hooks.
   --
-  -- Every 0.15 seconds it resets each initialized player's `cwInfoTable` (default inventory
-  -- weight and space, the player's base speeds, running and jumping state and class wages) and
-  -- runs `PlayerThink`; once a second it also runs `OnePlayerSecond`, then `OneSecond`.
+  -- Every 0.15 seconds it resets each initialized player's `cwInfoTable` (the `default_inv_weight`
+  -- and `default_inv_space` configs, the player's base speeds, running and jumping state and class
+  -- wages) and runs `PlayerThink`; once a second it also runs `OnePlayerSecond`.
   function GM:Tick()
     local curTime = CurTime()
 
     if curTime >= cwNextThink then
-      for k, v in ipairs(player.GetAll()) do
+      local defaultInvWeight = config.GetVal('default_inv_weight')
+      local defaultInvSpace = config.GetVal('default_inv_space')
+      local bIsSecond = curTime >= cwNextSecond
+
+      for k, v in ipairs(_player.GetAll()) do
         if v:HasInitialized() then
           local infoTable = v.cwInfoTable
 
@@ -1826,7 +1828,7 @@ do
 
           hook.Run('PlayerThink', v, curTime, infoTable)
 
-          if curTime >= cwNextSecond then
+          if bIsSecond then
             hook.Run('OnePlayerSecond', v, curTime, infoTable)
           end
         end
@@ -1834,7 +1836,7 @@ do
 
       cwNextThink = curTime + thinkRate
 
-      if curTime >= cwNextSecond then
+      if bIsSecond then
         cwNextSecond = curTime + 1
       end
     end
@@ -1862,15 +1864,12 @@ function GM:PlayerGetHoldingEntity(player) end
 
 --- Called once a second to regenerate a living player's health.
 --
--- Heals 2 health every 5 seconds while above half health, otherwise every 10 seconds. The
--- `health` and `maxHealth` arguments are ignored and read from the player instead.
+-- Heals 2 health every 5 seconds while above half health, otherwise every 10 seconds.
 -- @param player [Player The player to heal]
--- @param health [Number Unused]
--- @param maxHealth [Number Unused]
+-- @param health [Number The player's health]
+-- @param maxHealth [Number The player's maximum health]
 function GM:PlayerHealthRegenerate(player, health, maxHealth)
   local curTime = CurTime()
-  local maxHealth = player:GetMaxHealth()
-  local health = player:Health()
 
   if player:Alive() and (!player.cwNextHealthRegen or curTime >= player.cwNextHealthRegen) then
     if health >= (maxHealth / 2) and (health < maxHealth) then
@@ -1987,22 +1986,25 @@ end
 -- @param speaker [Player The player talking]
 -- @return [Boolean Whether the listener hears the speaker, Boolean Whether the voice is 3D]
 function GM:PlayerCanHearPlayersVoice(listener, speaker)
-  if !config.GetVal('voice_enabled') then
-    return false
-  elseif speaker:GetData('VoiceBan') then
-    return false
-  elseif !cw.player:HasFlags(speaker, 'x') then
+  if !config.GetVal('voice_enabled') or speaker:GetData('VoiceBan') then
     return false
   end
 
-  if config.Get('local_voice'):Get() then
-    if listener:IsRagdolled(RAGDOLL_KNOCKEDOUT) or !listener:Alive() then
+  -- The engine asks for every pair of players, so the cheap checks come before the flag lookup.
+  if config.GetVal('local_voice') then
+    local talkRadius = config.GetVal('talk_radius')
+
+    if listener:GetPos():DistToSqr(speaker:GetPos()) > talkRadius * talkRadius then
+      return false
+    elseif listener:IsRagdolled(RAGDOLL_KNOCKEDOUT) or !listener:Alive() then
       return false
     elseif speaker:IsRagdolled(RAGDOLL_KNOCKEDOUT) or !speaker:Alive() then
       return false
-    elseif listener:GetPos():Distance(speaker:GetPos()) > config.Get('talk_radius'):Get() then
-      return false
     end
+  end
+
+  if !cw.player:HasFlags(speaker, 'x') then
+    return false
   end
 
   return true, true
@@ -2219,7 +2221,7 @@ function GM:PlayerCanUseItem(player, itemTable, bNoMsg)
   local isSpawnWeapon = false
 
   if isWeapon then
-    itemTable = item.Validate(itemTable, true)
+    item.Validate(itemTable)
 
     isSpawnWeapon = cw.player:GetSpawnWeapon(player, itemTable:GetWeaponClass())
   end
@@ -2349,7 +2351,7 @@ end
 -- @param flag [String A single flag]
 -- @return [Boolean `true` to grant the flag, `false` to deny it, `nil` to fall through]
 function GM:PlayerDoesHaveFlag(player, flag)
-  if string.find(config.Get('default_flags'):Get(), flag) then
+  if string.find(config.Get('default_flags'):Get(), flag, 1, true) then
     return true
   end
 end
@@ -2676,10 +2678,14 @@ function GM:PlayerSay(player, text, bPublic)
 
   if string.sub(text, 1, prefixLength) == prefix then
     local arguments = cw.core:ExplodeByTags(text, ' ', '"', '"', true)
-    local command = string.sub(arguments[1], prefixLength + 1)
-    local realCommand = cw.command:GetAlias()[command] or command
+    local command = string.sub(arguments[1] or '', prefixLength + 1)
+    local realCommand = cw.command:GetAlias()[command]
+    local commandEnd = prefixLength + string.len(command)
 
-    return string.Replace(text, prefix..command, prefix..realCommand)
+    -- Only the command itself is replaced, not the same text further into the message.
+    if realCommand and string.sub(text, prefixLength + 1, commandEnd) == command then
+      return prefix..realCommand..string.sub(text, commandEnd + 1)
+    end
   end
 end
 
@@ -2817,10 +2823,10 @@ end
 --- Called when a player attempts to pick up an entity with the physics gun.
 --
 -- Non-admins cannot pick up non-interactable entities, player ragdolls, other characters'
--- ragdolls or (under prop protection) props, or chairs near doors, and nobody can grab map
--- props unless `enable_map_props_physgrab` is set, players in vehicles or observers. On pickup
--- props lose collision while held when `prop_kill_protection` is set and get 60 seconds of
--- damage immunity; picked up players are switched to noclip movement.
+-- ragdolls or (under prop protection) props, chairs near doors, or map props unless
+-- `enable_map_props_physgrab` is set, and nobody can grab players in vehicles or observers. On
+-- pickup props lose collision while held when `prop_kill_protection` is set and get 60 seconds
+-- of damage immunity; picked up players are switched to noclip movement.
 -- @param player [Player The player]
 -- @param entity [Entity The entity]
 -- @return [Boolean Whether the pickup is allowed]
@@ -2828,13 +2834,11 @@ function GM:PhysgunPickup(player, entity)
   local bCanPickup = nil
   local bIsAdmin = cw.player:IsAdmin(player)
 
-  if !config.Get('enable_map_props_physgrab'):Get() then
-    if cw.entity:IsMapEntity(entity) then
-      bCanPickup = false
-    end
+  if !bIsAdmin and !cw.entity:IsInteractable(entity) then
+    return false
   end
 
-  if !bIsAdmin and !cw.entity:IsInteractable(entity) then
+  if !bIsAdmin and !config.Get('enable_map_props_physgrab'):Get() and cw.entity:IsMapEntity(entity) then
     return false
   end
 
@@ -2965,15 +2969,15 @@ end
 --- Called when an entity is removed, except while the server shuts down.
 --
 -- A belongings ragdoll with items or cash spawns a `cw_belongings` entity with them. Props
--- removed within their refund window refund their cost to the spawner, and the entity is
--- removed from the property lists.
+-- removed within their refund window refund their cost to the character that spawned them, and
+-- the entity is removed from the property lists.
 -- @param entity [Entity The entity]
 function GM:EntityRemoved(entity)
   if !cw.core:IsShuttingDown() then
     if IsValid(entity) then
       if entity:GetClass() == 'prop_ragdoll' then
         if entity.cwIsBelongings and entity.cwInventory and entity.cwCash
-        and (table.Count(entity.cwInventory) > 0 or entity.cwCash > 0) then
+        and (!cw.inventory:IsEmpty(entity.cwInventory) or entity.cwCash > 0) then
           local belongings = ents.Create('cw_belongings')
 
           belongings:SetAngles(Angle(0, 0, -90))
@@ -2988,19 +2992,15 @@ function GM:EntityRemoved(entity)
 
       local allProperty = cw.player:GetAllProperty()
       local entIndex = entity:EntIndex()
+      local refundTab = entity.cwGiveRefundTab
 
-      if entity.cwGiveRefundTab
-      and CurTime() <= entity.cwGiveRefundTab[1] then
-        if IsValid(entity.cwGiveRefundTab[2]) then
-          cw.player:GiveCash(entity.cwGiveRefundTab[2], entity.cwGiveRefundTab[3], L'PropRefund')
-        end
+      -- Only the character that paid for the prop gets the refund.
+      if refundTab and CurTime() <= refundTab[1] and IsValid(refundTab[2])
+      and refundTab[2]:GetCharacterKey() == refundTab[4] then
+        cw.player:GiveCash(refundTab[2], refundTab[3], L'PropRefund')
       end
 
       allProperty[entIndex] = nil
-
-      if entity:GetClass() == 'csItem' then
-        item.RemoveItemEntity(entity)
-      end
     end
 
     cw.entity:ClearProperty(entity)
@@ -3009,10 +3009,10 @@ end
 
 --- Called when a player picks an option from an entity's menu.
 --
--- Handles taking, using, examining and unloading ammo from `cw_item` entities (refusing items
--- dropped by another character and running `PlayerPickupItem`), forwards other item options to
--- the item's `EntityHandleMenuOption`, opens `cw_belongings` and `cw_shipment` storage, and
--- takes `cw_cash`.
+-- Handles taking, using, examining and unloading ammo from `cw_item` entities (refusing to
+-- take, use or unload items dropped by another character, and running `PlayerPickupItem`),
+-- forwards other item options to the item's `EntityHandleMenuOption`, opens `cw_belongings` and
+-- `cw_shipment` storage, and takes `cw_cash`.
 -- @param player [Player The player]
 -- @param entity [Entity The entity]
 -- @param option [String The option's display name]
@@ -3079,20 +3079,28 @@ function GM:EntityHandleMenuOption(player, entity, option, arguments)
     end
   elseif class == 'cw_item' and arguments == 'cw.itemExamine' then
     local itemTable = entity.cwItemTable
-    local examineText = itemTable.description
 
-    if itemTable.GetEntityExamineText then
-      examineText = itemTable:GetEntityExamineText(entity)
+    if itemTable then
+      local examineText = itemTable.description
+
+      if itemTable.GetEntityExamineText then
+        examineText = itemTable:GetEntityExamineText(entity)
+      end
+
+      cw.player:Notify(player, examineText)
+    end
+  elseif class == 'cw_item' and arguments == 'cw.itemAmmo' then
+    if cw.entity:BelongsToAnotherCharacter(player, entity) then
+      cw.player:Notify(player, L(player, 'DroppedItemsOtherChar'))
+      return
     end
 
-    cw.player:Notify(player, examineText)
-  elseif class == 'cw_item' and arguments == 'cw.itemAmmo' then
     local itemTable = entity.cwItemTable
 
     if item.IsWeapon(itemTable) then
       if itemTable:HasSecondaryClip() or itemTable:HasPrimaryClip() then
-        local clipOne = itemTable:GetData('ClipOne')
-        local clipTwo = itemTable:GetData('ClipTwo')
+        local clipOne = tonumber(itemTable:GetData('ClipOne')) or 0
+        local clipTwo = tonumber(itemTable:GetData('ClipTwo')) or 0
 
         if clipTwo > 0 then
           player:GiveAmmo(clipTwo, itemTable.secondaryAmmoClass)
@@ -3133,12 +3141,10 @@ function GM:EntityHandleMenuOption(player, entity, option, arguments)
         entity.cwCash = storageTable.cash
       end,
       OnClose = function(player, storageTable, entity)
-        if IsValid(entity) then
-          if (!entity.cwInventory and !entity.cwCash)
-          or (table.Count(entity.cwInventory) == 0 and entity.cwCash == 0) then
-            entity:Explode(entity:BoundingRadius() * 2)
-            entity:Remove()
-          end
+        -- Taking the last item of a kind leaves its empty list behind, so the lists are not just counted.
+        if IsValid(entity) and cw.inventory:IsEmpty(entity.cwInventory) and (entity.cwCash or 0) == 0 then
+          entity:Explode(entity:BoundingRadius() * 2)
+          entity:Remove()
         end
       end,
       CanGiveItem = function(player, storageTable, itemTable)
@@ -3204,7 +3210,7 @@ function GM:PlayerSpawnedProp(player, model, entity)
 
       if cw.player:CanAfford(player, info.cost) then
         cw.player:GiveCash(player, -info.cost, info.name)
-        entity.cwGiveRefundTab = { CurTime() + 10, player, info.cost }
+        entity.cwGiveRefundTab = { CurTime() + 10, player, info.cost, player:GetCharacterKey() }
       else
         cw.player:Notify(
           player,
@@ -3516,8 +3522,10 @@ function GM:PlayerCharacterInitialized(player)
   end
 
   timer.Simple(FrameTime() * 0.5, function()
-    cw.inventory:SendUpdateAll(player)
-    player:NetworkAccessories()
+    if IsValid(player) and player:HasInitialized() then
+      cw.inventory:SendUpdateAll(player)
+      player:NetworkAccessories()
+    end
   end)
 
   netstream.Start(player, 'CharacterInit', player:GetCharacterKey())
@@ -3652,7 +3660,10 @@ function GM:PlayerCharacterLoaded(player)
   if className then
     local class = cw.class:FindByID(className)
 
-    cw.class:Set(player, class.index, nil, true)
+    -- The saved class may have been removed from the schema since.
+    if class then
+      cw.class:Set(player, class.index, nil, true)
+    end
   end
 end
 
@@ -3730,7 +3741,7 @@ function GM:PlayerAdjustCharacterTable(player, character) end
 -- @param character [Character The character]
 -- @param info [Map What the menu shows: `name`, `model`, `banned`, `faction`, `characterID`, `details` and so on]
 function GM:PlayerAdjustCharacterScreenInfo(player, character, info)
-  local playerRank, rank = player:GetFactionRank()
+  local playerRank, rank = player:GetFactionRank(character)
 
   if rank and rank.model then
     info.model = rank.model
@@ -4191,20 +4202,6 @@ end
 -- @param entity [Entity The damaged entity]
 -- @param damageInfo [CTakeDamageInfo The damage]
 function GM:EntityTakeDamage(entity, damageInfo)
-  --[[if (entity:IsPlayer() and damageInfo:IsExplosionDamage() and !entity:IsRagdolled()) then
-    local data = {}
-      data.start = damageInfo:GetDamagePosition()
-      data.endpos = entity:GetPos()
-    local trace = util.TraceLine(data)
-
-    cw.player:SetRagdollState(entity, RAGDOLL_FALLENOVER, nil, nil, nil, nil,
-    function(physicsObject, boneIndex, ragdoll, velocity, force)
-      physicsObject:SetVelocity(trace.Normal * damageInfo:GetReportedPosition())
-    end)
-    entity:SetDTBool(BOOL_FALLENOVER, true)
-    entity:SetDSP(36, false)
-  end]]
-
   if cw.core:DoEntityTakeDamageHook(entity, damageInfo) then
     return
   end
@@ -4225,8 +4222,8 @@ function GM:EntityTakeDamage(entity, damageInfo)
       return false
     end
 
-    if IsValid(attacker) and attacker:GetClass() == 'worldspawn'
-    and entity.cwDamageImmunity and entity.cwDamageImmunity > curTime then
+    -- `IsValid` is false for the world, so it is compared directly.
+    if attacker == game.GetWorld() and entity.cwDamageImmunity and entity.cwDamageImmunity > curTime then
       damageInfo:SetDamage(0)
       return false
     end
@@ -4242,7 +4239,7 @@ function GM:EntityTakeDamage(entity, damageInfo)
     entity.cwLastHitGroup = cw.core:GetRagdollHitBone(entity, damageInfo:GetDamagePosition(), HITGROUP_GEAR)
 
     if damageInfo:IsBulletDamage() then
-      if (attacker:IsPlayer() or attacker:IsNPC()) and attacker != player then
+      if (attacker:IsPlayer() or attacker:IsNPC()) and attacker != entity then
         damageInfo:ScaleDamage(10000)
       end
     end
@@ -4267,13 +4264,6 @@ function GM:EntityTakeDamage(entity, damageInfo)
         damageInfo:SetDamage(0)
       else
         local lastHitGroup = player:LastHitGroup()
-        local killed = nil
-
-        if player:InVehicle() and damageInfo:IsExplosionDamage() then
-          if !damageInfo:GetDamage() or damageInfo:GetDamage() == 0 then
-            damageInfo:SetDamage(player:GetMaxHealth())
-          end
-        end
 
         self:ScaleDamageByHitGroup(player, attacker, lastHitGroup, damageInfo, amount)
 
@@ -4327,8 +4317,6 @@ function GM:EntityTakeDamage(entity, damageInfo)
       end
     else
       local hitGroup = cw.core:GetRagdollHitGroup(entity, damageInfo:GetDamagePosition())
-      local curTime = CurTime()
-      local killed = nil
 
       self:ScaleDamageByHitGroup(player, attacker, hitGroup, damageInfo, amount)
 
@@ -4402,7 +4390,7 @@ function GM:EntityTakeDamage(entity, damageInfo)
       end
     end
 
-    if inflictor:GetClass() == 'prop_combine_ball' then
+    if IsValid(inflictor) and inflictor:GetClass() == 'prop_combine_ball' then
       if !entity.disintegrating then
         cw.entity:Disintegrate(entity, 3, damageInfo:GetDamageForce())
 
@@ -4545,38 +4533,29 @@ end
 -- @param player [Player The player who spawned the NPC]
 -- @param npc [NPC The NPC]
 function GM:PlayerSpawnedNPC(player, npc)
-  local faction
-  local relation
-
-  prevRelation = prevRelation or {}
-  prevRelation[player:SteamID()] = prevRelation[player:SteamID()] or {}
+  local class = npc:GetClass()
 
   for k, v in ipairs(_player.GetAll()) do
-    faction = _faction.FindByID(v:GetFaction())
+    local factionTable = v:HasInitialized() and _faction.FindByID(v:GetFaction())
+    local relation = factionTable and factionTable.entRelationship
+    local relationName = istable(relation) and relation[class]
 
-    if faction then
-      relation = faction.entRelationship
-    end
+    if relationName then
+      local disposition = relationTypes[string.lower(relationName)]
 
-    if istable(relation) then
-      for k2, v2 in pairs(relation) do
-        if k2 == npc:GetClass() then
-          if string.lower(v2) == 'like' then
-            prevRelation[player:SteamID()][k2] = prevRelation[player:SteamID()][k2] or npc:Disposition(v)
-            npc:AddEntityRelationship(v, D_LI, 1)
-          elseif string.lower(v2) == 'fear' then
-            prevRelation[player:SteamID()][k2] = prevRelation[player:SteamID()][k2] or npc:Disposition(v)
-            npc:AddEntityRelationship(v, D_FR, 1)
-          elseif string.lower(v2) == 'hate' then
-            prevRelation[player:SteamID()][k2] = prevRelation[player:SteamID()][k2] or npc:Disposition(v)
-            npc:AddEntityRelationship(v, D_HT, 1)
-          else
-            ErrorNoHalt(
-              "Attempting to add relationship using invalid relation '"..v2.."' towards faction '"..faction.name..
-                "'.\r\n"
-            )
-          end
-        end
+      if disposition then
+        local steamID = v:SteamID()
+
+        prevRelation = prevRelation or {}
+        prevRelation[steamID] = prevRelation[steamID] or {}
+        prevRelation[steamID][class] = prevRelation[steamID][class] or npc:Disposition(v)
+
+        npc:AddEntityRelationship(v, disposition, 1)
+      else
+        ErrorNoHalt(
+          "Attempting to add relationship using invalid relation '"..relationName.."' towards faction '"..
+            factionTable.name.."'.\r\n"
+        )
       end
     end
   end
@@ -4584,13 +4563,13 @@ end
 
 --- Called when an attribute is progressed, before the amount is applied.
 --
--- Catwork multiplies `amount` by `scale_attribute_progress`, but only in its own local copy, so
--- the change does not reach the caller.
+-- Catwork multiplies `amount` by the `scale_attribute_progress` config.
 -- @param player [Player The player who progressed the attribute]
 -- @param attribute [String The attribute's unique ID]
 -- @param amount [Number The amount it is progressed by]
+-- @return [Number The amount to progress the attribute by instead]
 function GM:OnAttributeProgress(player, attribute, amount)
-  amount = amount * config.Get('scale_attribute_progress'):Get()
+  return amount * config.Get('scale_attribute_progress'):Get()
 end
 
 --- Called to add ammo types that are saved with the character; adds the HL2 ammo types.

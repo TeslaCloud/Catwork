@@ -11,7 +11,7 @@ PLUGIN.name = 'Crosshair'
 PLUGIN.author = 'Mr. Meow'
 PLUGIN.description = 'Adds a crosshair.'
 
-local curSize = nil
+local colorWhite = Color(255, 255, 255)
 local size = 2
 local halfSize = size / 2
 local gap = 8
@@ -23,10 +23,12 @@ local curGap = gap
 -- `AdjustCrosshairGap` hooks, called with the eye trace and its distance, can override the color and
 -- the gap; the gap eases towards its target each frame.
 function PLUGIN:HUDPaint()
+  if !IsValid(cw.client) then return end
+
   if !plugin.Call('PreDrawCrosshair') then
     local trace = cw.client:GetEyeTraceNoCursor()
     local distance = cw.client:GetPos():Distance(trace.HitPos)
-    local drawColor = plugin.Call('AdjustCrosshairColor', trace, distance) or Color(255, 255, 255)
+    local drawColor = plugin.Call('AdjustCrosshairColor', trace, distance) or colorWhite
     local realGap =
       plugin.Call('AdjustCrosshairGap', trace, distance) or math.Round(gap * math.Clamp(distance / 400, 0.5, 4))
     curGap = Lerp(FrameTime() * 6, curGap, realGap)

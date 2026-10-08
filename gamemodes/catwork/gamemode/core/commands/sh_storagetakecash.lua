@@ -1,7 +1,5 @@
 --- Registers the `/StorageTakeCash` command, which takes cash out of the storage the caller has open.
 
-local NAME_CASH = cw.option:GetKey('name_cash')
-
 local COMMAND = cw.command:New('StorageTakeCash')
 COMMAND.tip = '#Command_Storagetakecash_Description'
 COMMAND.text = '#Command_Storagetakecash_Syntax'
@@ -17,13 +15,13 @@ function COMMAND:OnRun(player, arguments)
 
   if storageTable then
     local target = storageTable.entity
-    local cash = math.floor(tonumber(arguments[1]))
+    local cash = math.floor(tonumber(arguments[1]) or 0)
 
     if (target and !IsValid(target)) or !config.GetVal('cash_enabled') then
       return
     end
 
-    if cash and cash > 1 and cash <= storageTable.cash then
+    if cash >= 1 and cash <= storageTable.cash then
       if !storageTable.CanTakeCash
       or (storageTable.CanTakeCash(player, storageTable, cash) != false) then
         if !target or !target:IsPlayer() then

@@ -46,25 +46,27 @@ function vgui.Register(className, panelTable, baseName)
     backup = cwTHEME.factory
   end
 
-  backup[className] = {}
-
+  local classBackup = {}
   local base = backup[baseName]
 
+  -- The class starts from what its base class has, without changing the base's own backup.
   if base then
-    table.Merge(base, panelTable)
-
     for k, v in pairs(base) do
-      backup[className][k] = function(vguiObject, ...)
-        v(vguiObject, ...)
-      end
-    end
-  else
-    for k, v in pairs(panelTable) do
-      backup[className][k] = function(vguiObject, ...)
-        v(vguiObject, ...)
-      end
+      classBackup[k] = v
     end
   end
+
+  for k, v in pairs(panelTable) do
+    if isfunction(v) then
+      classBackup[k] = function(vguiObject, ...)
+        return v(vguiObject, ...)
+      end
+    else
+      classBackup[k] = v
+    end
+  end
+
+  backup[className] = classBackup
 
   return oldRegister(className, panelTable, baseName)
 end
@@ -95,7 +97,7 @@ function cw.theme:HookReplace(vguiName, functionName, callback)
 
     factory[vguiName] = factory[vguiName] or {}
     factory[vguiName][functionName] = function(vguiObject, ...)
-      callback(vguiObject, ...)
+      return callback(vguiObject, ...)
     end
   end
 end
@@ -174,13 +176,10 @@ function cw.theme:FindByID(id)
 end
 
 --- Returns whether a theme is registered.
---
--- Uses `IsValid` on the theme table, which is only true for tables with an
--- `IsValid` method, so this returns `false` for ordinary themes.
 -- @param id [String Name of the theme]
 -- @return [Boolean Whether the theme exists]
 function cw.theme:Exists(id)
-  return (IsValid(cw.theme.stored[id]))
+  return (cw.theme.stored[id] != nil)
 end
 
 --- Starts building a new theme with the arguments in the old order.
@@ -216,25 +215,15 @@ end
 -- @param isFixed=nil [Boolean Whether players cannot change the information color]
 -- @return [Map The new theme table]
 function cw.theme:New(themeName, baseName, isFixed)
-  if baseName then
-    local base = self:FindByID(baseName)
-
-    if base then
-      cwTHEME = table.Copy(base)
-    end
-
-    cwTHEME.base = baseName
-  elseif themeName != 'Clockwork' then
-    local base = self:FindByID('Clockwork')
-
-    if base then
-      cwTHEME = table.Copy(base)
-    end
-
-    cwTHEME.base = 'Clockwork'
+  if !baseName and themeName != 'Clockwork' then
+    baseName = 'Clockwork'
   end
 
-  if !cwTHEME then
+  local base = baseName and self:FindByID(baseName)
+
+  if base then
+    cwTHEME = table.Copy(base)
+  elseif !cwTHEME then
     cwTHEME = {
       factory = {},
       module = {},
@@ -243,6 +232,8 @@ function cw.theme:New(themeName, baseName, isFixed)
     }
   end
 
+  -- The base is kept even when it is not registered yet; `cw.theme:LoadTheme` looks it up again.
+  cwTHEME.base = baseName
   cwTHEME.name = themeName or 'Schema'
   cwTHEME.isFixed = isFixed
 
@@ -343,10 +334,7 @@ function cw.theme:SetActive(theme, firstLoad)
     end
 
     self.active = theme
-
-    if !bNoLoad then
-      self:LoadTheme(theme)
-    end
+    self:LoadTheme(theme)
   else
     local themeTable = self:FindByID(theme)
 
@@ -394,11 +382,7 @@ function cw.theme:LoadTheme(themeTable, isBase)
   if !isBase then
     plugin.Add('Theme', themeTable.module)
 
-    local factory = themeTable.factory
-
-    if factory != {} then
-      table.Merge(self.factory, factory)
-    end
+    table.Merge(self.factory, themeTable.factory)
   end
 end
 
@@ -429,18 +413,14 @@ function cw.theme:UnloadTheme(theme, isBase)
   if !isBase then
     plugin.Remove('Theme')
 
-    local factory = themeTable.factory
+    for k, v in pairs(themeTable.factory) do
+      local panelTable = self.factory[k]
+      local backup = self.backupFactory[k]
 
-    if factory != {} then
-      for k, v in pairs(factory) do
-        for k2, v2 in pairs(factory[k]) do
-          if isfunction(v2) then
-            self.factory[k][k2] = function(vguiObject, ...)
-              self.backupFactory[k][k2](vguiObject, ...)
-            end
-          else
-            self.factory[k][k2] = self.backupFactory[k][k2]
-          end
+      -- Only panel classes that exist and were backed up can be put back.
+      if panelTable and backup then
+        for k2, v2 in pairs(v) do
+          panelTable[k2] = backup[k2]
         end
       end
     end

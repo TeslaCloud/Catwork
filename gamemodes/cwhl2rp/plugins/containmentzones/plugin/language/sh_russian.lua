@@ -18,6 +18,7 @@ lang['#Containment_SphereAdded'] = 'Вы добавили зону зараже�
 lang['#Containment_Removed'] = 'Удалено зон заражения: #1.'
 lang['#Containment_NoneFound'] = 'Рядом с этой точкой нет зон заражения.'
 lang['#Containment_Saved'] = 'Вы сохранили зоны заражения.'
+lang['#Containment_InvalidNumber'] = 'Необходимо указать корректное число.'
 
 -- Radiation
 lang['#Containment_RadPerSecond'] = 'рад/с'
@@ -26,6 +27,8 @@ lang['#Containment_RadSickness_Stage2'] = 'Вы чувствуете сильн�
 lang['#Containment_RadSickness_Stage3'] = 'У Вас очень сильное кровотечение. Вам ужасно плохо, и у Вас выпадают волосы.'
 lang['#Containment_RadSickness_Stage4'] = 'У Вас сильное и продолжительное кровотечение. Вас рвет кровью.'
 lang['#Containment_RadSickness_Stage5'] = 'У Вас внутреннее кровотечение. Кроме того, у Вас вздутие живота и жуткая агония.'
+lang['#Containment_RadKnockout'] = '** Вы сильно устали, и Вам очень плохо. Вы ощущаете жар по всему телу...'
+lang['#Containment_FilterBar'] = 'ФИЛЬТР'
 
 -- Items
 lang['#Containment_UseText_ReplaceFilter'] = 'Сменить фильтр'

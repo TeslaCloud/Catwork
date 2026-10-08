@@ -17,55 +17,27 @@ function COMMAND:OnRun(player, arguments)
   local trace = player:GetEyeTraceNoCursor()
   local scale = tonumber(arguments[1])
 
-  if scale then
-    scale = math.Clamp(math.Round(scale), 1, 5)
-
-    if IsValid(trace.Entity) then
-      if cw.entity:IsPhysicsEntity(trace.Entity) then
-        local model = string.lower(trace.Entity:GetModel())
-
-        if cwStorage.containerList[model] then
-          if !trace.Entity.cwInventory then
-            cwStorage.storage[trace.Entity] = trace.Entity
-
-            trace.Entity.cwInventory = {}
-          end
-
-          local containerWeight = cwStorage.containerList[model][1] / (6 - scale)
-          local weight = cw.inventory:CalculateWeight(trace.Entity.cwInventory)
-
-          if !arguments[2] or cwStorage:CategoryExists(arguments[2]) then
-            while weight < containerWeight do
-              local randomItem = cwStorage:GetRandomItem(arguments[2])
-
-              if randomItem then
-                cw.inventory:AddInstance(
-                  trace.Entity.cwInventory, item.CreateInstance(randomItem[1])
-                )
-
-                weight = weight + randomItem[2]
-              end
-            end
-
-            cwStorage:SaveStorage()
-
-            cw.player:Notify(player, L('Container_Filled'))
-            return
-          else
-            cw.player:Notify(player, L('Container_CategoryNotExist'))
-            return
-          end
-        end
-
-        cw.player:Notify(player, L('Container_NotValid'))
-      else
-        cw.player:Notify(player, L('Container_NotValid'))
-      end
-    else
-      cw.player:Notify(player, L('Container_NotValid'))
-    end
-  else
+  if !scale then
     cw.player:Notify(player, L('Container_NotValidScale'))
+
+    return
+  end
+
+  local entity = trace.Entity
+
+  if !IsValid(entity) or !cw.entity:IsPhysicsEntity(entity)
+  or !cwStorage.containerList[string.lower(entity:GetModel())] then
+    cw.player:Notify(player, L('Container_NotValid'))
+
+    return
+  end
+
+  if cwStorage:FillContainer(entity, scale, arguments[2]) then
+    cwStorage:SaveStorage()
+
+    cw.player:Notify(player, L('Container_Filled'))
+  else
+    cw.player:Notify(player, L('Container_CategoryNotExist'))
   end
 end
 

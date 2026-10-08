@@ -1,29 +1,36 @@
 --- Defines the server-side `EditNotepad` netstream handler of the Notepad plugin, which writes a player's text to a
 -- `cw_notepad`, and `cwNotepad:LoadNotepad` and `cwNotepad:SaveNotepad`, which persist the notepads per map.
 --
--- The handler requires the player to be within 192 units of the notepad and looking at it, and lets only the owner
--- change written text. Notepads are stored in `plugins/notepad/<map>` with their owner, text, position, angles and
--- whether they can move.
-
-local PLUGIN = PLUGIN
+-- The handler requires a living player who may use the notepad, is within 192 units of it and looking at it, lets
+-- only the owner change written text and accepts one edit a second per player. Notepads are stored in
+-- `plugins/notepad/<map>` with their owner, text, position, angles and whether they can move.
 
 netstream.Hook('EditNotepad', function(player, entity, text)
-  if IsValid(entity) then
-    if entity:GetClass() == 'cw_notepad' then
-      if player:GetPos():Distance(entity:GetPos()) <= 192 and player:GetEyeTraceNoCursor().Entity == entity then
-        -- Same rule as the menu option: written text is the owner's, a blank notepad is anyone's.
-        if entity.text and cw.entity:QueryProperty(entity, 'uniqueID') != player:UniqueID() then
-          cw.player:Notify(player, '#Notepad_CannotEdit')
+  if !isentity(entity) or !IsValid(entity) or entity:GetClass() != 'cw_notepad' or !isstring(text) then return end
+  if !player:HasInitialized() or !player:Alive() or player:IsRagdolled() then return end
 
-          return
-        end
+  local curTime = CurTime()
 
-        if isstring(text) and string.utf8len(text) > 0 then
-          entity:SetText(string.utf8sub(text, 0, 64000))
-          cwNotepad:SaveNotepad()
-        end
-      end
-    end
+  if player.cwNextNotepadEdit and player.cwNextNotepadEdit > curTime then return end
+
+  player.cwNextNotepadEdit = curTime + 1
+
+  if player:GetPos():Distance(entity:GetPos()) > 192 or player:GetEyeTraceNoCursor().Entity != entity
+  or !hook.Run('PlayerUse', player, entity) then
+    return
+  end
+
+  -- Same rule as the menu option: written text is the owner's, a blank notepad is anyone's.
+  if entity.text and cw.entity:QueryProperty(entity, 'uniqueID') != player:UniqueID() then
+    cw.player:Notify(player, '#Notepad_CannotEdit')
+
+    return
+  end
+
+  -- A character takes at most four bytes, which bounds the work before the text is cut to size.
+  if #text > 0 and #text <= 256000 then
+    entity:SetText(string.utf8sub(text, 0, 64000))
+    cwNotepad:SaveNotepad()
   end
 end)
 
@@ -64,7 +71,7 @@ end
 function cwNotepad:SaveNotepad()
   local notepad = {}
 
-  for k, v in pairs(ents.FindByClass('cw_notepad')) do
+  for k, v in ipairs(ents.FindByClass('cw_notepad')) do
     local physicsObject = v:GetPhysicsObject()
     local moveable
 

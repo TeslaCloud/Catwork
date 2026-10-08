@@ -19,7 +19,8 @@ function ITEM:OnUse(player, itemEntity)
     return false
   end
 
-  player:GiveItem(item.CreateInstance('backpack'))
+  -- Forced: the box it replaces weighs the same and is only taken after this returns.
+  player:GiveItem(item.CreateInstance('backpack'), true)
 end
 
 --- Lets the item be dropped; nothing else happens.

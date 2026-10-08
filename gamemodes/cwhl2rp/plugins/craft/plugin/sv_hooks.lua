@@ -5,7 +5,7 @@
 
 --- Crafts a blueprint for a player without checking whether they may.
 --
--- Takes the recipe's materials, gives the resulting items (spawning them where the player looks
+-- Takes the recipe's materials, gives the resulting items (dropping them in front of the player
 -- when the inventory is full), progresses the blueprint's `updatt` attributes and notifies the
 -- player. Call `cwCraft:PlayerCanCraft` first.
 --
@@ -27,8 +27,17 @@ function cwCraft:PlayerCraftItem(player, bpTable)
   if result then
     for k, v in pairs(result) do
       for i = 1, v[2] do
-        if !player:GiveItem(v[1]) then
-          cw.entity:CreateItem(nil, v[1], player:GetEyeTraceNoCursor().HitPos, Angle(0, 0, 0))
+        local itemTable = item.CreateInstance(v[1])
+
+        if itemTable and !player:GiveItem(itemTable) then
+          local shootPos = player:GetShootPos()
+          local trace = util.TraceLine({
+            start = shootPos,
+            endpos = shootPos + player:GetAimVector() * 64,
+            filter = player
+          })
+
+          cw.entity:CreateItem(nil, itemTable, trace.HitPos)
         end
       end
     end
@@ -69,11 +78,16 @@ function cwCraft:LoadCraftTables()
   for k, v in pairs(craftTables) do
     local device = ents.Create(v.class)
 
-    if device then
+    if IsValid(device) then
       device:SetPos(v.position)
       device:SetAngles(v.angles)
       device:Spawn()
-      device:GetPhysicsObject():EnableMotion(false)
+
+      local physicsObject = device:GetPhysicsObject()
+
+      if IsValid(physicsObject) then
+        physicsObject:EnableMotion(false)
+      end
     end
   end
 end

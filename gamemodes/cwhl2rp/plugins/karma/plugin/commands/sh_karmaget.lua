@@ -1,7 +1,7 @@
 --- Registers the operator command `/KarmaGet` (aliases `/CharGetKarma` and `/GetKarma`) of the Karma plugin, which
 -- tells the player the target character's karma level and value.
 
-COMMAND = cw.command:New('KarmaGet')
+local COMMAND = cw.command:New('KarmaGet')
 COMMAND.tip = '#Command_Karmaget_Description'
 COMMAND.text = '#Command_Karmaget_Syntax'
 COMMAND.flags = CMD_DEFAULT

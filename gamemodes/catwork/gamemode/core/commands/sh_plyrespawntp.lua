@@ -12,7 +12,6 @@ COMMAND.alias = { 'PlyRTP', 'RespawnTP' }
 --- Respawns the target player where the caller is looking; the argument is the player name.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
-  local isSilent = cw.core:ToBool(arguments[2])
   local trace = player:GetEyeTraceNoCursor()
 
   if target then

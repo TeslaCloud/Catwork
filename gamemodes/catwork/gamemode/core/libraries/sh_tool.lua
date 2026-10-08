@@ -10,7 +10,8 @@ local stored = cw.tool.stored or {}
 cw.tool.stored = stored
 
 --[[ Set the __index meta function of the class. --]]
-local CLASS_TABLE = { __index = CLASS_TABLE }
+local CLASS_TABLE = {}
+CLASS_TABLE.__index = CLASS_TABLE
 
 --- Creates the tool's console variables.
 --
@@ -339,8 +340,6 @@ end
 --- Creates a ghost entity with the model, position and angles of an entity.
 -- @param ent [Entity The entity to copy]
 function CLASS_TABLE:StartGhostEntity(ent)
-  local class = ent:GetClass()
-
   if SERVER and !game.SinglePlayer() then return end
   if CLIENT and game.SinglePlayer() then return end
 
@@ -516,7 +515,7 @@ function cw.tool:Register(tool)
   else
     MsgC(
       Color(255, 100, 0, 255),
-      '[CW:Tool] The '..tool.Name..' tool does not have a UniqueID, it will not function without one!\n'
+      '[CW:Tool] The '..tostring(tool.Name)..' tool does not have a UniqueID, it will not function without one!\n'
     )
   end
 end

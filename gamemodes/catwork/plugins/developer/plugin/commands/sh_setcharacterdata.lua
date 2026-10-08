@@ -10,7 +10,8 @@ COMMAND.alias = { 'CharSetData', 'SetCharacterData' }
 
 --- Sets a character data key on the target player; only usable by developers (`catDev:IsDeveloper`).
 --
--- The value is converted to the type of the existing value; table and userdata values cannot be set.
+-- The value is converted to the type of the existing value; table and userdata values cannot be set, and a
+-- number can only be replaced by a number.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
   local key = arguments[2] or ''
@@ -21,18 +22,26 @@ function COMMAND:OnRun(player, arguments)
       if isstring(key) and key != '' then
         local existingData = target:GetCharacterData(key)
 
-        if existingData then
+        if existingData != nil then
           local dataType = type(existingData)
 
           if dataType == 'string' then
             val = tostring(val)
           elseif dataType == 'number' then
             val = tonumber(val)
+
+            if !val or val != val then
+              cw.player:Notify(player, L('Developer_NotANumber'))
+
+              return
+            end
+          elseif dataType == 'boolean' then
+            val = cw.core:ToBool(val)
           elseif dataType == 'table' then
             cw.player:Notify(player, L('Developer_CannotSetTable'))
 
             return
-          elseif IsValid(existingData) then
+          else
             cw.player:Notify(player, L('Developer_CannotSetUserData'))
 
             return

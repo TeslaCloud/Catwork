@@ -8,6 +8,23 @@ function cwSpawnPoints:ClockworkInitPostEntity()
   self:LoadSpawnPoints()
 end
 
+-- Moves a player to a random point of a list; returns whether the list had a usable point.
+local function MoveToRandomPoint(player, spawnPoints)
+  local spawnPoint = spawnPoints and #spawnPoints > 0 and spawnPoints[math.random(1, #spawnPoints)]
+
+  if !spawnPoint or !spawnPoint.position then
+    return false
+  end
+
+  player:SetPos(spawnPoint.position + Vector(0, 0, 8))
+
+  if spawnPoint.rotate then
+    player:SetEyeAngles(Angle(0, spawnPoint.rotate, 0))
+  end
+
+  return true
+end
+
 --- Called when a player spawns; moves them to a random spawn point for their class, faction or the default.
 --
 -- Class spawn points take priority over faction ones; the default set is used only when the faction has
@@ -17,55 +34,14 @@ end
 -- @param player [Player The player who spawned]
 function cwSpawnPoints:PlayerSpawn(player)
   if player:HasInitialized() then
-    local position = nil
-    local rotate = nil
-    local randomSpawn = nil
-    local faction = player:GetFaction()
+    local factionPoints = self.spawnPoints[player:GetFaction()]
     local class = cw.class:FindByID(player:Team())
 
-    if class then
-      if self.spawnPoints[class.name] and #self.spawnPoints[class.name] > 0 then
-        randomSpawn = math.random(1, #self.spawnPoints[class.name])
-        position = self.spawnPoints[class.name][randomSpawn].position
-        rotate = self.spawnPoints[class.name][randomSpawn].rotate
-
-        if position then
-          player:SetPos(position + Vector(0, 0, 8))
-        end
-
-        if rotate then
-          player:SetEyeAngles(Angle(0, rotate, 0))
-        end
-      end
-    end
-
-    if !position then
-      if self.spawnPoints[faction] and #self.spawnPoints[faction] > 0 then
-        randomSpawn = math.random(1, #self.spawnPoints[faction])
-        position = self.spawnPoints[faction][randomSpawn].position
-        rotate = self.spawnPoints[faction][randomSpawn].rotate
-
-        if position then
-          player:SetPos(position + Vector(0, 0, 8))
-        end
-
-        if rotate then
-          player:SetEyeAngles(Angle(0, rotate, 0))
-        end
-      elseif self.spawnPoints['default'] then
-        if #self.spawnPoints['default'] > 0 then
-          randomSpawn = math.random(1, #self.spawnPoints['default'])
-          position = self.spawnPoints['default'][randomSpawn].position
-          rotate = self.spawnPoints['default'][randomSpawn].rotate
-
-          if position then
-            player:SetPos(position + Vector(0, 0, 8))
-          end
-
-          if rotate then
-            player:SetEyeAngles(Angle(0, rotate, 0))
-          end
-        end
+    if !class or !MoveToRandomPoint(player, self.spawnPoints[class.name]) then
+      if factionPoints and #factionPoints > 0 then
+        MoveToRandomPoint(player, factionPoints)
+      else
+        MoveToRandomPoint(player, self.spawnPoints['default'])
       end
     end
 

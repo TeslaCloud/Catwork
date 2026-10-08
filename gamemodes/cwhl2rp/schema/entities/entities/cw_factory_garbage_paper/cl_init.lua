@@ -42,7 +42,7 @@ surface.CreateFont('_GR_CMB_FONT_4', {
 --- Creates the render target and material for the indicator screen.
 function ENT:Initialize()
   self.RT = GetRenderTargetEx(
-    '_cmb_FIndicatorRT'..self:EntIndex()..CurTime(),
+    '_cmb_FIndicatorRT'..self:EntIndex(),
     128,
     85,
     RT_SIZE_DEFAULT,
@@ -51,7 +51,7 @@ function ENT:Initialize()
     CREATERENDERTARGETFLAGS_UNFILTERABLE_OK,
     IMAGE_FORMAT_DEFAULT
   )
-  self.RTMat = CreateMaterial('_cmb_FIndicatorRTMAT'..self:EntIndex()..CurTime(), 'UnlitTwoTexture', {
+  self.RTMat = CreateMaterial('_cmb_FIndicatorRTMAT'..self:EntIndex(), 'UnlitTwoTexture', {
     ['$selfilium'] = '1',
     ['$texture2'] = 'dev/dev_scanline',
     ['Proxies'] =
@@ -77,24 +77,27 @@ function ENT:Draw()
       render.DrawLine(
         self:GetProductPos() - self:GetForward() * 12,
         self:GetProductPos() + self:GetForward() * 12,
-        Color(255, 255, 255),
+        color_white,
         true
       )
       render.DrawLine(
         self:GetProductPos() - self:GetRight() * 12,
         self:GetProductPos() + self:GetRight() * 12,
-        Color(255, 255, 255),
+        color_white,
         true
       )
       render.DrawLine(
         self:GetProductPos() - self:GetUp() * 12,
         self:GetProductPos() + self:GetUp() * 12,
-        Color(255, 255, 255),
+        color_white,
         true
       )
-      render.DrawLine(self:GetProductPos(), self:GetPos(), Color(255, 255, 255), true)
+      render.DrawLine(self:GetProductPos(), self:GetPos(), color_white, true)
     end
   end
+
+  -- The client does not always run Initialize for entities it receives while still loading.
+  if !self.RT then self:Initialize() end
 
   local pos = self:GetPos()
   local ang = self:GetAngles()
@@ -119,16 +122,15 @@ function ENT:Draw()
 
     local isWorking = self:GetIsWorking()
     local stopped = self:GetStopWorkTime() > 0
-    local hasMaterial = self:GetGarbageCount() < self.METAL_GARBAGE_COUNT_START
+    local notEnough = self:GetGarbageCount() < self.METAL_GARBAGE_COUNT_START
 
     local text = isWorking and '#GarbageRecycler_Status_Recycling'
       or (stopped and '#GarbageRecycler_Status_Stopped'
-      or (hasMaterial and '#GarbageRecycler_Status_NotEnough' or '#GarbageRecycler_Status_Ready'))
-    local red = isWorking and 0 or (stopped and 255 or (hasMaterial and 255 or 0))
-    local green = isWorking and 255 or (stopped and 0 or (hasMaterial and 0 or 255))
+      or (notEnough and '#GarbageRecycler_Status_NotEnough' or '#GarbageRecycler_Status_Ready'))
+    local red = isWorking and 0 or (stopped and 255 or (notEnough and 255 or 0))
+    local green = isWorking and 255 or (stopped and 0 or (notEnough and 0 or 255))
     surface.SetTextColor(red, green, 0, math.abs(math.cos(RealTime() * 2) * 255))
     surface.SetFont('_GR_CMB_FONT_3')
-    local w, h = surface.GetTextSize(text)
     surface.SetTextPos(6, 31)
     surface.DrawText(text)
 
@@ -148,9 +150,9 @@ function ENT:Draw()
       end
     end
 
-    surface.SetDrawColor(Color(65, 65, 65, 255))
+    surface.SetDrawColor(65, 65, 65, 255)
     surface.DrawRect(128 / 2 - 114 / 2, 100 / 2 - 16 / 2, 114, 16)
-    surface.SetDrawColor(Color(50, 120, 230, 255))
+    surface.SetDrawColor(50, 120, 230, 255)
     local bar = math.Clamp((var * 114) - 2, 0, 114)
     surface.DrawRect(128 / 2 - 114 / 2 + 1, 100 / 2 - 16 / 2 + 1, bar, 16 - 2)
 
@@ -161,9 +163,9 @@ function ENT:Draw()
     surface.SetTextPos(128 / 2 - w / 2, 100 / 2 - h / 2)
     surface.DrawText(text)
 
-    surface.SetDrawColor(Color(65, 65, 65, 255))
+    surface.SetDrawColor(65, 65, 65, 255)
     surface.DrawRect(128 / 2 - 114 / 2, 100 / 2 - 16 / 2 + 20, 114, 16)
-    surface.SetDrawColor(Color(50, 240, 50, 255))
+    surface.SetDrawColor(50, 240, 50, 255)
     local bar = math.Clamp((var2 * 114) - 2, 0, 114)
     surface.DrawRect(128 / 2 - 114 / 2 + 1, 100 / 2 - 16 / 2 + 1 + 20, bar, 16 - 2)
 

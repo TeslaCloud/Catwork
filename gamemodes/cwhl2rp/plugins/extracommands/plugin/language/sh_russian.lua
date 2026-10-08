@@ -13,6 +13,8 @@ lang['#ExtraCommands_IconSet'] = 'Вы установили игроку #1 ик
 lang['#ExtraCommands_NotPng'] = 'не является файлом .png!'
 lang['#ExtraCommands_AttributeSet'] = 'Вы установили атрибут #2 [#3] игрока #1 на #4.'
 lang['#ExtraCommands_NotValidAttribute'] = "Атрибута '#1' не существует!"
+lang['#ExtraCommands_NotValidBodyGroup'] = 'У модели этого игрока нет такой бодигруппы или такого значения бодигруппы!'
+lang['#ExtraCommands_NotValidSkin'] = 'У модели этого игрока нет такого скина!'
 
 -- Commands.
 lang['#Command_Overwatch_Description'] = 'Отправить сообщение всем юнитам Гражданской Обороны.'
