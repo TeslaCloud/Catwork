@@ -1,10 +1,6 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `Mysterious Serum` stimpack item (`stimpack_mystery`), an injection that restores stamina, clears
+-- fatigue, sets health to 200 and boosts agility, endurance and strength by 100 for 600 seconds, together with its
+-- English and Russian strings.
 
 ITEM.name = 'Mysterious Serum'
 ITEM.PrintName = '#ITEM_Mystery'

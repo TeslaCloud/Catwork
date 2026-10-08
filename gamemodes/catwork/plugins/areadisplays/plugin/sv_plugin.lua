@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server-side functions of the Area Displays plugin that load and save the map's areas.
+--
+-- The areas are kept in the `plugins/areas/<map>` schema data file. The `EnteredArea` netstream sent by clients runs
+-- the `PlayerEnteredArea` hook on the server.
 
 netstream.Hook('EnteredArea', function(player, data)
   if data[1] and data[2] and data[3] then

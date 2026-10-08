@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/DropWeapon` command (alias `/Drop`), which drops the caller's active weapon as an item entity where
+-- they are looking.
 
 local COMMAND = cw.command:New('DropWeapon')
 COMMAND.tip = '#Command_Dropweapon_Description'

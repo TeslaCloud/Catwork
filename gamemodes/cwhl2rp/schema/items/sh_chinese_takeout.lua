@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the Chinese Takeout food item, which heals 10 health, boosts endurance by 2 and accuracy by 1 for two
+-- minutes and leaves an empty takeout carton.
 
 ITEM.name = 'Chinese Takeout'
 ITEM.PrintName = '#ITEM_Chinese_Takeout'

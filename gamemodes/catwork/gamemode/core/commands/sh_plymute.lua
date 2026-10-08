@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the operator command `/PlyMute` (alias `/Mute`), which blocks the target player from OOC and LOOC chat for
+-- a number of minutes.
 
 local COMMAND = cw.command:New('PlyMute')
 COMMAND.tip = '#Command_Plymute_Description'

@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `cw.limb` library, the per-limb damage system switched on by the `limb_damage_system` config.
+--
+-- The server adds and heals damage per hit group and networks it. The client keeps the local player's limb damage and
+-- supplies the names, textures and colors for the limb display.
 
 library.New('limb', cw)
 

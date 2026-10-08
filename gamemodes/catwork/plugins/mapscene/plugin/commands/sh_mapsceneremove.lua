@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/MapSceneRemove` admin command, which removes the map scenes within 256 units of the player's eyes.
 
 local COMMAND = cw.command:New('MapSceneRemove')
 COMMAND.tip = '#Command_Mapsceneremove_Description'

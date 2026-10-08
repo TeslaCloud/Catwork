@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the Overwatch Soldier class as `CLASS_OWS`, the default class of `FACTION_OTA`, with wages of 20.
 
 local CLASS = cw.class:New('#Class_OverwatchSoldier')
   CLASS.color = Color(150, 50, 50, 255)

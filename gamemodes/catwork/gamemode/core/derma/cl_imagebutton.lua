@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines `cwImageButton`, a `DImage` that works as a button with hovered, depressed and disabled states.
+--
+-- Has `FadeIn` and `FadeOut` animations that play the theme's click and rollover sounds, and `SetCallback` to set the
+-- click handler.
 
 local PANEL = {}
 

@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Client-side hooks of the Pickup Objects plugin that show a notice while the local player's ragdoll is being dragged
+-- and stop them from getting up.
+--
+-- Also extends the instructions of the `cw_hands` weapon with the pickup, throw and drop controls.
 
 --- Called to get the full-screen text; shows a "being dragged" notice while the local player's ragdoll
 -- is carried.

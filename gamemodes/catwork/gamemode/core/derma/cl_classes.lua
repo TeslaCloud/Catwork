@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `cwClasses` menu tab, which lists the classes the local player can switch to, and its `cwClassesItem`
+-- entries.
+--
+-- Classes are filtered with the `PlayerCanSeeClass` hook and sorted by wages; an entry shows the class name and player
+-- count and runs the `SetClass` command when clicked. `cwClassesItem` is reused by the class step of character
+-- creation.
 
 local PANEL = {}
 

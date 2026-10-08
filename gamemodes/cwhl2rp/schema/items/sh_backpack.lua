@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the Backpack storage item, which adds 8 to its carrier's inventory weight limit, is limited to one per
+-- player and drops as a `boxed_backpack`.
 
 ITEM.name = 'Backpack'
 ITEM.PrintName = '#ITEM_Backpack'

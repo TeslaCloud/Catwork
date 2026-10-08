@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Client-side hooks of the Storage plugin that label containers, give them an Open menu option and show their message.
+--
+-- A container is a physics prop whose model is in `cwStorage.containerList`. Its target ID shows its custom or default
+-- name, and its message is shown above the contents in the storage panel.
 
 --- Called when an entity's target ID is painted; labels containers with their custom or default name
 -- and an "open" hint.

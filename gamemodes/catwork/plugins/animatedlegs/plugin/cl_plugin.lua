@@ -1,10 +1,10 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Client-side functions and state of the Animated Legs plugin, which shows the local player their own legs in first
+-- person.
+--
+-- `cwAnimatedLegs:CreateLegs` makes a clientside copy of the player's model, `cwAnimatedLegs:LegsThink` keeps it in
+-- sync with the player's animation, and `cwAnimatedLegs:WeaponChanged` hides the upper-body bones listed in
+-- `cwAnimatedLegs.BoneHoldTypes` for the current hold type. The legs are not drawn for the `FACTION_VORT` and
+-- `FACTION_VORT_SLAVE` factions.
 
 cwAnimatedLegs.BoneHoldTypes = {
   ['none'] = {

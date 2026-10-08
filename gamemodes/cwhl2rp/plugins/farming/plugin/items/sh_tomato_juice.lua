@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `Tomato Juice` item (`tomato_juice`) of the Farming plugin, a drink that restores 50 thirst and leaves
+-- an `empty_soda_can`.
 
 ITEM.name = 'Tomato Juice'
 ITEM.PrintName = '#Item_TomatoJuice_PrintName'

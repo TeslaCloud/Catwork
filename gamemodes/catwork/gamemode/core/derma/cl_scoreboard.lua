@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `cwScoreboard` menu tab, which lists the players grouped by scoreboard class, and its `cwScoreboardItem`
+-- player rows.
+--
+-- Grouping, visibility, sorting and the text of a row come from the `GetPlayerScoreboardClass`,
+-- `PlayerShouldShowOnScoreboard`, `ScoreboardSortClassPlayers` and `GetPlayerScoreboardText` hooks. Clicking a row's
+-- model opens the options from `GetPlayerScoreboardOptions`.
 
 local PANEL = {}
 

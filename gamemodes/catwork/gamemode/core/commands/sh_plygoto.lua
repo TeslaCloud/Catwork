@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the operator command `/PlyGoTo` (alias `/GoTo`), which teleports the caller to the target player.
 
 local COMMAND = cw.command:New('PlyGoTo')
 COMMAND.tip = '#Command_Plygoto_Description'

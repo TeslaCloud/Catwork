@@ -1,7 +1,10 @@
---[[
-  © 2013 CloudSixteen.com do not share, re-distribute or modify
-  without permission of its author (kurozael@gmail.com).
---]]
+--- Client side of the `cw_combineaccessmonitor` entity of the Combine Devices plugin, which draws the access monitor's
+-- screen.
+--
+-- The screen is rendered to a per-entity render target with a scrolling scanline material and shows the three text
+-- lines and the access level, or a flashing `ERROR` screen with random binary in the error status; a destroyed monitor
+-- shows no screen. Also creates the `_CMB_FONT_1` to `_CMB_FONT_5` fonts.
+
 ENT.RenderGroup = RENDERGROUP_TRANSLUCENT
 include('shared.lua')
 

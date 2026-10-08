@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server-side hooks of the Books plugin that handle the View and Take menu options of `cw_book` entities and load and
+-- save the placed books.
+--
+-- View sends the `ViewBook` netstream to the player, and Take gives them the book's item and removes the entity.
 
 local PLUGIN = PLUGIN
 

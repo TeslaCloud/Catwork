@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `cw.class` library, the registry of classes, the roles a character can take within a faction.
+--
+-- A class is created with `cw.class:New` and registered as a team. The library answers queries about a class (its
+-- limit, model, flags or any field) and moves players between classes with `cw.class:AssignToDefault` and the
+-- server-only `cw.class:Set`.
 
 if cw.class then return end
 

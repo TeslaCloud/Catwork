@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `Potato Dish` item (`potato_dish`) of the Farming plugin, a food item that restores 65 hunger and leaves
+-- an `empty_takeout_carton`.
 
 ITEM.name = 'Potato Dish'
 ITEM.PrintName = '#Item_PotatoDish_PrintName'

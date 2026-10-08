@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `Weed Seeds` item (`seed_weed`), a `seeds_base` item whose plant ripens in 1800 to 2000 seconds and
+-- yields `seed_weed` and `weed`.
 
 ITEM.baseItem = 'seeds_base'
 ITEM.name = 'Weed Seeds'

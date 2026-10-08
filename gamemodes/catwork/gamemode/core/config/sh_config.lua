@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the core config keys that are networked to clients with `config.ShareKey`, such as `cash_enabled`,
+-- `talk_radius` and `command_prefix`.
+--
+-- Runs in both realms so the server and client agree on the short index each key is networked under.
 
 config.ShareKey('use_opens_entity_menus')
 config.ShareKey('target_id_delay')

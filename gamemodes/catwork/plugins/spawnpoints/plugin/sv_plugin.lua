@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server-side functions of the Spawn Points plugin that load, save and list `cwSpawnPoints.spawnPoints`.
+--
+-- Points are kept per map in the schema data under `plugins/spawnpoints/<map>`, grouped by faction or class name or
+-- under `default`. `GetSpawnPoints` adds the map's `info_player_start` entities for the admin ESP.
 
 --- Loads the current map's spawn points from the schema data into `cwSpawnPoints.spawnPoints`.
 --

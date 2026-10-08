@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers `/PlyRemoveSeverWhitelist` (spelled that way), an admin command that removes an identity from a player's
+-- `serverwhitelist` player data.
 
 local COMMAND = cw.command:New('PlyRemoveSeverWhitelist')
 COMMAND.tip = '#Command_Plyremoveseverwhitelist_Description'

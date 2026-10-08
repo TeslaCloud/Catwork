@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the Suitcase item (`cw_suitcase`), a fake melee weapon held in the hand whose Unpack option replaces it with
+-- a random piece of clothing, food and drink.
 
 ITEM.baseItem = 'weapon_base'
 ITEM.name = 'Suitcase'

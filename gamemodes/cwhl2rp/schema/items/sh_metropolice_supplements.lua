@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the Metropolice Supplements food item for the Metropolice Force faction, which heals 5 health and boosts
+-- endurance by 2 for two minutes.
 
 ITEM.name = 'Metropolice Supplements'
 ITEM.PrintName = '#ITEM_Metropolice_Supplements'

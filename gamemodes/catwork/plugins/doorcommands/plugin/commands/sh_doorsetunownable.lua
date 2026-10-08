@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/DoorSetUnownable` command, which makes the door the player is looking at unownable with the given
+-- name and optional text.
 
 local COMMAND = cw.command:New('DoorSetUnownable')
 COMMAND.tip = '#Command_Doorsetunownable_Description'

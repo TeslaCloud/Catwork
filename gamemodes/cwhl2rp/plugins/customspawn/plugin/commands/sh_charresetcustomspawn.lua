@@ -1,8 +1,5 @@
---[[
-  © 2016 TeslaCloud Studios.
-  Feel free to use, edit or share the plugin, but
-  do not re-distribute without the permission of it's author.
---]]
+--- Registers the admin command `/CharResetCustomSpawn` of the Custom Spawn plugin, which removes the target character's
+-- custom spawn point.
 
 local COMMAND = cw.command:New('CharResetCustomSpawn')
 COMMAND.tip = '#Command_Charresetcustomspawn_Description'

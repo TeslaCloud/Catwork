@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Client-side hooks of the Map Scenes plugin that move the camera to the map scene while the player is choosing a
+-- character.
+--
+-- `CalcView` shows the scene received from the server, slowly swaying the yaw of spinning scenes, and
+-- `ShouldDrawCharacterBackground` hides the character menu background while a scene is set.
 
 --- Called to check whether the character menu background should be drawn; hides it when a map scene is set.
 --

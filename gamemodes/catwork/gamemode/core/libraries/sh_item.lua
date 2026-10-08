@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the global `item` library and the `CItem` class behind every item definition and item instance.
+--
+-- `item.IncludeItems` loads item files, each filling in a global `ITEM` that is registered and later merged with its
+-- base item by `item.Initialize`. The library creates and finds instances, each with its own item ID and per-instance
+-- data that can be networked, and on the server makes players use, drop and destroy items.
 
 library.New('item', _G)
 

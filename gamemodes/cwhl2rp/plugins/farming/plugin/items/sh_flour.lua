@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `Flour` item (`flour`) of the Farming plugin, a crafting material with no use of its own.
 
 ITEM.name = 'Flour'
 ITEM.PrintName = '#Item_Flour_PrintName'

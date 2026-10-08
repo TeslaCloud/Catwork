@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `cw_bloodsmoke` effect, a burst of red smoke particles that leave blood decals where they collide.
+--
+-- The effect data's scale (2 by default) sets the particle count and size, and its normal sets the direction the
+-- particles fly in.
 
 local function ParticleCollides(particle, position, normal)
   util.Decal('Blood', position + normal, position - normal)

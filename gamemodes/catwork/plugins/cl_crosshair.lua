@@ -1,8 +1,11 @@
---[[
-  Flux © 2016-2017 TeslaCloud Studios
-  Do not share or re-distribute before
-  the framework is publicly released.
---]]
+--- Single-file Crosshair plugin, which draws a five-dot crosshair on the HUD whose gap widens with the distance to what
+-- the player is aiming at.
+--
+-- The `PreDrawCrosshair`, `AdjustCrosshairColor` and `AdjustCrosshairGap` hooks can hide or restyle it; the plugin's
+-- own implementations hide it when the `enable_crosshair` config is false and highlight nearby players and `cw_item`
+-- entities.
+--
+-- Backported from the [Flux](https://github.com/TeslaCloud/flux-ce) project.
 
 PLUGIN.name = 'Crosshair'
 PLUGIN.author = 'Mr. Meow'

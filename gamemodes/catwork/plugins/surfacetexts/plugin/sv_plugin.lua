@@ -1,8 +1,10 @@
---[[
-  LightFlare © 2016-2017 TeslaCloud Studios
-  Do not share or re-distribute before
-  the framework is publicly released.
---]]
+--- Server-side functions of the Surface Texts plugin that add, remove, save and load the map's 3D texts.
+--
+-- `cwSurfaceTexts:AddText` stores a text and sends it to every client, and `cwSurfaceTexts:Remove` has an admin's
+-- client pick the text under the crosshair, which the `cw3DText_Remove` netstream then deletes. The texts are saved
+-- per map in the `plugins/3dtexts` schema data.
+--
+-- Backported from the [Flux](https://github.com/TeslaCloud/flux-ce) project.
 
 --- Saves the surface texts and the ID counter to the schema data for the current map.
 function cwSurfaceTexts:Save()

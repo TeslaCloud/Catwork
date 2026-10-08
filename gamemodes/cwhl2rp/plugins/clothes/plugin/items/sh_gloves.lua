@@ -1,9 +1,6 @@
---[[
-  © 2016 TeslaCloud Studios.
-  Private code for Global Cooldown community.
-  Stealing Lua cache is not nice lol.
-  get a life kiddos.
---]]
+--- Defines the Gloves item (`gloves`), handwear based on `bodygroup_base` that sets bodygroup 3 to 1.
+--
+-- Originally written for the Global Cooldown community.
 
 ITEM.baseItem = 'bodygroup_base'
 ITEM.name = 'Gloves'

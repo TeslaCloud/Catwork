@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the Spray Can item, which a player must carry to use their spray and has no behaviour of its own.
 
 ITEM.name = 'Spray Can'
 ITEM.PrintName = '#ITEM_Spray_Can'

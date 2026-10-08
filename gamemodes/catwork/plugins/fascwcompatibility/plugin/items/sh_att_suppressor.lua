@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `att_suppressor` item, a suppressor attachment for FA:S 2.0 weapons in the Attachments category.
 
 ITEM.name = 'att_suppressor'
 ITEM.PrintName = '#FAS2_Suppressor'

@@ -1,10 +1,11 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Client-side core of the HL2RP schema: its config menu entries, netstream receivers and the `Schema` helpers for
+-- stun, flash and Combine display effects.
+--
+-- Adds the schema's config keys (such as `permits`, `business_cost`, `knockout_time` and `enable_permakill`) to the
+-- system menu with `config.AddToSystem`, and handles the messages that open the `cwObjectives` and `cwData` editors,
+-- the radio frequency and object description prompts, and custom scoreboard icons. Helpers include
+-- `Schema:AddStunEffect`, `Schema:AddFlashEffect`, `Schema:AddCombineDisplayLine`, `Schema:GetScannerEntity` and
+-- `Schema:DownloadMaterial`.
 
 Schema.stunEffects = Schema.stunEffects or {}
 Schema.combineOverlay = Material('effects/combine_binocoverlay')

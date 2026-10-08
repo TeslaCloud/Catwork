@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/InvAction` command, which runs `destroy`, `drop`, `use` or a custom function on an item instance in
+-- the caller's inventory and is what the inventory menu sends.
 
 local COMMAND = cw.command:New('InvAction')
 COMMAND.tip = '#Command_Invaction_Description'

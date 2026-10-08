@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the superadmin command `/CfgListVars`, which prints the config variables to the caller's console,
+-- optionally filtered by a search string.
 
 local COMMAND = cw.command:New('CfgListVars')
 COMMAND.tip = '#Command_Cfglistvars_Description'

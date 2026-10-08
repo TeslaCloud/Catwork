@@ -1,9 +1,3 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `spawn_where_left` config of the Spawn Saver plugin, which is off by default.
 
 config.Add('spawn_where_left', false)

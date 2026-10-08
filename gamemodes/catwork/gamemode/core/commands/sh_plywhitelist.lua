@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the superadmin command `/PlyWhitelist` (aliases `/Whitelist`, `/CharWhitelist`, `/GiveWhitelist`), which
+-- adds the target player to a faction's whitelist.
 
 local COMMAND = cw.command:New('PlyWhitelist')
 COMMAND.tip = '#Command_Plywhitelist_Description'

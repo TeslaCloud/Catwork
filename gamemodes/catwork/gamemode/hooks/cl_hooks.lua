@@ -1,10 +1,10 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Client-side gamemode hooks of the Catwork framework, defined on `GM`.
+--
+-- Covers the HUD (`HUDPaint`, `HUDPaintForeground`, `HUDDrawTargetID`, `HUDDrawScoreBoard`, the bars, crosshair and
+-- vignette), the view and input (`CalcView`, `CreateMove`, `PlayerBindPress`), screen effects, the menu, the
+-- scoreboard and the chat box. Much of the file is the default implementation of the framework's own hooks, such as
+-- `PlayerCanSeeBars`, `GetPlayerScoreboardOptions`, `GetEntityMenuOptions`, `GetDoorInfo` and `GetProgressBarInfo`,
+-- which schemas and plugins override or extend.
 
 --- Called to check whether the local player has lenses, an item with the unique ID `lenses` in their inventory.
 -- @return [Boolean Whether the player has lenses]

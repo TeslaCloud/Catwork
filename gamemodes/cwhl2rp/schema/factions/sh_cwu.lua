@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the whitelisted Civil Worker's Union faction (`FACTION_CWU`), with the `group02` human models and a rule
+-- that Combine characters transferred into it need a new name.
 
 local FACTION = faction.New('#Faction_CWU')
 

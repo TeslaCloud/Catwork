@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `ammo_50` item, a box of 10 rounds of .50 BMG ammo sold to the Elite Overwatch Soldier class.
 
 ITEM.baseItem = 'ammo_base'
 ITEM.name = '.50 BMG Bullets'

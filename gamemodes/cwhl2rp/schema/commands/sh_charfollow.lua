@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers `/CharFollow`, which makes a scanner player's scanner follow the closest character it can see.
 
 local COMMAND = cw.command:New('CharFollow')
 COMMAND.tip = '#Command_Charfollow_Description'

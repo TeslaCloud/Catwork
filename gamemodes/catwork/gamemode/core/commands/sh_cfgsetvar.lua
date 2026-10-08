@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the superadmin command `/CfgSetVar`, which sets a config variable, optionally for a single map, and
+-- announces the change to everyone.
 
 local COMMAND = cw.command:New('CfgSetVar')
 COMMAND.tip = '#Command_Cfgsetvar_Description'

@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines `cw.menuButton`, the `cwFAButton` used for a tab in the main menu, and adds the `cwMenuButtonSmall` font.
+--
+-- `SetupLabel` gives it the menu item's translated text, icon and tooltip and a callback that opens the item's panel
+-- through `cw.menu`.
 
 local PANEL = {}
 

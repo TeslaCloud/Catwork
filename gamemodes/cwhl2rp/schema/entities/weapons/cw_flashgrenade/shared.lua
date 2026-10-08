@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `cw_flashgrenade` weapon (Flash), a thrown grenade that blinds every player within 768 units who can see
+-- it.
+--
+-- Holding primary fire charges the throw and releasing it throws a `prop_physics` grenade that explodes after four
+-- seconds and sends the `Flashed` netstream message to the affected players. Each throw uses up one grenade, and the
+-- weapon is stripped when none are left.
 
 if SERVER then
   AddCSLuaFile('shared.lua')

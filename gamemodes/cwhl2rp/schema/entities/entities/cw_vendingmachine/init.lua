@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server side of the `cw_vendingmachine` entity, a soda machine that sells Breen's water to citizens for 8 tokens.
+--
+-- A purchase takes one can from the stock and drops a regular, smooth or (1 time in 20) special Breen's water item;
+-- each citizen can buy once every 10 minutes. Combine players restock an empty machine by using it, and the stock is
+-- managed with `ENT:SetStock`, `ENT:GiveStock` and `ENT:Restock`.
 
 include('shared.lua')
 

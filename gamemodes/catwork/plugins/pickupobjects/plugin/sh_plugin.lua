@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Main file of the Pickup Objects plugin, which lets players pick up, carry and throw light objects and ragdolls with
+-- the hands weapon.
+--
+-- Aliases the plugin as `cwPickupObjects` and includes its client and server files.
 
 --[[
   You don't have to do this, but I think it's nicer.

@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the Vortigaunt Anatomy book item (`book_va`), a purchasable book on vortigaunts.
 
 ITEM.baseItem = 'book_base'
 ITEM.name = 'Vortigaunt Anatomy'

@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines `cwInfoText`, a colored notice bar with an icon and a line of text that can also act as a button.
+--
+-- `SetInfoColor` picks a preset background color and icon or a custom color, `SetButton` makes the notice call
+-- `DoClick` when clicked. It is used across the menus for messages such as an empty list.
 
 local PANEL = {}
 

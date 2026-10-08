@@ -1,10 +1,10 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server-side hooks of the HL2RP schema, the `Schema` implementations of Catwork and gamemode hooks that enforce the
+-- setting's rules.
+--
+-- They handle Combine units (names and ranks, radio and display lines, biosignal loss on death), player scanners, tied
+-- players, entity menu options for corpses, breaches and stationary radios, the server whitelist, permanent kill and
+-- item loss on death, door damage and damage scaling, and Combine death, pain and footstep sounds. Loading and saving
+-- is delegated to the functions of `sv_schema.lua` from `ClockworkInitPostEntity` and `PostSaveData`.
 
 --- Called when a player first spawns; exchanges custom scoreboard icons with them two seconds later.
 -- @param player [Player The player]

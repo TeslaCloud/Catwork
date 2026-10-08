@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `alcohol_base` base item for alcoholic drinks: drinking one boosts the item's `attributes` and makes the
+-- player drunk for `expireTime` seconds, then calls the item's optional `OnDrink`.
 
 ITEM.isBaseItem = true
 ITEM.name = 'Alcohol Base'

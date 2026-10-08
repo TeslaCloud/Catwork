@@ -1,10 +1,10 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server-side hooks of the Garbage plugin that respawn garbage piles at their spawn points and give players what they
+-- find.
+--
+-- `OneSecond` spawns a pile at every point whose `garbage_respawn_delay` has passed and that `CanSpawnGarbage` allows.
+-- `GetGarbageTime` returns the search time from `garbage_pickup_time` and the Scavenger attribute, and
+-- `PlayerTakeGarbage` rolls a random entry of `cwGarbage.stored` against `garbage_item_percentage`, with a few very
+-- rare jackpots, and progresses Scavenger.
 
 --- Called after Catwork has loaded the map entities; loads the garbage spawn points.
 function cwGarbage:ClockworkInitPostEntity()

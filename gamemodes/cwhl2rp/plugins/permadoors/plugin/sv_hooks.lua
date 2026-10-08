@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server-side hooks and persistence of the Permanent Doors plugin.
+--
+-- `PlayerDoesHaveDoorAccess` grants access to a door when the character's `PermaDoorSecret` data matches the door's
+-- secret. `LoadPermaDoors` runs once the map entities exist and matches the saved doors to map doors by position;
+-- `SavePermaDoors` writes each door's name, text, secret and position to `plugins/permadoors/<map>`.
 
 --- Called when a player's access to a door is checked; grants access to the owner of a permanent door.
 --

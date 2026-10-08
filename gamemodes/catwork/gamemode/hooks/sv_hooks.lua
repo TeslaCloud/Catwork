@@ -1,10 +1,10 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server-side gamemode hooks of the Catwork framework, defined on `GM`.
+--
+-- Covers start-up and the database connection (`Initialize`, `ClockworkInitialized`), the player lifecycle
+-- (`PlayerInitialSpawn`, `PlayerSpawn`, `PlayerCharacterLoaded`, `PlayerDeath`), the `Tick`-driven `PlayerThink`,
+-- `OnePlayerSecond` and `OneSecond`, damage (`EntityTakeDamage`), saving, Sandbox spawning, tool and physgun
+-- permissions and `EntityHandleMenuOption`. Most of the rest is the default implementation of the framework's own
+-- `PlayerCan*` and `PlayerAdjust*` hooks, which schemas and plugins override.
 
 DEFINE_BASECLASS('gamemode_base')
 

@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the client-side `cw.TargetPlayerText` library, the lines of text drawn under the name of the player the
+-- local player is looking at.
+--
+-- The list is cleared every frame, so lines are added with `cw.TargetPlayerText:Add` from the `GetTargetPlayerText`
+-- hook.
 
 library.New('TargetPlayerText', cw)
 

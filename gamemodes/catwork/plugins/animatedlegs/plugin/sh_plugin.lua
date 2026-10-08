@@ -1,10 +1,6 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Main file of the Animated Legs plugin, which aliases it as `cwAnimatedLegs` and includes its client files.
+--
+-- The plugin draws the local player's own legs when they look down in first person.
 
 --[[
   You don't have to do this, but I think it's nicer.

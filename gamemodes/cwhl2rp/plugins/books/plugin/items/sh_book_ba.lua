@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the Barnacle Anatomy book item (`book_ba`), a purchasable book on barnacles.
 
 ITEM.baseItem = 'book_base'
 ITEM.name = 'Barnacle Anatomy'

@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers `/CharHeal`, which heals the character being looked at with a `health_vial`, `health_kit` or `bandage`
+-- from the player's inventory, or repairs a scanner with a `power_node`.
+--
+-- The target must be within 192 units and the player must not be tied. The amount healed comes from
+-- `Schema:GetHealAmount`, and a successful heal runs the `PlayerHealed` hook.
 
 local COMMAND = cw.command:New('CharHeal')
 COMMAND.tip = '#Command_Charheal_Description'

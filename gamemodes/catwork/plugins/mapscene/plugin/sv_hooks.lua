@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server-side hooks of the Map Scenes plugin that load the saved scenes on startup, pick a random one for each joining
+-- player and add its position to that player's PVS.
 
 --- Called when a player's data stream info should be sent; picks a random map scene for them and sends it.
 --

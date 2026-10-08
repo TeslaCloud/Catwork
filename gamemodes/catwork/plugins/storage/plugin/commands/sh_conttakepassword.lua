@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/ContTakePassword` admin command, which removes the password of the container the player is looking
+-- at.
 
 local COMMAND = cw.command:New('ContTakePassword')
 COMMAND.tip = '#Command_Conttakepassword_Description'

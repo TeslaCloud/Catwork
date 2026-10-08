@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Shared definition of the `cw_plant` entity: its entity fields and the getters for the time it was planted, the time
+-- it ripens and the unique ID of the seed item it grew from.
 
 DEFINE_BASECLASS('base_gmodentity')
 

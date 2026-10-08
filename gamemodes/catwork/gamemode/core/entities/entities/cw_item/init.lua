@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server side of the `cw_item` entity, an item instance lying in the world.
+--
+-- `ENT:SetItemTable` binds the entity to an item, taking its model and skin and registering it with
+-- `item.AddItemEntity`. The entity has 25 health and passes damage, thinking and removal on to the item's
+-- `OnEntityTakeDamage`, `OnEntityThink`, `OnEntityDestroyed` and `OnEntityRemoved` callbacks and the
+-- `ItemEntityTakeDamage` and `ItemEntityDestroyed` hooks.
 
 include('shared.lua')
 

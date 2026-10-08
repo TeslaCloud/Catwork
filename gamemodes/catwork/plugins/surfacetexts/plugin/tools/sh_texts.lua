@@ -1,8 +1,10 @@
---[[
-  Rework © 2016-2017 TeslaCloud Studios
-  Do not share or re-distribute before
-  the framework is publicly released.
---]]
+--- Defines the `texts` toolgun of the Surface Texts plugin, which places a 3D text on the surface under the crosshair
+-- on left click and removes one on right click.
+--
+-- The text, style, scale, colors and fade distance offset come from the tool's console variables, which its control
+-- panel edits. Only admins can place or remove texts.
+--
+-- Backported from the [Flux](https://github.com/TeslaCloud/flux-ce) project.
 
 local TOOL = cw.tool:New()
 

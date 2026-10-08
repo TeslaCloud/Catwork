@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Main file of the Door Commands plugin, which aliases it as `cwDoorCmds` and includes its files.
+--
+-- The plugin adds admin commands and tools for locking doors, naming them, hiding them, setting whether they can be
+-- owned and parenting them to each other, and keeps that data for each map.
 
 --[[
   You don't have to do this, but I think it's nicer.

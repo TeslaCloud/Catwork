@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server-side part of the `cw.player` library, which holds most of the framework's player and character logic.
+--
+-- It creates, loads, saves and deletes characters and player data in the database, and manages flags, whitelists,
+-- cash, property and doors, recognition and names, weapons and ammo, gear, ragdolling, timed actions and
+-- notifications. It also adds `Player:GiveCash` and `Player:Notify`.
 
 if !cw.player then include('sh_player.lua') end
 if !cw.database then include('sv_database.lua') end

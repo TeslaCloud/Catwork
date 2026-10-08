@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `cw_smokegrenade` weapon (Smoke), a thrown grenade that explodes into a `cw_effect_smoke` cloud after
+-- four seconds.
+--
+-- It shares its throw logic with `cw_flashgrenade`: holding primary fire charges the throw, releasing it throws a
+-- `prop_physics` grenade, and each throw uses up one grenade until the weapon is stripped.
 
 if SERVER then
   AddCSLuaFile('shared.lua')

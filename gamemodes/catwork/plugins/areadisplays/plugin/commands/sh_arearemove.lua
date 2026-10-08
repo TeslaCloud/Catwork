@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/AreaRemove` command, which removes every area display with the given name.
 
 local COMMAND = cw.command:New('AreaRemove')
 COMMAND.tip = '#Command_Arearemove_Description'

@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `cw_hands` weapon, a character's bare hands, which punch with primary fire and knock on doors with
+-- secondary fire.
+--
+-- A punch damages and pushes what the owner looks at within 64 units and can knock out a player it would leave at 30
+-- health or less. The `PlayerCanThrowPunch`, `PlayerCanPunchEntity`, `PlayerCanPunchKnockout`,
+-- `PlayerAdjustNextPunchInfo` and `PlayerCanKnockOnDoor` hooks control it. The hands are removed instead of dropped.
 
 if SERVER then
   AddCSLuaFile('shared.lua')

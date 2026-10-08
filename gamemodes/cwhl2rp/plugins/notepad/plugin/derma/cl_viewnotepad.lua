@@ -1,7 +1,7 @@
---[[
-  © 2012 CloudSixteen.com do not share, re-distribute or modify
-  without permission of its author (kurozael@gmail.com).
---]]
+--- Defines the `cwViewNotepad` panel of the Notepad plugin, the read-only window that shows a notepad's text.
+--
+-- Also creates the `cwNotepadFont` font the text is drawn in. The window closes by itself when the notepad is removed
+-- or more than 192 units away.
 
 local PANEL = {}
 

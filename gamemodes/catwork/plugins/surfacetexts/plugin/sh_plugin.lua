@@ -1,8 +1,7 @@
---[[
-  LightFlare © 2016-2017 TeslaCloud Studios
-  Do not share or re-distribute before
-  the framework is publicly released.
---]]
+--- Main file of the Surface Texts plugin, which aliases it as `cwSurfaceTexts`, includes its files and creates
+-- `cwSurfaceTexts.stored`.
+--
+-- Backported from the [Flux](https://github.com/TeslaCloud/flux-ce) project.
 
 --[[
   You don't have to do this, but I think it's nicer.

@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Shared definition of the `cw_belongings` entity: a non-spawnable `anim` entity named Belongings that can be used
+-- from inside a vehicle.
 
 DEFINE_BASECLASS('base_gmodentity')
 

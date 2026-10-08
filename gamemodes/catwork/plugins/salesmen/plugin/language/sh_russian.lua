@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Russian (`ru`) language strings of the Salesmen plugin, covering the salesman editor, the default responses, the
+-- trade menu, notifications and the help text of the `/Salesman` commands.
 
 local lang = cw.lang:GetTable('ru')
 

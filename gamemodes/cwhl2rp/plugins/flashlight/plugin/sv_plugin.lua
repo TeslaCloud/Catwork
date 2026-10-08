@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines `PLUGIN:PlayerHasFlashlight`, the server-side check of the Flashlight plugin for whether a player may use a
+-- flashlight.
+--
+-- Combine always may; other players need the `cw_flashlight` item, or must hold the `cw_flashlight` weapon or a weapon
+-- whose item has `hasFlashlight` set.
 
 local PLUGIN = PLUGIN
 

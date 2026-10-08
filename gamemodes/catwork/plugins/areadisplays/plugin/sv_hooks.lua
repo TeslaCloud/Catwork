@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server-side hooks of the Area Displays plugin that load the map's areas and send them to joining players.
 
 --- Called after Catwork has loaded all map entities; loads the current map's areas.
 function cwAreaDisplays:ClockworkInitPostEntity() self:LoadAreaDisplays() end

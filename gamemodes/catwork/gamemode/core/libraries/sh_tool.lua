@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `cw.tool` library, which lets the framework and plugins define tools for the tool gun.
+--
+-- A tool made with `cw.tool:New` has the interface of a sandbox `TOOL` (console variables, selected objects, ghost
+-- entities, stages) and is registered under its `UniqueID`. Setting `leftClickCMD`, `rightClickCMD` or `reloadCMD`
+-- makes that action run a Catwork command.
 
 library.New('tool', cw)
 

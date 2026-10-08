@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the Loyalist class as `CLASS_LOYAL`, the default class of `FACTION_LOYAL`.
 
 local CLASS = cw.class:New('#Class_Loyalist')
   CLASS.color = Color(50, 150, 150, 255)

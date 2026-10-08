@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server-side functions of the Map Scenes plugin that load and save the current map's scenes.
+--
+-- `cwMapScene:LoadMapScenes` and `cwMapScene:SaveMapScenes` keep `cwMapScene.storedList` in the schema data under
+-- `plugins/scenes/<map>`.
 
 --- Loads the current map's scenes from the schema data and appends them to `cwMapScene.storedList`.
 function cwMapScene:LoadMapScenes()

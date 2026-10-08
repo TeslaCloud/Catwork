@@ -1,10 +1,11 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Shared entry point of the HL2RP schema, which includes the other schema files and sets up the city name, citizen
+-- factions and states, loyalist tiers, animation models, options, shared config keys, quiz questions and flags.
+--
+-- It also defines the shared `Schema` helpers: loyalist tiers (`Schema:DefineLoyalistTier`,
+-- `Schema:DetermineLoyalistTier`), custom business permits (`Schema:AddCustomPermit`), Combine ranks read from
+-- character names (`Schema:IsPlayerCombineRank`, `Schema:GetPlayerCombineRank`) and getters for the citizen record net
+-- vars such as `Schema:GetLP` and `Schema:GetCitizenStatus`. `Player:IsCombine` and `Player:IsCitizen` are added to
+-- the player metatable here.
 
 util.Include('cl_schema.lua')
 util.Include('cl_hooks.lua')

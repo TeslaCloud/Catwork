@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the Rebel class as `CLASS_REBEL`, the default class of `FACTION_REBEL`.
 
 local CLASS = cw.class:New('#Class_Rebel')
   CLASS.color = Color(150, 125, 100, 255)

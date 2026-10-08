@@ -1,10 +1,10 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `cwStorage` window, which shows an open storage next to the player's inventory, and handles the storage
+-- netstreams.
+--
+-- `cwStorageItem` is an item icon that moves the item with the `StorageGiveItem` and `StorageTakeItem` commands, and
+-- `cwStorageWeight` and `cwStorageSpace` are the weight and space bars. The `StorageStart`, `StorageCash`,
+-- `StorageWeight`, `StorageSpace`, `StorageTake`, `StorageGive` and `StorageClose` hooks keep `cw.storage` and the
+-- window in sync with the server.
 
 local PANEL = {}
 

@@ -1,10 +1,7 @@
---[[
-  Catwork � 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers `/CharUnDeath`, an admin command that undoes the permakill of a character by name.
+--
+-- A character of an online player has its `permakilled` data cleared in memory; otherwise the flag is rewritten in the
+-- `_Data` column of the `characters` database table.
 
 local COMMAND = cw.command:New('CharUnDeath')
 COMMAND.tip = '#Command_Charundeath_Description'

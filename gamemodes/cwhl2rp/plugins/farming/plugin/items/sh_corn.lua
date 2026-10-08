@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `Corn` item (`corn`) of the Farming plugin, a food item that restores 5 hunger.
 
 ITEM.name = 'Corn'
 ITEM.PrintName = '#Item_Corn_PrintName'

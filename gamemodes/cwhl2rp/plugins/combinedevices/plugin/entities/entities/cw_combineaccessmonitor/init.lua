@@ -1,7 +1,8 @@
---[[
-  © 2013 CloudSixteen.com do not share, re-distribute or modify
-  without permission of its author (kurozael@gmail.com).
---]]
+--- Server side of the `cw_combineaccessmonitor` entity of the Combine Devices plugin, a small Combine monitor that
+-- displays three lines of text and an access level.
+--
+-- `SetStatus` switches it between normal (0), destroyed (1) and error (2). It has 1 health, so any damage destroys the
+-- screen with sparks and broken glass; the glow sprite it once had is commented out.
 
 include('shared.lua')
 

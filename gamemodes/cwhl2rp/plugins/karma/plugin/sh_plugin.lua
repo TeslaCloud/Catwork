@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Main file of the Karma plugin, which gives every character a karma value from -100 to 100 that maps to a named karma
+-- level; exposes the plugin as `cwKarma`.
+--
+-- Adds the `k` flag for the karma commands, defines `cwKarma:AddKarmaLevel` and the nine default levels from
+-- `#Karma_Monster` to `#Karma_Divine`, and extends the player metatable with `GetKarma`, `GetKarmaLevel` and
+-- `SetKarma`. Karma is stored in the `karma` character data and networked under the same name.
 
 PLUGIN:SetGlobalAlias('cwKarma')
 

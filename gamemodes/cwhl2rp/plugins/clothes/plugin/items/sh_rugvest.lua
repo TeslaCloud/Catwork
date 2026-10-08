@@ -1,9 +1,7 @@
---[[
-  © 2016 TeslaCloud Studios.
-  Private code for Global Cooldown community.
-  Stealing Lua cache is not nice lol.
-  get a life kiddos.
---]]
+--- Defines the Rebel Uniform (Backpack) item (`rebel_kevlar`), a torso item based on `bodygroup_base` that sets
+-- bodygroup 1 to 12 and gives 20 protection.
+--
+-- Originally written for the Global Cooldown community.
 
 ITEM.baseItem = 'bodygroup_base'
 ITEM.name = 'Rebel Kevlar'

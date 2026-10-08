@@ -1,9 +1,11 @@
---[[
-  © 2016 TeslaCloud Studios.
-  Private code for Global Cooldown community.
-  Stealing Lua cache is not nice lol.
-  get a life kiddos.
---]]
+--- Defines `bodygroup_base`, the base item for clothing that is worn by setting a bodygroup on the player's model.
+--
+-- Derived items set `bodyGroup` and `bodyGroupVal`, and optionally `protection` (percent of damage absorbed),
+-- `isCombine` (Combine players can only wear items marked with it) and `requiredBG` (a bodygroup that must already be
+-- worn). Wearing goes through `Player:SetBodygroupClothes`, the item stays in the inventory, and it is taken off when
+-- dropped, sold, stored or unequipped.
+--
+-- Originally written for the Global Cooldown community.
 
 ITEM.isBaseItem = true
 ITEM.name = 'Bodygroup Base'

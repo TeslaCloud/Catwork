@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/Static` operator command (aliases `/StaticAdd` and `/StaticPropAdd`), which makes the entity the
+-- player is looking at static so that it stays on the map permanently.
 
 local COMMAND = cw.command:New('Static')
 COMMAND.tip = '#Command_Static_Description'

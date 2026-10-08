@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/AnimSitWall` command, which toggles a human character sitting against the wall behind them, and adds
+-- it to the Emotes category of the quick menu.
 
 local COMMAND = cw.command:New('AnimSitWall')
 COMMAND.tip = '#Command_Animsitwall_Description'

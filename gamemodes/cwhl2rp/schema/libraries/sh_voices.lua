@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Schema hooks that register the HL2RP voice groups (`Combine`, `Dispatch` and `Human`) and their voice lines with the
+-- voices library.
+--
+-- `Schema:RegisterVoiceGroups` and `Schema:RegisterVoices` are run by `cw.voices` when it builds its tables. Each line
+-- has a chat command, a phrase and a Half-Life 2 sound, human lines also have a female sound, and the Dispatch phrases
+-- are written in Russian.
 
 --- Called when voice groups should be registered.
 --

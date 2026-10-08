@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Russian language strings of the Farming plugin: the Farming attribute, planting and harvesting notifications, plant
+-- names, and the names and descriptions of the seed, crop and food items.
 
 local lang = cw.lang:GetTable('ru')
 

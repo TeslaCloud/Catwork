@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server-side hooks of the Display Typing plugin that play a rank's or faction's chat noises when a player starts and
+-- finishes typing.
+--
+-- `PlayerStartTypingDisplay` plays `startChatNoise` and `PlayerFinishTypingDisplay` plays `endChatNoise` when the
+-- message was sent.
 
 --- Called when a player starts typing; plays their rank's or faction's `startChatNoise`.
 --

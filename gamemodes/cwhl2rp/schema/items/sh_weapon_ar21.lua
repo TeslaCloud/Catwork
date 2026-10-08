@@ -1,7 +1,5 @@
---[[
-  © 2013 CloudSixteen.com do not share, re-distribute or modify
-  without permission of its author (kurozael@gmail.com).
---]]
+--- Defines the Impulse Rifle Mk.1 weapon item, which gives the `sxbase_ar21` weapon and is sold to the Elite Overwatch
+-- Soldier class.
 
 ITEM.baseItem = 'weapon_base'
 ITEM.name = 'Impulse Rifle Mk.1'

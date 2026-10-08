@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Client-side part of the Door Commands plugin that outlines the parent door being edited and its children.
+--
+-- The doors arrive over the `doorParentESP` netstream and are drawn in `PreDrawHalos`, the parent in orange and the
+-- children in cyan. Also adds the `default_doors_hidden` and `doors_save_state` config keys to the system config menu.
 
 config.AddToSystem('#DoorsDefaultHidden', 'default_doors_hidden', '#DoorsDefaultHiddenDesc')
 config.AddToSystem('#DoorsSaveState', 'doors_save_state', '#DoorsSaveStateDesc')

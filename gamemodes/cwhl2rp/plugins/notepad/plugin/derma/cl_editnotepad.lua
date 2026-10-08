@@ -1,7 +1,8 @@
---[[
-  © 2012 CloudSixteen.com do not share, re-distribute or modify
-  without permission of its author (kurozael@gmail.com).
---]]
+--- Defines the `cwEditNotepad` panel of the Notepad plugin, the window in which a player writes or edits a notepad's
+-- text.
+--
+-- The text is capped at 64000 characters and sent to the server with the `EditNotepad` netstream when the button is
+-- pressed. The window closes by itself when the notepad is removed or more than 192 units away.
 
 local PANEL = {}
 

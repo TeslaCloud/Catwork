@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Client-side hooks of the Display Typing plugin that draw a typing indicator above players' heads and report the
+-- local player's typing to the server.
+--
+-- `ChatBoxTextChanged` picks the typing mode from the chat prefix and runs the `cwTypingStart` console command, and
+-- `ChatBoxClosed` runs `cwTypingFinish`. `PostDrawTranslucentRenderables` draws the text for each player's `Typing`
+-- net var, within a range based on the `talk_radius` config.
 
 --[[
   Micro-optimizations, because local variables are faster

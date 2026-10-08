@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `cwDoor` door management window and handles the door netstreams sent by the server.
+--
+-- The window has a Players tab for granting basic or complete access and a Settings tab with the door text, parent
+-- sharing options and a Sell or Unown button; every change is sent with the `DoorManagement` netstream. The
+-- `PurchaseDoor`, `DoorManagement`, `DoorAccess`, `SetSharedAccess` and `SetSharedText` hooks open the purchase query
+-- or the window and keep `cw.door` up to date.
 
 local PANEL = {}
 

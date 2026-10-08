@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `weapon_vort` weapon (Vorti-Beam), the vortigaunt's beam attack and healing ability.
+--
+-- Primary fire charges for `SWEP.BeamChargeTime` seconds and then fires a shock beam for `SWEP.BeamDamage` damage;
+-- secondary fire heals the player in front of the owner, or the owner, by 12 to 18 health after `SWEP.HealDelay`
+-- seconds. Both are advanced in `SWEP:Think` with looping sounds and particle effects, and the instructions are
+-- hard-coded in Russian.
 
 if SERVER then
   -- resource.AddFile("models/weapons/v_vortbeamvm.mdl")

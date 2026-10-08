@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the operator command `/SetVoicemail`, which sets the automatic reply the caller's character gives to
+-- `/PM`, or removes it with `none`.
 
 local COMMAND = cw.command:New('SetVoicemail')
 COMMAND.tip = '#Command_Setvoicemail_Description'

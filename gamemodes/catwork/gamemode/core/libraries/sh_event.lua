@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `cw.event` library, a table of switches that turns named framework events on or off.
+--
+-- `cw.event:Hook` allows or disallows one event or a whole event class, and the framework asks `cw.event:CanRun`
+-- before effects such as the screen blur and the damage view punch. Events that were never set are allowed.
 
 library.New('event', cw)
 

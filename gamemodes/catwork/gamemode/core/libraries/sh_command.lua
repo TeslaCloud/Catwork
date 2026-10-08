@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `cw.command` library, the registry of chat commands, and the `cwCmd` console command that runs them.
+--
+-- A command is created with `cw.command:New` and registered with its aliases; its `CMD_` flags name the states (dead,
+-- ragdolled, in a vehicle and so on) in which it is refused. On the server `cw.command:ConsoleCommand` checks
+-- cooldown, access and arguments before calling `COMMAND:OnRun`, and on the client each command is listed on the
+-- Commands page of the directory.
 
 library.New('command', cw)
 

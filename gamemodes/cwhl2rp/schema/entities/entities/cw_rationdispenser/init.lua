@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server side of the `cw_rationdispenser` entity, the Combine dispenser that hands citizens one ration per hour.
+--
+-- Using it as a citizen starts `ENT:ActivateRation`, which picks the ration item and preparation time from the
+-- player's loyalist tier (`ration_highest` in 4 seconds down to `ration_minimal` in 26) and then plays the dispense
+-- animation. Combine players lock and unlock it instead, and the next collection time is kept in the `nextration`
+-- character data.
 
 include('shared.lua')
 

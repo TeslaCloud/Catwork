@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the superadmin command `/PlyGiveAccess` (alias `/GiveAccess`), which grants the target player permission
+-- to use a command given by name or alias.
 
 local COMMAND = cw.command:New('PlyGiveAccess')
 COMMAND.tip = '#Command_Plygiveaccess_Description'

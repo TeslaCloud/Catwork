@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Main file of the Area Displays plugin, which aliases it as `cwAreaDisplays`, includes its files and creates
+-- `cwAreaDisplays.storedList`.
+--
+-- The plugin shows the name of a map area to players who walk into it, as scrolling HUD text, 3D text in the world or
+-- cinematic text.
 
 --[[
   You don't have to do this, but I think it's nicer.

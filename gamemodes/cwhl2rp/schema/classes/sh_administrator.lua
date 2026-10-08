@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the Administrator class as `CLASS_ADMIN`, the default class of `FACTION_ADMIN`, with wages of 25.
 
 local CLASS = cw.class:New('#Class_Admin')
   CLASS.color = Color(255, 200, 100, 255)

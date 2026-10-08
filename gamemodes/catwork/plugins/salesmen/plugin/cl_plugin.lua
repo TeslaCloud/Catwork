@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Client-side netstream receivers of the Salesmen plugin that open the trade menu and the salesman editor.
+--
+-- `Salesmenu` and `SalesmenuRebuild` fill `cw.salesmenu` and show the `cwSalesmenu` panel, `SalesmanAdd` and
+-- `SalesmanEdit` ask for a name, fill `cw.salesman` and show the `cwSalesman` editor, and `SalesmanPlaySound` plays a
+-- response sound on the salesman.
 
 --- Called when a salesman's target ID is painted; does nothing here.
 --

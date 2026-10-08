@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the client-side `cw.theme` library, which registers interface themes and switches between them.
+--
+-- A theme is built between `cw.theme:New` and `cw.theme:Register` and can replace or wrap methods of Derma panel
+-- classes with `cw.theme:HookReplace`, `cw.theme:HookBefore` and `cw.theme:HookAfter`. `vgui.Register` is replaced so
+-- the original panel methods are backed up and restored when a theme is unloaded, and `cw.theme:GetMarkupObject`
+-- returns the builder used for tooltip text.
 
 library.New('theme', cw)
 

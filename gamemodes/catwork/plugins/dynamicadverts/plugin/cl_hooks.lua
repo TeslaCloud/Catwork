@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Client-side `PostDrawTranslucentRenderables` hook of the Dynamic Adverts plugin, which draws every advert whose
+-- image has loaded as a textured rectangle in the world.
 
 --- Called after translucent renderables are drawn; draws every advert whose material has loaded.
 --

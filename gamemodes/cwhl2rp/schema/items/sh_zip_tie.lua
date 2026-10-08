@@ -1,10 +1,10 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the Zip Tie item for the Metropolice Force and Overwatch factions, which ties up the character the player is
+-- looking at after a timed action.
+--
+-- The target must be untied, within 192 units and facing away or ragdolled. The delay comes from
+-- `Schema:GetDexterityTime`; on success `Schema:TiePlayer` is called, the zip tie is used up, dexterity progresses and
+-- a tied Combine unit raises a lost-contact line on the Combine display. The file also adds the item's English and
+-- Russian notification strings.
 
 local langEn = cw.lang:GetTable('en')
 local langRu = cw.lang:GetTable('ru')

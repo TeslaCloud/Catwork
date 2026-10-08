@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `cwAttributes` menu tab, which lists the attributes the local player has access to, and its
+-- `cwAttributesItem` rows.
+--
+-- Each row shows an attribute with an animated points bar and its boosted value out of the maximum. The tab stores
+-- itself as `cw.attributes.panel` and rebuilds when it is opened or selected in the menu.
 
 local PANEL = {}
 

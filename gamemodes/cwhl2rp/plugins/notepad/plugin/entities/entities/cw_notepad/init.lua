@@ -1,7 +1,8 @@
---[[
-  © 2012 CloudSixteen.com do not share, re-distribute or modify
-  without permission of its author (kurozael@gmail.com).
---]]
+--- Server side of the `cw_notepad` entity of the Notepad plugin, a clipboard prop that holds the text a player wrote on
+-- it.
+--
+-- `SetText` stores the text, marks the notepad as written and uses the text's CRC as the `uniqueID` clients cache it
+-- by. The notepad has 25 health and is destroyed when it runs out.
 
 include('shared.lua')
 

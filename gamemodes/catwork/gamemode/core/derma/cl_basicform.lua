@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines `cwBasicForm`, a `DPanelList`-based form with helpers for adding labelled controls bound to console
+-- variables.
+--
+-- Offers the same helpers as `DForm` (`TextEntry`, `ComboBox`, `NumberWang`, `NumSlider`, `CheckBox`, `Help`,
+-- `ControlHelp`, `Button`, `PanelSelect`, `ListBox`) plus `SetText` for the header.
 
 local PANEL = {}
 

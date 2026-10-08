@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/UnStatic` admin command (aliases `/StaticRemove` and `/StaticPropRemove`), which makes the entity
+-- the player is looking at non-static again.
 
 local COMMAND = cw.command:New('UnStatic')
 COMMAND.tip = '#Command_Unstatic_Description'

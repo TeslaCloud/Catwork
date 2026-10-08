@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines `cwLabelButton`, a `DLabel` that works as a button with hovered, depressed and disabled states and an
+-- optional background box.
+--
+-- Has `FadeIn` and `FadeOut` animations that play the theme's click and rollover sounds, `OverrideTextColor`, and
+-- `SetCallback` to set the click handler. The character menu and the quiz use it for their buttons.
 
 local PANEL = {}
 

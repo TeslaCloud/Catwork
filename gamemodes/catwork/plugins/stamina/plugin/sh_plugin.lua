@@ -1,10 +1,6 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Entry point of the Stamina plugin, which gives characters stamina that running, jumping and punching use up.
+--
+-- Sets the `cwStamina` global alias and includes the plugin's server and client files.
 
 --[[
   You don't have to do this, but I think it's nicer.

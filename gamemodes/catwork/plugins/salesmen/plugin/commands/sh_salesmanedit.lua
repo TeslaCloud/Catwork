@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/SalesmanEdit` superadmin command, which removes the salesman the player is looking at and opens the
+-- editor with its settings, so that closing the editor respawns it in place.
 
 local COMMAND = cw.command:New('SalesmanEdit')
 COMMAND.tip = '#Command_Salesmanedit_Description'

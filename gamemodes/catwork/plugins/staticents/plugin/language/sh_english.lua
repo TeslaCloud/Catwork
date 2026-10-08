@@ -1,8 +1,7 @@
---[[
-  Flux © 2016-2017 TeslaCloud Studios
-  Do not share or re-distribute before
-  the framework is publicly released.
---]]
+--- English language strings for the Static Entities plugin: its `static` tool, its notifications and the descriptions
+-- of `/Static` and `/UnStatic`.
+--
+-- Backported from the [Flux](https://github.com/TeslaCloud/flux-ce) project.
 
 local lang = cw.lang:GetTable('en')
 

@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/GiveCash` command (alias `/GiveTokens` and two Russian aliases), which gives some of the caller's
+-- cash to the player they are looking at.
 
 local NAME_CASH = cw.option:GetKey('name_cash')
 

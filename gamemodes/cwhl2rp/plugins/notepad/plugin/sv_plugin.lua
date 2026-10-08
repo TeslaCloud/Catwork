@@ -1,7 +1,9 @@
---[[
-  © 2012 CloudSixteen.com do not share, re-distribute or modify
-  without permission of its author (kurozael@gmail.com).
---]]
+--- Defines the server-side `EditNotepad` netstream handler of the Notepad plugin, which writes a player's text to a
+-- `cw_notepad`, and `cwNotepad:LoadNotepad` and `cwNotepad:SaveNotepad`, which persist the notepads per map.
+--
+-- The handler requires the player to be within 192 units of the notepad and looking at it, and lets only the owner
+-- change written text. Notepads are stored in `plugins/notepad/<map>` with their owner, text, position, angles and
+-- whether they can move.
 
 local PLUGIN = PLUGIN
 

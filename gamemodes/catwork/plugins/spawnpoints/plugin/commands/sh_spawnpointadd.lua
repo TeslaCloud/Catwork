@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/SpawnPointAdd` admin command, which adds a spawn point for a faction, a class or `default` where the
+-- player is looking, with an optional yaw.
 
 local COMMAND = cw.command:New('SpawnPointAdd')
 COMMAND.tip = '#Command_Spawnpointadd_Description'

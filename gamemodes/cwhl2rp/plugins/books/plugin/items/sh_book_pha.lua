@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the Poison Headcrab Anatomy book item (`book_pha`), a purchasable book on poison headcrabs and poison
+-- zombies.
 
 ITEM.baseItem = 'book_base'
 ITEM.name = 'Poison Headcrab Anatomy'

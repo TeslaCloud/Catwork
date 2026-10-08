@@ -1,10 +1,5 @@
---[[
-  Catwork � 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Shared definition of the `cw_garbage` entity: its entity fields, the `TYPE_WATERCAN` and `TYPE_SUPPLIES` globals and
+-- its networked `index` variable.
 
 DEFINE_BASECLASS('base_gmodentity')
 

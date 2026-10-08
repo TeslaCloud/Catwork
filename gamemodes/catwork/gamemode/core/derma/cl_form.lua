@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines `cwForm`, a `DForm` whose `TextEntry` adds a dark label with a text entry on the row below it.
 
 local PANEL = {}
 

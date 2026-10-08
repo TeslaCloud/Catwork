@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `cw_stunstick` weapon, the Civil Protection stun baton.
+--
+-- Primary fire strikes a player or prop within 96 units for club damage that scales with the owner's strength
+-- attribute and runs the `PlayerStunEntity` hook. Secondary fire knocks on a door (`PlayerCanKnockOnDoor`,
+-- `PlayerKnockOnDoor`) or pushes whatever is aimed at. The client draws a pulsing glow on the baton while it is
+-- raised, and the print name and instructions are hard-coded in Russian.
 
 if SERVER then
   AddCSLuaFile('shared.lua')

@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Client side of the `cw_rationdispenser` entity: draws its status light, which flashes blue with a beep while a
+-- ration is prepared and is otherwise green, orange when locked or red after a refusal.
 
 include('shared.lua')
 

@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Shared definition of the `cw_rationdispenser` entity (print name Ration Dispenser), with its ration time, flash time
+-- and locked data table variables and `ENT:IsLocked`.
 
 DEFINE_BASECLASS('base_gmodentity')
 

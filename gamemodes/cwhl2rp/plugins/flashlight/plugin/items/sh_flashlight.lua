@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `Flashlight` item (`cw_flashlight`), a `weapon_base` fake weapon that lets its holder use a flashlight.
 
 ITEM.baseItem = 'weapon_base'
 ITEM.name = 'Flashlight'

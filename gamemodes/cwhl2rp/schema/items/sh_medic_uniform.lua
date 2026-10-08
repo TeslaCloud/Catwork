@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the Medic Uniform clothes item on `clothes_base`, which switches the wearer to the `group03m` human models
+-- and is sold to characters with the `m` flag.
 
 ITEM.baseItem = 'clothes_base'
 ITEM.name = 'Medic Uniform'

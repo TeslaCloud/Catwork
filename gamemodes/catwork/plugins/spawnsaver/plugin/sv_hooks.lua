@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server-side hooks of the Spawn Saver plugin that save a character's position when it unloads and restore it on the
+-- next spawn.
+--
+-- The position, eye angles and map are kept in the `SpawnPoint` character data, written on character unload and before
+-- a map change, and used once on the same map. Other plugins can veto both with the `ShouldSavePlayerSpawn` hook.
 
 --- Called when a player's character unloads; saves where they were standing to the `SpawnPoint` character data.
 --

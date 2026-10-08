@@ -1,7 +1,10 @@
---[[
-  © 2012 Iron-Wall.org do not share, re-distribute or modify
-  without permission of its author (ext@iam1337.ru).
---]]
+--- Shared definition of the `cw_factorydispenser` entity of the Ration Factory plugin, with the networked spawn type
+-- and `GetSpawnType`.
+--
+-- Also sets the global `TYPE_WATERCAN` (0) and `TYPE_SUPPLIES` (1) constants, which for this entity stand for Breen's
+-- Water and citizen supplements.
+--
+-- Originally written for the Iron Wall community.
 
 DEFINE_BASECLASS('base_gmodentity')
 

@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/W` command, which whispers an in-character message to players within a third of the `talk_radius`
+-- config, at most 80 units.
 
 local COMMAND = cw.command:New('W')
 COMMAND.tip = '#Commands_WDesc'

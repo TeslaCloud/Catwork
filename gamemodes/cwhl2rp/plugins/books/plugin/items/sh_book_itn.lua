@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the Into the Night book item (`book_itn`), an anonymous tattered journal that is not sold in the business
+-- menu.
 
 ITEM.baseItem = 'book_base'
 ITEM.name = 'Into the Night'

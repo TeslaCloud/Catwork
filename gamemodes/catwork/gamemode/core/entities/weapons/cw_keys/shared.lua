@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `cw_keys` weapon, which locks the entity the owner looks at with primary fire and unlocks it with
+-- secondary fire.
+--
+-- The `PlayerGetLockInfo` and `PlayerGetUnlockInfo` hooks supply the duration and the callback that does the work, and
+-- `PlayerCanLockEntity` or `PlayerCanUnlockEntity` must keep allowing the action, within 192 units, until the timed
+-- `lock` or `unlock` action ends.
 
 if SERVER then
   AddCSLuaFile('shared.lua')

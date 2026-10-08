@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `ammo_ar2` item, Pulse-Rifle Energy, which gives 30 rounds of `ar2` ammo and is sold to the Elite
+-- Overwatch Soldier class.
 
 ITEM.baseItem = 'ammo_base'
 ITEM.name = 'Pulse-Rifle Energy'

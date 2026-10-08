@@ -1,8 +1,5 @@
---[[
-  © 2016 TeslaCloud Studios.
-  Feel free to use, edit or share the plugin, but
-  do not re-distribute without the permission of it's author.
---]]
+--- Registers the superadmin command `/CharSetAttribute` of the Extra Commands plugin, which adds the given amount to an
+-- attribute of the target character.
 
 local COMMAND = cw.command:New('CharSetAttribute')
 COMMAND.tip = '#Command_Charsetattribute_Description'

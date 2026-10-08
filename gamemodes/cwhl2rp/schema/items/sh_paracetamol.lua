@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the Paracetamol medical item, which refills stamina and boosts endurance by 30 for two minutes.
 
 ITEM.name = 'Paracetamol'
 ITEM.PrintName = '#ITEM_Paracetamol'

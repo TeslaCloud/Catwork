@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers `/ViewObjectives`, which opens the Combine objectives editor for a Combine player by sending
+-- `Schema.combineObjectives` with the `EditObjectives` netstream message.
 
 local COMMAND = cw.command:New('ViewObjectives')
 COMMAND.tip = '#Command_Viewobjectives_Description'

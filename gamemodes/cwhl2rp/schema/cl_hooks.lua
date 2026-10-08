@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Client-side hooks of the HL2RP schema, defined on `Schema`.
+--
+-- They draw the Combine display lines, overlay and the stun and flash screen effects, build the permits form of the
+-- business menu, and adjust the scoreboard, target IDs, class menu and entity menu options for the Combine, citizen
+-- and scanner roles. `Schema:Initialize` also creates the `catwork` data folder and downloads the developer scoreboard
+-- icons into it.
 
 --- Called when the gamemode initializes on the client.
 --

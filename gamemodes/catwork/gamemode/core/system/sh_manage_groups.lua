@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `Manage Groups` system, which lists the members of the superadmin, admin and operator user groups and
+-- lets them be demoted.
+--
+-- The page is shown to players with access to `/PlySetGroup` unless the `use_own_group_system` config is on. Members
+-- are read from the players database table and sent eight per page over the `SystemGroupGet` netstream;
+-- `SystemGroupDemote` demotes through the `PlyDemote` command.
 
 local GROUP_SUPER = 1
 local GROUP_ADMIN = 2

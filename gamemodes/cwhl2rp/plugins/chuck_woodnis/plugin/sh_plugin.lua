@@ -1,7 +1,9 @@
---[[
-  © 2016 Mr. Meow
-  Like, feel free to do stuff with my code I guess?
---]]
+--- Main and only file of the Stop Breaking My Freaking Wood plugin, which makes wooden props undamageable once the map
+-- has loaded.
+--
+-- On the server its `ClockworkInitPostEntity` hook creates a `filter_activator_name` damage filter named `woodnorris`
+-- and applies it to every non-player entity whose model name contains wood, table, bench, chair, box, cardboard or
+-- pallet.
 
 --- Called after Catwork has loaded all map entities; gives wooden props a damage filter.
 --

@@ -1,7 +1,9 @@
---[[
-  (C) 2016 TeslaCloud Studios
-  For internal distribution only.
---]]
+--- Defines the client-side global `cdraw` drawing library and creates the `Derma`, `DermaBold`, `DermaThin`,
+-- `DermaGlow`, `DermaNarrow`, `DermaNarrowBold`, `Exo` and `ExoBold` fonts in every size from 1 to 72.
+--
+-- `cdraw` draws boxes, text in those sized fonts, blurred boxes (`cdraw.DrawSimpleBlurBox`, `cdraw.DrawBlurBox`) and
+-- the slanted polygons and progress bar of the UI (`cdraw.DrawEZPoly`, `cdraw.PolyBar`). The file also adds
+-- `util.GetTextSize`.
 
 library.New('cdraw', _G)
 

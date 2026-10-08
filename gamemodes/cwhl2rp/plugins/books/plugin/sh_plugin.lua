@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Entry point of the Books plugin, which adds books that players can place in the world and read.
+--
+-- Adds the Literature custom permit (flag `3`) with `Schema:AddCustomPermit` and includes the plugin's client and
+-- server files.
 
 local PLUGIN = PLUGIN
 

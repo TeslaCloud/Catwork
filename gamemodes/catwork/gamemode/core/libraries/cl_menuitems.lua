@@ -1,10 +1,6 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the client-side `cw.menuitems` library, the list of tabs shown in the main menu.
+--
+-- A tab is a text, a panel class, a tooltip and icon data, added with `cw.menuitems:Add`.
 
 --[[
   @codebase Client

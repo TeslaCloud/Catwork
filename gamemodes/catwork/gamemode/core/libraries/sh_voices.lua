@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `cw.voices` library, voice lines that play a sound when a player says a set phrase in character.
+--
+-- Voice groups decide who may use their lines; one is registered per faction, and the `RegisterVoiceGroups`,
+-- `RegisterVoices` and `AdjustVoices` hooks add more. The library is registered as the `Voices` plugin module, through
+-- which it rewrites matching chat messages and plays the sound.
 
 library.New('voices', cw)
 

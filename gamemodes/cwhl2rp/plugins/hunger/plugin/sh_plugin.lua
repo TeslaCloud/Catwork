@@ -1,7 +1,8 @@
---[[
-  © 2016 TeslaCloud Studios.
-  Please do not use anywhere else.
---]]
+--- Main file of the Hunger plugin, which makes players need food, water and sleep; includes the plugin's server and
+-- client files and defines the shared `PlayerHasNeeds` hook.
+--
+-- `PlayerHasNeeds` gives needs to everyone but the Combine, except that Civil Protection (`FACTION_MPF`) have them
+-- too.
 
 util.Include('sv_plugin.lua')
 util.Include('sv_hooks.lua')

@@ -1,7 +1,7 @@
---[[
-  © 2012 Iron-Wall.org do not share, re-distribute or modify
-  without permission of its author (ext@iam1337.ru).
---]]
+--- Registers the superadmin command `/FactoryBigDispenserAdd` of the Ration Factory plugin, which spawns a
+-- `cw_bigfactorydispenser` for empty ration packets or empty crates where the player is looking.
+--
+-- Originally written for the Iron Wall community.
 
 local COMMAND = cw.command:New('FactoryBigDispenserAdd')
 COMMAND.tip = '#Command_Factorybigdispenseradd_Description'

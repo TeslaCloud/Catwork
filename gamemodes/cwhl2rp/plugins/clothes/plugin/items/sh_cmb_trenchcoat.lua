@@ -1,9 +1,7 @@
---[[
-  © 2016 TeslaCloud Studios.
-  Private code for Global Cooldown community.
-  Stealing Lua cache is not nice lol.
-  get a life kiddos.
---]]
+--- Defines the Officer's Trenchcoat item (`cmb_ofc_trenchcoat`), a Combine-wearable coat based on `bodygroup_base` that
+-- sets bodygroup 4 to 1 and gives 35 protection.
+--
+-- Originally written for the Global Cooldown community.
 
 ITEM.baseItem = 'bodygroup_base'
 ITEM.name = "Officer's Trenchcoat"

@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `ammo_smg1` item, SMG Bullets, which gives 30 rounds of `smg1` ammo and is sold to the Elite Metropolice
+-- and Elite Overwatch Soldier classes.
 
 ITEM.baseItem = 'ammo_base'
 ITEM.name = 'SMG Bullets'

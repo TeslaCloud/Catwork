@@ -1,9 +1,7 @@
---[[
-  © 2016 TeslaCloud Studios.
-  Private code for Global Cooldown community.
-  Stealing Lua cache is not nice lol.
-  get a life kiddos.
---]]
+--- Defines the Medic Pants item (`rebel_legs_3`), legwear based on `bodygroup_base` that sets bodygroup 2 to 6 and
+-- gives 17 protection.
+--
+-- Originally written for the Global Cooldown community.
 
 ITEM.baseItem = 'bodygroup_base'
 ITEM.name = 'Medic Pants'

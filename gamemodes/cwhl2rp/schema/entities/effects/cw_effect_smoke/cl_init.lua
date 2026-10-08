@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `cw_effect_smoke` effect, a burst of large, long-lived smoke particles used as the cloud of the
+-- `cw_smokegrenade` weapon.
 
 --- Emits a burst of `32 * scale` long-lived smoke grenade particles at the effect origin.
 -- @param data [CEffectData Effect data; the origin and scale (default 2) are used]

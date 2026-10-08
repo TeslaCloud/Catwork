@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `cwViewBook` panel, the window that shows a book's HTML text above a Take button.
+--
+-- Opened by the `ViewBook` netstream handler. It closes itself when the book entity is removed or more than 192 units
+-- away, and Take sends the `TakeBook` netstream.
 
 local PANEL = {}
 

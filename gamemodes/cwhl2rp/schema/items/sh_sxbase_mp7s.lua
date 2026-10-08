@@ -1,7 +1,5 @@
---[[
-  © 2013 CloudSixteen.com do not share, re-distribute or modify
-  without permission of its author (kurozael@gmail.com).
---]]
+--- Defines the MP7 Suppressor weapon item, which gives the `sxbase_mp7_s` weapon and is sold to the Elite Metropolice
+-- and Elite Overwatch Soldier classes.
 
 ITEM.baseItem = 'weapon_base'
 ITEM.name = 'MP7 Suppressor'

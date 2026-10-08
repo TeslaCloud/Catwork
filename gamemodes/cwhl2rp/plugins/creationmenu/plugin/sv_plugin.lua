@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the server-side config keys of the Left-Side Menu plugin: `community_name`, `community_link`,
+-- `community_button_enable`, `forum_name`, `forum_link` and `forum_button_enable`.
 
 config.Add('community_name', '[TeslaCloud]')
 config.Add('community_link', 'http://teslacloud.net/')

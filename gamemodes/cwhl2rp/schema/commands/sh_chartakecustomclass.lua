@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers `/CharTakeCustomClass`, an operator command that clears a character's `customclass` character data.
 
 local COMMAND = cw.command:New('CharTakeCustomClass')
 COMMAND.tip = '#Command_Chartakecustomclass_Description'

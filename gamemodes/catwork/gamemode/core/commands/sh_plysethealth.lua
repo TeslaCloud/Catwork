@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the operator command `/PlySetHealth` (aliases `/PlyHealth`, `/Health`, `/SetHealth`), which sets the
+-- target player's health.
 
 local COMMAND = cw.command:New('PlySetHealth')
 COMMAND.tip = '#Command_Plysethealth_Description'

@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the Smooth Breen's Water drink item (`smooth_breens_water`), which restores 80 stamina and 6 health, boosts
+-- agility and stamina by 2 for two minutes, leaves an empty soda can and hides its Drink option from Combine players.
 
 ITEM.name = "Smooth Breen's Water"
 ITEM.PrintName = '#ITEM_Smooth_Breens_Water'

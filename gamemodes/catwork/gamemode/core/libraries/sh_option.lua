@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `cw.option` library, the schema-level options: keys, sounds and, on the client, interface colors and
+-- fonts.
+--
+-- Schemas override them with `cw.option:SetKey`, `cw.option:SetSound`, `cw.option:SetColor` and `cw.option:SetFont`.
+-- The file sets the defaults, such as `name_cash`, `model_cash`, `format_cash`, the menu names and the `icon_data_`
+-- keys.
 
 library.New('option', cw)
 

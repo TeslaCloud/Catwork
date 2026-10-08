@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server-side hooks of the Farming plugin that restore and save plants with the map and hand out the harvest.
+--
+-- `PlayerHarvest` is fired by `cw_plant` when a player finishes harvesting: a roll helped by the Farming attribute
+-- decides whether the player gets the seeds back and how many crops, taken from the seed item's `Harvest` field.
 
 --- Called after all map entities have been initialized; spawns the saved plants.
 function PLUGIN:ClockworkInitPostEntity()

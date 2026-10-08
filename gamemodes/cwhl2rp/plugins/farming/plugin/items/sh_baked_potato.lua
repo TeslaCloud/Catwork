@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `Baked Potato` item (`baked_potato`) of the Farming plugin, a food item that restores 25 hunger.
 
 ITEM.name = 'Baked Potato'
 ITEM.PrintName = '#Item_BakedPotato_PrintName'

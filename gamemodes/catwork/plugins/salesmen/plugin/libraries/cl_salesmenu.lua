@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the client-side `cw.salesmenu` library, which holds the data of the salesman whose trade menu is open.
+--
+-- The data arrives in the `Salesmenu` netstream message; the getters expose the salesman entity, its sells and buys
+-- lists, stock, cash, prices and trade restrictions to the `cwSalesmenu` panel.
 
 library.New('salesmenu', cw)
 

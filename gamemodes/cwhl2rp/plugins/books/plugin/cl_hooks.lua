@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Client-side hook of the Books plugin that adds the View and Take options to the entity menu of `cw_book` entities.
 
 local PLUGIN = PLUGIN
 

@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Client-side hooks of the Farming plugin: `GetProgressBarInfo` shows the `#Farming_ProgressBar_Cleanup` progress bar
+-- while the local player performs the `cleanup` action.
 
 --- Called when the progress bar info is needed; shows the cleanup progress bar.
 -- @return [Map Progress bar `text`, `percentage` and `flash`, or `nil` when no cleanup is running]

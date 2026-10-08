@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers `/PermitTake`, which lets a Combine unit above the `RCT` rank take the custom permits of the citizen being
+-- looked at.
 
 local COMMAND = cw.command:New('PermitTake')
 COMMAND.tip = '#Command_Permittake_Description'

@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers `/Request`, which sends a request to Civil Protection with `Schema:SayRequest`.
+--
+-- The player needs a `request_device` item and can send one request every 30 seconds; Combine and administrator
+-- characters need neither.
 
 local COMMAND = cw.command:New('Request')
 COMMAND.tip = '#Command_Request_Description'

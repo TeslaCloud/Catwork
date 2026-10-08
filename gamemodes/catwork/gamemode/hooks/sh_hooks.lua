@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Shared gamemode hooks and metatable overrides for player models and animation.
+--
+-- Overrides `Player:SetModel` so that it runs the `PlayerModelChanged` hook on both realms, adds `Entity:IsStuck`, and
+-- defines `GM:CalcMainActivity`, `GM:TranslateActivity`, `GM:DoAnimationEvent`, `GM:MouthMoveAnimation` and
+-- `GM:PlayerFootstep`. `GM:OnReloaded` handles AutoRefresh: it re-checks the SQLite tables on the server and rebuilds
+-- the theme on the client.
 
 do
   local playerMeta = FindMetaTable('Player')

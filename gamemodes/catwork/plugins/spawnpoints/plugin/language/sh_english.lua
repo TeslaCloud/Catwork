@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- English strings of the Spawn Points plugin: notifications and the descriptions and syntax of `/SpawnPointAdd` and
+-- `/SpawnPointRemove`.
 
 local lang = cw.lang:GetTable('en')
 

@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the Beer item on `alcohol_base`, which heals 10 health, boosts acrobatics and agility by 2 for two minutes
+-- and leaves an empty glass bottle.
 
 ITEM.baseItem = 'alcohol_base'
 ITEM.name = 'Beer'

@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `cwObjectives` panel, a small frame for editing the Combine objectives.
+--
+-- It is opened by the `EditObjectives` netstream message (see `/ViewObjectives`) and holds a multiline text entry
+-- limited to 500 characters. Pressing Okay sends the text back to the server with `EditObjectives`.
 
 local PANEL = {}
 

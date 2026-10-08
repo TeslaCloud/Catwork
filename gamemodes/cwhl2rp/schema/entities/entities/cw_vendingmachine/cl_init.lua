@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Client side of the `cw_vendingmachine` entity: draws the machine with a status light that is green when stocked,
+-- orange when empty, blue after a sale or restock and red after a refused purchase.
 
 include('shared.lua')
 

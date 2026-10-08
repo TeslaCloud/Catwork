@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server-side code of the `cw_salesman` entity, the NPC a player uses to open a trade menu.
+--
+-- `ENT:SetupSalesman` sets its networked name and description, its animation and an optional `cw_chatbubble`,
+-- `ENT:TalkToPlayer` delivers one of its responses, and `ENT:Use` runs the `PlayerCanUseSalesman` and
+-- `PlayerUseSalesman` hooks.
 
 util.Include('shared.lua')
 

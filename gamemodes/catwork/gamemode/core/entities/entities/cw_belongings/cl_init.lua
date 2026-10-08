@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Client side of the `cw_belongings` entity: draws the suitcase model and, when it is looked at, its title and the
+-- hint for opening it.
 
 include('shared.lua')
 

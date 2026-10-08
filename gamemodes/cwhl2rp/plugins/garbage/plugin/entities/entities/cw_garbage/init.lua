@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server side of the `cw_garbage` entity, a garbage pile with a random junk model that players search with the use
+-- key.
+--
+-- Searching needs a crouching, untied player or one holding the `cw_pushbroom` weapon; it runs a timed `cleanup`
+-- action lasting what the `GetGarbageTime` hook returns, then fires `PlayerTakeGarbage` and removes the pile. The pile
+-- stays frozen in place and cannot be tooled.
 
 include('shared.lua')
 

@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines `cwPermaDoors:SetPermaDoor` and `cwPermaDoors:ResetPermaDoor`, which assign a door to a character or mark it
+-- vacant and save the result.
+--
+-- A character gets a random `PermaDoorSecret` key the first time it is given a door, and every door it owns stores
+-- that key. Either way the door is made unownable, so it cannot be bought, and its name and text are updated.
 
 --- Makes a door permanently owned by a player's character and saves it.
 --

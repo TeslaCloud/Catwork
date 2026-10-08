@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/DoorSetChild` command, which parents the door the player is looking at to their active parent door.
 
 local COMMAND = cw.command:New('DoorSetChild')
 COMMAND.tip = '#Command_Doorsetchild_Description'

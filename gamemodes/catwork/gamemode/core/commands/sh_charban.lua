@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/CharBan` command, which bans the target player's current character and kills them.
 
 local COMMAND = cw.command:New('CharBan')
 COMMAND.tip = '#Command_Charban_Description'

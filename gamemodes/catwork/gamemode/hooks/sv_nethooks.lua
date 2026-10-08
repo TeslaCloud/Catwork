@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server-side netstream receivers for the requests the client sends to the framework.
+--
+-- Handles `CreateCharacter`, `InteractCharacter`, `DoorManagement`, `EntityMenuOption`, `MenuOption`,
+-- `RecogniseOption`, `GetTargetRecognises`, `UnequipItem`, the quiz messages (`GetQuizStatus`, `QuizAnswer`,
+-- `QuizCompleted`) and the `LocalPlayerCreated` and `DataStreamInfoSent` steps of the join handshake.
 
 -- GetTargetRecognises datastream callback.
 netstream.Hook('GetTargetRecognises', function(player, data)

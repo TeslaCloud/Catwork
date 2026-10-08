@@ -1,0 +1,21 @@
+title: Catwork
+exclude:
+  - thirdparty
+sections:
+  - title: Catwork
+    groups:
+      - path: gamemodes/catwork/gamemode
+        name: Catwork
+        core: true
+  - title: Plugins
+    groups:
+      - path: gamemodes/catwork/plugins/*
+      - path: gamemodes/catwork/plugins/*.lua
+  - title: HL2RP
+    groups:
+      - path: gamemodes/cwhl2rp/schema
+        name: HL2RP
+        core: true
+  - title: HL2RP Plugins
+    groups:
+      - path: gamemodes/cwhl2rp/plugins/*

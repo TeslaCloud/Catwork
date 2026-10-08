@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Russian strings of the Spawn Saver plugin: the name and description of the `spawn_where_left` config.
 
 local lang = cw.lang:GetTable('ru')
 

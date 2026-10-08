@@ -1,8 +1,8 @@
+--- Disabled `backpack_large` item, a Backpack accessory worn on the spine.
+--
+-- The whole file is commented out.
+
 --[[
-  © 2012 CloudSixteen.com do not share, re-distribute or modify
-  without permission of its author (kurozael@gmail.com).
-
-
 ITEM.baseItem = "accessory_base"
 ITEM.name = "Backpack";
 ITEM.PrintName = "#Item_BackpackLarge_PrintName";

@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server side of the `cw_plant` entity, a plant grown from a seed item that scales up as it ripens and can be
+-- harvested with the use key.
+--
+-- Harvesting needs a ripe plant and a crouching, untied player; it runs a timed `farming` action shortened by the
+-- Farming attribute and then fires the `PlayerHarvest` hook and removes the plant. Damage from a player destroys the
+-- plant. The setters for the spawn time, grow time and seed item ID are defined here.
 
 include('shared.lua')
 

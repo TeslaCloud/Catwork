@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the Scavenger attribute (`scv`, global `ATB_SCAVENGER`, maximum 75), a skill that speeds up searching
+-- garbage and improves what is found.
 
 local ATTRIBUTE = cw.attribute:New()
   ATTRIBUTE.name = '#Attribute_Scavenger'

@@ -1,7 +1,5 @@
---[[
-  © 2012 CloudSixteen.com do not share, re-distribute or modify
-  without permission of its author (kurozael@gmail.com).
---]]
+--- Main file of the Notepad plugin, which adds notepads that players can place and write on; exposes the plugin as
+-- `cwNotepad`, creates the `cwNotepad.notepadIDs` text cache and includes the plugin's client and server files.
 
 local PLUGIN = PLUGIN
 

@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `Crowbar` melee weapon item, a `weapon_base` item for the `weapon_crowbar` weapon that is worn on the
+-- back when holstered.
 
 ITEM.baseItem = 'weapon_base'
 ITEM.name = 'Crowbar'

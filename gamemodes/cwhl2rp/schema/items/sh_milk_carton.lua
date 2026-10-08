@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the Milk Carton drink item, which heals 5 health, boosts endurance and strength by 1 for two minutes and
+-- leaves an empty carton.
 
 ITEM.name = 'Milk Carton'
 ITEM.PrintName = '#ITEM_Milk_Carton'

@@ -1,8 +1,6 @@
---[[
-  Flux © 2016-2017 TeslaCloud Studios
-  Do not share or re-distribute before
-  the framework is publicly released.
---]]
+--- Main file of the Static Entities plugin, which aliases it as `cwStaticEnts` and includes its server-side hooks.
+--
+-- Backported from the [Flux](https://github.com/TeslaCloud/flux-ce) project.
 
 PLUGIN:SetGlobalAlias('cwStaticEnts')
 

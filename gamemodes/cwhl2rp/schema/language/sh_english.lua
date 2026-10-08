@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Adds the HL2RP schema's English strings to the `en` language table, covering factions, classes, items, entities,
+-- hints, quiz questions, Combine display lines, config names, commands and location names.
 
 local lang = cw.lang:GetTable('en')
 

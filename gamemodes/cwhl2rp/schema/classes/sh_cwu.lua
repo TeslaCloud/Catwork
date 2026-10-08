@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the Civil Worker's Union class as `CLASS_CWU`, the default class of `FACTION_CWU`, with wages of 8.
 
 local CLASS = cw.class:New('#Class_CWU')
   CLASS.color = Color(240, 220, 100, 255)

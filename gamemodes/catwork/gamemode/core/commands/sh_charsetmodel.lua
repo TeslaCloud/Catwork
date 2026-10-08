@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the operator command `/CharSetModel` (alias `/SetModel`), which sets and saves the target character's
+-- model.
 
 local COMMAND = cw.command:New('CharSetModel')
 COMMAND.tip = '#Command_Charsetmodel_Description'

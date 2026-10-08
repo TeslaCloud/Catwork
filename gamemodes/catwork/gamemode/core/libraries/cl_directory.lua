@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the client-side `cw.directory` library, the HTML help pages shown in the directory menu.
+--
+-- Categories form a tree and hold pages of HTML added with `cw.directory:AddCode` or `cw.directory:AddPage`, each
+-- category with optional formatting, sorting, text replacements, a tooltip and a friendly name. The file also sets up
+-- the Commands, Plugins, Flags and Voice Commands categories.
 
 if cw.directory then return end
 

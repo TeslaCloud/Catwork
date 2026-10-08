@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- English language strings of the Vort Howl plugin: the Vortigese shout suffix, the messages shown to non-vortigaunts
+-- who try to howl and the help text of `/VortHowl`.
 
 local lang = cw.lang:GetTable('en')
 

@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `Manage Plugins` system, which lists every plugin by author and lets admins load or unload them.
+--
+-- The page is shown to players with access to `/PluginLoad` or `/PluginUnload`. The unloaded plugins are requested
+-- over the `SystemPluginGet` netstream, and `SystemPluginSet` toggles a plugin with `plugin.SetUnloaded` on the server
+-- and updates the page for every admin.
 
 if CLIENT then
   local SYSTEM = cw.system:New('Manage Plugins')

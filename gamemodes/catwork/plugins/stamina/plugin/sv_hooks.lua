@@ -1,10 +1,10 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server-side hooks of the Stamina plugin that drain and regenerate the `Stamina` character data and slow the run
+-- speed as it falls.
+--
+-- `PlayerThink` runs a drain timer per player while they run and a regeneration timer while they do not, at rates set
+-- by the `stam_drain_scale` and `stam_regen_scale` configs, health and the endurance attribute. Jumping and punching
+-- cost stamina too, and the `PlayerShouldStaminaDrain` and `PlayerShouldStaminaRegenerate` hooks let other plugins
+-- stop either timer.
 
 --- Called when a player's character data is saved; rounds the `stamina` value.
 --

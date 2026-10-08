@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server-side hooks of the Pickup Objects plugin that handle picking up, throwing and dropping entities with the
+-- hands.
+--
+-- `KeyPress` maps secondary attack, primary attack and reload to pickup, throw and drop, and `CanHandsPickupEntity`
+-- decides what can be carried from its mass and the player's strength. Other hooks protect dragged ragdolls, pause
+-- their unragdoll timer and apply the `take_physcannon` config.
 
 --- Called when a player's character has unloaded; drops whatever the player was holding.
 -- @param player [Player The player whose character unloaded]

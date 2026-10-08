@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server-side functions of the Books plugin that save and restore the placed `cw_book` entities, plus the `TakeBook`
+-- netstream handler.
+--
+-- Books are kept per map in the schema data under `plugins/books/<map>` with their item, owner, position, angles and
+-- whether they were frozen.
 
 local PLUGIN = PLUGIN
 

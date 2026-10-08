@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server-side hooks of the Save Cash plugin that respawn the saved cash once the map's entities have loaded, if the
+-- `cash_enabled` config is on, and save it whenever Catwork saves its data.
 
 --- Called after Catwork has loaded all of its entities; restores saved cash when the `cash_enabled` config is on.
 function cwSaveCash:ClockworkInitPostEntity()

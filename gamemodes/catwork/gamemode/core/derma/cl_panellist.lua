@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines `cwPanelList`, a `DCategoryList` with an outlined background that docks added items to the top, used as the
+-- list in most framework menus.
+--
+-- Keeps `DPanelList` methods such as `SetSpacing` and `EnableVerticalScrollbar` so older code keeps working.
 
 local PANEL = {}
 

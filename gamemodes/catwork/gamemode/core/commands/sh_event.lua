@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/Event` command (alias `/E`), which prints an event message in every player's chat and requires the
+-- `z` flag.
 
 local COMMAND = cw.command:New('Event')
 COMMAND.tip = '#Command_Event_Description'

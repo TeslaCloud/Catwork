@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the client-side `cw.fonts` library, which creates fonts and makes resized copies of them on demand.
+--
+-- `surface.CreateFont` is replaced to go through `cw.fonts:Add`, with the engine function kept as the global
+-- `CreateFont`, so that `cw.fonts:GetSize` and `cw.fonts:GetMultiplied` can return any font at another size. The file
+-- also creates Catwork's own fonts, such as `cwMainText` and `cw.menuTextBig`.
 
 CreateFont = CreateFont or surface.CreateFont
 

@@ -1,7 +1,9 @@
---[[
-  © 2017 TeslaCloud Studios.
-  Do not share, re-distribute or sell.
---]]
+--- Client-side part of the Combine Civil Authority plugin, which adds the Combine PDA to the main menu and the action
+-- buttons to its player card.
+--
+-- `AddCombinePDAButons` adds the citizen status, residence, job, points and jail buttons to a `cwCombinePlayerCard`
+-- panel. Each one prompts for a value and passes it to a `Handle...` hook, which sends the request to the server over
+-- an `Application::PDA::Controller::` netstream.
 
 --- Called when the main menu items are added; adds the Combine PDA for Combine and CWU players.
 -- @param menuItems [Map The menu item list, with an `Add` method]

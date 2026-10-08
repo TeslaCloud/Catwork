@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `cwSystem` menu tab, which lists the systems registered with `cw.system` and shows the page of the one
+-- that is opened.
+--
+-- A system's Open button is enabled when its `HasAccess` allows it, and its page is filled by its `OnDisplay` method.
+-- The tab stores itself as `cw.system.panel`.
 
 local PANEL = {}
 

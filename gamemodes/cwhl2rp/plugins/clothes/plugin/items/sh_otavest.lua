@@ -1,9 +1,7 @@
---[[
-  © 2016 TeslaCloud Studios.
-  Private code for Global Cooldown community.
-  Stealing Lua cache is not nice lol.
-  get a life kiddos.
---]]
+--- Defines the Resistance OTA Vest item (`kevlar_ota`), a torso item based on `bodygroup_base` that sets bodygroup 1 to
+-- 13 and gives 35 protection.
+--
+-- Originally written for the Global Cooldown community.
 
 ITEM.baseItem = 'bodygroup_base'
 ITEM.name = 'Overwatch Unit Vest'

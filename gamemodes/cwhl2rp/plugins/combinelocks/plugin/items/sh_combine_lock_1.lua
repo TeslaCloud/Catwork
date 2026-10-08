@@ -1,7 +1,5 @@
---[[
-  © 2013 CloudSixteen.com do not share, re-distribute or modify
-  without permission of its author (kurozael@gmail.com).
---]]
+--- Defines the level 1 `Combine Lock` item (`combine_lock_1`) of the Combine Locks plugin, which fits a Combine lock
+-- with access level 1 to the unownable door the player is looking at.
 
 ITEM.name = 'Combine Lock'
 ITEM.PrintName = '#Item_CombineLock1_PrintName'

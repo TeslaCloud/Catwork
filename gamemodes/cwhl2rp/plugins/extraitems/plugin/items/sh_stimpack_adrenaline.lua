@@ -1,10 +1,6 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `Adrenaline` stimpack item (`stimpack_adrenaline`), an injection that restores stamina, clears fatigue,
+-- heals 25 health and boosts agility, endurance and strength for 240 seconds, together with its English and Russian
+-- strings.
 
 ITEM.name = 'Adrenaline'
 ITEM.PrintName = '#ITEM_Adrenaline'

@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/PM` command, which sends a private message to the target player or shows their voicemail when they
+-- have one set.
 
 local COMMAND = cw.command:New('PM')
 COMMAND.tip = '#Commands_PMDesc'

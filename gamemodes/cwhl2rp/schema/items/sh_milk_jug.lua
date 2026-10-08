@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the Milk Jug drink item, which heals 10 health, boosts endurance and strength by 2 for two minutes and
+-- leaves an empty jug.
 
 ITEM.name = 'Milk Jug'
 ITEM.PrintName = '#ITEM_Milk_Jug'

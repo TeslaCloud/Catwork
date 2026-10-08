@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- English language strings of the Hunger plugin: the hunger and thirst config keys, notifications and the descriptions
+-- and syntax of `/CharSetHunger`, `/CharSetThirst`, `/CharSetFatigue`, `/CharResetNeeds` and `/Sleep`.
 
 local lang = cw.lang:GetTable('en')
 

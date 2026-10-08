@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the Small Bag storage item, which adds 4 to its carrier's inventory weight limit, is limited to two per
+-- player and drops as a `boxed_bag`.
 
 ITEM.name = 'Small Bag'
 ITEM.PrintName = '#ITEM_Small_Bag'

@@ -1,7 +1,9 @@
---[[
-  © 2017 TeslaCloud Studios.
-  Do not share, re-distribute or sell.
---]]
+--- Main file of the Combine Civil Authority plugin, which aliases it as `cca`, includes its files and defines the civil
+-- record log.
+--
+-- `cca.AppendLog` adds an entry to a player's civil record, stored in the `CCA_Logs` character data and networked as a
+-- net var of the same name. `cca.AddLogType` and `cca.GetLogType` set how each entry type (loyalty, crime and work
+-- points, jail and unjail) is colored and highlighted.
 
 PLUGIN:SetGlobalAlias('cca')
 

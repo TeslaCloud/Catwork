@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the framework's shared global constants.
+--
+-- These are the enumerations used across Catwork, such as `LOGTYPE_*`, `NWTYPE_*`, `RAGDOLL_*`, `DOOR_ACCESS_*`,
+-- `DOOR_STATE_*`, `CHARACTER_MENU_*`, `RECOGNISE_*`, `TIME_*`, `GRADIENT_*` and `GENDER_*`, together with
+-- `STEAM_COMMUNITY_ID` and the data table slot indices for player variables (`BOOL_*`, `INT_RAGDOLLSTATE`,
+-- `STRING_*`).
 
 STEAM_COMMUNITY_ID = 76561197960265728
 

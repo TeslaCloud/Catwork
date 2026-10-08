@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Russian strings of the Combine Civil Authority plugin: the Combine PDA and its citizen status, residence, job,
+-- points and isolation dialogs, its log entries and notifications, and the information terminal.
 
 local lang = cw.lang:GetTable('ru')
 

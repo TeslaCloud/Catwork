@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Client side of the `cw_gear` entity: fetches its item data, moves the gear onto its owner's bone every frame and
+-- draws it with the item's model scale.
+--
+-- The gear is hidden while the local player wears it in first person or is dead. The `PreGearEntityDraw` and
+-- `GearEntityDraw` hooks and the item's `GetAttachmentModelScale` can change how it is drawn.
 
 include('shared.lua')
 

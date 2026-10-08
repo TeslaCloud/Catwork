@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/DoorSetHidden` command, which sets whether the door the player is looking at is hidden.
 
 local COMMAND = cw.command:New('DoorSetHidden')
 COMMAND.tip = '#Command_Doorsethidden_Description'

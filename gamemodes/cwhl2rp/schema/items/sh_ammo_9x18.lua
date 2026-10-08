@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `ammo_9x18` item, a box of 30 rounds of `9x18mm` ammo sold to the Elite Metropolice and Elite Overwatch
+-- Soldier classes.
 
 ITEM.baseItem = 'ammo_base'
 ITEM.name = '9x18 Bullets'

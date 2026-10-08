@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the Large Soda drink item, which refills stamina, heals 10 health, boosts agility and stamina by 5 for two
+-- minutes, leaves an empty plastic bottle and hides its Drink option from Combine players.
 
 ITEM.name = 'Large Soda'
 ITEM.PrintName = '#ITEM_Large_Soda'

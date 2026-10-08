@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the Poncho clothes item on `clothes_base`, whitelisted to the Vortigaunt faction, which switches the wearer
+-- to the `vortigaunt_ozaxi` model.
 
 ITEM.baseItem = 'clothes_base'
 ITEM.name = 'Poncho'

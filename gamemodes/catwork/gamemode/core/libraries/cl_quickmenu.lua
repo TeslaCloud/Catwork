@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the client-side `cw.quickmenu` library, the options of the quick menu opened from the player information
+-- box.
+--
+-- `cw.quickmenu:AddCallback` adds an option that a function builds each time the menu opens, and
+-- `cw.quickmenu:AddCommand` adds one that runs a command.
 
 library.New('quickmenu', cw)
 cw.quickmenu.stored = cw.quickmenu.stored or {}

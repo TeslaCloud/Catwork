@@ -1,8 +1,9 @@
---[[
-  © 2014 TeslaCloud Studios.
-  Feel free to use, edit or share the plugin, but
-  do not re-distribute without the permission of it's author.
---]]
+--- Server-side part of the Roll Gains plugin, whose `AdjustRollNumber` hook adds bonuses to both sides of a roll made
+-- against another player.
+--
+-- Between two non-Combine players each side gets up to 20 points from their strength. When one side is Combine and the
+-- roll is 80 or less, that side gets a bonus based on the rank in its name and the other side a small penalty offset
+-- by their strength.
 
 local function AdjustInCombineFavor(player, target, adjust1, adjust2)
   if player:IsCombine() and !Schema:PlayerIsCombine(target) then

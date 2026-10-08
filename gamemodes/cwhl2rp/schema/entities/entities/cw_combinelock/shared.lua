@@ -1,7 +1,5 @@
---[[
-  © 2013 CloudSixteen.com do not share, re-distribute or modify
-  without permission of its author (kurozael@gmail.com).
---]]
+--- Shared definition of the `cw_combinelock` entity (print name Combine Lock), a spawnable `anim` entity with its smoke
+-- charge, flash and locked data table variables and the `ENT:IsLocked` getter.
 
 DEFINE_BASECLASS('base_gmodentity')
 

@@ -1,7 +1,8 @@
---[[
-  © 2013 CloudSixteen.com do not share, re-distribute or modify
-  without permission of its author (kurozael@gmail.com).
---]]
+--- Shared definition of the `cw_combineaccessmonitor` entity of the Combine Devices plugin, an admin-only spawnable
+-- entity named `Combine Monitor s2120`.
+--
+-- Sets up the networked strings for the three text lines and the access level. The status is declared here as int 4
+-- but is read and written as int 5 by the rest of the entity.
 
 DEFINE_BASECLASS('base_gmodentity')
 

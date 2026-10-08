@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Russian strings of the Storage plugin: container labels, the names of the container types, notifications and the
+-- descriptions and syntax of the `/Cont` commands.
 
 local lang = cw.lang:GetTable('ru')
 

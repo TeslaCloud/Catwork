@@ -1,10 +1,6 @@
---[[
-  Catwork � 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Main file of the Garbage plugin, which lets admins place spawn points for garbage piles that players can search for
+-- items; exposes the plugin as `cwGarbage`, creates the `cwGarbage.stored` loot table and includes the plugin's server
+-- and client files.
 
 PLUGIN:SetGlobalAlias('cwGarbage')
 

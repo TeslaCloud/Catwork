@@ -1,9 +1,3 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Adds the `take_physcannon` config of the Pickup Objects plugin to the client's system config menu.
 
 config.AddToSystem('#TakePhyscannon', 'take_physcannon', '#TakePhyscannonDesc')

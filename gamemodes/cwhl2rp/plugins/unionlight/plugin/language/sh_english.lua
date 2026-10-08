@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- English language strings of the Union Light plugin: the name, description and use text of the Union Light item.
 
 local lang = cw.lang:GetTable('en')
 

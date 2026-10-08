@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the Citizen Supplements food item handed out by ration packets, which heals 5 health and leaves an empty tin
+-- can.
 
 ITEM.name = 'Citizen Supplements'
 ITEM.PrintName = '#ITEM_Citizen_Supplements'

@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/SalesmanAdd` superadmin command, which opens the salesman editor to create a salesman where the
+-- player is looking, with an optional animation.
 
 local COMMAND = cw.command:New('SalesmanAdd')
 COMMAND.tip = '#Command_Salesmanadd_Description'

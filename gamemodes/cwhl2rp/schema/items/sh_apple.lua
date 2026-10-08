@@ -1,7 +1,4 @@
---[[
-  © 2013 CloudSixteen.com do not share, re-distribute or modify
-  without permission of its author (kurozael@gmail.com).
---]]
+--- Defines the Apple food item, which boosts strength and endurance by 1 for two minutes.
 
 ITEM.name = 'Apple'
 ITEM.PrintName = '#Item_Apple_PrintName'

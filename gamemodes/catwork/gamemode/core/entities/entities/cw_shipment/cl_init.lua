@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Client side of the `cw_shipment` entity: draws the crate model, unless the `ShipmentEntityDraw` hook returns
+-- `false`, and the shipment title and the name of the item inside when it is looked at.
 
 include('shared.lua')
 

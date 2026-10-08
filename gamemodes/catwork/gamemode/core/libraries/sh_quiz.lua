@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `cw.quiz` library, the quiz that new players have to pass before they can play.
+--
+-- Schemas add questions with `cw.quiz:AddQuestion` and switch the quiz on with `cw.quiz:SetEnabled`. The server also
+-- sets the share of correct answers needed and the callback run for players who fail.
 
 library.New('quiz', cw)
 

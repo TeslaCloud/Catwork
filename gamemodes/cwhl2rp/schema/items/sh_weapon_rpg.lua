@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the RPG weapon item, which gives the `weapon_rpg` weapon and is not sold in the business menu.
 
 ITEM.baseItem = 'weapon_base'
 ITEM.name = 'RPG'

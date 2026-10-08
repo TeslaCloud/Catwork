@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the .357 Magnum weapon item, which gives the `sxbase_357` weapon and is sold to the Elite Overwatch Soldier
+-- class.
 
 ITEM.baseItem = 'weapon_base'
 ITEM.name = '.357 Magnum'

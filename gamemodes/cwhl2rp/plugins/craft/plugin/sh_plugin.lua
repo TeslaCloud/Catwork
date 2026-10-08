@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Entry point of the Craft plugin, which lets players craft items from blueprints at crafting stations.
+--
+-- Sets the `cwCraft` global alias and defines `cwCraft:PlayerCanCraft` with its checks for materials, tools,
+-- attributes, custom requirements and a one second cooldown. The `Craft::CraftItem` netstream looks the blueprint up
+-- by ID in `cw.blueprints`, runs the checks and crafts it.
 
 PLUGIN:SetGlobalAlias('cwCraft')
 

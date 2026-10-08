@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Russian strings of the Craft plugin: the craft menu, crafting station names, the crafting attributes, error
+-- messages, blueprint categories and the names and descriptions of its items and blueprints.
 
 local lang = cw.lang:GetTable('ru')
 

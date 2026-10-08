@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the Whiskey item on `alcohol_base`, a drink that boosts the Stamina attribute by 2 through the base item's
+-- drinking behaviour.
 
 ITEM.baseItem = 'alcohol_base'
 ITEM.name = 'Whiskey'

@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server side of the `cw_gear` entity, an item's model attached to a player's body, such as a holstered weapon.
+--
+-- It is created by `cw.player:CreateGear`. Its think removes the gear when the owner is gone or the item's
+-- `GetAttachmentExists` says so, hides it when `GetAttachmentVisible` says so (by default a weapon's gear is hidden
+-- while that weapon is held), and recreates it when the item's model changes.
 
 include('shared.lua')
 

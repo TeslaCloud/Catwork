@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server-side part of the `cw.storage` library, which opens an inventory and cash as a storage menu for a player and
+-- moves items in and out of it.
+--
+-- `cw.storage:Open` takes a storage table with the name, inventory, cash, weight and space limits, entity and
+-- callbacks. `cw.storage:GiveTo` and `cw.storage:TakeFrom` do the transfers after checking permissions and capacity,
+-- and changes are synced to everyone viewing the same inventory.
 
 library.New('storage', cw)
 

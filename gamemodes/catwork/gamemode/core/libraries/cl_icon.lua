@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the client-side `cw.icon` library, the chat icons shown next to player names.
+--
+-- An icon is a material path and a callback that says which players it applies to; `cw.icon:PlayerSet` and
+-- `cw.icon:GroupSet` register one for a Steam ID or a user group. `cw.player:GetChatIcon` picks the icon, preferring
+-- player icons.
 
 library.New('icon', cw)
 

@@ -1,7 +1,7 @@
---[[
-  © 2012 Iron-Wall.org do not share, re-distribute or modify
-  without permission of its author (ext@iam1337.ru).
---]]
+--- Server-side hooks of the Ration Factory plugin that spawn the saved factory dispensers once the map entities exist
+-- and save them whenever data is saved.
+--
+-- Originally written for the Iron Wall community.
 
 local PLUGIN = PLUGIN
 

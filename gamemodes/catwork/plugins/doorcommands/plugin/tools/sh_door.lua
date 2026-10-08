@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `doortool` tool, which locks and unlocks doors and sets them ownable or unownable from the tool gun.
+--
+-- Left click runs `/DoorLock`, `/DoorSetOwnable` or `/DoorSetUnownable` depending on the selected mode, and right
+-- click runs `/DoorUnlock` in lock mode. The tool menu picks the mode and the door name and text.
 
 local TOOL = cw.tool:New()
 

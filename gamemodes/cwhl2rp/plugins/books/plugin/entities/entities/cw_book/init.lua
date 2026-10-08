@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server side of the `cw_book` entity, a book placed in the world that players can view or take.
+--
+-- `ENT:SetBook` ties the entity to a book item, taking its model and skin and networking the item's index. The book
+-- has 25 health and is destroyed when it runs out.
 
 include('shared.lua')
 

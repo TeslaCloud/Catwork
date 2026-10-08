@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the operator command `/PlyRespawnTP` (aliases `/PlyRTP`, `/RespawnTP`), which respawns the target player
+-- where the caller is looking.
 
 local COMMAND = cw.command:New('PlyRespawnTP')
 COMMAND.tip = '#Command_Plyrespawntp_Description'

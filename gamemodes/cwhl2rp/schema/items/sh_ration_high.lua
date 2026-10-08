@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the High Tier Ration Packet item (`ration_high`), which is opened for 100 tokens, premium supplements and
+-- two special Breen's waters and fires the `PlayerUseRation` hook.
 
 ITEM.name = 'High Tier Ration Packet'
 ITEM.PrintName = '#ITEM_High_Tier_Ration_Packet'

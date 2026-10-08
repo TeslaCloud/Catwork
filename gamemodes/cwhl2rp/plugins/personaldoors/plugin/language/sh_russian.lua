@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Russian language strings of the Personal Doors plugin: the door access notifications and the help text of
+-- `/DoorSetAccess` and `/DoorUnsetAccess`.
 
 local lang = cw.lang:GetTable('ru')
 

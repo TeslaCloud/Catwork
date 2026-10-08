@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server side of the `cw_shipment` entity, a crate holding a batch of instances of one item.
+--
+-- `ENT:SetItemTable` fills it and takes the model from the item's `shipmentModel` or the `model_shipment` option. The
+-- crate has 50 health and drops the items it still holds into the world when it is destroyed or removed.
 
 include('shared.lua')
 

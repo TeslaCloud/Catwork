@@ -1,7 +1,3 @@
---[[
-  © 2014 TeslaCloud Studios.
-  Feel free to use, edit or share the plugin, but
-  do not re-distribute without the permission of it's author.
---]]
+--- Server-side part of the Apply plugin, which adds the `apply_recognise_enable` config, on by default.
 
 config.Add('apply_recognise_enable', true)

@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers `/InvZipTie`, a shortcut that uses a `zip_tie` item from the player's inventory through `/InvAction`.
 
 local COMMAND = cw.command:New('InvZipTie')
 COMMAND.tip = '#Command_Invziptie_Description'

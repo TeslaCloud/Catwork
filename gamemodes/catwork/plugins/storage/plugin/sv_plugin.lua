@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server-side functions of the Storage plugin that open containers and pick the random items they are filled with.
+--
+-- `cwStorage:OpenContainer` gives the entity an inventory and cash on first use and opens it with `cw.storage:Open`,
+-- and the `ContainerPassword` netstream opens a container when the entered password matches. `GetRandomItem` and
+-- `CategoryExists` read `cwStorage.randomItems`. `SaveStorage` and `LoadStorage` are empty stubs, as persistence is
+-- left to the Static Entities plugin.
 
 cwStorage.storage = cwStorage.storage or {}
 

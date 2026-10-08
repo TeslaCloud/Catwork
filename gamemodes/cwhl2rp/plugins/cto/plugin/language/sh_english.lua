@@ -1,10 +1,6 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- English language strings of the Combine Technology Overlay plugin: HUD labels for biosignals, cameras and movement
+-- violations, the descriptions and notifications of `/CameraEnable`, `/CameraDisable`, `/SetBiosignalStatus`,
+-- `/CharSetBiosignalStatus` and `/SetSocioStatus`, and the Combine display lines.
 
 local lang = cw.lang:GetTable('en')
 

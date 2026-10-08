@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/PlyUnwhitelist` command (aliases `/UnWhitelist`, `/DeWhitelist`), which removes the target player
+-- from a faction's whitelist.
 
 local COMMAND = cw.command:New('PlyUnwhitelist')
 COMMAND.tip = '#Command_Plyunwhitelist_Description'

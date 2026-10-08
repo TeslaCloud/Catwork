@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the Stationary Radio item, which is used to place a `cw_radio` entity owned by the player where they are
+-- looking, within 192 units.
 
 ITEM.name = 'Stationary Radio'
 ITEM.PrintName = '#ITEM_Stationary_Radio'

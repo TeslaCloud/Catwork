@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the operator command `/PlyUnban` (alias `/Unban`), which lifts the ban stored in `cw.bans` for a Steam ID
+-- or IP address.
 
 local COMMAND = cw.command:New('PlyUnban')
 COMMAND.tip = '#Command_Plyunban_Description'

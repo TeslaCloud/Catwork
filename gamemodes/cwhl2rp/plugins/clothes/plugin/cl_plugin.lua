@@ -1,9 +1,10 @@
---[[
-  © 2016 TeslaCloud Studios.
-  Private code for Global Cooldown community.
-  Stealing Lua cache is not nice lol.
-  get a life kiddos.
---]]
+--- Client-side netstream receivers of the Extra Clothing plugin that store the worn bodygroup and skin clothing sent by
+-- the server.
+--
+-- The `BGClothes` and `SkinClothes` streams fill `cw.client.bgClothesData` and `cw.client.skinClothesData`, which the
+-- items' `HasPlayerEquipped` reads on the client, and rebuild the inventory with `cw.inventory:Rebuild`.
+--
+-- Originally written for the Global Cooldown community.
 
 netstream.Hook('BGClothes', function(clothesData)
   cw.client.bgClothesData = clothesData or {}

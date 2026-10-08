@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `cwData` panel, a small frame for editing a player's Combine data record.
+--
+-- It is opened by the `EditData` netstream message and holds a multiline text entry limited to 500 characters.
+-- Pressing Okay sends the text back with `EditData`, and the server saves it as the player's `combinedata` character
+-- data.
 
 local PANEL = {}
 

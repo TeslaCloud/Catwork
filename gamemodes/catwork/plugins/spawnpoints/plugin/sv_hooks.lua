@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server-side hooks of the Spawn Points plugin that load the saved points and move spawning players to one.
+--
+-- `PlayerSpawn` picks a random point for the player's class, then for their faction, then from `default`. Admins, and
+-- players whose user group becomes operator or higher, are sent the points for the ESP.
 
 --- Called after Catwork has loaded all of its entities; loads the saved spawn points.
 function cwSpawnPoints:ClockworkInitPostEntity()

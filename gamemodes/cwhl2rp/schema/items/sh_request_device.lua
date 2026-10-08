@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the Request Device item, which lets its carrier send requests to the Combine with the `/Request` command and
+-- has no behaviour of its own.
 
 ITEM.name = 'Request Device'
 ITEM.PrintName = '#ITEM_Request_Device'

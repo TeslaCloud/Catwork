@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `Boiled Corn` item (`boiled_corn`) of the Farming plugin, a food item that restores 35 hunger.
 
 ITEM.name = 'Boiled Corn'
 ITEM.PrintName = '#Item_BoiledCorn_PrintName'

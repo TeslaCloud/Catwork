@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the superadmin command `/PluginUnload`, which unloads a plugin and sends its new state to the players who
+-- can manage plugins.
 
 local COMMAND = cw.command:New('PluginUnload')
 COMMAND.tip = '#Command_Pluginunload_Description'

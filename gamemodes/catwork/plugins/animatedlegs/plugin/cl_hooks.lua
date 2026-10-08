@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Client-side hooks of the Animated Legs plugin that update and draw the local player's legs model.
+--
+-- `UpdateAnimation` creates the legs or syncs them with the player, and `RenderScreenspaceEffects` draws them clipped
+-- below the eyes and then runs the `PostDrawAnimatedLegs` hook.
 
 --- Called when a player's animation is updated; creates or advances the local player's legs model.
 --

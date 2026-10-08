@@ -1,7 +1,7 @@
---[[
-  © 2012 Iron-Wall.org do not share, re-distribute or modify
-  without permission of its author (ext@iam1337.ru).
---]]
+--- Registers the superadmin command `/FactoryDispenserAdd` of the Ration Factory plugin, which spawns a
+-- `cw_factorydispenser` for Breen's Water or citizen supplements where the player is looking.
+--
+-- Originally written for the Iron Wall community.
 
 local COMMAND = cw.command:New('FactoryDispenserAdd')
 COMMAND.tip = '#Command_Factorydispenseradd_Description'

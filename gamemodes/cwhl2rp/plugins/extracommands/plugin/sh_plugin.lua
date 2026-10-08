@@ -1,8 +1,8 @@
---[[
-  © 2016 TeslaCloud Studios.
-  Feel free to use, edit or share the plugin, but
-  do not re-distribute without the permission of it's author.
---]]
+--- Main file of the Extra Commands plugin, which adds several commands for server administration; defines the
+-- server-side hooks that reapply a character's custom bodygroups and skin.
+--
+-- `PostPlayerSpawn` restores the `CustomBodyGroup` and `CustomSkin` character data set by `/CharSetBodyGroup` and
+-- `/CharSetSkin`, and `PlayerUnragdolled` restores the bodygroups when the player gets up from a ragdoll.
 
 if SERVER then
   --- Called just after a player spawns; reapplies the character's custom bodygroups and skin.

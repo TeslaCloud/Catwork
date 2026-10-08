@@ -1,9 +1,6 @@
---[[
-  © 2016 TeslaCloud Studios.
-  Private code for Global Cooldown community.
-  Stealing Lua cache is not nice lol.
-  get a life kiddos.
---]]
+--- Defines the Green Beanie item (`green_beanie`), headwear based on `bodygroup_base` that sets bodygroup 4 to 4.
+--
+-- Originally written for the Global Cooldown community.
 
 ITEM.baseItem = 'bodygroup_base'
 ITEM.name = 'Green Beanie'

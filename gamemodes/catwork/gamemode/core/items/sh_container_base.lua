@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `container_base` item for containers, items that carry their own inventory and cash and open as storage
+-- when used.
+--
+-- The contents live in the instance's `Inventory` and `Cash` data and are converted with `cw.inventory:ToSaveable` and
+-- `cw.inventory:ToLoadable` when the item is saved and loaded. `storageWeight` and `storageSpace` limit what fits, and
+-- `ITEM:OpenFor` opens the storage through `cw.storage:Open`.
 
 ITEM.name = 'Container Base'
 ITEM.model = 'models/props_junk/garbage_bag001a.mdl'

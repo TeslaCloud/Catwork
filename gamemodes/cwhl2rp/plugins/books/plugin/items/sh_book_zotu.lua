@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the Zen of the Union book item (`book_zotu`), a purchasable book on the Universal Union's philosophy.
 
 ITEM.baseItem = 'book_base'
 ITEM.cost = 6

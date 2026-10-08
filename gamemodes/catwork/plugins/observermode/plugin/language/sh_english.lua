@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- English (`en`) language strings of the Observer Mode plugin, covering the observer status label, the
+-- `observer_reset` config and the help text of `/Observer`.
 
 local lang = cw.lang:GetTable('en')
 

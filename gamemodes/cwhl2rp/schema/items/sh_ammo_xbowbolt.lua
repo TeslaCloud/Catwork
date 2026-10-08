@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `ammo_xbowbolt` item, Crossbow Bolts, which gives 4 rounds of `xbowbolt` ammo and is not sold in the
+-- business menu.
 
 ITEM.baseItem = 'ammo_base'
 ITEM.name = 'Crossbow Bolts'

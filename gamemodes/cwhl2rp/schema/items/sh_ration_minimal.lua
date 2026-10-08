@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the Minimal Tier Ration Packet item (`ration_minimal`), which is opened for 20 tokens and citizen
+-- supplements and fires the `PlayerUseRation` hook.
 
 ITEM.name = 'Minimal Tier Ration Packet'
 ITEM.PrintName = '#ITEM_Minimal_Tier_Ration_Packet'

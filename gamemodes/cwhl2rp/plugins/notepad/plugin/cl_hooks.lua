@@ -1,7 +1,5 @@
---[[
-  © 2012 CloudSixteen.com do not share, re-distribute or modify
-  without permission of its author (kurozael@gmail.com).
---]]
+--- Client-side hooks of the Notepad plugin; `GetEntityMenuOptions` gives a written `cw_notepad` the Read and Edit menu
+-- options and a blank one the Write option.
 
 --- Called when an entity's menu options are needed; adds the notepad's options.
 --

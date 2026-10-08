@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Main file of the Map Scenes plugin, which shows a saved view of the map behind the character menu.
+--
+-- Aliases the plugin as `cwMapScene` and includes its client and server files. Scenes are added with `/MapSceneAdd`
+-- and removed with `/MapSceneRemove`.
 
 --[[
   You don't have to do this, but I think it's nicer.

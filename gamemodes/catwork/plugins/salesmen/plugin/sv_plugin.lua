@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server-side part of the Salesmen plugin, which carries out trades, spawns salesmen from the editor's data and saves
+-- the map's salesmen.
+--
+-- The `Salesmenu` netstream receiver performs a purchase or a sale, `SalesmanAdd` validates the editor's data and
+-- spawns a `cw_salesman`, and `SalesmanDone` plays the farewell response. `cwSalesmen:LoadSalesmen` and
+-- `cwSalesmen:SaveSalesmen` keep the salesmen in the schema data under `plugins/salesmen/<map>`.
 
 netstream.Hook('SalesmanDone', function(player, data)
   if IsValid(data) and data:GetClass() == 'cw_salesman' then

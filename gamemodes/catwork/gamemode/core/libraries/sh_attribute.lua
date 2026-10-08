@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `cw.attribute` library, the registry of character attribute definitions.
+--
+-- An attribute is created with `cw.attribute:New`, given a `name`, `maximum`, `description` and so on, and registered;
+-- `cw.attribute:FindByID` finds one by index, unique ID or name. The attribute values of players are handled by
+-- `cw.attributes`.
 
 library.New('attribute', cw)
 

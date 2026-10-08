@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `cwBusiness` menu tab, which lists the items the local player can order, and its `cwBusinessItem` and
+-- `cwBusinessCustom` entries.
+--
+-- Items are grouped by category and filtered with the `PlayerCanSeeBusinessItem` hook; their cost is scaled by the
+-- class or faction `costScale`. Clicking an item runs the `OrderShipment` command.
 
 local PANEL = {}
 

@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Adds the framework's core config keys to the client's System menu config editor with `config.AddToSystem`.
+--
+-- Each call gives a key such as `default_cash` or `talk_radius` a translated name and help text and, for some numeric
+-- keys, a minimum, maximum and number of decimals.
 
 config.AddToSystem('#AttributeProgressionScale', 'scale_attribute_progress', '#AttributeProgressionScaleDesc')
 config.AddToSystem('#MessagesMustSeePlayer', 'messages_must_see_player', '#MessagesMustSeePlayerDesc')

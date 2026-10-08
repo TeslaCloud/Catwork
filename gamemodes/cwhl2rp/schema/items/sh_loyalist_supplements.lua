@@ -1,10 +1,6 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines a Premium Supplements food item under the unique ID `premium_supplements`, a copy of the premium supplements
+-- item with a different model that heals 5 health, boosts endurance by 2 for two minutes and leaves an empty cardboard
+-- box.
 
 ITEM.name = 'Premium Supplements'
 ITEM.PrintName = '#ITEM_Premium_Supplements'

@@ -1,9 +1,7 @@
---[[
-  © 2016 TeslaCloud Studios.
-  Private code for Global Cooldown community.
-  Stealing Lua cache is not nice lol.
-  get a life kiddos.
---]]
+--- Defines the Green Tactical Pants item (`rebel_legs_1`), legwear based on `bodygroup_base` that sets bodygroup 2 to 4
+-- and gives 12 protection.
+--
+-- Originally written for the Global Cooldown community.
 
 ITEM.baseItem = 'bodygroup_base'
 ITEM.name = 'Green Tactical Pants'

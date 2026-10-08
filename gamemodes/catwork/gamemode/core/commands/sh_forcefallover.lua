@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the operator command `/ForceFallOver` (alias `/ForceCharFallover`), which makes the target player fall
+-- over, optionally for 2 to 30 seconds.
 
 local COMMAND = cw.command:New('ForceFallOver')
 COMMAND.tip = '#Command_Forcefallover_Description'

@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/A` command (aliases `/AD`, `/OP`), which sends a message to every online operator, admin and
+-- superadmin in the admin chat.
 
 local COMMAND = cw.command:New('A')
 COMMAND.tip = '#Command_A_Description'

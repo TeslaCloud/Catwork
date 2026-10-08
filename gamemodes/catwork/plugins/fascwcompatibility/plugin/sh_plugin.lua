@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Shared hooks of the FA:S 2.0 & CW 2.0 Integration plugin that tie FA:S 2.0, CW 2.0 and SXBase weapons into Catwork's
+-- weapon raising.
+--
+-- Raising or lowering such a weapon switches it between the `safe` fire mode and its second fire mode, and it counts
+-- as raised whenever it is not on `safe`. Toggling is blocked while the weapon is busy, and the weapon selection menu
+-- while it is being customized.
 
 --- Called to check whether the weapon selection menu may open; blocks it while a FA:S 2, SXBase or CW 2.0
 -- weapon is being customized.

@@ -1,7 +1,5 @@
---[[
-  © 2013 CloudSixteen.com do not share, re-distribute or modify
-  without permission of its author (kurozael@gmail.com).
---]]
+--- Defines the MP7 weapon item, which gives the `sxbase_mp7` weapon and is sold to the Elite Metropolice and Elite
+-- Overwatch Soldier classes.
 
 ITEM.baseItem = 'weapon_base'
 ITEM.name = 'MP7'

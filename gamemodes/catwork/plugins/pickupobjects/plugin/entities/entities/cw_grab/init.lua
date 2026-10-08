@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server-side code of the `cw_grab` entity, the invisible physics handle that the Pickup Objects plugin welds a
+-- carried entity to.
+--
+-- The grab moves towards its compute position with shadow control, asks `cwPickupObjects:CalculatePosition` for a new
+-- position 20 times a second, and drops the entity once the player can no longer hold it.
 
 util.Include('shared.lua')
 

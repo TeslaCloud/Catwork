@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `cw.menu` panel, the framework's main menu, with a button column that opens the menu tabs.
+--
+-- `Rebuild` creates the Close and Characters buttons and a `cw.menuButton` for each item collected by the
+-- `MenuItemsAdd` and `MenuItemsDestroy` hooks, keeping the tab panels in `cw.menu.stored`; `OpenPanel` fades between
+-- tabs. The `MenuOpen` netstream opens, closes or creates the menu.
 
 local GRADIENT = surface.GetTextureID('gui/gradient')
 local PANEL = {}

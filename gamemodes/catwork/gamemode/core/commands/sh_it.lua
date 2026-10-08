@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/It` command, which prints a description of the surroundings in the chat of players near the caller.
 
 local COMMAND = cw.command:New('It')
 COMMAND.tip = '#Command_It_Description'

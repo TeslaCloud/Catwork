@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server-side hooks of the Gathering plugin that respawn resource nodes at their spawn points and reward players for
+-- breaking wooden props.
+--
+-- `OneSecond` spawns a node at every point whose `nodes_respawn_delay` has passed and that `CanSpawnNode` allows. A
+-- `PropBreak` hook passes broken wooden props to `cwGather:PlayerBreaksWood`.
 
 --- Called after Catwork has loaded the map entities; loads the resource node spawn points.
 function cwGather:ClockworkInitPostEntity()

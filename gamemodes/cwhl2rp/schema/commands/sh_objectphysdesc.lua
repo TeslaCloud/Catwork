@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers `/ObjectPhysDesc`, which lets the owner of the physics prop being looked at set its physical description.
+--
+-- The command only checks ownership and distance, then sends the `ObjectPhysDesc` netstream message so the client
+-- prompts for the text.
 
 local COMMAND = cw.command:New('ObjectPhysDesc')
 COMMAND.tip = '#Command_Objectphysdesc_Description'

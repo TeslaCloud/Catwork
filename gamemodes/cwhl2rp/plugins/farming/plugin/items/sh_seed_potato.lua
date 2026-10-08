@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `Potato Seeds` item (`seed_potato`), a `seeds_base` item whose plant ripens in 1200 to 2000 seconds and
+-- yields `seed_potato` and `potato`.
 
 ITEM.baseItem = 'seeds_base'
 ITEM.name = 'Potato Seeds'

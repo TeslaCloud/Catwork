@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server-side hooks of the Storage plugin that open containers from the entity menu and handle their breaching,
+-- removal and prop cost name.
+--
+-- A container with a password asks for it before opening, unless it was breached in the last two minutes. A removed
+-- container drops its items and cash, and containers that have been opened or named are kept from automatic removal.
 
 --- Called when a player attempts to breach an entity; allows breaching password protected containers.
 -- @param player [Player The player breaching]

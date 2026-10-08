@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Client-side part of the `cw.storage` library: accessors for the storage the local player has open.
+--
+-- They return its name, entity, inventory, cash and weight and space limits, and `cw.storage:CanGiveTo` and
+-- `cw.storage:CanTakeFrom` check whether an item's storage permissions allow moving it.
 
 library.New('storage', cw)
 

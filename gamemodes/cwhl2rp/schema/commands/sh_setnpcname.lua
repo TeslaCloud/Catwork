@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers `/SetNPCName`, an operator command that sets the `cw_Name` and `cw_Title` networked strings of the NPC
+-- being looked at.
 
 local COMMAND = cw.command:New('SetNPCName')
 COMMAND.tip = '#Command_Setnpcname_Description'

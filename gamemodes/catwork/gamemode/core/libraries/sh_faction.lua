@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the global `faction` library, the registry of factions that characters belong to.
+--
+-- A faction is created with `faction.New` and registered with its models, whitelist setting, limits and ranks. The
+-- library validates genders and models for character creation, lists a faction's players and walks its rank ladder
+-- (highest, lowest, next higher, next lower and default rank).
 
 library.New 'faction'
 

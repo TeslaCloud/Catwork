@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server-side functions of the Save Items plugin that save and respawn the `cw_item` and `cw_shipment` entities on the
+-- map.
+--
+-- `cwSaveItems:SaveItems` and `cwSaveItems:LoadItems` keep each item instance with its item ID and data under
+-- `plugins/items/<map>` in the schema data, and `cwSaveItems:SaveShipments` and `cwSaveItems:LoadShipments` keep each
+-- shipment's item and remaining amount under `plugins/shipments/<map>`.
 
 --- Spawns the shipments saved for the current map.
 --

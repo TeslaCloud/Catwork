@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server-side functions of the Observer Mode plugin that put a player into observer mode and take them out again.
+--
+-- `cwObserverMode:MakePlayerEnterObserverMode` stores the player's position, eye angles, color and move type and
+-- enables noclip, and `cwObserverMode:MakePlayerExitObserverMode` restores them. The `observer_reset` config, added
+-- here, decides whether the position and angles are restored.
 
 config.Add('observer_reset', true, true)
 

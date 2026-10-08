@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers `/Broadcast`, which lets a character of the administrator faction broadcast a message to the whole city
+-- with `Schema:SayBroadcast`.
 
 local COMMAND = cw.command:New('Broadcast')
 COMMAND.tip = '#Command_Broadcast_Description'

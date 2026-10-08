@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the A Blood Stained Journal book item (`book_absj`), a journal of feverish prayers that is not sold in the
+-- business menu.
 
 ITEM.baseItem = 'book_base'
 ITEM.name = 'A Blood Stained Journal'

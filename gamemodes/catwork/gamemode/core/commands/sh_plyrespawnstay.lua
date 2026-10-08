@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the operator command `/PlyRespawnStay` (aliases `/PlyRStay`, `/RespawnStay`), which respawns the target
+-- player at the spot where they currently are.
 
 local COMMAND = cw.command:New('PlyRespawnStay')
 COMMAND.tip = '#Command_Plyrespawnstay_Description'

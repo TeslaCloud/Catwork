@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/MapSceneAdd` admin command, which saves the player's eye position and angles as a map scene,
+-- optionally a spinning one.
 
 local COMMAND = cw.command:New('MapSceneAdd')
 COMMAND.tip = '#Command_Mapsceneadd_Description'

@@ -1,7 +1,5 @@
---[[
-  © 2013 CloudSixteen.com do not share, re-distribute or modify
-  without permission of its author (kurozael@gmail.com).
---]]
+--- Defines the Vodka item (`vodka`) on `alcohol_base`, which heals 15 health, boosts strength by 15 for two minutes and
+-- leaves an empty glass bottle.
 
 ITEM.baseItem = 'alcohol_base'
 ITEM.name = 'Vodka'

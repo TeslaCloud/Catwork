@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Client side of the `cw_cash` entity: draws the cash model, unless the `CashEntityDraw` hook returns `false`, and the
+-- cash name and formatted amount when it is looked at.
 
 include('shared.lua')
 

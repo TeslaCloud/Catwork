@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the admin command `/MapRestart` (alias `/Restart`), which saves data and reloads the current map after a
+-- delay of ten seconds by default.
 
 local COMMAND = cw.command:New('MapRestart')
 COMMAND.tip = '#Command_Maprestart_Description'

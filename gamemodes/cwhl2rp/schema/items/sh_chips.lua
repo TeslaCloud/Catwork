@@ -1,7 +1,4 @@
---[[
-  © 2013 CloudSixteen.com do not share, re-distribute or modify
-  without permission of its author (kurozael@gmail.com).
---]]
+--- Defines the Chips food item, which boosts agility and stamina by 3 for two minutes.
 
 ITEM.name = 'Chips'
 ITEM.PrintName = '#Item_Chips_PrintName'

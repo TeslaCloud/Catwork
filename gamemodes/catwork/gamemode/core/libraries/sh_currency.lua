@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `cw.currency` library, a registry of named currency objects that each carry a world model and a default
+-- amount.
+--
+-- `cw.currency:Add` creates a currency and `cw.currency:Get` returns one, creating it if needed. A currency object can
+-- be called like a function to query its data.
 
 library.New('currency', cw)
 

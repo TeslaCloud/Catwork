@@ -1,10 +1,12 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Client-side kernel of the framework: the client half of `cw.core`, a few global helpers and the client `Player` meta
+-- methods.
+--
+-- Derives the gamemode from Sandbox and defines the HUD and drawing helpers (`cw.core:DrawInfo`, `DrawBar`,
+-- `DrawAdminESP`, `DrawDateTime`, hints, the cinematic intro, door text), text measuring and wrapping, the entity and
+-- item menus (`HandleEntityMenu`, `HandleItemSpawnIconClick`), markup tooltips, background blurs and the client's
+-- schema data files. It also adds `base64`, `surface.DrawScaledText` and `surface.DrawRotatedText`,
+-- `Derma_NumRequest`, the `cwSay` and `cwLua` console commands, an `AddWorldTip` override and getters such as
+-- `playerMeta:GetFaction` and `playerMeta:GetCharacterData`.
 
 --[[
   Derive from Sandbox, because we want the spawn menu and such!

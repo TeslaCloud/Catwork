@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the superadmin command `/PlySetGroup` (alias `/SetGroup`), which puts the target player in the
+-- `superadmin`, `admin` or `operator` group and respawns them.
 
 local COMMAND = cw.command:New('PlySetGroup')
 COMMAND.tip = '#Command_Plysetgroup_Description'

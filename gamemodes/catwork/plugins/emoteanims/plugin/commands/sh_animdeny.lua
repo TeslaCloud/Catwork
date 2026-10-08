@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/AnimDeny` command, which makes a Civil Protection character hold a hand out to deny access, and adds
+-- it to the Emotes category of the quick menu.
 
 local COMMAND = cw.command:New('AnimDeny')
 COMMAND.tip = '#Command_Animdeny_Description'

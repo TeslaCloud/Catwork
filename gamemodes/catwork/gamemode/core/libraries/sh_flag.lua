@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `cw.flag` library, the registry of single-character player flags with their names and descriptions.
+--
+-- On the client every registered flag is listed on the Flags page of the directory. The file adds the framework's own
+-- flags, such as `p` for the physics gun, `t` for the tool gun and `e` for spawning props.
 
 library.New('flag', cw)
 

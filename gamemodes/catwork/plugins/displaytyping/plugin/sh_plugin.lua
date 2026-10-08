@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Main file of the Display Typing plugin, which aliases it as `cwDisplayTyping` and includes its files.
+--
+-- The plugin shows above a character's head that they are typing, and whether they are talking, whispering, yelling,
+-- using the radio, performing an action or typing out of character.
 
 --[[
   You don't have to do this, but I think it's nicer.

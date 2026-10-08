@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server-side hooks of the Salesmen plugin that load and save the map's salesmen and handle a player using one.
+--
+-- `PlayerCanUseSalesman` enforces the salesman's faction, class and flag restrictions, and `PlayerUseSalesman` sends
+-- its inventory to the player in the `Salesmenu` netstream message.
 
 --- Called after Catwork has loaded all map entities; spawns the salesmen saved for the current map.
 function cwSalesmen:ClockworkInitPostEntity()

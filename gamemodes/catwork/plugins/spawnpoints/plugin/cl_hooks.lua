@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Client-side hooks of the Spawn Points plugin that show spawn points on the admin ESP.
+--
+-- Creates the `cwSpawnPointESP` convar with its admin ESP checkbox, and lists every point under its faction, class or
+-- `default` name in `GetAdminESPInfo`. The points come from the server through the `SpawnPointESPSync` netstream.
 
 local cwSpawnPoints = cwSpawnPoints
 local spawnPointData

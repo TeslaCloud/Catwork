@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers `/SetFreq`, which tunes the `cw_radio` being looked at, or otherwise the character's own `frequency` data,
+-- to a given radio frequency.
+--
+-- The frequency must have the form `1X1.X` to `1X9.X` with a non-zero decimal, such as `101.1`. Combine characters
+-- cannot change it.
 
 local COMMAND = cw.command:New('SetFreq')
 COMMAND.tip = '#Command_Setfreq_Description'

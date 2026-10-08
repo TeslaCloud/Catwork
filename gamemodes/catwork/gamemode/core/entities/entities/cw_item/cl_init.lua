@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Client side of the `cw_item` entity: fetches the item data from the server, draws the model and shows the item's
+-- name, weight and space when it is looked at.
+--
+-- The `PaintItemTargetID`, `ItemEntityDraw` and `ItemEntityThink` hooks and the item's `OnHUDPaintTargetID`,
+-- `OnDrawModel` and `OnEntityThink` callbacks can change this.
 
 include('shared.lua')
 

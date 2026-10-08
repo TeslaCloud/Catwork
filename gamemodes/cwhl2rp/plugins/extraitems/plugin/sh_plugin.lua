@@ -1,5 +1,2 @@
---[[
-  © 2016 TeslaCloud Studios.
-  Feel free to use, edit or share the plugin, but
-  do not re-distribute without the permission of it's author.
---]]
+--- Main file of the Extra Items plugin, which adds melee weapon and stimpack items; it is empty, since the plugin
+-- consists only of its item and language files.

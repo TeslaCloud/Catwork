@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server side of the `cw_belongings` entity, a suitcase that holds an inventory of items and an amount of cash.
+--
+-- `ENT:SetData` stores the contents, which the gamemode's entity menu handling opens as storage. The suitcase has 50
+-- health, and whatever it still holds is dropped into the world when it is destroyed or removed.
 
 include('shared.lua')
 

@@ -1,10 +1,10 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the character menu (`cw.characterMenu`) and every panel of character selection and creation.
+--
+-- Holds the character carousel (`cw.characterList`, `cw.characterPanel`, `cw.characterModel`) and the four creation
+-- steps `cw.characterStageOne` to `cw.characterStageFour` (faction and gender, name and description, class,
+-- attributes), which are registered with `cw.character:RegisterCreationPanel`. Also handles the `CharacterMenu`,
+-- `CharacterOpen`, `CharacterAdd`, `CharacterRemove`, `CharacterFinish` and `SetWhitelisted` netstreams; the character
+-- cards send `InteractCharacter` to use or delete a character.
 
 local PANEL = {}
 

@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `seeds_base` base item, whose use plants a `cw_plant` entity on the dirt or grass the player is looking
+-- at.
+--
+-- Seed items derive from it and set `PlantModel`, `PlantName`, `GrowTime` (a range in seconds) and `Harvest` (the seed
+-- and crop item IDs). Planting must be within 192 units and away from other plants, takes a random grow time shortened
+-- by the Farming attribute, and progresses that attribute.
 
 ITEM.isBaseItem = true
 ITEM.name = 'Seeds Base'

@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/Radio` command (aliases `/R`, `/Rs`), which sends the caller's message over the radio through
+-- `cw.player:SayRadio`.
 
 local COMMAND = cw.command:New('Radio')
 COMMAND.tip = '#Commands_RDesc'

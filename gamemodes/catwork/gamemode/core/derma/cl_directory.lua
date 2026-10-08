@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `cwDirectory` menu tab, which shows the categories of `cw.directory` in a tree on the left and the
+-- selected category's page in a `DHTML` view.
+--
+-- The tab stores itself as `cw.directory.panel` and rebuilds its tree from `cw.directory.stored`.
 
 local PANEL = {}
 

@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- English language strings of the Flashlight plugin: the name and description of the flashlight item.
 
 local lang = cw.lang:GetTable('en')
 

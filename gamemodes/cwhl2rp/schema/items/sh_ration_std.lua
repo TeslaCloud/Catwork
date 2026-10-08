@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the Standard Tier Ration Packet item (`ration_standard`), which is opened for 50 tokens, citizen supplements
+-- and a smooth Breen's water and fires the `PlayerUseRation` hook.
 
 ITEM.name = 'Standard Tier Ration Packet'
 ITEM.PrintName = '#ITEM_Standard_Tier_Ration_Packet'

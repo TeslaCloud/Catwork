@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the framework's core config keys and their default values on the server with `config.Add`.
+--
+-- Covers the `mysql_*` database settings and `owner_steamid` (static and private) and the gameplay keys such as
+-- `default_cash`, `walk_speed`, `ooc_interval` and `default_theme`. The values are meant to be changed through the cfg
+-- files or the in-game config editor, not by editing this file.
 
 --[[
   Never edit this file! All config editing should be done

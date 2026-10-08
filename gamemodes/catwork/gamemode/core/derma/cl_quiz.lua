@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines `cw.quiz`, the full-screen quiz a player has to answer before playing.
+--
+-- `Populate` adds a combo box for each question from `cw.quiz:GetQuestions`; picking an answer sends the `QuizAnswer`
+-- netstream and the Continue button sends `QuizCompleted`, after which the server decides whether the answers pass.
 
 local PANEL = {}
 

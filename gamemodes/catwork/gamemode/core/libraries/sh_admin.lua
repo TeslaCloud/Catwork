@@ -1,7 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
---]]
+--- Adds per-player permission methods to the `Player` metatable: `Player:HasPermission` in both realms and
+-- `Player:SetPermission`, `Player:GivePermission` and `Player:TakePermission` on the server.
+--
+-- Permissions are stored in the player's data under `permissions`, keyed by lowercased ID.
 
 local playerMeta = FindMetaTable('Player')
 

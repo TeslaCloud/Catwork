@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server-side persistence of the Farming plugin: `SavePlants` and `LoadPlants` store and respawn every `cw_plant` on
+-- the map with its position, timings and seed item.
+--
+-- The data is kept per map in the schema data file `plugins/farming/<map>`.
 
 --- Saves the position, angles, timings and seed item of every plant on the map.
 --

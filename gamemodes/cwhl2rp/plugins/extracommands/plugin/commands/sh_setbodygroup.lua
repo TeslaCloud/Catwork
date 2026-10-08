@@ -1,8 +1,5 @@
---[[
-  © 2016 TeslaCloud Studios.
-  Feel free to use, edit or share the plugin, but
-  do not re-distribute without the permission of it's author.
---]]
+--- Registers the admin command `/CharSetBodyGroup` of the Extra Commands plugin, which sets a bodygroup on the target
+-- character and saves it in the `CustomBodyGroup` character data.
 
 local COMMAND = cw.command:New('CharSetBodyGroup')
 COMMAND.tip = '#Command_Charsetbodygroup_Description'

@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Client-side functions of the Area Displays plugin that receive the area list and show area names as scrolling, 3D or
+-- cinematic text.
+--
+-- Hooks the `AreaDisplays`, `AreaAdd` and `AreaRemove` netstreams and adds the `cwShowAreas` setting. Expiring areas
+-- are shown only once: the ones already seen are remembered in the `plugins/displays/<map>` schema data file on the
+-- client.
 
 cwAreaDisplays.activeDisplays = cwAreaDisplays.activeDisplays or {}
 cwAreaDisplays.expiredList = cw.core:RestoreSchemaData('plugins/displays/'..game.GetMap())

@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Main file of the Observer Mode plugin, which replaces noclip for staff with an invisible observer mode that returns
+-- them to where they entered it.
+--
+-- Aliases the plugin as `cwObserverMode` and includes its client and server files.
 
 --[[
   You don't have to do this, but I think it's nicer.

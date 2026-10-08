@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/Roll` command, which rolls a random number up to 100 or a given maximum and shows it to nearby
+-- players, rolling against the player the caller is looking at when there is one.
 
 local COMMAND = cw.command:New('Roll')
 COMMAND.tip = '#Commands_RollDesc'

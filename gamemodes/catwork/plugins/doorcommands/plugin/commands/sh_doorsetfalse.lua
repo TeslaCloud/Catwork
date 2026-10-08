@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/DoorSetFalse` command, which sets whether the door the player is looking at is a false door.
 
 local COMMAND = cw.command:New('DoorSetFalse')
 COMMAND.tip = '#Command_Doorsetfalse_Description'

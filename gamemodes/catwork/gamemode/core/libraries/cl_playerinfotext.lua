@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the client-side `cw.PlayerInfoText` library, the lines of text shown in the local player's information box.
+--
+-- The text is cleared every frame, so lines and sub text are added with `cw.PlayerInfoText:Add` and
+-- `cw.PlayerInfoText:AddSub` from the `GetPlayerInfoText` hook.
 
 library.New('PlayerInfoText', cw)
 cw.PlayerInfoText.text = cw.PlayerInfoText.text or {}

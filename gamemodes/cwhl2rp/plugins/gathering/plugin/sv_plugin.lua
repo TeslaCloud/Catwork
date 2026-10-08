@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server-side core of the Gathering plugin: the `nodes_respawn_delay` config key, the saving, loading and spawning of
+-- resource node spawn points, and the wood reward.
+--
+-- Spawn points live in `cwGather.nodePoints` and are kept per map in `plugins/gather/<map>`.
+-- `cwGather:PlayerBreaksWood` drops `wooden_board` or `wooden_parts` items at a broken prop, with the number of rolls
+-- set by the prop's mass and the odds by the Scavenger attribute, which it also progresses.
 
 config.Add('nodes_respawn_delay', 30)
 

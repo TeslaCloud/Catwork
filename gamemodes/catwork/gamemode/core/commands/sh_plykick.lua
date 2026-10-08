@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the operator command `/PlyKick` (alias `/Kick`), which kicks the target player from the server with a
+-- reason.
 
 local COMMAND = cw.command:New('PlyKick')
 COMMAND.tip = '#Command_Plykick_Description'

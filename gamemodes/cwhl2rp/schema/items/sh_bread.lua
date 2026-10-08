@@ -1,7 +1,4 @@
---[[
-  ? 2013 CloudSixteen.com do not share, re-distribute or modify
-  without permission of its author (kurozael@gmail.com).
---]]
+--- Defines the Bread food item, which boosts strength and endurance by 2 for two minutes.
 
 ITEM.name = 'Bread'
 ITEM.PrintName = '#Item_Bread_PrintName'

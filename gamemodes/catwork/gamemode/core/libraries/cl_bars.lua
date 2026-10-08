@@ -1,10 +1,6 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the client-side `cw.bars` library, the list of bars drawn at the top of the HUD.
+--
+-- The list is cleared and rebuilt every frame, so bars are added with `cw.bars:Add` from the `GetBars` hook.
 
 library.New('bars', cw)
 

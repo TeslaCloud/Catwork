@@ -1,9 +1,10 @@
---[[
-  © 2016 TeslaCloud Studios.
-  Private code for Global Cooldown community.
-  Stealing Lua cache is not nice lol.
-  get a life kiddos.
---]]
+--- Defines `skin_base`, the base item for clothing that is worn by setting the skin of the player's model.
+--
+-- Derived items set `playerSkin`, and optionally `protection` (percent of damage absorbed) and `isCombine` (Combine
+-- players can only wear items marked with it). Wearing goes through `Player:SetSkinClothes`, the item stays in the
+-- inventory, and it is taken off, resetting the skin to 0, when dropped, sold, stored or unequipped.
+--
+-- Originally written for the Global Cooldown community.
 
 ITEM.isBaseItem = true
 ITEM.name = 'Skin Base'

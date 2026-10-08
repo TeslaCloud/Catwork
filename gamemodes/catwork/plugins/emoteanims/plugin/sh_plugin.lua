@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Main file of the Emote Anims plugin, which lets characters perform stance and gesture animations through the `/Anim`
+-- commands.
+--
+-- Aliases the plugin as `cwEmoteAnims` and defines `cwEmoteAnims:IsPlayerInStance`, the `cwEmoteAnims.stanceList` set
+-- of animations that count as stances, and the shared `Move` and `EntityFireBullets` hooks that lock an emoting
+-- player's angles and block their bullets.
 
 --[[
   You don't have to do this, but I think it's nicer.

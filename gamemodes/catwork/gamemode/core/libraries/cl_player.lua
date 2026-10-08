@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Client-side part of the `cw.player` library: queries about the local player, and about other players as the client
+-- knows them.
+--
+-- It covers carrying capacity, worn clothes and accessories, flags, recognition and displayed names, line of sight,
+-- ragdoll and action state, cash, wages and chat icons. Many functions mirror the server ones of the same name in
+-- `sv_player.lua`.
 
 if !cw.player then
   include('sh_player.lua')

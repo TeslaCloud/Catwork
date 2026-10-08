@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers `/VendorAdd`, an admin command that spawns a `cw_vendingmachine` with a random stock of 10 to 20 where the
+-- player is looking.
 
 local COMMAND = cw.command:New('VendorAdd')
 COMMAND.tip = '#Command_Vendoradd_Description'

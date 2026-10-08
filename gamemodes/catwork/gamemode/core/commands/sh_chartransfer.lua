@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the operator command `/CharTransfer` (aliases `/Transfer`, `/PlyTransfer`), which moves the target
+-- character to another faction through that faction's `OnTransferred` callback.
 
 local COMMAND = cw.command:New('CharTransfer')
 COMMAND.tip = '#Command_Chartransfer_Description'

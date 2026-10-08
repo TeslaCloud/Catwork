@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `ammo_base` base item for ammunition: using one gives `ammoAmount` rounds of `ammoClass` if the player
+-- carries a weapon that takes that ammo.
+--
+-- Each instance has a networked `Rounds` data field, and the item's weight and space scale with the rounds left.
 
 ITEM.isBaseItem = true
 ITEM.name = 'Ammo Base'

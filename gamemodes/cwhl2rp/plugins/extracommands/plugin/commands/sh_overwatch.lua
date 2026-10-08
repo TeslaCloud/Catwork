@@ -1,8 +1,5 @@
---[[
-  © 2016 TeslaCloud Studios.
-  Feel free to use, edit or share the plugin, but
-  do not re-distribute without the permission of it's author.
---]]
+--- Registers the superadmin command `/Overwatch` of the Extra Commands plugin, which sends a green Overwatch message to
+-- every Combine player.
 
 local COMMAND = cw.command:New('Overwatch')
 COMMAND.tip = '#Command_Overwatch_Description'

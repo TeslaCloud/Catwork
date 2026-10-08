@@ -1,10 +1,12 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the server-side kernel: the server half of `cw.core`, the `Player` and `Entity` metatable extensions and the
+-- server console commands.
+--
+-- `cw.core` gains the schema and Catwork data file storage (`cw.core:SaveSchemaData`, `cw.core:RestoreSchemaData`),
+-- damage, blood and ragdoll hit helpers, the date and time think, wages and logging. The metatable part wraps engine
+-- methods such as `Player:Give`, `Player:Kick`, `Player:Name` and `Entity:SetModel` and adds the character, inventory,
+-- attribute, clothes and accessory accessors used everywhere else. The `cwc` console command runs admin actions such
+-- as `setgroup`, `ban` and `whitelist` from the server console; the file also derives the gamemode from Sandbox and
+-- adds the content addon and fonts to the downloads.
 
 --[[ Downloads the content addon for clients. --]]
 resource.AddWorkshop('474315121')

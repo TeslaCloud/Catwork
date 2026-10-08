@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Shared definition of the `cw_gear` entity: its networked item `Index` and the accessors for its item, owner,
+-- attachment bone and offsets.
+--
+-- `ENT:GetRealPosition` works out where the gear is drawn from the owner's bone (or their ragdoll's) and the item's
+-- `attachmentOffsetVector` and `attachmentOffsetAngles`, which the item's `AdjustAttachmentOffsetInfo` can change.
 
 DEFINE_BASECLASS('base_gmodentity')
 

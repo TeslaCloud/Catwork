@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Shared definition of the `cw_chatbubble` entity, a non-spawnable `base_anim` entity named Chat Bubble that floats
+-- above a salesman.
 
 ENT.Type = 'anim'
 ENT.Base = 'base_anim'

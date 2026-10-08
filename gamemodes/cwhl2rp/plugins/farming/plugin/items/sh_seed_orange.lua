@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `Orange Seeds` item (`seed_orange`), a `seeds_base` item whose plant ripens in 1337 to 1488 seconds and
+-- yields `seed_orange` and `orange`.
 
 ITEM.baseItem = 'seeds_base'
 ITEM.name = 'Orange Seeds'

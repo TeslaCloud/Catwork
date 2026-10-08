@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Client-side hooks of the Karma plugin that show karma in the interface.
+--
+-- They add the karma level to the local player's info text, draw a karma bar with a slider in the info menu, and show
+-- the karma level under recognised non-Combine players the local player looks at.
 
 --- Called when the local player's info text is built; adds the karma level line.
 -- @param playerInfoText [Map The info text object; lines are added with `:Add(id, text)`]

@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/AnimSit` command, which makes a human character sit down on the ground or stand back up, and adds it
+-- to the Emotes category of the quick menu.
 
 local COMMAND = cw.command:New('AnimSit')
 COMMAND.tip = '#Command_Animsit_Description'

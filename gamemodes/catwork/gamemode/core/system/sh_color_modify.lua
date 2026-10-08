@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `Color Modify` system, which lets admins with the `a` flag tune a screen color modification applied to
+-- every player.
+--
+-- The client page has an enable checkbox and sliders for brightness, contrast, color and the add and multiply
+-- channels. Changes go to the server over the `SystemColSet` netstream, are stored in `cw.OverrideColorMod`, saved to
+-- the `color` schema data file and broadcast back to all clients.
 
 local ACCESS_FLAG = 'a'
 

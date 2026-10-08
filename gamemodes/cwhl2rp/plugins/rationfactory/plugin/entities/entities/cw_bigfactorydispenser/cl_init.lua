@@ -1,7 +1,6 @@
---[[
-  © 2012 Iron-Wall.org do not share, re-distribute or modify
-  without permission of its author (ext@iam1337.ru).
---]]
+--- Client side of the `cw_bigfactorydispenser` entity of the Ration Factory plugin, which only draws the model.
+--
+-- Originally written for the Iron Wall community.
 
 include('shared.lua')
 

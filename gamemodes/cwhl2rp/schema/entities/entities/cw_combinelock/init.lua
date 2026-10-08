@@ -1,7 +1,8 @@
---[[
-  © 2013 CloudSixteen.com do not share, re-distribute or modify
-  without permission of its author (kurozael@gmail.com).
---]]
+--- Server side of the `cw_combinelock` entity, the Combine lock that is attached to a door and keeps it locked.
+--
+-- `ENT:SetDoor` binds it to a door and its double door partner, and using it toggles the lock for players who pass
+-- `Schema:PlayerHasCombineLockAccess` (see `ENT:SetAccess` and `ENT:SetCPRank`) and flashes red for everyone else. The
+-- lock has 800 health; when that reaches 0 a 12 second smoke charge busts its doors open.
 
 include('shared.lua')
 

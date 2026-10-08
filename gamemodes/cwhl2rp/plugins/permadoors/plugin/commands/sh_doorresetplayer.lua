@@ -1,8 +1,5 @@
---[[
-  © 2016 TeslaCloud Studios.
-  Feel free to use, edit or share the plugin, but
-  do not re-distribute without the permission of it's author.
---]]
+--- Registers the `/DoorResetPlayer` command of the Permanent Doors plugin, which makes the door the player is looking
+-- at vacant under the given name.
 
 local COMMAND = cw.command:New('DoorResetPlayer')
 COMMAND.tip = '#Command_Doorresetplayer_Description'

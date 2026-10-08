@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the Farming attribute (`farm`, global `ATB_FARM`, maximum 100), a skill that speeds up growing and
+-- harvesting plants and improves the harvest.
 
 local ATTRIBUTE = cw.attribute:New()
   ATTRIBUTE.name = '#Attribute_Farm'

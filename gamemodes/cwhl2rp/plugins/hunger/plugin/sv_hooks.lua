@@ -1,7 +1,10 @@
---[[
-  © 2016 TeslaCloud Studios.
-  Please do not use anywhere else.
---]]
+--- Server-side hooks of the Hunger plugin that drain, refill and apply the effects of the `Hunger`, `Thirst` and
+-- `Fatigue` character data.
+--
+-- `OnePlayerSecond` drains hunger and thirst over the `hunger_tick` and `thirst_tick` configs, raises fatigue, hurts
+-- starving players, knocks out exhausted ones and networks the three values as net vars. `PlayerUseItem` feeds the
+-- player from food and drink items, `PlayerThink` makes jumping and running in the air cost thirst and add fatigue,
+-- and low hunger or thirst blocks health and stamina regeneration.
 
 --- Called when character data is saved; rounds the hunger, thirst and fatigue values.
 --

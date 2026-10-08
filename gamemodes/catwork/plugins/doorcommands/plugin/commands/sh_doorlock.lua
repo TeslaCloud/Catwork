@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/DoorLock` command, which locks the door the player is looking at.
 
 local COMMAND = cw.command:New('DoorLock')
 COMMAND.tip = '#Command_Doorlock_Description'

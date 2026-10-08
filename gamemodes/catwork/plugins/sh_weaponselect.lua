@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Single-file Weapon Selector plugin, aliased `cwWeaponSelect`, which replaces the default HUD weapon selection with a
+-- scrolling list of five weapons and an information box for the highlighted one.
+--
+-- On the client, `PlayerBindPress` handles the `invprev`, `invnext`, `slot` and `attack` binds and runs the
+-- `ShouldWeaponMenuOpen`, `OnWeaponIndexChange` and `OnWeaponSelected` hooks. The server part only adds the
+-- `selectweapon` console command, which switches to the weapon at a given index.
 
 PLUGIN.name = 'Weapon Selector'
 PLUGIN.description = 'Provides a weapon selector replacement.'

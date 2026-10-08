@@ -1,9 +1,3 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Adds the Cleaned Maps plugin's `remove_map_physics` config key to the system config menu.
 
 config.AddToSystem('#RemoveMapPhysics', 'remove_map_physics', '#RemoveMapPhysicsDesc')

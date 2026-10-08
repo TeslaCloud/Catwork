@@ -1,7 +1,10 @@
---[[
-  © 2012 Iron-Wall.org do not share, re-distribute or modify
-  without permission of its author (ext@iam1337.ru).
---]]
+--- Server side of the `cw_emptycrate` entity of the Ration Factory plugin, a crate that collects finished ration
+-- packets.
+--
+-- A full `cw_emptyration` that touches it is packed in, at most one per second; at ten the crate turns into a shipment
+-- of ten `ration_standard` items. It has 50 health and breaks when it runs out.
+--
+-- Originally written for the Iron Wall community.
 
 include('shared.lua')
 

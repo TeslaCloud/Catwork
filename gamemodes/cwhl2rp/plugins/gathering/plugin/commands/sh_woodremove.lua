@@ -1,10 +1,6 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/WoodRemove` command, which removes wood node spawn points around where the admin is looking.
+--
+-- The distance limit is 50000000 units, so in practice it removes every point on the map.
 
 local COMMAND = cw.command:New('WoodRemove')
 COMMAND.tip = '#Command_Woodremove_Description'

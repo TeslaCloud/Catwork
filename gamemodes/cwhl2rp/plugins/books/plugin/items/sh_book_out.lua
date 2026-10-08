@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the Outlands 2015 book item (`book_out`), a framed photo of resistance members whose text is a single remote
+-- image and which is not sold in the business menu.
 
 ITEM.baseItem = 'book_base'
 ITEM.name = 'Outlands 2015'

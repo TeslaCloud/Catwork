@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the HL2RP schema's client theme, built with `cw.theme:Begin` and registered with `cw.theme:Finish`.
+--
+-- It creates the `hl2_*` fonts, sets the theme's colours, logo and font options, draws the HUD bars as rows of
+-- segments, and overrides the Derma skin painters for frames, buttons, menus, tabs and list views with a flat dark
+-- look. The gradient and logo images are downloaded into `data/catwork/` at start-up, and the character and main menu
+-- hooks are empty stubs.
 
 local THEME = cw.theme:Begin()
 

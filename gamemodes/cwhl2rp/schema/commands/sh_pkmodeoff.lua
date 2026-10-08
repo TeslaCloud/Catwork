@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers `/PKModeOff`, an operator command that turns perma-kill mode off by setting the `PKMode` global net var to
+-- 0 and removing the `pk_mode` timer.
 
 local COMMAND = cw.command:New('PKModeOff')
 COMMAND.tip = '#Command_Pkmodeoff_Description'

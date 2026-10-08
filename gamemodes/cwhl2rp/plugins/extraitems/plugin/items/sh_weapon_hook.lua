@@ -1,7 +1,4 @@
---[[
-© 2013 CloudSixteen.com do not share, re-distribute or modify
-without permission of its author (kurozael@gmail.com).
---]]
+--- Defines the `Hook` melee weapon item, a `weapon_base` item for the `weapon_hl2hook` weapon.
 
 ITEM.baseItem = 'weapon_base'
 ITEM.name = 'Hook'

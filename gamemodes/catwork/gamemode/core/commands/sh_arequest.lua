@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/ARequest` command (alias `/AR`), which sends the caller's help request to all online staff and tells
+-- staff callers to use `/A` instead.
 
 local COMMAND = cw.command:New('ARequest')
 COMMAND.tip = '#Command_Arequest_Description'

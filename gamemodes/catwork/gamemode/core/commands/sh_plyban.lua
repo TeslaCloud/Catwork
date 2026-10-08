@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the operator command `/PlyBan` (alias `/Ban`), which bans a player by name, Steam ID or IP address for a
+-- number of minutes, or permanently with a duration of 0.
 
 local COMMAND = cw.command:New('PlyBan')
 COMMAND.tip = '#Command_Plyban_Description'

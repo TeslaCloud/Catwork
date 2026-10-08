@@ -1,10 +1,6 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Main file of the Permanent Doors plugin, which lets admins assign doors to characters for good; exposes the plugin
+-- as `cwPermaDoors`, creates `cwPermaDoors.stored` (door entity to door data) and includes the plugin's server-side
+-- files.
 
 PLUGIN:SetGlobalAlias('cwPermaDoors')
 

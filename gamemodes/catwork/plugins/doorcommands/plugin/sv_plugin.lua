@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server-side functions of the Door Commands plugin that save and restore door parents, door data and door states for
+-- the current map.
+--
+-- The data is kept in the `plugins/parents/<map>`, `plugins/doors/<map>` and `plugins/doorstates/<map>` schema data
+-- files and matched to the map's doors by position. Defines the `default_doors_hidden` and `doors_save_state` config
+-- keys; with the first one on, every door without saved data is hidden.
 
 local IsDoorLocked = cw.entity.IsDoorLocked
 local GetDoorState = cw.entity.GetDoorState

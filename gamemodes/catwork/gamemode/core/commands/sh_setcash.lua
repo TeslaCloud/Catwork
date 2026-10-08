@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the superadmin command `/SetCash`, which sets the target player's cash to an exact amount.
 
 local COMMAND = cw.command:New('SetCash')
 COMMAND.tip = '#Command_Setcash_Description'

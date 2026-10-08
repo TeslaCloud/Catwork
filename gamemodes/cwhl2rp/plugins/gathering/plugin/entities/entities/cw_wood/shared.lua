@@ -1,10 +1,5 @@
---[[
-  Catwork � 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Shared definition of the `cw_wood` entity, a copy of `cw_garbage` that keeps its `Garbage Spawnpoint` name, the
+-- `TYPE_WATERCAN` and `TYPE_SUPPLIES` globals and the networked `index` variable.
 
 DEFINE_BASECLASS('base_gmodentity')
 

@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the 9mm Pistol weapon item, which gives the `sxbase_uspmatch` weapon and is sold to the Elite Metropolice
+-- and Elite Overwatch Soldier classes.
 
 ITEM.baseItem = 'weapon_base'
 ITEM.name = '9mm Pistol'

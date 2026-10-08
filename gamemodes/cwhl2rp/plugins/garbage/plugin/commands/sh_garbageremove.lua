@@ -1,10 +1,5 @@
---[[
-  Catwork � 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/GarbageRemove` command, which removes the garbage spawn points within 50 units of where the admin is
+-- looking.
 
 local COMMAND = cw.command:New('GarbageRemove')
 COMMAND.tip = '#Command_Garbageremove_Description'

@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the Vegetable Oil consumable item (`vegetable_oil`), which deals 5 damage to the player who drinks it and is
+-- not sold in the business menu.
 
 ITEM.name = 'Vegetable Oil'
 ITEM.PrintName = '#ITEM_Vegetable_Oil'

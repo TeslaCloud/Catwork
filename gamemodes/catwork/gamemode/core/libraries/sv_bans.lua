@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the server-side `cw.bans` library, which keeps Steam ID and IP address bans in the database for the current
+-- schema.
+--
+-- `cw.bans:Load` reads them into `cw.bans.stored`, `cw.bans:Add` bans an identifier for a duration and kicks any
+-- matching player, and `cw.bans:Remove` lifts a ban.
 
 library.New('bans', cw)
 

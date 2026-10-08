@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `Weed` item (`weed`) of the Farming plugin, a crafting material with no use of its own.
 
 ITEM.name = 'Weed'
 ITEM.PrintName = '#Item_Weed_PrintName'

@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `Manage Bans` system, a paged list of banned players that can be unbanned with a click.
+--
+-- The page is shown to players with access to `/PlyUnban`. The server sends the bans eight per page over the
+-- `SystemUnbanGet` netstream and unbans through the `PlyUnban` command when it receives `SystemUnbanDo`.
 
 if CLIENT then
   local SYSTEM = cw.system:New()

@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the client-side `cw.menu` library, which creates, opens and closes the main menu and gives access to its tab
+-- panels.
+--
+-- The tabs themselves are registered with `cw.menuitems`.
 
 library.New('menu', cw)
 cw.menu.width = math.min(ScrW() * 0.7, 768)

@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the client-side `cw.character` library, which runs the character menu and the character creation process.
+--
+-- It holds the local player's characters and faction whitelists as sent by the server and the creation steps
+-- registered with `cw.character:RegisterCreationPanel`. The rest opens, closes and navigates the character menu panel,
+-- and the last creation step sends the `CreateCharacter` message.
 
 library.New('character', cw)
 

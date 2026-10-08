@@ -1,9 +1,7 @@
---[[
-  © 2016 TeslaCloud Studios.
-  Private code for Global Cooldown community.
-  Stealing Lua cache is not nice lol.
-  get a life kiddos.
---]]
+--- Defines the STORM Uniform item (`storm_uniform`), a Combine-wearable uniform based on `skin_base` that sets the
+-- player's skin to 3 and gives 10 protection.
+--
+-- Originally written for the Global Cooldown community.
 
 ITEM.baseItem = 'skin_base'
 ITEM.name = 'STORM Uniform'

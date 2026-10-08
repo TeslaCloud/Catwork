@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the superadmin command `/CharGiveItem` (aliases `/PlyGiveItem`, `/GiveItem`), which gives the target
+-- character one to ten instances of an item and requires the `G` flag.
 
 local COMMAND = cw.command:New('CharGiveItem')
 COMMAND.tip = '#Command_Chargiveitem_Description'

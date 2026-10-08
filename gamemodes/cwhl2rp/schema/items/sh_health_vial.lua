@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the Health Vial medical item for the Metropolice Force and Overwatch factions, which heals one and a half
+-- times `Schema:GetHealAmount` and has a Give option that runs the `CharHeal` command on another character.
 
 ITEM.name = 'Health Vial'
 ITEM.PrintName = '#ITEM_Health_Vial'

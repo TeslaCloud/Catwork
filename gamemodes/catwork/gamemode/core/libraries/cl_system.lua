@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the client-side `cw.system` library, the pages of the admin system menu.
+--
+-- A system is created with `cw.system:New`, given a `toolTip`, the `access` flags needed to see it and an `OnDisplay`
+-- function that builds the page, and then registered.
 
 library.New('system', cw)
 

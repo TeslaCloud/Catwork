@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Client side of the `cw_plant` entity, which draws the plant and its target ID.
+--
+-- The target ID shows the plant's name from its seed item and, for players with enough of the Farming attribute, its
+-- maturity as a percentage.
 
 --- Draws the plant's name and, for players with over 25 farming, its maturity percentage.
 function ENT:HUDPaintTargetID(x, y, alpha)

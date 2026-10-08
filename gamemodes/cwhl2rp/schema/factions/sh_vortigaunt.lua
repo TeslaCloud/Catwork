@@ -1,7 +1,5 @@
---[[
-  © 2013 CloudSixteen.com do not share, re-distribute or modify
-  without permission of its author (kurozael@gmail.com).
---]]
+--- Defines the whitelisted Vortigaunt faction (`FACTION_VORT`), with the `vortigaunt` model and a rule that Combine
+-- characters transferred into it need a new name.
 
 local FACTION = faction.New('#Faction_Vort')
 

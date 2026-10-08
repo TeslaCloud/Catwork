@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Adds the Left-Side Menu plugin's `community_name`, `community_link`, `community_button_enable`, `forum_name`,
+-- `forum_link` and `forum_button_enable` config keys to the client's system config menu.
 
 config.AddToSystem('#CommunityName', 'community_name', '#CommunityNameDesc')
 config.AddToSystem('#CommunityLink', 'community_link', '#CommunityLinkDesc')

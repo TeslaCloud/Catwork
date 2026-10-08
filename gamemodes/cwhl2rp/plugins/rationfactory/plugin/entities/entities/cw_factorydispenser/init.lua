@@ -1,7 +1,10 @@
---[[
-  © 2012 Iron-Wall.org do not share, re-distribute or modify
-  without permission of its author (ext@iam1337.ru).
---]]
+--- Server side of the `cw_factorydispenser` entity of the Ration Factory plugin, a button with a pipe that dispenses
+-- the contents of a ration.
+--
+-- Pressing it creates a `breens_water` or a `citizen_supplements` item, depending on the type set with `SetSpawnType`,
+-- with a five second cooldown.
+--
+-- Originally written for the Iron Wall community.
 
 include('shared.lua')
 

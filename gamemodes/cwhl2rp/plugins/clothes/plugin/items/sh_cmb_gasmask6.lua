@@ -1,9 +1,7 @@
---[[
-  © 2016 TeslaCloud Studios.
-  Private code for Global Cooldown community.
-  Stealing Lua cache is not nice lol.
-  get a life kiddos.
---]]
+--- Defines the CmD Mask item (`cmb_gasmask6`), a Combine-wearable mask based on `bodygroup_base` that sets bodygroup 2
+-- to 6 and can only be worn over an item in bodygroup 5, the Protective Collar.
+--
+-- Originally written for the Global Cooldown community.
 
 ITEM.baseItem = 'bodygroup_base'
 ITEM.name = 'gasmask6'

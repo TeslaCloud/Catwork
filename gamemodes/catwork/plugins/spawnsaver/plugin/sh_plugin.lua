@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Entry point of the Spawn Saver plugin, which makes characters spawn where they were last left when the
+-- `spawn_where_left` config is on.
+--
+-- Sets the `cwSpawnSaver` global alias and includes the plugin's client and server files.
 
 --[[
   You don't have to do this, but I think it's nicer.

@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the client-side `cw.salesman` library, which holds the state of the salesman being created or edited in the
+-- `cwSalesman` editor.
+--
+-- The netstream receivers and the editor write the fields straight into the library table; its getters expose the
+-- name, model, sells and buys lists, stock, cash, price scale, buy rate, responses and the factions, classes and flags
+-- allowed to trade.
 
 library.New('salesman', cw)
 

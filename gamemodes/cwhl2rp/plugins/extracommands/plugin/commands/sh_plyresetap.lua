@@ -1,8 +1,5 @@
---[[
-  © 2016 TeslaCloud Studios.
-  Feel free to use, edit or share the plugin, but
-  do not re-distribute without the permission of it's author.
---]]
+--- Registers the admin command `/PlyResetArmor` of the Extra Commands plugin, which sets the target player's armor to
+-- 100.
 
 local COMMAND = cw.command:New('PlyResetArmor')
 COMMAND.tip = '#Command_Plyresetarmor_Description'

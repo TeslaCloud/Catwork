@@ -1,10 +1,11 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the shared kernel: the `cw.core` library, the `library` and `Class` helpers and a set of global utility
+-- functions.
+--
+-- `cw.core` holds the file and plugin includers (also exposed as `util.Include` and `util.IncludeDirectory`),
+-- `cw.core:Serialize` and `cw.core:Deserialize`, console logging filtered by `cw.LogLevel`, and string, table and
+-- color helpers. The file also replaces the engine `Color` so that it accepts hex strings and CSS color names, adds
+-- helpers such as `string.MakeID`, `typeof` and `util.WaitForEntity`, and creates the timers that run the
+-- `HalfSecond`, `OneSecond`, `OneMinute` and `LazyTick` hooks.
 
 cw.core = cw.core or {}
 library = library or {}

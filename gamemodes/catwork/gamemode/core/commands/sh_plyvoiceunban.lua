@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the operator command `/PlyVoiceUnban` (aliases `/VoiceUnban`, `/PlyUnbanVoice`), which lifts the target
+-- player's voice chat ban.
 
 local COMMAND = cw.command:New('PlyVoiceUnban')
 COMMAND.tip = '#Command_Plyvoiceunban_Description'

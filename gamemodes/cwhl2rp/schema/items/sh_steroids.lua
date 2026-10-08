@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the Steroids medical item, which refills stamina and boosts strength by 30 for seven minutes.
 
 ITEM.name = 'Steroids'
 ITEM.PrintName = '#ITEM_Steroids'

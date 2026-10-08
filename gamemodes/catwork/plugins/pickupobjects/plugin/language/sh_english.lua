@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- English (`en`) language strings of the Pickup Objects plugin, covering the dragged notice, the drop instruction of
+-- the hands and the `take_physcannon` config.
 
 local lang = cw.lang:GetTable('en')
 

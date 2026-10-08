@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server-side hooks of the Karma plugin that start characters without `karma` data at 0 and network a character's
+-- karma when the player spawns.
 
 --- Called when a character's data is restored; starts characters without karma at 0.
 -- @param player [Player The player whose character is loading]

@@ -1,9 +1,7 @@
---[[
-  © 2016 TeslaCloud Studios.
-  Private code for Global Cooldown community.
-  Stealing Lua cache is not nice lol.
-  get a life kiddos.
---]]
+--- Defines the Protective Collar item (`cmb_vorotnik`), a Combine-wearable neck piece based on `bodygroup_base` that
+-- sets bodygroup 5 to 1 and gives 30 protection, and which the Combine masks require.
+--
+-- Originally written for the Global Cooldown community.
 
 ITEM.baseItem = 'bodygroup_base'
 ITEM.name = 'vorotnik'

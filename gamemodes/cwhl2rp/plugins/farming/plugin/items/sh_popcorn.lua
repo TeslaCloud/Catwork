@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `Popcorn` item (`popcorn`) of the Farming plugin, a food item that restores 25 hunger and leaves an
+-- `empty_carton`.
 
 ITEM.name = 'Popcorn'
 ITEM.PrintName = '#Item_Popcorn_PrintName'

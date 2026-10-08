@@ -1,7 +1,11 @@
---[[
-  © 2012 Iron-Wall.org do not share, re-distribute or modify
-  without permission of its author (ext@iam1337.ru).
---]]
+--- Defines the save and load functions of the Ration Factory plugin for its three dispenser entities.
+--
+-- `cw_factorydispenser` and `cw_bigfactorydispenser` keep their position, angles and spawn type, and
+-- `cw_factoryrationdispenser` its position, angles, ration count and lock state. Each class is stored for the current
+-- map in its own file under `plugins/factorydispensers/`, `plugins/bigfactorydispensers/` and
+-- `plugins/factoryrationdispensers/`.
+--
+-- Originally written for the Iron Wall community.
 
 --- Saves the position, angles and spawn type of every `cw_factorydispenser` on the map.
 --

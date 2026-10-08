@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Client entry point of the Catwork gamemode, which creates the global `cw` table and loads the framework.
+--
+-- Includes the third-party `utf8`, `pon`, `netstream` and `md5` libraries when they are not loaded yet, then `cw.lua`
+-- and `shared.lua`.
 
 cw = cw or {}
 

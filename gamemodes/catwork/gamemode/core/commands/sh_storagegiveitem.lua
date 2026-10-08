@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/StorageGiveItem` command, which moves an item instance from the caller's inventory into the storage
+-- they have open.
 
 local COMMAND = cw.command:New('StorageGiveItem')
 COMMAND.tip = '#Command_Storagegiveitem_Description'

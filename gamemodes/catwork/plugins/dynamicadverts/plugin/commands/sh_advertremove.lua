@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/AdvertRemove` admin command, which removes the adverts within 256 units of where the player is
+-- looking.
 
 local COMMAND = cw.command:New('AdvertRemove')
 COMMAND.tip = '#Command_Advertremove_Description'

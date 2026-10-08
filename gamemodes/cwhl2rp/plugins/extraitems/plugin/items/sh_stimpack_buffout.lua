@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `Buffout` stimpack item (`stimpack_buffout`), an injection that clears fatigue and boosts strength by
+-- 100 for 600 seconds, together with its English and Russian strings.
 
 ITEM.name = 'Buffout'
 ITEM.PrintName = '#ITEM_Buff'

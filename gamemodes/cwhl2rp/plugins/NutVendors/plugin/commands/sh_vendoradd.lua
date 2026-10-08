@@ -1,7 +1,4 @@
---[[
-  © 2013 CloudSixteen.com do not share, re-distribute or modify
-  without permission of its author (kurozael@gmail.com).
---]]
+--- Registers the `/NutVendorAdd` admin command, which spawns a `nut_vend` vending machine where the player is looking.
 
 local COMMAND = cw.command:New('NutVendorAdd')
 COMMAND.tip = '#Command_Nutvendoradd_Description'

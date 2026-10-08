@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `accessory_base` base item for accessories, wearable items shown attached to a bone of the player's
+-- model.
+--
+-- Using the item wears it, unless its optional `CanPlayerWear` refuses, and unequipping takes it off; it cannot be
+-- dropped while worn. By default it attaches to the head bone.
 
 ITEM.isBaseItem = true
 ITEM.name = 'Accessory Base'

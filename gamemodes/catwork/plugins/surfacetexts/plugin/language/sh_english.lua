@@ -1,8 +1,7 @@
---[[
-  Rework © 2016-2017 TeslaCloud Studios
-  Do not share or re-distribute before
-  the framework is publicly released.
---]]
+--- English language strings for the Surface Texts plugin: its `texts` tool, its notifications and the descriptions of
+-- `/TextAdd` and `/TextRemove`.
+--
+-- Backported from the [Flux](https://github.com/TeslaCloud/flux-ce) project.
 
 local lang = cw.lang:GetTable('en')
 

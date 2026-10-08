@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Shared definition of the `cw_radio` entity (print name Radio), with its off state data table variable and the
+-- `ENT:GetFrequency` and `ENT:IsOff` getters.
 
 DEFINE_BASECLASS('base_gmodentity')
 

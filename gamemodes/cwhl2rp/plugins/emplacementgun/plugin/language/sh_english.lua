@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- English language strings of the Emplacement Gun plugin: the `/EmplacementAdd` description and the gun's
+-- notifications.
 
 local lang = cw.lang:GetTable('en')
 

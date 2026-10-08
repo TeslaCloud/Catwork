@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the superadmin command `/PlySearch`, which opens the target player's inventory and cash for the caller as
+-- a `cw.storage` storage.
 
 local COMMAND = cw.command:New('PlySearch')
 COMMAND.tip = '#Command_Plysearch_Description'

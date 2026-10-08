@@ -1,8 +1,5 @@
---[[
-  © 2017 TeslaCloud Studios.
-  Feel free to use, edit or share the plugin, but
-  do not re-distribute without the permission of it's author.
---]]
+--- Registers the `/SetCharData` superadmin command (aliases `/CharSetData` and `/SetCharacterData`), which sets a
+-- character data key on a target player and can only be run by Catwork developers.
 
 local COMMAND = cw.command:New('SetCharData')
 COMMAND.tip = '#Command_Setchardata_Description'

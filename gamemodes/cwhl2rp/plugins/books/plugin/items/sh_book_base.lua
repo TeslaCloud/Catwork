@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `book_base` base item that every book item derives from.
+--
+-- Using a book places it in the world as a `cw_book` entity owned by the player, and `OnSetup` turns the item's
+-- `bookInformation` text into the HTML shown by the `cwViewBook` panel. Books are in the Literature category and sold
+-- under the `3` access flag.
 
 ITEM.isBaseItem = true
 ITEM.name = 'Book Base'

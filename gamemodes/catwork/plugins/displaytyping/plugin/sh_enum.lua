@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `TYPING_*` constants stored in the `Typing` net var of the Display Typing plugin.
 
 TYPING_WHISPER = 6
 TYPING_PERFORM = 5

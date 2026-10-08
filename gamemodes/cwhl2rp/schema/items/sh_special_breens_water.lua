@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the Special Breen's Water drink item, which restores full stamina and 8 health, boosts agility and stamina
+-- by 3 for two minutes, leaves an empty soda can and hides its Drink option from Combine players.
 
 ITEM.name = "Special Breen's Water"
 ITEM.PrintName = '#ITEM_Special_Breens_Water'

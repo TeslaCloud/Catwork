@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the server-side `cw.hint` library, which sends hint text to players and keeps the list of gameplay hints
+-- shown at random.
+--
+-- `cw.hint:Send` and `cw.hint:SendCenter` show a hint to one player, and `cw.hint:Distribute` sends a random
+-- registered hint to every player who wants hints. The file adds the framework's default hints.
 
 library.New('hint', cw)
 

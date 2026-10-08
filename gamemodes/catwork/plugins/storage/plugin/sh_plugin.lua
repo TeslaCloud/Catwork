@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Entry point of the Storage plugin, which turns props with certain models into containers that hold items and cash.
+--
+-- Sets the `cwStorage` global alias, includes the plugin's files and defines `cwStorage.containerList`, which maps
+-- each container model to its weight capacity and its name.
 
 --[[
   You don't have to do this, but I think it's nicer.

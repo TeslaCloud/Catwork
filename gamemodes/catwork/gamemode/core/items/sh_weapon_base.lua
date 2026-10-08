@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `weapon_base` base item for weapons: using one gives the player its `weaponClass`, and unequipping
+-- holsters it back into the inventory or drops it.
+--
+-- Instances keep their loaded clips in the networked `ClipOne` and `ClipTwo` data. `OnSetup` fills in the ammo classes
+-- and default ammo from the SWEP table, or from a built-in list for the Half-Life 2 weapons, and the
+-- `PlayerCanHolsterWeapon` and `PlayerCanDropWeapon` hooks gate unequipping.
 
 ITEM.isBaseItem = true
 ITEM.name = 'Weapon Base'

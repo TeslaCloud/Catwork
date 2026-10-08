@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `Banana` item (`banana`) of the Farming plugin, a food item that restores 10 hunger.
 
 ITEM.name = 'Banana'
 ITEM.PrintName = '#Item_Banana_PrintName'

@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the default `Clockwork` theme and the `Clockwork` derma skin.
+--
+-- `THEME:CreateFonts` adds the framework's fonts through `cw.fonts`, `THEME:Initialize` sets the default icons,
+-- colors, fonts and sounds through `cw.option` and the size of the `cw.bars` bars, and `THEME.skin` holds the `Paint*`
+-- functions passed to `derma.DefineSkin`. The character menu and main menu callbacks in `THEME.hooks` do nothing in
+-- this theme.
 
 local THEME = cw.theme:New('Clockwork')
 

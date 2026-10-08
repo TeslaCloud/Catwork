@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `cw.dermaRequest` library, which lets the server show a player a Derma text prompt, confirmation query
+-- or message box and receive the answer.
+--
+-- `cw.dermaRequest:RequestString` and `cw.dermaRequest:RequestConfirmation` take a callback that runs on the server
+-- once the client answers over the `dermaRequestCallback` message.
 
 library.New('dermaRequest', cw)
 

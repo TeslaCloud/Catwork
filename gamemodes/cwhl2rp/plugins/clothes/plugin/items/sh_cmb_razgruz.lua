@@ -1,9 +1,7 @@
---[[
-  © 2016 TeslaCloud Studios.
-  Private code for Global Cooldown community.
-  Stealing Lua cache is not nice lol.
-  get a life kiddos.
---]]
+--- Defines the Load-Bearing Vest item (`cmb_razgruz`), a Combine-wearable gear item based on `bodygroup_base` that sets
+-- bodygroup 3 to 1 and gives 25 protection.
+--
+-- Originally written for the Global Cooldown community.
 
 ITEM.baseItem = 'bodygroup_base'
 ITEM.name = 'razgruz'

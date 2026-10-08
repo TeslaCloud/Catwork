@@ -1,10 +1,6 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Entry point of the Spawn Points plugin, which lets admins set spawn points per class, per faction or as a default.
+--
+-- Sets the `cwSpawnPoints` global alias and includes the plugin's server and client files.
 
 --[[
   You don't have to do this, but I think it's nicer.

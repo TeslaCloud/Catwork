@@ -1,8 +1,9 @@
---[[
-  LightFlare © 2016-2017 TeslaCloud Studios
-  Do not share or re-distribute before
-  the framework is publicly released.
---]]
+--- Client-side hooks of the Surface Texts plugin that draw the stored 3D texts and a preview for the `texts` tool.
+--
+-- `PostDrawOpaqueRenderables` draws every text within range with `cam.Start3D2D`, fading it out with distance and
+-- layering shadows and a background box according to its style (1 to 6).
+--
+-- Backported from the [Flux](https://github.com/TeslaCloud/flux-ce) project.
 
 --- Called after opaque renderables are drawn; draws the surface texts and the text tool's preview.
 --

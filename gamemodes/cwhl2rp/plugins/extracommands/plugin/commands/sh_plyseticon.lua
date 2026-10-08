@@ -1,8 +1,5 @@
---[[
-  © 2017 TeslaCloud Studios.
-  Feel free to use, edit or share the plugin, but
-  do not re-distribute without the permission of it's author.
---]]
+--- Registers the superadmin command `/PlySetIcon` of the Extra Commands plugin, which gives the target player a custom
+-- PNG icon from a local path or a URL and sends it to clients.
 
 local COMMAND = cw.command:New('PlySetIcon')
 COMMAND.tip = '#Command_Plyseticon_Description'

@@ -1,10 +1,10 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `cw.lang` library and the global `L` function, which translate `#Phrase` identifiers into the player's
+-- language.
+--
+-- Language files fill the table returned by `cw.lang:GetTable`. On the client `L` translates directly, and
+-- `surface.DrawText`, `surface.GetTextSize` and `Panel:SetText` are wrapped to translate phrases automatically; on the
+-- server `L` only builds a `#Identifier:arg1,arg2;` string for the client to translate. The language follows the
+-- `cwLanguage` console variable, or the game's language when it is empty.
 
 library.New('lang', cw)
 

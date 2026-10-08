@@ -1,7 +1,5 @@
---[[
-  © 2013 CloudSixteen.com do not share, re-distribute or modify
-  without permission of its author (kurozael@gmail.com).
---]]
+--- Defines the Beer Bad item on `alcohol_base`, shown as Low-Quality Beer, which heals 10 health, boosts agility by 12
+-- for two minutes and leaves an empty glass bottle.
 
 ITEM.baseItem = 'alcohol_base'
 ITEM.name = 'Beer Bad'

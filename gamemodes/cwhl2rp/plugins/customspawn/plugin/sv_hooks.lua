@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server-side hooks of the Custom Spawn plugin that move a player to their character's `CustomSpawn` position on
+-- spawn.
+--
+-- `PostPlayerSpawn` teleports the player and restores the saved eye angles on full spawns, when the point was set on
+-- the current map. `ShouldSavePlayerSpawn` stops the spawn saver from storing a position for characters that have a
+-- custom spawn.
 
 --- Called when the spawn saver wants to store where a player left; skipped for characters with a custom spawn.
 -- @param player [Player The player whose position would be saved]

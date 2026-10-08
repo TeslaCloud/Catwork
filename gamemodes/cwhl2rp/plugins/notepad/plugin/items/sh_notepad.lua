@@ -1,7 +1,5 @@
---[[
-  © 2012 CloudSixteen.com do not share, re-distribute or modify
-  without permission of its author (kurozael@gmail.com).
---]]
+--- Defines the `Notepad` item of the Notepad plugin, which places a blank `cw_notepad` entity owned by the player where
+-- they are looking.
 
 ITEM.name = 'Notepad'
 ITEM.PrintName = '#Notepad_Title'

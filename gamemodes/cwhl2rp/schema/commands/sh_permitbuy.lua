@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers `/PermitBuy`, which lets a citizen buy a business permit while the `permits` config is enabled.
+--
+-- `business` costs the `business_cost` config and gives the `x` flag. With that flag, `generalgoods` gives the `1`
+-- flag and a `Schema.customPermits` name gives that permit's flag, each priced at the summed cost of the items it
+-- unlocks.
 
 local COMMAND = cw.command:New('PermitBuy')
 COMMAND.tip = '#Command_Permitbuy_Description'

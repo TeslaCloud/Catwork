@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the superadmin command `/CharSetFlags`, which replaces the target character's flags with the given ones,
+-- admin flags excluded.
 
 local COMMAND = cw.command:New('CharSetFlags')
 COMMAND.tip = '#Command_Charsetflags_Description'

@@ -1,8 +1,10 @@
---[[
-  Flux © 2016-2017 TeslaCloud Studios
-  Do not share or re-distribute before
-  the framework is publicly released.
---]]
+--- Defines the global `pipeline` library, which lets a system register its content from a folder of Lua files.
+--
+-- `pipeline.Register` stores a callback under a pipeline ID, and `pipeline.Include` and `pipeline.IncludeDirectory`
+-- call it for each file with a unique ID derived from the file name (extension and `cl_`, `sh_` or `sv_` prefix
+-- removed).
+--
+-- Backported from the [Flux](https://github.com/TeslaCloud/flux-ce) project.
 
 --[[
   Pipeline library lets you create systems that register their stuff via folders.

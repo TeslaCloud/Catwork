@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server side of the `cw_breach` entity, a padlock-shaped charge that is attached to a door and breaches it when
+-- destroyed.
+--
+-- `ENT:SetBreachEntity` parents the breach to its target and gives it 5 health. When damage brings that to 0 it leaves
+-- a broken padlock prop, plays its effect and runs the `EntityBreached` hook for the target.
 
 include('shared.lua')
 

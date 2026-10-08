@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/Observer` operator command, which makes the player enter or leave observer mode.
 
 local COMMAND = cw.command:New('Observer')
 COMMAND.tip = '#Command_Observer_Description'

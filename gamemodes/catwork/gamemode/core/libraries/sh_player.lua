@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Shared part of the `cw.player` library: registration of networked player and character data types, player net vars
+-- and faction rank checks.
+--
+-- `cw.player:AddPlayerData` and `cw.player:AddCharacterData` declare data that is networked when it changes,
+-- `player.Find` finds a player by name or Steam ID, and `cw.player:CanPromote` and `cw.player:CanDemote` compare
+-- faction ranks. This file creates the library, which `cl_player.lua` and `sv_player.lua` extend.
 
 if cw.player then return end
 

@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the Ration Packet item (`ration_normal`), which is opened for 30 tokens, citizen supplements and a Breen's
+-- water and fires the `PlayerUseRation` hook.
 
 ITEM.name = 'Ration Packet'
 ITEM.PrintName = '#ITEM_Normal_Tier_Ration_Packet'

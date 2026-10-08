@@ -1,7 +1,11 @@
---[[
-  © 2012 Iron-Wall.org do not share, re-distribute or modify
-  without permission of its author (ext@iam1337.ru).
---]]
+--- Server side of the `cw_factoryrationdispenser` entity of the Ration Factory plugin, a Combine ration dispenser that
+-- hands out the rations loaded into it.
+--
+-- Citizens who use it get a ration when it is unlocked, stocked and their `nextration` time has passed;
+-- `ActivateRation` picks the ration's quality and delay from the `civ_reputation` character data. Combine players load
+-- a `ration_standard` from their inventory into it, or toggle its lock when they carry none.
+--
+-- Originally written for the Iron Wall community.
 
 include('shared.lua')
 

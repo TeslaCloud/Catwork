@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Shared boot script that sets the gamemode info and loads the whole framework in order.
+--
+-- Sets `GM.Name`, the version, `cw.Schema`, `cw.DebugMode` and `cw.LogLevel`, then includes the kernels, libraries,
+-- config, plugins, systems, items, derma and hooks, loads the schema and finally the commands and entities. On the
+-- server it writes `CW_SCRIPT_SHARED` to `lua/cw.lua` for clients. Also defines `GM:GetGameDescription` and the
+-- server-side `SimpleBan`, which applies a few hard-coded bans at boot.
 
 -- Name conflict fixes.
 _player, _team, _file, _sound = player, team, file, sound

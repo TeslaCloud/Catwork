@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the book item The Cat Strangler (`book_tcs`), a purchasable short story.
 
 ITEM.baseItem = 'book_base'
 ITEM.cost = 8

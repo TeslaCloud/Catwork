@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the Melon food item, which heals 10 health and boosts acrobatics and agility by 2 for two minutes.
 
 ITEM.name = 'Melon'
 ITEM.PrintName = '#ITEM_Melon'

@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Client-side code of the Craft plugin that opens the `cwCraft` menu and decides which blueprints it lists.
+--
+-- The `Craft::OpenMenu` netstream creates the menu for a crafting station, and `cwCraft:PlayerCanSeeCraft` hides
+-- blueprints whose attribute requirements are well above the player's attributes.
 
 --- Checks whether the local player may see a blueprint in the craft menu.
 --

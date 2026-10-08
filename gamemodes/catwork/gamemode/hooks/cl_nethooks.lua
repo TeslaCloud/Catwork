@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Client-side netstream receivers for the framework's core messages.
+--
+-- Handles shared variables and tables (`SharedVar`, `SharedTables`), `Notification`, `Hint`, `CinematicText`, sounds
+-- (`StartSound`, `StopSound`, `PlaySound`), the recognition and quiz messages, accessories, `Log`, `CfgListVars`, the
+-- `ClockworkIntro` and the `DataStreaming` and `DataStreamed` steps of the join handshake.
 
 netstream.Hook('RunCommand', function(data)
   -- Never let network data reach the cwLua (RunString) developer command.

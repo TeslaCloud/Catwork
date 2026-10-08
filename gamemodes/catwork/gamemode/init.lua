@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server entry point of the Catwork gamemode.
+--
+-- Requires the `file` binary module (gmsv_file) and aborts start-up without it, sends and includes the third-party
+-- libraries (UTF-8, pON, netstream and MD5), then includes `shared.lua` and prints how long the boot or AutoRefresh
+-- took. Defines the global `GetTimeSinceBoot`.
 
 cw = cw or {}
 

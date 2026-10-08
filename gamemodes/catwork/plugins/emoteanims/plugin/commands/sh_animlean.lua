@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/AnimLean` command, which toggles a human or Civil Protection character leaning back against the wall
+-- behind them, with optional `ArmsBack` and `ArmsDown` poses, and adds it to the Emotes category of the quick menu.
 
 local COMMAND = cw.command:New('AnimLean')
 COMMAND.tip = '#Command_Animlean_Description'

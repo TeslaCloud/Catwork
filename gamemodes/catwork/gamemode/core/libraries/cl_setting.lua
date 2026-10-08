@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the client-side `cw.setting` library, the controls of the settings menu, each bound to a console variable.
+--
+-- There is one function per control type (slider, drop-down list, number box, text box, check box and color picker),
+-- each taking a category, a label, a tooltip and an optional condition. `cw.setting:AddSettings` adds Catwork's own
+-- settings.
 
 library.New('setting', cw)
 

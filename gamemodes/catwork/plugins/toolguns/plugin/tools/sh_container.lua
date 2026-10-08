@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `containertool` toolgun, an admin tool that fills a container with random items or sets its message,
+-- name or password.
+--
+-- Left click runs the mode picked in the tool's control panel on the container under the crosshair, doing what
+-- `/ContFill`, `/ContSetMessage`, `/ContSetName` and `/ContSetPassword` do. The tool is only registered when the
+-- Storage plugin is loaded and enabled.
 
 local TOOL = cw.tool:New()
 

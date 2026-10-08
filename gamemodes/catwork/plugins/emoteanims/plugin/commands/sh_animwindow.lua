@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/AnimWindow` command, which toggles a human character looking out of the window or wall they are
+-- facing, and adds it to the Emotes category of the quick menu.
 
 local COMMAND = cw.command:New('AnimWindow')
 COMMAND.tip = '#Command_Animwindow_Description'

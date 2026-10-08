@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers `/CharSearch`, which opens the inventory and cash of the tied, motionless character being looked at as a
+-- `cw.storage` container.
+--
+-- The target must be within 192 units and the searcher must not be tied. Taking or giving the clothes item a character
+-- is wearing also takes the clothes off.
 
 local COMMAND = cw.command:New('CharSearch')
 COMMAND.tip = '#Command_Charsearch_Description'

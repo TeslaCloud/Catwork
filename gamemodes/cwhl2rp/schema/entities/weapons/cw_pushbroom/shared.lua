@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `cw_pushbroom` weapon, a push broom for sweeping rubbish that has no view model and shows a broom prop
+-- in the owner's hand instead.
+--
+-- While it is raised the server forces the owner's sweeping, idle or walking broom animation, and primary fire plays a
+-- two second sweep. Its print name and instructions are hard-coded in Russian.
 
 if SERVER then
   AddCSLuaFile('shared.lua')

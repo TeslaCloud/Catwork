@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the superadmin command `/CharCheckFlags` (alias `/CheckFlags`), which shows the caller the target
+-- character's flags.
 
 local COMMAND = cw.command:New('CharCheckFlags')
 COMMAND.tip = '#Command_Charcheckflags_Description'

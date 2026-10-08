@@ -1,8 +1,11 @@
---[[
-  LightFlare © 2016-2017 TeslaCloud Studios
-  Do not share or re-distribute before
-  the framework is publicly released.
---]]
+--- Client-side functions of the Surface Texts plugin that receive the text list from the server and find the text under
+-- the crosshair for removal.
+--
+-- The `cwLoad3DTexts`, `cw3DText_Add` and `cw3DText_Remove` netstreams keep `cwSurfaceTexts.stored` in sync, and
+-- `cwSurfaceTexts:RemoveAtTrace` asks the server to remove the text a trace runs through.
+--
+-- Backported from the [Flux](https://github.com/TeslaCloud/flux-ce) project.
+
 netstream.Hook('cwLoad3DTexts', function(data)
   cwSurfaceTexts.stored = data or {}
 end)

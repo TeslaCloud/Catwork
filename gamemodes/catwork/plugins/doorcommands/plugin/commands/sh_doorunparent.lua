@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/DoorUnparent` command, which removes the parent of the door the player is looking at.
 
 local COMMAND = cw.command:New('DoorUnparent')
 COMMAND.tip = '#Command_Doorunparent_Description'

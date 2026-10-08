@@ -1,10 +1,10 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `cw.entity` library, helpers for entities in general and for doors, ragdolls, property and item entities
+-- in particular.
+--
+-- The shared part classifies entities and checks lines of sight. The server part manages doors (names, text, parents,
+-- ownability, opening and blasting them), tracks which character owns an entity, and spawns `cw_item`, `cw_cash` and
+-- `cw_shipment` entities. The client part fetches the item of an item entity over the `FetchItemData` message and
+-- works out where door text is drawn.
 
 library.New('entity', cw)
 

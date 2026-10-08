@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the superadmin command `/PlyTakeAccess` (alias `/TakeAccess`), which removes the target player's
+-- permission to use a command.
 
 local COMMAND = cw.command:New('PlyTakeAccess')
 COMMAND.tip = '#Command_Plytakeaccess_Description'

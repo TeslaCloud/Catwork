@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server-side hooks of the Flashlight plugin that stop players without a flashlight from switching theirs on and turn
+-- it off once they no longer have one.
 
 local PLUGIN = PLUGIN
 

@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `cw.attributes` library, which reads and changes the attribute values, progress and boosts of players.
+--
+-- On the server it updates, progresses and boosts a player's attributes and networks the changes. On the client it
+-- keeps the local player's values up to date from the `AttrUpdate`, `AttributeProgress`, `AttrBoost`, `AttrBoostClear`
+-- and `AttrClear` messages.
 
 library.New('attributes', cw)
 

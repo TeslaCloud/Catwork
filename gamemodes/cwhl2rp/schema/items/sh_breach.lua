@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the Breach item, which places a `cw_breach` charge on the entity the player is looking at when the
+-- `PlayerCanBreachEntity` hook allows it.
 
 ITEM.name = 'Breach'
 ITEM.PrintName = '#ITEM_Breach'

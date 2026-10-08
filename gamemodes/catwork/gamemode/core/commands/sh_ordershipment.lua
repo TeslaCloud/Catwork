@@ -1,10 +1,8 @@
+--- Disabled `/OrderShipment` command, which ordered a shipment of an item to where the player is looking.
+--
+-- The whole file is commented out.
+
 --[[
-  Catwork © 2016 Some good coders
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
-
 local COMMAND = cw.command:New("OrderShipment")
 COMMAND.tip = "#Command_Ordershipment_Description"
 COMMAND.text = "#Command_Ordershipment_Syntax"

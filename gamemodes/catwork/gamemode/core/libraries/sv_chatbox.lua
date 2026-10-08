@@ -1,7 +1,11 @@
---[[
-  (C) TeslaCloud Studios LLC.
-  For internal use only.
---]]
+--- Defines the server-side half of the global `chatbox` library, which processes what players type and decides who
+-- receives each chat message.
+--
+-- Prefixes registered with `chatbox.AddPrefix` (`//`, `.//`, `[[`, `/`, `/?`, `@` and `<sys>` are built in) classify
+-- typed text as OOC, local OOC, a command and so on, and filters registered with `chatbox.AddFilter` pick the
+-- listeners. `chatbox.AddText` builds and sends a message from code and `chatbox.SayAsPlayer` speaks for a player. The
+-- `ChatboxTextEntered` receiver runs commands, applies the `ooc_interval` and `looc_interval` configs, and kicks
+-- players who type one of a hard-coded list of insults about the server.
 
 library.New('chatbox', _G)
 // Chatbox prefixes for serverside processing. Will be networked to clients for message styling.

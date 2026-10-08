@@ -1,7 +1,4 @@
---[[
-  ? 2011 CloudSixteen.com do not share, re-distribute or modify
-  without permission of its author (kurozael@gmail.com).
---]]
+--- Defines the Tea drink item, which heals 5 health and boosts endurance and strength by 1 for two minutes.
 
 ITEM.name = 'Tea'
 ITEM.PrintName = '#Item_Tea_PrintName'

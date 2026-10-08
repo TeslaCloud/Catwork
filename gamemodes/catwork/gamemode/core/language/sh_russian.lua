@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Russian (`ru`) phrases of the Catwork framework, added to the table returned by `cw.lang:GetTable`.
 
 local lang = cw.lang:GetTable('ru')
 

@@ -1,8 +1,8 @@
---[[
-  © 2016 TeslaCloud Studios.
-  Feel free to use, edit or share the plugin, but
-  do not re-distribute without the permission of it's author.
---]]
+--- Main file of the Left-Side Menu plugin, which replaces the framework's main character menu; includes the plugin's
+-- server and client files and overrides `cw.core:DrawBackgroundBlurs`.
+--
+-- The override draws the screen blur behind the registered background blur panels with a lighter, blue-tinted overlay
+-- than the framework's version.
 
 local PLUGIN = PLUGIN
 

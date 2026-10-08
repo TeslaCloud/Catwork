@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `Tomato Seeds` item (`seed_tomato`), a `seeds_base` item whose plant ripens in 1800 to 3000 seconds and
+-- yields `seed_tomato` and `tomato`.
 
 ITEM.baseItem = 'seeds_base'
 ITEM.name = 'Tomato Seeds'

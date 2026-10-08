@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/DropCash` command (alias `/DropTokens`), which drops the given amount of the caller's cash as a cash
+-- entity where they are looking.
 
 local NAME_CASH = cw.option:GetKey('name_cash')
 

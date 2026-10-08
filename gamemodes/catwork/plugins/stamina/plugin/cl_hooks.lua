@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Client-side hook of the Stamina plugin that adds the stamina bar to the HUD.
+--
+-- The bar is shown while stamina is below 95, eases towards the `Stamina` net var and has its limit lowered by the
+-- `Fatigue` net var.
 
 --- Called to collect the HUD bars; adds the stamina bar, with fatigue as its limit, while stamina is below 95.
 --

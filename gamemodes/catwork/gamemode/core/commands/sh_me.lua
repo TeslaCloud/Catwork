@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/Me` command (alias `/Perform`), which prints a roleplay action of the caller's character in the chat
+-- of nearby players.
 
 local COMMAND = cw.command:New('Me')
 COMMAND.tip = '#Commands_MeDesc'

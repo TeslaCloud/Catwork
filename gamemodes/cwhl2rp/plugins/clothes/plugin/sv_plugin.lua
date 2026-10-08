@@ -1,9 +1,14 @@
---[[
-  © 2016 TeslaCloud Studios.
-  Private code for Global Cooldown community.
-  Stealing Lua cache is not nice lol.
-  get a life kiddos.
---]]
+--- Server side of the Extra Clothing plugin: the player methods that wear and take off bodygroup and skin clothing, and
+-- the hooks that apply its protection.
+--
+-- `Player:SetBodygroupClothes` and `Player:SetSkinClothes` track the worn items in `player.bgClothesData` and
+-- `player.skinClothesData` and send them to the client with the `BGClothes` and `SkinClothes` netstreams.
+-- `EntityTakeDamage` reduces non-fall damage by the summed `protection` of the worn items, capped at 60 percent, when
+-- the player wears no model-replacing clothes item, and lets `radProtection` clothes block everything but bullets,
+-- explosions and falls. The clothing is cleared when the character is unloaded and the bodygroups are reapplied when
+-- the player gets up from a ragdoll.
+--
+-- Originally written for the Global Cooldown community.
 
 local maxArmorValue = 60
 

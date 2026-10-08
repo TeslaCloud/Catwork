@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the Metropolice Unit class as `CLASS_MPU`, the default class of `FACTION_MPF`, with wages of 10.
 
 local CLASS = cw.class:New('#Class_MPF')
   CLASS.color = Color(50, 100, 150, 255)

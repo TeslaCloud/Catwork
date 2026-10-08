@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the global `config` library, the framework's saved and networked configuration keys.
+--
+-- The server declares a key and its default with `config.Add`, and `config.Get(key)` returns an object with `Get`,
+-- `Set`, `GetNumber`, `GetDefault` and similar methods. Changed values are saved per schema or globally, shared keys
+-- are sent to clients over the `Config` message, and the client lists keys in the config system menu with
+-- `config.AddToSystem`.
 
 if config and !cw.DebugMode then return end
 

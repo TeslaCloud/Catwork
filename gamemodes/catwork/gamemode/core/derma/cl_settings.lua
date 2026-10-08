@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `cwSettings` menu tab, which builds a form of controls for each category of client settings in
+-- `cw.setting.stored`.
+--
+-- Each setting gets the control for its class (number slider, multi choice, number wang, text entry, check box or
+-- color mixer), bound to its console variable.
 
 local PANEL = {}
 

@@ -1,8 +1,6 @@
---[[
-  LightFlare © 2016-2017 TeslaCloud Studios
-  Do not share or re-distribute before
-  the framework is publicly released.
---]]
+--- Server-side hooks of the Surface Texts plugin that load and save the texts and send them to joining players.
+--
+-- Backported from the [Flux](https://github.com/TeslaCloud/flux-ce) project.
 
 --- Called when a player's data stream info should be sent; sends them every surface text.
 --

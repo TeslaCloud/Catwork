@@ -1,8 +1,6 @@
---[[
-  © 2014 TeslaCloud Studios.
-  Feel free to use, edit or share the plugin, but
-  do not re-distribute without the permission of it's author.
---]]
+--- Registers the `/NameSay` command, which makes the player introduce themselves by name in a full sentence in
+-- character (as a unit for Combine) and, when the `apply_recognise_enable` config is on, makes players within talk
+-- radius recognise them.
 
 local COMMAND = cw.command:New('NameSay')
 COMMAND.tip = '#Command_Namesay_Description'

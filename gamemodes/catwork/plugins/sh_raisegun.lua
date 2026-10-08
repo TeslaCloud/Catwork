@@ -1,8 +1,12 @@
---[[
-  Flux © 2016-2017 TeslaCloud Studios
-  Do not share or re-distribute before
-  the framework is publicly released.
---]]
+--- Single-file Raise Gun plugin, which lets players raise and lower their weapons by holding reload for one second and
+-- stops lowered weapons from firing.
+--
+-- It adds `Player:SetWeaponRaised`, `Player:IsWeaponRaised` and `Player:ToggleWeaponRaised`, networks the state as the
+-- `BOOL_WEAPON_RAISED` data table variable and runs the `OnWeaponRaised`, `ShouldWeaponBeRaised` and
+-- `CanWeaponBeToggled` hooks. On the client, `CalcViewModelView` tilts the view model away while the weapon is
+-- lowered.
+--
+-- Backported from the [Flux](https://github.com/TeslaCloud/flux-ce) project.
 
 PLUGIN.name = 'Raise Gun'
 PLUGIN.description = 'Allows players to raise and lower their weapons.'

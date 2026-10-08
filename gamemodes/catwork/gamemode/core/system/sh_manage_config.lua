@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `Manage Config` system, which lists the config keys and lets admins edit their values in-game.
+--
+-- The page is shown to players with access to `/CfgSetVar`. Keys and values are requested over the `SystemCfgKeys` and
+-- `SystemCfgValue` netstreams, with private values masked, and `SystemCfgSet` applies a change on the server,
+-- optionally for a single map.
 
 if CLIENT then
   local SYSTEM = cw.system:New('Manage Config')

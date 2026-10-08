@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `cw_flashlight` weapon, a fist-held flashlight whose primary fire toggles the owner's flashlight.
 
 if SERVER then
   AddCSLuaFile('shared.lua')

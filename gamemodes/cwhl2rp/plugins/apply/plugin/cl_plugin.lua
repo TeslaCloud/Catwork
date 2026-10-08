@@ -1,8 +1,4 @@
---[[
-  © 2014 TeslaCloud Studios.
-  Feel free to use, edit or share the plugin, but
-  do not re-distribute without the permission of it's author.
---]]
+--- Client-side part of the Apply plugin, which adds the `apply_recognise_enable` config to the system config menu.
 
 PLUGIN = PLUGIN
 

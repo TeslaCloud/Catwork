@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the Fast Headcrab Anatomy book item (`book_fha`), a purchasable book on fast headcrabs and fast zombies.
 
 ITEM.baseItem = 'book_base'
 ITEM.name = 'Fast Headcrab Anatomy'

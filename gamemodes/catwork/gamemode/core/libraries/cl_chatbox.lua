@@ -1,7 +1,10 @@
---[[
-  © 2016 TeslaCloud Studios LLC.
-  For internal use only.
---]]
+--- Defines the client-side half of the global `chatbox` library and the `cwChatBox` and `cwChatTextEntry` panels that
+-- replace the default chat box.
+--
+-- Received messages are kept in `chatbox.history` and turned into wrapped lines by `chatbox.ParseText`; filters
+-- (`chatbox.AddFilter`), message types (`chatbox.AddType`) and BB-codes (`chatbox.AddBBCode`) decide how each one is
+-- drawn. `chat.AddText` is replaced to go through `chatbox.AddText`, typed text is sent to the server over the
+-- `ChatboxTextEntered` netstream, and the `cw_resetchat` console command rebuilds the panels.
 
 if chatbox then return end
 

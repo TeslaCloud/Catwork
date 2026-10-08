@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `cw.inventory` library, functions that work on inventory tables of item instances.
+--
+-- They add, remove, find and count instances, total up weight and space, and convert an inventory to and from its
+-- saved form, without networking anything themselves. The client part holds the local player's inventory, kept up to
+-- date by the `InvGive`, `InvTake`, `InvUpdate` and related messages, and the server part sends inventory updates to a
+-- player.
 
 library.New('inventory', cw)
 

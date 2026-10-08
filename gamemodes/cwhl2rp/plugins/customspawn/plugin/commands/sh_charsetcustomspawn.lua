@@ -1,8 +1,5 @@
---[[
-  © 2016 TeslaCloud Studios.
-  Feel free to use, edit or share the plugin, but
-  do not re-distribute without the permission of it's author.
---]]
+--- Registers the admin command `/CharSetCustomSpawn` of the Custom Spawn plugin, which sets the target character's
+-- custom spawn point to the target's current position on the current map.
 
 local COMMAND = cw.command:New('CharSetCustomSpawn')
 COMMAND.tip = '#Command_Charsetcustomspawn_Description'

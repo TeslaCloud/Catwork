@@ -1,9 +1,7 @@
---[[
-  © 2016 TeslaCloud Studios.
-  Private code for Global Cooldown community.
-  Stealing Lua cache is not nice lol.
-  get a life kiddos.
---]]
+--- Defines the VICE Division Mask item (`cmb_gasmask4`), a Combine-wearable mask based on `bodygroup_base` that sets
+-- bodygroup 2 to 4 and can only be worn over an item in bodygroup 5, the Protective Collar.
+--
+-- Originally written for the Global Cooldown community.
 
 ITEM.baseItem = 'bodygroup_base'
 ITEM.name = 'gasmask4'

@@ -1,7 +1,9 @@
---[[
-  © 2017 TeslaCloud Studios.
-  Do not share, re-distribute or sell.
---]]
+--- Server-side part of the Combine Civil Authority plugin, which handles the Combine PDA requests to change a citizen's
+-- status, residence, job, points and jail state.
+--
+-- Each `Application::PDA::Controller::` netstream receiver checks that the sender is Combine (or CWU where that is
+-- allowed), applies the change through the schema (`Schema:SetCitizenStatus`, `Schema:AddLP`, `Schema:SetJailed` and
+-- so on), writes a server log line and appends an entry to the target's civil record with `cca.AppendLog`.
 
 --- Called when a player's character has loaded; networks the character's civil record.
 -- @param player [Player The player whose character loaded]

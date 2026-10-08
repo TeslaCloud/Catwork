@@ -1,10 +1,6 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- English language strings of the Extra Commands plugin: notifications and the descriptions and syntax of
+-- `/Overwatch`, `/PlyResetArmor`, `/PlyResetHealth`, `/CharSetSkin`, `/CharSetBodyGroup`, `/PlySetIcon` and
+-- `/CharSetAttribute`.
 
 local lang = cw.lang:GetTable('en')
 

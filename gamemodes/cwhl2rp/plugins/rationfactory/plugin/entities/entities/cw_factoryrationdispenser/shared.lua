@@ -1,7 +1,7 @@
---[[
-  © 2012 Iron-Wall.org do not share, re-distribute or modify
-  without permission of its author (ext@iam1337.ru).
---]]
+--- Shared definition of the `cw_factoryrationdispenser` entity of the Ration Factory plugin, with the networked ration
+-- timer, flash timer, lock state and ration count, and `IsLocked` and `GetRationCount`.
+--
+-- Originally written for the Iron Wall community.
 
 DEFINE_BASECLASS('base_gmodentity')
 

@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Russian strings of the Combine Locks plugin: the `/SetCombineLockRank` command, notifications and the names and
+-- descriptions of the Combine lock and access card items.
 
 local lang = cw.lang:GetTable('ru')
 

@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the operator command `/CharSetDesc` (aliases `/SetDescription`, `/SetDesc`), which sets another
+-- character's physical description or asks the caller for it in a text request.
 
 local COMMAND = cw.command:New('CharSetDesc')
 COMMAND.tip = '#Command_Charsetdesc_Description'

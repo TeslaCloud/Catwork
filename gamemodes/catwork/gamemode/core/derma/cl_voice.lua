@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Redefines the `VoiceNotify` derma control, the notice shown while a player speaks over voice chat.
+--
+-- Players the local player does not recognise are shown with their unrecognised name and an unknown avatar instead of
+-- their name and Steam avatar.
 
 local PANEL = {}
 

@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Single-file DBugR Support plugin, which wraps every cached plugin hook in a DBugR profiler when the DBugR addon is
+-- installed.
+--
+-- Its `ClockworkLoaded` hook detours the hooks in `plugin.GetCache()` once and reports the run time of each to DBugR
+-- as `<plugin name>:<hook name>`.
 
 PLUGIN.name = 'DBugR Support'
 PLUGIN.author = 'Mr. Meow and NightAngel'

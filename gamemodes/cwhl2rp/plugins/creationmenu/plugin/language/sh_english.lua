@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- English language strings of the Left-Side Menu plugin: the forum button label and the names and descriptions of the
+-- community and forum config keys.
 
 local lang = cw.lang:GetTable('en')
 

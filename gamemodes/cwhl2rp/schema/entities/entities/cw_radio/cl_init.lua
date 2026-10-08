@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Client side of the `cw_radio` entity: draws the radio with a green status light, red while it is off, and shows its
+-- frequency as the target ID.
 
 include('shared.lua')
 

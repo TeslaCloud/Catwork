@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server-side functions of the Save Cash plugin that save and respawn the `cw_cash` entities on the map.
+--
+-- `cwSaveCash:SaveCash` and `cwSaveCash:LoadCash` keep each entity's amount, position, angles, frozen state and owner
+-- properties in the schema data under `plugins/cash/<map>`.
 
 --- Spawns the cash entities saved for the current map.
 --

@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/StorageGiveCash` command, which moves some of the caller's cash into the storage they have open.
 
 local COMMAND = cw.command:New('StorageGiveCash')
 COMMAND.tip = '#Command_Storagegivecash_Description'

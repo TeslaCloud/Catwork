@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the Endurance attribute (`end`, maximum 75) as `ATB_ENDURANCE`, a characteristic that can be set on the
+-- character creation screen.
 
 local ATTRIBUTE = cw.attribute:New()
   ATTRIBUTE.name = '#Attribute_Endurance'

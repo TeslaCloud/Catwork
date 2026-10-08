@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/CharFallOver` command (alias `/Fallover`), which makes the caller fall over as a ragdoll, optionally
+-- for 2 to 30 seconds.
 
 local COMMAND = cw.command:New('CharFallOver')
 COMMAND.tip = '#Command_Charfallover_Description'

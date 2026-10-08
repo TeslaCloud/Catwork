@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `cwInventory` menu tab with its Inventory and Equipment sheets, and the panels it is built from.
+--
+-- `cwInventoryItem` is an item icon, `cwInventoryCustom` a custom entry, and `cwInventoryWeight` and
+-- `cwInventorySpace` are the weight and space bars. The tab rebuilds from the local player's inventory and equipped
+-- weapons when opened, and `HandleUnequip` asks the server to unequip an item.
 
 local PANEL = {}
 

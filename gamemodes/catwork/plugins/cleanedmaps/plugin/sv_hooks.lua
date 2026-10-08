@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server-side hooks of the Cleaned Maps plugin that remove unwanted entities once the map has loaded.
+--
+-- `InitPostEntity` removes chargers, map weapons and gun store buttons and, when the `remove_map_physics` config is
+-- on, physics props; `ClockworkInitPostEntity` then removes map vehicles. The file also carries hard-coded fixes for
+-- `rp_tb_city45_v02n`, `md_venetianredux_b2` and `rp_evocity_v2d`.
 
 --- Called after Catwork has loaded all of its entities; removes map vehicles when `remove_map_physics` is on.
 function cwCleanedMaps:ClockworkInitPostEntity()

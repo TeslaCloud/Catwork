@@ -1,10 +1,5 @@
---[[
-  Catwork � 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/GarbageAdd` command, which adds a garbage spawn point where the admin is looking and spawns a
+-- `cw_garbage` pile there.
 
 local COMMAND = cw.command:New('GarbageAdd')
 COMMAND.tip = '#Command_Garbageadd_Description'

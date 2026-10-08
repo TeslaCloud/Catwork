@@ -1,7 +1,8 @@
---[[
-  © 2012 CloudSixteen.com do not share, re-distribute or modify
-  without permission of its author (kurozael@gmail.com).
---]]
+--- Server-side hooks of the Notepad plugin that handle a notepad's menu options and load and save the notepads.
+--
+-- `EntityHandleMenuOption` opens a `cw_notepad` for reading or editing and sends its text only the first time a player
+-- opens it; only the notepad's owner may edit written text, while anyone may write on a blank one.
+-- `ClockworkInitPostEntity` and `PostSaveData` call `LoadNotepad` and `SaveNotepad`.
 
 --- Called when an entity's menu option is chosen; opens a notepad for reading or editing.
 --

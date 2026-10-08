@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- English strings of the Apply plugin: its config, notifications and the descriptions of `/Apply`, `/ApplySay`,
+-- `/Name` and `/NameSay`.
 
 local lang = cw.lang:GetTable('en')
 

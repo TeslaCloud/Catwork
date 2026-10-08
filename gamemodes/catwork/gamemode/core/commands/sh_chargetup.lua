@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/CharGetUp` command, which makes a caller who fell over with `/CharFallOver` get up after five
+-- seconds.
 
 local COMMAND = cw.command:New('CharGetUp')
 COMMAND.tip = '#Command_Chargetup_Description'

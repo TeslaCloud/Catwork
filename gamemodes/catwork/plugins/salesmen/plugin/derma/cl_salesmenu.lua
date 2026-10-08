@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `cwSalesmenu` panel, the menu in which a player trades with a salesman, and the `cwSalesmenuItem` icon
+-- it shows for each item.
+--
+-- Lists the items the salesman sells and buys from `cw.salesmenu`, grouped by category. Clicking an icon sends a
+-- `Salesmenu` netstream message to buy or sell the item, and closing the menu sends `SalesmanDone`.
 
 local PANEL = {}
 

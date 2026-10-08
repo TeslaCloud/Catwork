@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Main file of the Custom Spawn plugin, which gives characters their own spawn point; exposes the plugin as
+-- `cwCustomSpawn` and includes its server-side hooks.
 
 PLUGIN:SetGlobalAlias('cwCustomSpawn')
 

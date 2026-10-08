@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server-side functions of the Pickup Objects plugin that pick up, carry, drop and throw an entity.
+--
+-- `cwPickupObjects:ForcePickup` welds the entity to a `cw_grab` entity, `cwPickupObjects:CalculatePosition` keeps it
+-- in front of the player's aim, and `cwPickupObjects:ForceDropEntity` and `cwPickupObjects:ForceThrowEntity` release
+-- it. Also adds the `take_physcannon` config.
 
 config.Add('take_physcannon', true)
 

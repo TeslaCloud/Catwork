@@ -1,7 +1,10 @@
---[[
-  © 2012 Iron-Wall.org do not share, re-distribute or modify
-  without permission of its author (ext@iam1337.ru).
---]]
+--- Client side of the `cw_factoryrationdispenser` entity of the Ration Factory plugin, which draws the status light and
+-- shows the ration count to Combine players.
+--
+-- The light blinks blue while a ration is being dispensed, turns red while flashing a denial, and is orange when the
+-- dispenser is locked and green otherwise.
+--
+-- Originally written for the Iron Wall community.
 
 include('shared.lua')
 

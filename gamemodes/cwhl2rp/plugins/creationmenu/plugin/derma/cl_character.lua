@@ -1,10 +1,11 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `cw.characterMenu` panel of the Left-Side Menu plugin, a replacement for the framework's main character
+-- menu with its buttons stacked on the left side of the screen.
+--
+-- It registers under the same name as the core panel, so it overrides it. The panel holds the schema title and logo,
+-- the new, load, community, forum and leave buttons, the previous, cancel and next navigation of character creation
+-- with a progress bar of the creation steps, and the `cw.characterModel` preview; `OpenPanel` swaps the active
+-- sub-panel such as `cw.characterList`. The community and forum buttons are driven by the `community_*` and `forum_*`
+-- config keys, and most steps can be overridden by theme hooks like `PreCharacterMenuInit`.
 
 local PANEL = {}
 

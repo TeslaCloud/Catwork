@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server-side hooks of the Observer Mode plugin that turn a noclip attempt into the `/Observer` command and keep
+-- observers hidden.
+--
+-- `PlayerThink` makes noclipping players invisible and non-solid, and takes players who no longer qualify out of
+-- observer mode.
 
 --- Called when a player tries to noclip; runs the `Observer` command for them instead.
 --

@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/CharPhysDesc` command (aliases `/PhysDesc`, `/ChangeDesc`, `/ChangeDescription`), which sets the
+-- caller's physical description or asks for it in a text request when none is given.
 
 local COMMAND = cw.command:New('CharPhysDesc')
 COMMAND.tip = '#Command_Charphysdesc_Description'

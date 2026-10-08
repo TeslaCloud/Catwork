@@ -1,8 +1,5 @@
---[[
-  © 2016 TeslaCloud Studios.
-  Feel free to use, edit or share the plugin, but
-  do not re-distribute without the permission of it's author.
---]]
+--- Registers the admin command `/PlyResetHealth` of the Extra Commands plugin, which restores the target player's
+-- health to their maximum health.
 
 local COMMAND = cw.command:New('PlyResetHealth')
 COMMAND.tip = '#Command_Plyresethealth_Description'

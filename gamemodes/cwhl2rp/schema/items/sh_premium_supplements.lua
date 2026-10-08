@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the Premium Supplements food item (`premium_supplements`) handed out by the high tier ration packets, which
+-- heals 5 health, boosts endurance by 2 for two minutes and leaves an empty cardboard box.
 
 ITEM.name = 'Premium Supplements'
 ITEM.PrintName = '#ITEM_Premium_Supplements'

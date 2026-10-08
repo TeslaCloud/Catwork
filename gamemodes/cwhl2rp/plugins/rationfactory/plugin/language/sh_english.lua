@@ -1,10 +1,6 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- English language strings of the Ration Factory plugin: the labels drawn on its dispensers, crates and rations, the
+-- placement notifications and the help text of `/FactoryBigDispenserAdd`, `/FactoryDispenserAdd` and
+-- `/FactoryRationDispenserAdd`.
 
 local lang = cw.lang:GetTable('en')
 

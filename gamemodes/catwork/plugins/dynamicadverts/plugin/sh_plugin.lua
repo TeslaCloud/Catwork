@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Main file of the Dynamic Adverts plugin, which lets admins place images from URLs on surfaces of the map.
+--
+-- Aliases the plugin as `cwDynamicAdverts`, includes its client and server files and creates
+-- `cwDynamicAdverts.storedList`, the list of adverts that both realms keep.
 
 --[[
   You don't have to do this, but I think it's nicer.

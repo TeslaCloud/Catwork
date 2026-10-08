@@ -1,8 +1,5 @@
---[[
-  © 2014 TeslaCloud Studios.
-  Feel free to use, edit or share the plugin, but
-  do not re-distribute without the permission of it's author.
---]]
+--- Registers the `/Name` command, which makes the player say their name in character (as a unit for Combine) and, when
+-- the `apply_recognise_enable` config is on, makes players within talk radius recognise them.
 
 local COMMAND = cw.command:New('Name')
 COMMAND.tip = '#Command_Name_Description'

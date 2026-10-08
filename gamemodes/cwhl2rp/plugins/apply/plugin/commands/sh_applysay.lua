@@ -1,8 +1,5 @@
---[[
-  © 2014 TeslaCloud Studios.
-  Feel free to use, edit or share the plugin, but
-  do not re-distribute without the permission of it's author.
---]]
+--- Registers the `/ApplySay` command, which makes the player state their name and citizen ID in a full sentence in
+-- character and, when the `apply_recognise_enable` config is on, makes players within talk radius recognise them.
 
 local COMMAND = cw.command:New('ApplySay')
 COMMAND.tip = '#Command_Applysay_Description'

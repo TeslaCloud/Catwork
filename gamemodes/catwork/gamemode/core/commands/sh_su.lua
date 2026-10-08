@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the superadmin command `/Su`, which sends a message to every online superadmin in the admin chat.
 
 local COMMAND = cw.command:New('Su')
 COMMAND.tip = '#Command_Su_Description'

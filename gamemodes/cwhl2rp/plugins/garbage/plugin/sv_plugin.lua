@@ -1,10 +1,10 @@
---[[
-  Catwork � 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server-side core of the Garbage plugin: its config keys, the saving, loading and spawning of garbage spawn points,
+-- and the loot table.
+--
+-- Registers `garbage_respawn_delay`, `garbage_pickup_time` and `garbage_item_percentage`. Spawn points live in
+-- `cwGarbage.garbagePoints` and are kept per map in `plugins/garbage/<map>`. `cwGarbage:AddItem` adds an item ID with
+-- a chance to `cwGarbage.stored`, and the default loot (junk, seeds, crafting materials, broken weapons) is added at
+-- the bottom of the file.
 
 config.Add('garbage_respawn_delay', 400)
 config.Add('garbage_pickup_time', 20, true)

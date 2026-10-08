@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server-side functions of the Dynamic Adverts plugin that load and save the current map's adverts.
+--
+-- `cwDynamicAdverts:LoadDynamicAdverts` and `cwDynamicAdverts:SaveDynamicAdverts` keep `cwDynamicAdverts.storedList`
+-- in the schema data under `plugins/adverts/<map>`.
 
 --- Loads the current map's adverts from the schema data into `cwDynamicAdverts.storedList`.
 function cwDynamicAdverts:LoadDynamicAdverts()

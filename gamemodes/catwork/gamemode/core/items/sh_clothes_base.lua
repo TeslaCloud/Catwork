@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `clothes_base` base item for clothing, which changes the player's model while worn and restores the
+-- default model when taken off.
+--
+-- The model comes from the item's `GetReplacement`, its `replacement`, or its `group`, a citizen model folder matched
+-- to the player's own model. A `whitelist` of factions and an optional `CanPlayerWear` restrict who can wear the
+-- clothes, and they cannot be dropped while worn.
 
 ITEM.isBaseItem = true
 ITEM.name = 'Clothes Base'

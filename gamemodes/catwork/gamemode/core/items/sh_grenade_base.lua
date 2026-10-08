@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `grenade_base` base item for throwable grenades, built on `weapon_base`.
+--
+-- Equipping gives one round of `grenade` spawn ammo, which holstering or dropping takes back. Once the grenade has
+-- been thrown and no ammo is left, trying to holster or drop it strips the weapon instead.
 
 ITEM.isBaseItem = true
 ITEM.baseItem = 'weapon_base'

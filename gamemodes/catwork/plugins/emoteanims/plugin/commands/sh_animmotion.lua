@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/AnimMotion` command, which makes a Civil Protection character motion to the left, to the right or
+-- behind, and adds it to the Emotes category of the quick menu.
 
 local COMMAND = cw.command:New('AnimMotion')
 COMMAND.tip = '#Command_Animmotion_Description'

@@ -1,10 +1,6 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `Manage Players` system, an admin-only page of the system menu that lists players by scoreboard class.
+--
+-- Clicking a player opens the same options menu as the scoreboard, built by the `GetPlayerScoreboardOptions` hook.
 
 local SYSTEM = cw.system:New('Manage Players')
 SYSTEM.toolTip = '#System_ManagePlayers_ToolTip'

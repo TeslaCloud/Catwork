@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the whitelisted Metropolice Force faction (`FACTION_MPF`), a Combine faction whose units get the `cp_c08`
+-- Civil Protection models and a generated recruit name with a random unit number.
 
 local FACTION = faction.New('#Faction_MPF')
 

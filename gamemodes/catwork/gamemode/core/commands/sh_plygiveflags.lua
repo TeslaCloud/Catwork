@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the superadmin command `/PlyGiveFlags`, which gives the target player flags that apply to all of their
+-- characters, admin flags excluded.
 
 local COMMAND = cw.command:New('PlyGiveFlags')
 COMMAND.tip = '#Command_Plygiveflags_Description'

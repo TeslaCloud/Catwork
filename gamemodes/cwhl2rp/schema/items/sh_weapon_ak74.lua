@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the AK-74 weapon item, which gives the `sxbase_ak74` weapon and is sold to the Elite Overwatch Soldier
+-- class.
 
 ITEM.baseItem = 'weapon_base'
 ITEM.name = 'AK-74'

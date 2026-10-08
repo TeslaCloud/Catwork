@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server side of the `cw_radio` entity, the stationary radio placed from an item.
+--
+-- It keeps the item it came from, a networked frequency (`ENT:SetFrequency`) and an off state (`ENT:SetOff`,
+-- `ENT:Toggle`). The radio has 25 health and is removed with an impact effect when destroyed.
 
 include('shared.lua')
 

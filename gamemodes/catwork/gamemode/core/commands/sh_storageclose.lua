@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/StorageClose` command, which closes the storage the caller has open and is sent by the storage
+-- window.
 
 local COMMAND = cw.command:New('StorageClose')
 COMMAND.tip = '#Command_Storageclose_Description'

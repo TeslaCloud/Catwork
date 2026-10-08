@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `Corn Seeds` item (`seed_corn`), a `seeds_base` item whose plant ripens in 3200 to 4000 seconds and
+-- yields `seed_corn` and `corn`.
 
 ITEM.baseItem = 'seeds_base'
 ITEM.name = 'Corn Seeds'

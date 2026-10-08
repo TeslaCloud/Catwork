@@ -1,10 +1,6 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Main file of the Gathering plugin, a resource gathering system in which breaking respawning wooden props yields
+-- wood; exposes the plugin as `cwGather`, includes its server and client files and defines `cwGather.woodNodes`, the
+-- list of prop models used for wood nodes.
 
 PLUGIN:SetGlobalAlias('cwGather')
 

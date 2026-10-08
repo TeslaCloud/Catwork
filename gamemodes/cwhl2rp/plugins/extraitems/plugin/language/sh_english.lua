@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- English language strings of the Extra Items plugin: the melee weapons category and the names and descriptions of the
+-- melee weapon items.
 
 local lang = cw.lang:GetTable('en')
 

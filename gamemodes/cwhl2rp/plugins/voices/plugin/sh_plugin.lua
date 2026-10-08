@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Extra Voices plugin, whose `RegisterVoices` hook adds about a thousand Half-Life 2 voice lines to the schema's
+-- `Human` and `Combine` voice groups.
+--
+-- The file is one long list of `voices:Add` calls: citizen lines with male and female sounds for `Human`, then
+-- Metropolice, Overwatch radio and Combine soldier lines for `Combine`. Both groups are registered by
+-- `Schema:RegisterVoiceGroups`, and the citizen list appears twice, so many of its lines are added a second time.
 
 --- Called when voice commands are registered; adds the Half-Life 2 citizen and Combine voice lines.
 --

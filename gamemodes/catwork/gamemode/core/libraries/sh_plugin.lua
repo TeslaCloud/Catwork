@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the global `plugin` library, which loads plugins and the schema and dispatches hooks to them.
+--
+-- `plugin.Include` loads a plugin from its `plugin` folder or a single file, together with its entities and its extra
+-- folders (`items`, `commands`, `language` and so on), and `plugin.Add` registers a library as a hook module. The
+-- functions of every plugin and module are cached by name, and `hook.Call` is replaced so they run before the regular
+-- hooks and the gamemode. `plugin.SetUnloaded` turns a plugin off.
 
 --[[ The plugin library is already defined! --]]
 if plugin then return end

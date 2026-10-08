@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Client-side hooks of the Observer Mode plugin that limit the admin ESP to noclipping players, add the observer label
+-- to a noclipping player's status text and block the client-side prediction of noclip.
 
 --- Called to check whether the local player can see the admin ESP; only allows it while noclipping.
 --

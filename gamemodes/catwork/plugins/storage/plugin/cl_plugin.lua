@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Client-side netstream handlers of the Storage plugin: `StorageMessage` stores a container's message on the entity
+-- and `ContainerPassword` asks the player for a container's password.
 
 netstream.Hook('StorageMessage', function(data)
   local entity = data.entity

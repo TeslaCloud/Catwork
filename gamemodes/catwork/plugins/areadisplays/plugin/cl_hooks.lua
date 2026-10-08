@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Client-side hooks of the Area Displays plugin that detect which area the local player is in and draw the area names.
+--
+-- `Tick` checks the stored areas once a second and runs the `PlayerEnteredArea` and `PlayerExitedArea` hooks, while
+-- `PostDrawTranslucentRenderables` and `HUDPaintForeground` draw the 3D and scrolling displays. `Initialize` creates
+-- the `cwShowAreas` client convar.
 
 --- Called when the client initializes; creates the `cwShowAreas` client convar as `CW_CONVAR_SHOWAREAS`.
 function cwAreaDisplays:Initialize()

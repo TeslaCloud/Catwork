@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server-side functions and hooks of the Craft plugin that carry out a craft and save and load the crafting stations.
+--
+-- `cwCraft:PlayerCraftItem` takes the recipe's materials, gives the resulting items and progresses attributes.
+-- Stations, the entities with `IsCraft` set, are kept per map in the schema data under `plugins/craft/<map>`.
 
 --- Crafts a blueprint for a player without checking whether they may.
 --

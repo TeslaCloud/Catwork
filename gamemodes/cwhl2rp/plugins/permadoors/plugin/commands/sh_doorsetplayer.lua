@@ -1,8 +1,5 @@
---[[
-  © 2016 TeslaCloud Studios.
-  Feel free to use, edit or share the plugin, but
-  do not re-distribute without the permission of it's author.
---]]
+--- Registers the `/DoorSetPlayer` command of the Permanent Doors plugin, which gives the door the player is looking at
+-- to the target character as a permanent door with the given name.
 
 local COMMAND = cw.command:New('DoorSetPlayer')
 COMMAND.tip = '#Command_Doorsetplayer_Description'

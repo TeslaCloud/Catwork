@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the client-side `cw.outline` library, which draws glowing outlines around entities with `halo.Add`.
+--
+-- It is registered as the `Outline` plugin module and runs the `AddEntityOutlines` hook from `PreDrawHalos`, which is
+-- where `cw.outline:Add` and the distance-fading `cw.outline:Fader` are meant to be called.
 
 --[[ We need the plugin library to add this as a module! --]]
 if !plugin then

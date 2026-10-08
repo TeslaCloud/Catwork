@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/SetClass` command (aliases `/CharSetClass`, `/ChangeClass`), which moves the target player into a
+-- class when the class limit and the `PlayerCanChangeClass` hook allow it.
 
 local COMMAND = cw.command:New('SetClass')
 COMMAND.tip = '#Command_Setclass_Description'

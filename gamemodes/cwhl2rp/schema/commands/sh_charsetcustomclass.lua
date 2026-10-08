@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers `/CharSetCustomClass`, an operator command that sets a character's `customclass` character data to a
+-- custom class name.
 
 local COMMAND = cw.command:New('CharSetCustomClass')
 COMMAND.tip = '#Command_Charsetcustomclass_Description'

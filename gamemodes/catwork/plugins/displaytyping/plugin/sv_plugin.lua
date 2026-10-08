@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `cwTypingStart` and `cwTypingFinish` console commands of the Display Typing plugin.
+--
+-- They set the player's `Typing` net var to a `TYPING_*` value, or back to 0, and run the `PlayerStartTypingDisplay`
+-- and `PlayerFinishTypingDisplay` hooks.
 
 -- Called when a player starts typing.
 concommand.Add('cwTypingStart', function(player, command, arguments)

@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Client-side part of the Dynamic Adverts plugin, which receives the advert list from the server and downloads each
+-- advert's image.
+--
+-- Handles the `DynamicAdverts`, `DynamicAdvertAdd` and `DynamicAdvertRemove` netstream messages and defines
+-- `cwDynamicAdverts:CacheMaterial`, which fetches a `png` or `jpg` URL, caches the file under `data/` by the CRC of
+-- the URL and stores the resulting material on the advert.
 
 netstream.Hook('DynamicAdverts', function(data)
   for k, v in ipairs(data) do

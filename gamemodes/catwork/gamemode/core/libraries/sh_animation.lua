@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `cw.animation` library, which assigns player models to animation classes and picks the animation for
+-- each activity and weapon hold type.
+--
+-- It holds the animation tables for the Combine Overwatch, Civil Protection, male and female human and vortigaunt
+-- classes, and lets schemas assign models to a class or override single animations. It also decides which viewmodel
+-- hands a model uses.
 
 --[[
   A lot of the code was taken from Gristwork, which was publicly released couple of years ago.

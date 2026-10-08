@@ -1,7 +1,9 @@
---[[
-  © 2012 Iron-Wall.org do not share, re-distribute or modify
-  without permission of its author (ext@iam1337.ru).
---]]
+--- Server side of the `cw_emptyration` entity of the Ration Factory plugin, an empty ration packet that players fill.
+--
+-- It absorbs a `breens_water` and a `citizen_supplements` item entity that touch it and is marked full once it holds
+-- both, ready to be packed into a `cw_emptycrate`. It has 25 health and breaks when it runs out.
+--
+-- Originally written for the Iron Wall community.
 
 include('shared.lua')
 

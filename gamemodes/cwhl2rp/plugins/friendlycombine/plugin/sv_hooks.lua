@@ -1,10 +1,10 @@
---[[
-  Catwork � 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server-side hooks of the Friendly Combine plugin that set the relationship between Combine NPCs and each player.
+--
+-- Players are named `f_combine` or `f_human` and the listed NPC classes (metrocops, soldiers, scanners, turrets,
+-- striders and so on) are told to like the first and hate the second. MPF, OTA, the admin faction, holders of a
+-- `combine_security_card` and ragdolled players count as friendly; the relationship is refreshed when a character
+-- loads, an NPC is spawned, a player is ragdolled or gets up, and a card is given or taken. `PlayerTakeDamage` also
+-- scales the damage these NPCs deal.
 
 local stored = {
   'npc_metropolice',

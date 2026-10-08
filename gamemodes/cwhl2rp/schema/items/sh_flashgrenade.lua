@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the Flash grenade item (`sxbase_fg`) on `grenade_base`, sold to the Elite Metropolice and Elite Overwatch
+-- Soldier classes.
 
 ITEM.baseItem = 'grenade_base'
 ITEM.name = 'Flash'

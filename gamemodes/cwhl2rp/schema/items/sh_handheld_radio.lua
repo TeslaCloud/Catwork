@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the Handheld Radio item, which lets its carrier use the radio and has a Frequency option that opens the
+-- frequency prompt on the client.
 
 ITEM.name = 'Handheld Radio'
 ITEM.PrintName = '#ITEM_Handheld_Radio'

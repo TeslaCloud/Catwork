@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the book item The Fountain of Youth, a purchasable short story about an old couple at a doctor's office.
 
 ITEM.baseItem = 'book_base'
 ITEM.cost = 6

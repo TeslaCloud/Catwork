@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the superadmin command `/PlyDemote` (alias `/Demote`), which puts the target player back in the `user`
+-- group and respawns them.
 
 local COMMAND = cw.command:New('PlyDemote')
 COMMAND.tip = '#Command_Plydemote_Description'

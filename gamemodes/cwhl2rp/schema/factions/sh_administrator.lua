@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the whitelisted Administrator faction (`FACTION_ADMIN`), which uses the `group17` human models and only
+-- accepts transfers from the Citizen faction.
 
 local FACTION = faction.New('#Faction_Admin')
 

@@ -1,10 +1,9 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `cwSalesman` panel, the editor used to set up a salesman, and the `cwSalesmanItem` icon it shows for
+-- each item.
+--
+-- The editor has sells, buys, items and settings tabs backed by `cw.salesman`; the settings cover prices, stock, cash,
+-- model, responses and the factions and classes allowed to trade. Closing it sends the result to the server in the
+-- `SalesmanAdd` netstream message.
 
 local PANEL = {}
 

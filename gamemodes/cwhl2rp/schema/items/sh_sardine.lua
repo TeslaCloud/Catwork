@@ -1,7 +1,4 @@
---[[
-  © 2013 CloudSixteen.com do not share, re-distribute or modify
-  without permission of its author (kurozael@gmail.com).
---]]
+--- Defines the Sardine food item, which boosts strength and endurance by 5 for two minutes.
 
 ITEM.name = 'Sardine'
 ITEM.PrintName = '#Item_Sardine_PrintName'

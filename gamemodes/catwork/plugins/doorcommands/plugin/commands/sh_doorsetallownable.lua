@@ -1,10 +1,4 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/DoorSetAllOwnable` command, which makes every door on the map ownable under the given name.
 
 local COMMAND = cw.command:New('DoorSetAllOwnable')
 COMMAND.tip = '#Command_Doorsetallownable_Description'

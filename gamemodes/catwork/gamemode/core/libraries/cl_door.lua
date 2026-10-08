@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the client-side `cw.door` library, read-only accessors for the door being managed in the door panel.
+--
+-- They return the door's entity, owner, name, access list and its parent, sharing and unsellable flags as sent by the
+-- server, and the panel itself.
 
 library.New('door', cw)
 

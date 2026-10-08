@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the Antidepressants medical item, which sets the player's `antidepressants` net var for ten minutes
+-- (restoring normal screen colours on the client) and trades 2 strength for 2 endurance for two minutes.
 
 ITEM.name = 'Antidepressants'
 ITEM.PrintName = '#ITEM_Antidepressants'

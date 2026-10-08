@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines `cwEmoteAnims:MakePlayerExitStance`, which ends a player's emote, clears the `StancePos`, `StanceAng` and
+-- `StanceIdle` net vars and puts a player moved by the emote back where they stood before it.
 
 --- Ends a player's emote and clears the stance net vars.
 --

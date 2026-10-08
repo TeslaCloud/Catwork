@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Client-side hooks of the Emote Anims plugin that show the local player in third person while they emote and render
+-- emoting players at their stance angles.
+--
+-- `CalcViewAdjustTable` puts the camera just in front of the head for idle stances and up to 128 units behind the
+-- player for other emotes, using the `StanceAng` and `StanceIdle` net vars.
 
 --- Called to decide whether the local player is drawn; draws them while they are in a stance.
 -- @return [Boolean Whether the local player is in a stance]

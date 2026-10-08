@@ -1,10 +1,5 @@
---[[
-  © 2015 CloudSixteen.com do not share, re-distribute or modify
-  without permission of its author (kurozael@gmail.com).
-
-  Clockwork was created by Conna Wiles (also known as kurozael.)
-  http://cloudsixteen.com/license/cw.html
---]]
+--- Registers the `/Nightvision` command of the Nightvision plugin, which toggles night vision for players allowed to
+-- use it by flipping their `nightvisionfx` networked boolean.
 
 local Clockwork = Clockwork
 

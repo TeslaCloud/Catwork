@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server side of the `cw_cash` entity, an amount of cash lying in the world.
+--
+-- The model comes from the `model_cash` option and `ENT:SetAmount` sets and networks the amount. The entity has 25
+-- health and removes itself when it ends up outside the world.
 
 include('shared.lua')
 

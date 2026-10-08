@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `doorparent` tool, which sets up door parenting from the tool gun.
+--
+-- Left click makes the door the active parent with `/DoorSetParent`, or a child of it with `/DoorSetChild` when a
+-- parent is already active. Right click runs `/DoorUnparent` and reload runs `/DoorResetParent`.
 
 local TOOL = cw.tool:New()
 

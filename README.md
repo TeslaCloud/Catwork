@@ -14,3 +14,13 @@ Not shipped with this repository. Use the build that matches your server: `win32
 - MySQLOO v9 `gmsv_mysqloo_*.dll` ([FredyH/MySQLOO](https://github.com/FredyH/MySQLOO)) in `garrysmod/lua/bin`. If your build comes with a `libmysql.dll`, it goes into the server root (next to `srcds`).
 
 The old `catio`, `fileio` and `watchdog` modules are gone and no longer needed.
+
+## License
+
+Catwork © 2016-2017 TeslaCloud Studios. Please find the license under [LICENSE](LICENSE).
+
+Original code by Alex Grist, 'impulse and Conna Wiles, with contributions from the Cloud Sixteen community.
+
+This notice applies to every file in this repository, unless the file itself says otherwise.
+
+Parts of Catwork are borrowed from [Flux](https://github.com/TeslaCloud/flux-ce), which is released under the [MIT License](https://github.com/TeslaCloud/flux-ce/blob/master/LICENSE).

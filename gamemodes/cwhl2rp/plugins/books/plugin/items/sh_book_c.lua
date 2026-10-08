@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the Community book item (`book_c`), a purchasable book on keeping a citizen community hidden from the
+-- Combine.
 
 ITEM.baseItem = 'book_base'
 ITEM.name = 'Community'

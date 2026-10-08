@@ -1,7 +1,5 @@
---[[
-  © 2012 CloudSixteen.com do not share, re-distribute or modify
-  without permission of its author (kurozael@gmail.com).
---]]
+--- Shared definition of the `cw_notepad` entity of the Notepad plugin, with the networked bool that is true once the
+-- notepad has text.
 
 DEFINE_BASECLASS('base_gmodentity')
 

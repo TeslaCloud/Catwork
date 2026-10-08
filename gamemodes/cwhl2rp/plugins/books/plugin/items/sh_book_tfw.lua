@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `book_tfw` book item, a purchasable short story about a child telling on his sister for saying the
+-- f-word.
+--
+-- The item is named The F. Word.
 
 ITEM.baseItem = 'book_base'
 ITEM.cost = 3

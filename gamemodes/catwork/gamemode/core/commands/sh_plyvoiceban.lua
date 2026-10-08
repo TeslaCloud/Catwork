@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the operator command `/PlyVoiceBan` (aliases `/VoiceBan`, `/PlyBanVoice`), which bans the target player
+-- from voice chat.
 
 local COMMAND = cw.command:New('PlyVoiceBan')
 COMMAND.tip = '#Command_Plyvoiceban_Description'

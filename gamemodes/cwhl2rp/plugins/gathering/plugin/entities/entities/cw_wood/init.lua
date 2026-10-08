@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server side of the `cw_wood` entity, a searchable node copied from the Garbage plugin's `cw_garbage` entity.
+--
+-- It still uses the garbage models and the `GetGarbageTime` and `PlayerTakeGarbage` hooks, and nothing in the
+-- Gathering plugin spawns it: wood nodes are plain `prop_physics` props.
 
 include('shared.lua')
 

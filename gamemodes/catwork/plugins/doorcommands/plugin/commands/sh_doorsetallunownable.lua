@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/DoorSetAllUnownable` command, which makes every door on the map unownable with the given name and
+-- text.
 
 local COMMAND = cw.command:New('DoorSetAllUnownable')
 COMMAND.tip = '#Command_Doorsetallunownable_Description'

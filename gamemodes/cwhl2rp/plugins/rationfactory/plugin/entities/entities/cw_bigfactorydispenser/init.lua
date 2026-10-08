@@ -1,7 +1,10 @@
---[[
-  © 2012 Iron-Wall.org do not share, re-distribute or modify
-  without permission of its author (ext@iam1337.ru).
---]]
+--- Server side of the `cw_bigfactorydispenser` entity of the Ration Factory plugin, a button with pipes that produces
+-- the factory's empty containers.
+--
+-- Pressing it spawns a `cw_emptyration` packet (8 second cooldown) or a `cw_emptycrate` (60 seconds) at its pipe,
+-- depending on the type set with `SetSpawnType`.
+--
+-- Originally written for the Iron Wall community.
 
 include('shared.lua')
 

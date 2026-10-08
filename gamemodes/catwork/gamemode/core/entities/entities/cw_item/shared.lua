@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Shared definition of the `cw_item` entity: a non-spawnable `anim` entity named Item with a networked item `Index`
+-- and an `ENT:GetItemTable` accessor.
 
 DEFINE_BASECLASS('base_gmodentity')
 

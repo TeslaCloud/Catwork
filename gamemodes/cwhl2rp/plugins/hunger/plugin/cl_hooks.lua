@@ -1,7 +1,5 @@
---[[
-  © 2016 TeslaCloud Studios.
-  Please do not use anywhere else.
---]]
+--- Client-side hooks of the Hunger plugin; `GetBars` adds the hunger HUD bar, with thirst as its second value, once the
+-- player's hunger drops below 90.
 
 local PLUGIN = PLUGIN
 

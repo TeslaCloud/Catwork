@@ -1,9 +1,6 @@
---[[
-  © 2016 TeslaCloud Studios.
-  Private code for Global Cooldown community.
-  Stealing Lua cache is not nice lol.
-  get a life kiddos.
---]]
+--- Defines the Grey Jeans item (`refugee_legs`), legwear based on `bodygroup_base` that sets bodygroup 2 to 2.
+--
+-- Originally written for the Global Cooldown community.
 
 ITEM.baseItem = 'bodygroup_base'
 ITEM.name = 'Grey Jeans'

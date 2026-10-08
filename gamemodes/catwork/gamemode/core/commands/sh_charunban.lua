@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the admin command `/CharUnban`, which unbans a character by name, whether its owner is online or it only
+-- exists in the database.
 
 local COMMAND = cw.command:New('CharUnban')
 COMMAND.tip = '#Command_Charunban_Description'

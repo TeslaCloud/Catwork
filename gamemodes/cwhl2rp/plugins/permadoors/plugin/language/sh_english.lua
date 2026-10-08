@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- English language strings of the Permanent Doors plugin: the vacant door text, notifications and the descriptions and
+-- syntax of `/DoorSetPlayer` and `/DoorResetPlayer`.
 
 local lang = cw.lang:GetTable('en')
 

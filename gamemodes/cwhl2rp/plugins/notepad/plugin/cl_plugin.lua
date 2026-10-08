@@ -1,7 +1,8 @@
---[[
-  © 2012 CloudSixteen.com do not share, re-distribute or modify
-  without permission of its author (kurozael@gmail.com).
---]]
+--- Client-side netstream handlers of the Notepad plugin: `ViewNotepad` opens the `cwViewNotepad` window and
+-- `EditNotepad` the `cwEditNotepad` window for a notepad entity.
+--
+-- The server sends a notepad's text only the first time, so it is cached in `cwNotepad.notepadIDs` by the notepad's ID
+-- and reused when a later message arrives without text.
 
 netstream.Hook('ViewNotepad', function(entity, uniqueID, text)
   if IsValid(entity) then

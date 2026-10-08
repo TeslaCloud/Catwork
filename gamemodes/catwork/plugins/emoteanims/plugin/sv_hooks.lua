@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server-side hooks of the Emote Anims plugin that end a player's emote when they move, spawn or are ragdolled.
+--
+-- `PlayerThink` clears the stance once the player presses a movement key, strays more than 16 units from the stance
+-- position or leaves the ground. Other hooks block firing, noclip and ragdolling while in a stance.
 
 --- Called just after a player spawns; ends the player's emote in place unless it was a light spawn.
 -- @param player [Player The player who spawned]

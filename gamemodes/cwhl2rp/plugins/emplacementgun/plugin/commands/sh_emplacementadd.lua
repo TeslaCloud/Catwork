@@ -1,7 +1,5 @@
---[[
-  © 2012 CloudSixteen.com do not share, re-distribute or modify
-  without permission of its author (kurozael@gmail.com).
---]]
+--- Registers the superadmin command `/EmplacementAdd` of the Emplacement Gun plugin, which spawns a `cw_emplacementgun`
+-- where the player is looking.
 
 local COMMAND = cw.command:New('EmplacementAdd')
 COMMAND.tip = '#Command_Emplacementadd_Description'

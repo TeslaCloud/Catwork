@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `static` toolgun of the Static Entities plugin, which makes the entity under the crosshair static on
+-- left click and non-static on right click.
 
 local TOOL = cw.tool:New()
 

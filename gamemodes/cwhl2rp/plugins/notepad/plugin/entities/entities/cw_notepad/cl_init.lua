@@ -1,7 +1,5 @@
---[[
-  © 2012 CloudSixteen.com do not share, re-distribute or modify
-  without permission of its author (kurozael@gmail.com).
---]]
+--- Client side of the `cw_notepad` entity of the Notepad plugin, which draws the model and a target ID that says
+-- whether the notepad is written or blank.
 
 include('shared.lua')
 

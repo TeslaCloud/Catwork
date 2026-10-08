@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- English (`en`) language strings of the FA:S 2.0 & CW 2.0 Integration plugin, naming the Attachments item category
+-- and the suppressor.
 
 local lang = cw.lang:GetTable('en')
 

@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/AnimCheer` command, which plays a two second cheer on a human character, and adds it to the Emotes
+-- category of the quick menu.
 
 local COMMAND = cw.command:New('AnimCheer')
 COMMAND.tip = '#Command_Animcheer_Description'

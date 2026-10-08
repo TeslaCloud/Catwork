@@ -1,10 +1,6 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Main file of the Cleaned Maps plugin, which aliases it as `cwCleanedMaps` and includes its files.
+--
+-- The plugin removes commonly unwanted entities from maps when they load.
 
 --[[
   You don't have to do this, but I think it's nicer.

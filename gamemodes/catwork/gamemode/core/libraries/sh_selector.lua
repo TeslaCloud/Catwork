@@ -1,10 +1,8 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `cw.selector` library, numbered on-screen option lists that players pick from with the number keys.
+--
+-- A selector is built with `cw.selector:New`, `AddText` and `AddOption`. Created on the server, it is sent to its
+-- players over the `Selector` message and the callback receives their choice; created on the client, it is shown to
+-- the local player.
 
 library.New('selector', cw)
 cw.selector.COLOR_ORANGE = Color(215, 150, 50, 255)

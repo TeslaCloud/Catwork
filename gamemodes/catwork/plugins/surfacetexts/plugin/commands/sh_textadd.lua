@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/TextAdd` admin command, which places a 3D text on the surface the player is looking at, with an
+-- optional scale, style, color and second color.
 
 local COMMAND = cw.command:New('TextAdd')
 COMMAND.tip = '#Command_Textadd_Description'

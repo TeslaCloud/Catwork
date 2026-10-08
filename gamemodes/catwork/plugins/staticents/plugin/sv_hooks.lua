@@ -1,8 +1,11 @@
---[[
-  Flux © 2016-2017 TeslaCloud Studios
-  Do not share or re-distribute before
-  the framework is publicly released.
---]]
+--- Server-side hooks of the Static Entities plugin that make entities static and save and restore them across restarts.
+--
+-- The file removes Sandbox's own persistence hooks and takes their place: `PlayerMakeStatic` marks a whitelisted
+-- entity (props, ragdolls, `edit_` and `gmod_` entities) persistent for an admin, `PersistenceSave` copies every
+-- persistent entity into the `static` schema data with the duplicator on shutdown, and `PersistenceLoad` pastes them
+-- back once the map has loaded.
+--
+-- Backported from the [Flux](https://github.com/TeslaCloud/flux-ce) project.
 
 -- Disable default Sandbox persistence.
 hook.Remove('ShutDown', 'SavePersistenceOnShutdown')

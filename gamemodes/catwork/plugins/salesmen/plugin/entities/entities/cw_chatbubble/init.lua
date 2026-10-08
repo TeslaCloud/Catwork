@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server-side code of the `cw_chatbubble` entity, which sets the speech bubble model and makes the entity non-solid
+-- and immovable.
 
 util.Include('shared.lua')
 

@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `Orange Juice` item (`orange_juice`) of the Farming plugin, a drink that restores 55 thirst and leaves
+-- an `empty_soda_can`.
 
 ITEM.name = 'Orange Juice'
 ITEM.PrintName = '#Item_OrangeJuice_PrintName'

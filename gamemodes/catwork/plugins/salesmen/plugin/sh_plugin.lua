@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Main file of the Salesmen plugin, which lets staff place NPCs that sell items to players and buy items from them.
+--
+-- Aliases the plugin as `cwSalesmen`, includes its client and server files and creates `cwSalesmen.salesmen`, the list
+-- of salesman entities on the map.
 
 --[[
   You don't have to do this, but I think it's nicer.

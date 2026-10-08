@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/AdvertAdd` admin command, which places an image advert from a URL, with a given width, height and
+-- optional scale, on the surface the player is looking at.
 
 -- Called when the command has been run.
 local COMMAND = cw.command:New('AdvertAdd')

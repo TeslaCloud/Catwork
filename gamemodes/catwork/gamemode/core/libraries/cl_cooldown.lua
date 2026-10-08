@@ -1,10 +1,6 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the client-side `cw.cooldown` library, which draws a cooldown box that fills clockwise with progress.
+--
+-- `cw.cooldown:DrawBox` draws it; the polygon tables it needs are built once per box size and cached.
 
 library.New('cooldown', cw)
 

@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers `/PKModeOn`, an operator command that turns perma-kill mode on for a number of minutes by setting the
+-- `PKMode` global net var to 1 until the `pk_mode` timer resets it.
 
 local COMMAND = cw.command:New('PKModeOn')
 COMMAND.tip = '#Command_Pkmodeon_Description'

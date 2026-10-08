@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the admin command `/CharTie` (alias `/Tie`), which ties or unties the target player through
+-- `Schema:TiePlayer` when the schema provides the `InvZipTie` command.
 
 local COMMAND = cw.command:New('CharTie')
 COMMAND.tip = '#Command_Chartie_Description'

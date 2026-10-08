@@ -1,10 +1,5 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Registers the `/ContSetMessage` command, which sets the message shown to players who open the prop the player is
+-- looking at.
 
 local COMMAND = cw.command:New('ContSetMessage')
 COMMAND.tip = '#Command_Contsetmessage_Description'

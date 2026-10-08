@@ -1,10 +1,7 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Defines the `cw.time` and `cw.date` libraries, accessors for the in-game clock and calendar.
+--
+-- The server holds the values and exports them for saving with `GetSaveData`. The client reads the networked minute,
+-- hour, day and date and formats the time with a 12 or 24 hour clock.
 
 library.New('time', cw)
 library.New('date', cw)

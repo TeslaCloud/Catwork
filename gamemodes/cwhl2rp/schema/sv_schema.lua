@@ -1,10 +1,12 @@
---[[
-  Catwork © 2016-2017 TeslaCloud Studios
-  Please find license under LICENSE.
-
-  Original code by Alex Grist, 'impulse and Conna Wiles
-  with contributions from Cloud Sixteen community.
---]]
+--- Server-side core of the HL2RP schema, which registers its config keys, hints and netstream receivers and defines the
+-- `Schema` functions that the schema's hooks, commands, items and entities call.
+--
+-- The functions cover citizen records (loyalty, criminal and work points, status, residence, job), player-controlled
+-- scanners, the Combine display and objectives, request, broadcast and Dispatch messages, Combine locks, door busting,
+-- tying and permanent kills, and the per-map saving and loading of radios, ration dispensers, vending machines and
+-- named NPCs. Config keys added here include `server_whitelist_identity`, `knockout_time`, `business_cost`, `permits`,
+-- `cwu_props`, `voice_cooldown` and `enable_permakill`; `cw.hint:AddHumanHint` is added for hints shown only to
+-- non-Combine players.
 
 Schema.scannerSounds = {
   'npc/scanner/cbot_servochatter.wav',

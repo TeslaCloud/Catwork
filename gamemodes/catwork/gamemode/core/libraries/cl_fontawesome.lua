@@ -1,8 +1,11 @@
---[[
-  (C) 2016 TeslaCloud Studios.
-  Font-Awesome's creators and license can be found here:
-  http://fontawesome.io/
---]]
+--- Defines the client-side `cw.FontIcons` library, which maps Font Awesome icon names such as `fa-star` to their
+-- characters and draws them.
+--
+-- `cw.FontIcons:GetIcon` returns the character for a name and `cw.FontIcons:Draw` draws an icon at a given size and
+-- color with the `cwFontAwesome` font, which this file registers. Most of the file is the table of icon names and
+-- character codes.
+--
+-- Font Awesome's creators and license can be found at http://fontawesome.io/.
 
 if !cw.fonts then
   include('catwork/gamemode/core/libraries/cl_fonts.lua')
