@@ -1,3 +1,7 @@
+--- Registers the Gas Mask blueprint (`blueprint_gasmask`) of the Craft plugin, which makes one `gasmask` at the
+-- workbench (`cw_crafttable`) from two `plastic` and two `charcoal`, requiring 20 Repair (`rem`) and progressing it by
+-- 35.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintGasmask_Name'

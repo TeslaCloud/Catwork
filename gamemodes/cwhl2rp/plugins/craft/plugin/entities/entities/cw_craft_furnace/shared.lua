@@ -1,3 +1,6 @@
+--- Defines the `cw_craft_furnace` entity of the Craft plugin, the furnace crafting station, which is based on
+-- `cw_crafttable` and only changes its name and model so that the craft menu lists the smelting blueprints made at it.
+
 DEFINE_BASECLASS('base_gmodentity')
 
 ENT.Base = 'cw_crafttable'

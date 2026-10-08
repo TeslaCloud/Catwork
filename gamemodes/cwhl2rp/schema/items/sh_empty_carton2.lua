@@ -1,3 +1,5 @@
+--- Defines the Empty Takeout Carton junk item, `empty_takeout_carton`, which is left behind by takeout food and has no
+-- behaviour of its own.
 
 ITEM.name = 'Empty Takeout Carton'
 ITEM.PrintName = '#Item_EmptyCarton2_PrintName'

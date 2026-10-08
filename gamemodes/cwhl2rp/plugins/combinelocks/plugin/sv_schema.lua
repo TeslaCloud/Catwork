@@ -1,3 +1,11 @@
+--- Server-side functions of the Combine Locks plugin that check access to a Combine lock, fit a lock to a door and save
+-- and load the locks of the current map.
+--
+-- `Schema:PlayerHasCombineLockAccess` lets Combine players through unless their rank is one the lock is closed to, and
+-- other players when they carry the matching `combine_lock_access_<level>` card or the `combine_lock_access_x` card.
+-- `Schema:ApplyCombineLock` spawns a `cw_combinelock` parented to a door, and `PLUGIN:SaveCombineLocks` and
+-- `PLUGIN:LoadCombineLocks` keep the locks in the schema data under `plugins/combinelocks/<map>`.
+
 local PLUGIN = PLUGIN
 
 --- Returns whether a player can open a Combine lock.

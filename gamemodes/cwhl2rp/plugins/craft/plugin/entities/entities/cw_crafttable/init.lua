@@ -1,3 +1,9 @@
+--- Server side of the `cw_crafttable` entity of the Craft plugin, the crafting station that opens the craft menu when
+-- used.
+--
+-- `ENT:Use` sends the `Craft::OpenMenu` netstream with the entity's class and name, at most once a second per player,
+-- so the menu lists the blueprints whose `craftplace` is that class. The other stations inherit this behaviour.
+
 include('shared.lua')
 
 AddCSLuaFile('cl_init.lua')

@@ -1,3 +1,9 @@
+--- Defines the `cwFAButton` panel, a button that draws a Font Awesome icon with an optional text label next to it.
+--
+-- The icon is drawn with `cw.FontIcons:Draw` and set up with `SetIcon`, `SetIconSize` and `SetText`; `SetCallback`
+-- sets what a click does. A collapsible button toggles between showing and hiding its text when clicked, and `FadeIn`
+-- and `FadeOut` animate its alpha. It is the base of the main menu's buttons, such as `cw.menuButton`.
+
 local PANEL = {}
 
 PANEL.isCollapsible = false

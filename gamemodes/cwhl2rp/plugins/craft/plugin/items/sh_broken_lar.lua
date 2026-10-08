@@ -1,3 +1,5 @@
+--- Defines the Broken LAR item (`broken_lar`) of the Craft plugin, a crafting material that the `blueprint_lar`
+-- blueprint rebuilds into the `sxbase_lar` weapon.
 
 ITEM.name = 'Broken LAR'
 ITEM.PrintName = '#Item_BrokenLar_Name'

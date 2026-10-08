@@ -1,3 +1,6 @@
+--- Defines the `Thermometer` item of the Diseases plugin, a reusable diagnostic tool that tells its user the
+-- temperature of the player being looked at, which is high when they have a fever.
+
 ITEM.name = 'Thermometer'
 ITEM.PrintName = '#Item_Thermometer_PrintName'
 ITEM.cost = 50

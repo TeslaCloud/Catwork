@@ -1,3 +1,5 @@
+--- Defines the Gunpowder item (`gunpowder`) of the Craft plugin, a crafting material made from `selitra`, `sulphur` and
+-- `charcoal` and used by the ammunition and breaching charge blueprints.
 
 ITEM.name = 'Gunpowder'
 ITEM.PrintName = '#Item_Gunpowder_Name'

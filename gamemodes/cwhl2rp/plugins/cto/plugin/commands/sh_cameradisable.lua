@@ -1,3 +1,6 @@
+--- Registers the `/CameraDisable` command of the Combine Technology Overlay plugin, which lets Combine units of rank
+-- SCN, OfC, EpU, DvL or SeC and Overwatch soldiers disable the alert `npc_combine_camera` with the given entity index.
+
 local cwCTO = cwCTO
 
 local COMMAND = cw.command:New('CameraDisable')

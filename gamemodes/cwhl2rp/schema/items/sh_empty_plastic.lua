@@ -1,3 +1,5 @@
+--- Defines the Empty Plastic Bottle junk item, `empty_plastic_bottle`, which is left behind by a large soda and has no
+-- behaviour of its own.
 
 ITEM.name = 'Empty Plastic Bottle'
 ITEM.PrintName = '#Item_EmptyPlastic_PrintName'

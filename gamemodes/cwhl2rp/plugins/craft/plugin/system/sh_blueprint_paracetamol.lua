@@ -1,3 +1,7 @@
+--- Registers the Paracetamol blueprint (`blueprint_paracetamol`) of the Craft plugin, which makes one `paracetamol` and
+-- one `empty_glass_bottle` at the chemical laboratory (`cw_craft_chem`) from one `health_vial`, one `charcoal` and one
+-- `vodka`, requiring 15 Chemistry (`chem`) and progressing it by 35.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintParacetamol_Name'

@@ -1,3 +1,6 @@
+--- Registers the Flour blueprint (`blueprint_flour`) of the Craft plugin, which makes one `flour` at the cooking stove
+-- (`cw_craft_cook`) from one `corn` and one `empty_carton`, progressing Cooking (`cook`) by 10.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintFlour_Name'

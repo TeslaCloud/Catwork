@@ -1,3 +1,6 @@
+--- Registers the Screwdriver blueprint (`blueprint_screwdriver`) of the Craft plugin, which makes one `screw_driver` at
+-- the workbench (`cw_crafttable`) from one `refined_metal`, requiring 10 Repair (`rem`) and progressing it by 15.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintScrewdriver_Name'

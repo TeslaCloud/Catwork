@@ -1,3 +1,6 @@
+--- Registers the Charcoal blueprint (`blueprint_charcoal`) of the Craft plugin, which makes one `charcoal` at the
+-- furnace (`cw_craft_furnace`) from three `wooden_parts`.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintCharcoal_Name'

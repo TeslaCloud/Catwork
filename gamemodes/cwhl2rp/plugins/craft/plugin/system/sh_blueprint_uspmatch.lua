@@ -1,3 +1,7 @@
+--- Registers the USP Match blueprint (`blueprint_uspmatch`) of the Craft plugin, which makes one `sxbase_uspmatch` at
+-- the weapon workbench (`cw_craft_wep`) from two `broken_uspmatch`, three `reclaimed_metal` and two `box_of_screws`,
+-- using `screw_driver` and `wrench` as tools, requiring 40 Repair (`rem`) and progressing it by 20.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintUspmatch_Name'

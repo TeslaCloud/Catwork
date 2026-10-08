@@ -1,3 +1,6 @@
+--- Registers the `/ContainmentBoxEndPos` superadmin command of the Radiation plugin, which sets the end corner of the
+-- box containment zone being placed to where the player is looking.
+
 local COMMAND = cw.command:New('ContainmentBoxEndPos')
 COMMAND.tip = ''
 COMMAND.text = ''

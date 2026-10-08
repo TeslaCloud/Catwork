@@ -1,3 +1,6 @@
+--- Defines the AK-74N Foregrip EoTech weapon item, which gives the `sxbase_ak74n` weapon and is sold to the Elite
+-- Overwatch Soldier class.
+
 ITEM.baseItem = 'weapon_base'
 ITEM.name = 'AK-74N Foregrip EoTech'
 ITEM.PrintName = '#Item_WeaponAk74n_PrintName'

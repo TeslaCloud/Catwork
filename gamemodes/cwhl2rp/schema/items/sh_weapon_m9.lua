@@ -1,3 +1,6 @@
+--- Defines the M9 Beretta pistol item, which gives the `sxbase_m9` weapon and is sold to the Elite Overwatch Soldier
+-- class.
+
 ITEM.baseItem = 'weapon_base'
 ITEM.name = 'M9 Beretta'
 ITEM.PrintName = '#Item_WeaponM9_PrintName'

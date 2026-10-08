@@ -1,3 +1,9 @@
+--- Client side of the global `netvars` library, which keeps the networked variables received from the server and reads
+-- them back with `Entity:GetNetVar` and `netvars.GetNetVar`.
+--
+-- Values arrive over the `nVar`, `nLcl`, `nDel` and `gVar` netstreams and are stored by entity index.
+-- `Player:GetLocalVar` is the same function as `Entity:GetNetVar`, so the local player's private variables are read
+-- the same way.
 
 if netvars then return end
 

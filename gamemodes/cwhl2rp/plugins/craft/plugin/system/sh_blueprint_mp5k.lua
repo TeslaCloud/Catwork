@@ -1,3 +1,7 @@
+--- Registers the MP5K blueprint (`blueprint_mp5k`) of the Craft plugin, which makes one `sxbase_mp5k` at the weapon
+-- workbench (`cw_craft_wep`) from two `broken_mp5k`, three `reclaimed_metal`, two `box_of_screws`, one `box_of_bolts`
+-- and two `plastic`, using `screw_driver` and `wrench` as tools, requiring 40 Repair (`rem`) and progressing it by 30.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintMp5k_Name'

@@ -1,3 +1,15 @@
+--- Main file of the Radiation plugin, which aliases it as `cwRadSystem` and implements containment zones that irradiate
+-- the players inside them, radiation sickness and the Geiger counter.
+--
+-- The file holds both realms. The server keeps the sphere and box zones in `cwRadSystem.stored`, saved per map under
+-- `plugins/containment/<map>`, and once a second adds a zone's radiation to the `radlevel` character data of the
+-- players inside it, reduced by the resistance from `cwRadSystem:ModifyPlayerRadResistance` (radiation-proof clothing,
+-- faction, and a gas mask filter or the Civil Protection `cp_filter` that drains while in use).
+-- `OnPlayerRadLevelChanged` and `PlayerRadThink` apply the sickness as the level rises: attribute penalties and chat
+-- messages in stages, no stamina regeneration, then knockouts and damage. The client plays the Geiger clicks, draws
+-- the radiation bloom, the filter bar and the zone's radiation reading, and lets superadmins see the zones as
+-- wireframes with the `cwradsys_get` and `cwradsys_show` console commands.
+
 local PLUGIN = PLUGIN
 
 PLUGIN:SetGlobalAlias('cwRadSystem')

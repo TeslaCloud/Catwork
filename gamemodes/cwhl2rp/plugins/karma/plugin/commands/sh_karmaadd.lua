@@ -1,3 +1,6 @@
+--- Registers the operator command `/KarmaAdd` (aliases `/CharAddKarma` and `/AddKarma`) of the Karma plugin, which adds
+-- between 1 and 100 karma to the target character.
+
 COMMAND = cw.command:New('KarmaAdd')
 COMMAND.tip = '#Command_Karmaadd_Description'
 COMMAND.text = '#Command_Karmaadd_Syntax'

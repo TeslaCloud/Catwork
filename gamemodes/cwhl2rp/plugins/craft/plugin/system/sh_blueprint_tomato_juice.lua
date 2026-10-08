@@ -1,3 +1,7 @@
+--- Registers the Tomato Juice blueprint (`blueprint_tomato_juice`) of the Craft plugin, which makes one `tomato_juice`
+-- at the cooking stove (`cw_craft_cook`) from two `tomato` and one `empty_soda_can`, progressing Cooking (`cook`) by
+-- 10.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintTomatoJuice_Name'

@@ -1,3 +1,10 @@
+--- Defines the `combine_mortar_shell` entity (print name Mortar Shell), a shell that falls straight down trailing smoke
+-- and explodes on impact.
+--
+-- Its spawn function places it just under the ceiling or skybox above the aimed position. On the server it moves down
+-- every tick and, once a hull trace below it hits something, creates an `env_explosion` with magnitude 200 and radius
+-- 460, shakes nearby screens and removes itself. On the client it draws glowing sprites on its tail.
+
 if SERVER then AddCSLuaFile() end
 
 ENT.PrintName = 'Mortar Shell'

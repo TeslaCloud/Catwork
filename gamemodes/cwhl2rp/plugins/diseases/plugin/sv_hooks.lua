@@ -1,3 +1,10 @@
+--- Server-side hooks of the Diseases plugin, which keep a character's disease in the `diseases` character data, network
+-- it, and run the symptoms, random infections and medicine rewards.
+--
+-- `OnePlayerSecond` plays the coughs and other symptoms, lets healthy characters catch a cough, fever, colour
+-- blindness or diarrhea at random and drains the health of characters given a lethal injection until they are
+-- perma-killed. `PlayerUseItem` can give an allergy, gastritis or insomnia from food and drink, and `PlayerHealed`
+-- rewards the patient with a dexterity boost and the healer with medical attribute progress.
 
 --- Called when a character data value changes; networks the `diseases` value to clients.
 -- @param player [Player The player whose character data changed]

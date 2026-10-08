@@ -1,3 +1,12 @@
+--- Defines the `cw.blueprints` library of the Craft plugin, which creates, registers and looks up the blueprints
+-- players craft at crafting stations.
+--
+-- A blueprint made with `cw.blueprints:New` inherits the base blueprint's defaults and accessors; its `craftplace` is
+-- the class of the station that lists it, `recipe` the materials it consumes, `required` the tools it needs, `reqatt`
+-- and `updatt` the attributes it requires and progresses, and `finish` the items it produces. The files in the
+-- plugin's `system` folder each register one blueprint, and `cw.blueprints:FindByID` and `cw.blueprints:GetAll` are
+-- how the craft menu and the `Craft::CraftItem` netstream find them.
+
 library.New('blueprints', cw)
 
 local stored = cw.blueprints.stored or {}

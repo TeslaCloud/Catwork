@@ -6,6 +6,12 @@
         Heavily based off the works of Cervidae Kosmonaut in Faction Doors.
 --]]
 
+--- Server side of the Personal Doors plugin: `PLUGIN:LoadDoorData` and `PLUGIN:SaveDoorData`, which keep the owners,
+-- position and `startLocked` setting of every personal door in the schema data `plugins/personaldoors/<map>`.
+--
+-- Loading matches the saved doors to map entities by position, fills each door's `_OwningPersons` table and
+-- `PLUGIN.personalDoors`, and locks or unlocks the door.
+
 --- Restores the personal doors saved for the current map.
 --
 -- Saved doors are matched to map entities by position. Each door's owner names are stored

@@ -1,3 +1,8 @@
+--- Defines the Filter item (`filter`) of the Radiation plugin, a gas mask filter with an `energy` charge that is
+-- swapped into the player's equipped `gasmask` item, or into the `cp_filter` character data for Civil Protection.
+--
+-- The filter that was in use is given back as a new `filter` item when it still has charge, and the item's description
+-- shows the remaining charge.
 
 ITEM.name = 'Filter'
 ITEM.PrintName = '#Item_Filter_PrintName'

@@ -1,3 +1,6 @@
+--- Registers the `/SetCombineLockRank` command, which lets Civil Protection of the CmD, SeC or MaJ rank close the
+-- Combine lock they are looking at to a `/`-separated list of Combine ranks.
+
 local COMMAND = cw.command:New('SetCombineLockRank')
 COMMAND.tip = '#Command_Setcombinelockrank_Description'
 COMMAND.text = '#Command_Setcombinelockrank_Syntax'

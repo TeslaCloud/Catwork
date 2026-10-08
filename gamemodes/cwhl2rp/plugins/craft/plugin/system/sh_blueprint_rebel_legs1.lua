@@ -1,3 +1,7 @@
+--- Registers the Tactical Pants blueprint (`blueprint_rebel_legs`) of the Craft plugin, which makes one `rebel_legs_1`
+-- at the workbench (`cw_crafttable`) from five `cloth` and one `refined_metal`, requiring 55 Clothes making (`cloth`)
+-- and progressing it by 55.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintRebelLegs1_Name'

@@ -1,3 +1,10 @@
+--- Main file of the Nightvision plugin, which draws the green night vision screen effect for players whose
+-- `nightvisionfx` networked boolean is set and defines who may use it.
+--
+-- The client renders the effect in a `RenderScreenspaceEffects` hook, and the server's `PlayerThink` hook switches it
+-- off for players who lose the right. `Schema:PlayerCanUseNightvision` allows Civil Protection units of rank SpF, CmD,
+-- CpT, MaJ or SeC and anyone with the `9` flag, which this file registers.
+
 local PLUGIN = PLUGIN
 
 if CLIENT then

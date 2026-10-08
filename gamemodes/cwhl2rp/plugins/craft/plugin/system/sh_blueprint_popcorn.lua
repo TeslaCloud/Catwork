@@ -1,3 +1,7 @@
+--- Registers the Popcorn blueprint (`blueprint_popcorn`) of the Craft plugin, which makes three `popcorn` at the
+-- cooking stove (`cw_craft_cook`) from two `corn` and three `empty_carton`, requiring 10 Cooking (`cook`) and
+-- progressing it by 10.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintPopcorn_Name'

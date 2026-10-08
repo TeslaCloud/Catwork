@@ -1,3 +1,5 @@
+--- Defines the PDB-6 item (`rad_checker`) of the Radiation plugin, a device that tells a player with at least half of
+-- the Medical attribute the radiation dose (`radlevel`) of the player or NPC they are looking at from close up.
 
 ITEM.name = 'PDB-6'
 ITEM.PrintName = '#Item_RadChecker_PrintName'

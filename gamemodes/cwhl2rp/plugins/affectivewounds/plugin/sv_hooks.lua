@@ -1,3 +1,12 @@
+--- Server-side hooks of the Affective wounds plugin that count the hits a player takes to the legs and arms and apply
+-- their effects.
+--
+-- `PlayerTraceAttack` keeps the counts in the `legshotamount` and `armshotamount` net vars. When the leg count reaches
+-- `affectivewounds_legshotlimit` the player falls over for 5 seconds, and when the arm count reaches
+-- `affectivewounds_armshotlimit` the active weapon is dropped as an item unless its class is in the local
+-- `NoStripWeps` list. `PlayerCharacterLoaded` resets the counters, starting Overwatch and Civil Protection characters
+-- below zero so that they take extra hits.
+
 local PLUGIN = PLUGIN
 
 -- If there's a certain weapon you don't want to be dropped when a player's arm is hit, add said weapon's CLASS NAME

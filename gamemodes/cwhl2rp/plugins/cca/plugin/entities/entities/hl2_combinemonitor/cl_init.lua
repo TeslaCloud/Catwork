@@ -1,3 +1,11 @@
+--- Client side of the `hl2_combinemonitor` entity of the Combine Civil Authority plugin, which draws the check
+-- monitor's screen.
+--
+-- The screen is rendered to a per-entity render target with a scrolling scanline material, for players within 1000
+-- units. It shows a waiting message while the monitor is off and the civil record from the `userData` net var while it
+-- is on; an anti-citizen gets a flashing `ERROR` screen with random binary instead. Also creates the `_CMB_FONT_1`,
+-- `_CMB_FONT_2`, `_CMB_FONT_4` and `_CMB_FONT_5` fonts.
+
 include('shared.lua')
 
 local glow = CreateMaterial('_CMB_SMALLMONITOR_GLOW4', 'UnlitGeneric', {

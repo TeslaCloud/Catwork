@@ -6,6 +6,12 @@
         Heavily based off the works of Cervidae Kosmonaut in Faction Doors.
 --]]
 
+--- Server-side hooks of the Personal Doors plugin, which restore the personal doors once the map entities are loaded
+-- and grant a door's personal owners basic access to it.
+--
+-- `PlayerDoesHaveDoorAccess` matches the player's character name, ignoring case, against the door's `_OwningPersons`
+-- table.
+
 local PLUGIN = PLUGIN
 
 --- Called after Catwork has loaded all map entities; restores the personal door owners.

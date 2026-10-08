@@ -1,3 +1,7 @@
+--- Registers the M1911 blueprint (`blueprint_m1911`) of the Craft plugin, which makes one `sxbase_m1911` at the weapon
+-- workbench (`cw_craft_wep`) from two `broken_m1911`, two `reclaimed_metal` and two `box_of_screws`, using
+-- `screw_driver` and `wrench` as tools, requiring 40 Repair (`rem`) and progressing it by 20.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintM1911_Name'

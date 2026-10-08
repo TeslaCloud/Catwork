@@ -1,3 +1,6 @@
+--- Registers the Cloth blueprint (`blueprint_cloth`) of the Craft plugin, which makes one `cloth` at the workbench
+-- (`cw_crafttable`) from two `weed`.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintCloth_Name'

@@ -1,3 +1,6 @@
+--- Registers the `/ContainmentRemove` superadmin command of the Radiation plugin, which removes the containment zones
+-- whose centre or corner lies within a radius, 64 units by default, of where the player is looking.
+
 local COMMAND = cw.command:New('ContainmentRemove')
 COMMAND.tip = ''
 COMMAND.text = '#Command_Containmentremove_Syntax'

@@ -1,3 +1,10 @@
+--- Server-side part of the Catwork Dev Plugin, which defines `catDev:IsDeveloper` to check whether a player is a
+-- Catwork developer.
+--
+-- A developer is a superadmin whose Steam ID is in `catDev.authorizedIDs` or whose hashed Steam ID is in
+-- `catDev.authorizedHashes`; being listed never grants anything to a player who is not a superadmin already. The
+-- `/SetCharData` command uses it.
+
 --- Returns whether a player is a Catwork developer.
 --
 -- Developers are superadmins whose Steam ID is in `catDev.authorizedIDs`, or whose hashed Steam ID is in

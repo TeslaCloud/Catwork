@@ -1,3 +1,7 @@
+--- Registers the admin command `/CharSetThirst` of the Hunger plugin, which sets the target character's `Thirst`
+-- character data to the given amount, 100 by default; its aliases `/SetFatigue`, `/SetSleep` and `/CharSetSleep` are
+-- the same as those of `/CharSetFatigue`.
+
 local PLUGIN = PLUGIN
 
 local COMMAND = cw.command:New('CharSetThirst')

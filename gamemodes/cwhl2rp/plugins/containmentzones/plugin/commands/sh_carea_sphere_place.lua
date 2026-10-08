@@ -1,3 +1,6 @@
+--- Registers the `/ContainmentSpherePlace` superadmin command of the Radiation plugin, which adds a sphere containment
+-- zone with the given radius and radiation level where the player is looking.
+
 local COMMAND = cw.command:New('ContainmentSpherePlace')
 COMMAND.tip = ''
 COMMAND.text = '#Command_Containmentsphereplace_Syntax'

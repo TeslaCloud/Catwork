@@ -1,3 +1,5 @@
+--- Defines the Empty Tin Can junk item, `empty_tin_can`, a plastic jar that is left behind by citizen supplements and
+-- has no behaviour of its own.
 
 ITEM.name = 'Empty Tin Can'
 ITEM.PrintName = '#Item_EmptyPlastic2_PrintName'

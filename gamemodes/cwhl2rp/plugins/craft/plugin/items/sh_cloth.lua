@@ -1,3 +1,5 @@
+--- Defines the Cloth item (`cloth`) of the Craft plugin, a crafting material made by the `blueprint_cloth` blueprint
+-- and used by the clothing, bag, backpack and bandage blueprints.
 
 ITEM.name = 'Cloth'
 ITEM.PrintName = '#Item_Cloth_Name'

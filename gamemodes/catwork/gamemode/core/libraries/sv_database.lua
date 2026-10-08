@@ -6,6 +6,15 @@
   http://www.alexgrist.com
 --]]
 
+--- Defines the `cw.database` library, the server's query builder and connection layer for SQLite and MySQL.
+--
+-- Query objects made with `cw.database:Select`, `Insert`, `Update`, `Delete`, `Create`, `Drop` and `Truncate` are
+-- filled in with `Where`, `Limit`, `Callback` and similar methods and sent with `Execute`; `EasyRead` and `EasyWrite`
+-- cover the common select and update-or-insert cases. `cw.database:Connect` uses the module named in
+-- `cw.database.Module` (`sqlite` by default, `mysqloo` for MySQLOO 9; the `tmysql4` path is kept but untested), queues
+-- queries until the connection is ready and retries a failed MySQLOO connection after 30 seconds. Once connected,
+-- `OnConnected` creates the `bans`, `players` and `characters` tables and runs the `DatabaseConnected` hook.
+
 cw.database = cw.database or {}
 cw.database.connections = cw.database.connections or {}
 

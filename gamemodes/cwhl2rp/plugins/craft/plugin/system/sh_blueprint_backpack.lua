@@ -1,3 +1,7 @@
+--- Registers the Backpack blueprint (`blueprint_backpack`) of the Craft plugin, which makes one `boxed_backpack` at the
+-- workbench (`cw_crafttable`) from two `cloth` and two `cables`, requiring 30 Clothes making (`cloth`) and progressing
+-- it by 20.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintBackpack_Name'

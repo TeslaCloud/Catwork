@@ -1,3 +1,7 @@
+--- Registers the Refined Electronics blueprint (`blueprint_electronics`) of the Craft plugin, which makes one
+-- `refined_electronics` at the workbench (`cw_crafttable`) from two `scrap_electronics`, using `screw_driver` as a
+-- tool, progressing Repair (`rem`) by 15.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintElectronics_Name'

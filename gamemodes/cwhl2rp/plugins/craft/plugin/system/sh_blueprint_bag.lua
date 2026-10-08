@@ -1,3 +1,6 @@
+--- Registers the Bag blueprint (`blueprint_bag`) of the Craft plugin, which makes one `boxed_bag` at the workbench
+-- (`cw_crafttable`) from one `cloth` and one `cables`, requiring 15 Clothes making (`cloth`) and progressing it by 15.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintBag_Name'

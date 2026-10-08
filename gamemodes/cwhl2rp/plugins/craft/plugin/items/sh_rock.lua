@@ -1,3 +1,5 @@
+--- Defines the Rock item (`rock`) of the Craft plugin, a heavy item in the Materials category that no blueprint uses
+-- yet.
 
 ITEM.name = 'Rock'
 ITEM.PrintName = '#Item_Rock_Name'

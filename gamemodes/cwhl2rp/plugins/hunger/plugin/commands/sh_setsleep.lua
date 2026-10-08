@@ -1,3 +1,6 @@
+--- Registers the admin command `/CharSetFatigue` (aliases `/SetFatigue`, `/SetSleep` and `/CharSetSleep`) of the Hunger
+-- plugin, which sets the target character's `Fatigue` character data to the given amount, 100 by default.
+
 local PLUGIN = PLUGIN
 
 local COMMAND = cw.command:New('CharSetFatigue')

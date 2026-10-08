@@ -1,3 +1,7 @@
+--- Registers the 12 Gauge Buckshot blueprint (`blueprint_ammo_buckshot`) of the Craft plugin, which makes one
+-- `ammo_buckshot` at the ammo workbench (`cw_craft_bullet`) from one `bullet_casings`, one `gunpowder` and one
+-- `scrap_metal`, requiring 30 Repair (`rem`) and progressing it by 20.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintAmmoBuckshot_Name'

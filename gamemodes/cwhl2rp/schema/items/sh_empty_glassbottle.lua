@@ -1,3 +1,5 @@
+--- Defines the Empty Glass Bottle junk item, `empty_glass_bottle`, which is left behind by beer and vodka, serves as a
+-- crafting material and has no behaviour of its own.
 
 ITEM.name = 'Empty Glass Bottle'
 ITEM.PrintName = '#Item_EmptyGlassbottle_PrintName'

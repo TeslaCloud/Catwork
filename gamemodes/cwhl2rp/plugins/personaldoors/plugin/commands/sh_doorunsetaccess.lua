@@ -6,6 +6,9 @@
         Heavily based off the works of Cervidae Kosmonaut in Faction Doors.
 --]]
 
+--- Registers the operator command `/DoorUnsetAccess` of the Personal Doors plugin, which removes the target character's
+-- personal access to the door the player is looking at.
+
 local PLUGIN = PLUGIN
 
 local COMMAND = cw.command:New('DoorUnsetAccess')

@@ -1,3 +1,10 @@
+--- Server-side functions of the Combine Devices plugin that save and load the Combine devices of the current map.
+--
+-- `PLUGIN:SaveCombineDevices` and `PLUGIN:LoadCombineDevices` cover four entity classes, each in its own schema data
+-- file under `plugins/combinedevices/`: `cw_combineaccessmonitor` with its texts, access level and status, the
+-- `hl2_info_citizen` and `hl2_info_card` terminals with their locked state, and `hl2_combinemonitor`. Loaded devices
+-- are frozen in place.
+
 local PLUGIN = PLUGIN
 
 --- Saves the Combine devices on the map to the schema data.

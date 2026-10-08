@@ -19,6 +19,12 @@
 --
 -- Based on the original Bouncy Ball.
 
+--- Client side of the `cw_emplacementgun` entity of the Emplacement Gun plugin, which draws the gun and handles the
+-- local player operating one.
+--
+-- The `ZAR3_S` net message says which gun the player has taken over or left; while operating one, the view model and
+-- the ammo HUD are hidden and a `CreateMove` hook turns the attack key into the `zar3_attack` console command.
+
 include('shared.lua')
 
 -- Import the function(s) and remove their globals.

@@ -1,3 +1,6 @@
+--- Defines the M40A1 Optic Suppressor sniper rifle item, which gives the `sxbase_m40a1optic_2` weapon and is not sold
+-- in the business menu.
+
 ITEM.baseItem = 'weapon_base'
 ITEM.name = 'M40A1 Optic Suppressor'
 ITEM.PrintName = '#Item_WeaponM40a1optic2_PrintName'

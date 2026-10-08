@@ -1,3 +1,5 @@
+--- Defines the PDB User Manual item (`pdb_book`) of the Radiation plugin, a book that raises the reader's Medical
+-- attribute to 50 when it is lower, is not used up, and teaches Overwatch soldiers nothing.
 
 ITEM.name = 'PDB User Manual'
 ITEM.PrintName = '#Item_PdbBook_PrintName'

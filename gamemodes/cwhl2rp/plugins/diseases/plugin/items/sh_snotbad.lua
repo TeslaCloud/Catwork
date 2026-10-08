@@ -1,3 +1,7 @@
+--- Defines the `Sleeping Pills (Non-prescription)` medical item (`snotbad`) of the Diseases plugin, which sets the
+-- `Fatigue` character data to 100 and cures insomnia with a one in two chance of a relapse six minutes later, when it
+-- is swallowed or given to the player being looked at with its `Give` action.
+
 ITEM.name = 'Sleeping Pills (Non-prescription)'
 ITEM.PrintName = '#Item_Snotbad_PrintName'
 ITEM.uniqueID = 'snotbad'

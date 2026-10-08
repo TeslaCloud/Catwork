@@ -1,3 +1,5 @@
+--- Defines the Contact Lenses item, `lenses`, which has no behaviour of its own; the framework's `PlayerHasLenses` hook
+-- checks whether the local player carries it.
 
 ITEM.name = 'Contact Lenses'
 ITEM.PrintName = '#Item_Lenses_PrintName'

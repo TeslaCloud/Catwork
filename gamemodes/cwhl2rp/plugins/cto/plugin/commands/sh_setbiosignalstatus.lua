@@ -1,3 +1,6 @@
+--- Registers the `/SetBiosignalStatus` command of the Combine Technology Overlay plugin, which turns the player's own
+-- biosignal on or off with `cwCTO:SetPlayerBiosignal`.
+
 local cwCTO = cwCTO
 
 local COMMAND = cw.command:New('SetBiosignalStatus')

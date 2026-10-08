@@ -1,3 +1,9 @@
+--- Defines the `cwCombinePlayerLog` panel of the Combine Civil Authority plugin, a scrolling list of a player's civil
+-- record, and `cwPlayerLogEntry`, one row of it.
+--
+-- The list reads the entries from the player's `CCA_Logs` net var and shows them newest first, or a notice when there
+-- are none. Each row draws the entry's text, author and time on the color that `cca.GetLogType` gives for its type.
+
 local color_black = Color(0, 0, 0)
 
 local PANEL = {}

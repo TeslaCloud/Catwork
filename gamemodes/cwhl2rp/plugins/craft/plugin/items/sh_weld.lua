@@ -1,3 +1,5 @@
+--- Defines the Welding tool item (`weld`) of the Craft plugin, a tool, filed under Materials, that most weapon
+-- blueprints require but do not use up.
 
 ITEM.name = 'Welding tool'
 ITEM.PrintName = '#Item_Weld_Name'

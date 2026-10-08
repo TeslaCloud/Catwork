@@ -1,3 +1,5 @@
+--- Defines the Wooden Board item (`wooden_board`) of the Craft plugin, an item in the Materials category that is not
+-- sold in the business menu and that no blueprint uses yet.
 
 ITEM.name = 'Wooden Board'
 ITEM.PrintName = '#Item_WoodenBoard_Name'

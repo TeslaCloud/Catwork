@@ -1,3 +1,7 @@
+--- Defines the `Inhaler` medical item (`ingall`) of the Diseases plugin, which cures its user's pneumonia one to two
+-- minutes after use; its custom action for treating the player being looked at is listed under another name than the
+-- `Give` its handler reacts to, so only self-use has an effect.
+
 ITEM.name = 'Inhaler'
 ITEM.PrintName = '#Item_Ingall_PrintName'
 ITEM.uniqueID = 'ingall'

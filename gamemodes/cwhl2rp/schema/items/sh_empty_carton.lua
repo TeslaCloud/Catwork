@@ -1,3 +1,5 @@
+--- Defines the Empty Carton junk item, `empty_carton`, which is left behind by a milk carton or popcorn and has no
+-- behaviour of its own.
 
 ITEM.name = 'Empty Carton'
 ITEM.PrintName = '#Item_EmptyCarton_PrintName'

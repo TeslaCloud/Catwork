@@ -1,3 +1,14 @@
+--- Shared definition of the `cw_factory_garbage_metal` entity (Russian print name meaning Recycling: Metal), a
+-- spawnable garbage recycler that turns metal junk items into `scrap_metal` items, with its settings, network vars and
+-- think logic.
+--
+-- `ENT.GARBAGE_ITEMS` lists the accepted items (empty cans and melee weapons), `ENT.METAL_GARBAGE_COUNT_START` (10) is
+-- the garbage needed for a cycle and `ENT.WORK_TIME` (30) its length in seconds. `ENT:Think` absorbs accepted
+-- `cw_item` entities above an idle recycler, each counting twice its weight, drains the count during a cycle and calls
+-- `ENT:EndWork` when the time is up; the file also adds a `PostDrawOpaqueRenderables` hook named `Factories`, whose
+-- class check skips every entity. The single-file `cw_factory_garbage_metal.lua` next to this folder defines the same
+-- class and is loaded after it.
+
 ENT.Base = 'base_gmodentity'
 ENT.Type = 'anim'
 

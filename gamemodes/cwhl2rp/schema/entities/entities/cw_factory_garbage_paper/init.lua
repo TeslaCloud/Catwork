@@ -1,3 +1,10 @@
+--- Server side of the `cw_factory_garbage_paper` entity: sets up the paper recycler and implements its work cycle.
+--
+-- `ENT:StartWork` starts or resumes a cycle once enough garbage is collected, `ENT:StopWork` pauses it and
+-- `ENT:EndWork` spawns the `paper` product at the product position. `ENT:Eject` moves the collected garbage into the
+-- storage entity set with `SetEjectStorage`, dropping what does not fit, and `ENT:Use` does nothing, since the
+-- recycler is operated through the Factories plugin's entity menu options.
+
 AddCSLuaFile('cl_init.lua')
 AddCSLuaFile('shared.lua')
 include('shared.lua')

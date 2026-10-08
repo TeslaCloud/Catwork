@@ -1,3 +1,10 @@
+--- Server side of the `hl2_combinemonitor` entity of the Combine Civil Authority plugin, a wall monitor that shows a
+-- citizen their own civil record when they use it.
+--
+-- `ENT:Use` switches the screen on for six seconds for a non-Combine player and `ENT:SetPlayer` networks their name,
+-- citizen ID, loyalty, crime and work points, work level, citizen status, residence and job as the `userData` net var.
+-- The on state is the `monitor_activated` net var.
+
 AddCSLuaFile('cl_init.lua')
 AddCSLuaFile('shared.lua')
 include('shared.lua')

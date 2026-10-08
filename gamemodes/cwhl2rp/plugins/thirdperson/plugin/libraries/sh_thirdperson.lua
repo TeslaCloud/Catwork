@@ -1,6 +1,14 @@
 -- All credit for third person script goes to cringerpants and his/her affiliates.
 -- His/her email: cringerpants@phuce.com
 
+--- Defines the `cw.thirdperson` library, the chase camera behind the Third Person plugin.
+--
+-- On the server the `chasecam` console command switches a player's `thirdperson` networked int and view entity through
+-- `cw.thirdperson.Enable` and `cw.thirdperson.Disable`. On the client its `CalcView`, `HUDPaint` and `HUDShouldDraw`
+-- hooks place the camera behind the player, draw a crosshair at the aim point and hide the default one, tuned by the
+-- `chasecam_*` convars and the `chasecam_zoom` command. A shared `UpdateAnimation` hook speeds up the player's
+-- animation while sprinting.
+
 library.New('thirdperson', cw)
 
 -- Client

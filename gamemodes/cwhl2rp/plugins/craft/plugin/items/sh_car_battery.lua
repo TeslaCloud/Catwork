@@ -1,3 +1,5 @@
+--- Defines the Car Battery item (`car_battery`) of the Craft plugin, an item in the Materials category that no
+-- blueprint uses yet.
 
 ITEM.name = 'Car Battery'
 ITEM.PrintName = '#Item_CarBattery_Name'

@@ -1,3 +1,5 @@
+--- Defines the Broken AK-74 item (`broken_ak74`) of the Craft plugin, a crafting material that the `blueprint_ak74`
+-- blueprint rebuilds into the `sxbase_ak74` weapon.
 
 ITEM.name = 'Broken AK-74'
 ITEM.PrintName = '#Item_BrokenAk74_Name'

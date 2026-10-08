@@ -1,3 +1,7 @@
+--- Defines the `cw_craft_bullet` entity of the Craft plugin, the ammo workbench crafting station, which is based on
+-- `cw_crafttable` and only changes its name and model so that the craft menu lists the ammunition blueprints made at
+-- it.
+
 DEFINE_BASECLASS('base_gmodentity')
 
 ENT.Base = 'cw_crafttable'

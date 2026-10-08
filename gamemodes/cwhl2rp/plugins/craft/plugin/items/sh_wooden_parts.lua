@@ -1,3 +1,5 @@
+--- Defines the Wooden Parts item (`wooden_parts`) of the Craft plugin, a crafting material that is not sold in the
+-- business menu and is used to make `charcoal` and by the `blueprint_ak74` blueprint.
 
 ITEM.name = 'Wooden Parts'
 ITEM.PrintName = '#Item_WoodenParts_Name'

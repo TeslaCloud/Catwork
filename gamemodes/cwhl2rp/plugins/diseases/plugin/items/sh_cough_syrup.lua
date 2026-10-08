@@ -1,3 +1,6 @@
+--- Defines the `Cough Syrup` medical item (`cough_syrup`) of the Diseases plugin, which cures a cough when it is drunk
+-- or given to the player being looked at with its `Give` action.
+
 ITEM.name = 'Cough Syrup'
 ITEM.PrintName = '#Item_CoughSyrup_PrintName'
 ITEM.uniqueID = 'cough_syrup'

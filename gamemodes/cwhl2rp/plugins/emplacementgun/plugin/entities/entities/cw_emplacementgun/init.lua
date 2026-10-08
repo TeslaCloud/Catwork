@@ -26,6 +26,13 @@
 -- afterwards with little to zero improvement.
 -- In addition, the flashlight is kind-of-buggy - but a certain someone just wanted me to release this, so take it.
 
+--- Server side of the `cw_emplacementgun` entity of the Emplacement Gun plugin, a mounted pulse gun on a Combine
+-- barricade that a Combine player takes over with the use key, aims with their view and fires.
+--
+-- `ENT:SpawnFunction` and `ENT:SpawnProp` mount the gun on a barricade prop, `ENT:TakeOver` and `ENT:Abandon` set and
+-- release the controller, and `ENT:Think` fires bullets while the `zar3_attack` console command holds attack. The
+-- controller's flashlight key toggles the gun's spotlight instead.
+
 AddCSLuaFile('cl_init.lua')
 AddCSLuaFile('shared.lua')
 include('shared.lua')

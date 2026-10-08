@@ -1,3 +1,6 @@
+--- Defines the `Combine Security Clearance Card` item (`combine_security_card`) of the Combine Locks plugin, an ID card
+-- with no use action whose bearer the Friendly Combine plugin makes friendly to Combine NPCs.
+
 ITEM.name = 'Combine Security Clearance Card'
 ITEM.PrintName = '#Item_CombineSecurityCard_PrintName'
 ITEM.uniqueID = 'combine_security_card'

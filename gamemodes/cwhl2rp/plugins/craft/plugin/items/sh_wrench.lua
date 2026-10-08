@@ -1,3 +1,5 @@
+--- Defines the Wrench item (`wrench`) of the Craft plugin, a tool that most weapon blueprints require but do not use
+-- up.
 
 ITEM.name = 'Wrench'
 ITEM.PrintName = '#Item_Wrench_Name'

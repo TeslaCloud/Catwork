@@ -1,3 +1,5 @@
+--- Defines the Screw Driver item (`screw_driver`) of the Craft plugin, a tool that the weapon blueprints and some
+-- others require but do not use up.
 
 ITEM.name = 'Screw Driver'
 ITEM.PrintName = '#Item_ScrewDriver_Name'

@@ -1,3 +1,9 @@
+--- Main file of the Catwork Dev Plugin, which aliases it as `catDev`, lists the Steam IDs of the Catwork developers and
+-- includes its server file.
+--
+-- `catDev.authorizedIDs` holds plain Steam IDs and `catDev.authorizedHashes` holds older entries that are only known
+-- as MD5 hashes. Both lists are read by `catDev:IsDeveloper`.
+
 PLUGIN:SetGlobalAlias('catDev')
 
 -- Plain SteamIDs of the developers.

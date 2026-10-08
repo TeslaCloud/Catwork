@@ -1,3 +1,6 @@
+--- Server side of the `cw_unionlight` entity, the Union Light placed from an item: sets the Combine light model and its
+-- physics and defines the spawn function, with no use or think behaviour.
+
 include('shared.lua')
 
 AddCSLuaFile('cl_init.lua')

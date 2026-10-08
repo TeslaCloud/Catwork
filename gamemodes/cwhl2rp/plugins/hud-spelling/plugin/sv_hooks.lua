@@ -4,6 +4,12 @@
   without permission.
 --]]
 
+--- Server-side hook of the Spelling plugin that capitalises the first letter of messages with the `ic` chat filter and
+-- ends them with a period.
+--
+-- `ChatboxAdjustMessageInfo` changes `info.text` in place, keeps leading and trailing quotes and adds no period after
+-- a period, exclamation mark or question mark.
+
 --- Called before a chat message is sent; capitalises in-character messages and ends them with a period.
 --
 -- Leading and trailing quotes are kept, and no period is added after `.`, `!` or `?`.

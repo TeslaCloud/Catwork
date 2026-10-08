@@ -2,6 +2,13 @@
 -- NutScript and code license are found here:
 -- https://github.com/Chessnut/NutScript
 
+--- Server side of the global `netvars` library, which stores networked variables on entities and globally and sends
+-- them to clients over netstream.
+--
+-- `Entity:SetNetVar` and `netvars.SetNetVar` send a value to everyone or to chosen receivers, and `Player:SetLocalVar`
+-- sends it only to that player; a value that is or contains a function is rejected with an error. A joining player
+-- receives everything through `Player:SyncVars`, and an entity's variables are cleared when it is removed.
+
 if netvars then return end
 
 library.New('netvars', _G)

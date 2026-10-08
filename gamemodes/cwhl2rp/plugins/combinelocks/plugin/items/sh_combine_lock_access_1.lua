@@ -1,3 +1,5 @@
+--- Defines the level 1 `Combine Lock Access Card` item (`combine_lock_access_1`) of the Combine Locks plugin, the blue
+-- card that lets a non-Combine player open Combine locks with access level 1.
 
 ITEM.name = 'Combine Lock Access Card'
 ITEM.PrintName = '#Item_CombineLockAccess1_PrintName'

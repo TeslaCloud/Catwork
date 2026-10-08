@@ -1,3 +1,5 @@
+--- Defines the Broken M40A1 item (`broken_m40a1`) of the Craft plugin, a crafting material that the `blueprint_m40a1`
+-- blueprint rebuilds into the `sxbase_m40a1` weapon.
 
 ITEM.name = 'Broken M40A1'
 ITEM.PrintName = '#Item_BrokenM40a1_Name'

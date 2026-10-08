@@ -1,3 +1,7 @@
+--- Registers the Medic Tactical Pants blueprint (`blueprint_medic_legs`) of the Craft plugin, which makes one
+-- `rebel_legs_3` at the workbench (`cw_crafttable`) from five `cloth` and two `refined_metal`, requiring 65 Clothes
+-- making (`cloth`) and progressing it by 65.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintMedicLegs_Name'

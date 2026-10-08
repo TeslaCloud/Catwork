@@ -1,3 +1,7 @@
+--- Registers the Makeshift Radio blueprint (`blueprint_handheld_radio`) of the Craft plugin, which makes one
+-- `handheld_radio` at the workbench (`cw_crafttable`) from one `refined_electronics`, one `plastic` and one
+-- `energy_cell`, using `screw_driver` as a tool, requiring 45 Repair (`rem`) and progressing it by 20.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintHandheldRadio_Name'

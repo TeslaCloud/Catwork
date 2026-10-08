@@ -1,3 +1,7 @@
+--- Registers the Breaching Charge blueprint (`blueprint_breach`) of the Craft plugin, which makes two `breach` at the
+-- chemical laboratory (`cw_craft_chem`) from three `gunpowder`, one `cables`, one `refined_electronics` and one
+-- `energy_cell`, using `screw_driver` as a tool, requiring 40 Chemistry (`chem`) and progressing it by 20.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintBreach_Name'

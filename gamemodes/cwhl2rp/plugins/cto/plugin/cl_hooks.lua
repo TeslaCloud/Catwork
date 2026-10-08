@@ -1,3 +1,11 @@
+--- Client-side hooks of the Combine Technology Overlay plugin, which draw the Combine HUD overlay: the biosignal
+-- markers of other units, requests for assistance, Combine cameras with the movement violations they see, and the
+-- socio-status and objectives at the top of the screen.
+--
+-- `cwCTO:UpdateBiosignalLocations` keeps the marker tables current, and `cwCTO:HUDPaintForeground` and
+-- `cwCTO:HUDPaintTopScreen` draw them for Combine players. The data arrives from the server through the
+-- `CombineRequestSignal`, `UpdateBiosignalCameraData` and `RecalculateHUDObjectives` netstreams.
+
 local cwCTO = cwCTO
 
 cwCTO.biosignalLocations = {}

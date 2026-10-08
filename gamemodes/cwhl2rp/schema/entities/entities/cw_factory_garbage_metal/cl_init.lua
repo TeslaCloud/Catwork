@@ -1,3 +1,9 @@
+--- Client side of the `cw_factory_garbage_metal` entity: creates the `_GR_CMB_FONT_1` to `_GR_CMB_FONT_4` fonts and
+-- draws the metal recycler's indicator screen.
+--
+-- The screen is painted to a per-entity render target and shows the status, the garbage count and the cycle progress
+-- as bars. While the local player holds the toolgun, lines also mark the product position.
+
 include('shared.lua')
 
 surface.CreateFont('_GR_CMB_FONT_1', {

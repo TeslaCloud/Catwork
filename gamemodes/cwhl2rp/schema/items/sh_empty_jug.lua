@@ -1,3 +1,4 @@
+--- Defines the Empty Jug junk item, `empty_jug`, which is left behind by a milk jug and has no behaviour of its own.
 
 ITEM.name = 'Empty Jug'
 ITEM.PrintName = '#Item_EmptyJug_PrintName'

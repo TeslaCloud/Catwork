@@ -1,3 +1,6 @@
+--- Registers the Bandage blueprint (`blueprint_bandage`) of the Craft plugin, which makes one `bandage` at the
+-- workbench (`cw_crafttable`) from one `cloth`, progressing Medical (`med`) by 15.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintBandage_Name'

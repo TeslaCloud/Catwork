@@ -1,3 +1,7 @@
+--- Registers the `blueprint_ammo_762x51` ammunition blueprint of the Craft plugin, which makes one `ammo_762x51` at the
+-- ammo workbench (`cw_craft_bullet`) from one `bullet_casings`, two `gunpowder` and one `refined_metal`, requiring 30
+-- Repair (`rem`) and progressing it by 15.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintAmmo762x51_Name'

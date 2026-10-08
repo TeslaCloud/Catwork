@@ -1,3 +1,5 @@
+--- Defines the `Knife` melee weapon item (`weapon_knife`), a `weapon_base` item for the `weapon_knife` weapon.
+
 ITEM.baseItem = 'weapon_base'
 ITEM.name = 'Knife'
 ITEM.PrintName = '#Item_WeaponKnife_PrintName'

@@ -1,3 +1,6 @@
+--- Registers the operator command `/CharSetBiosignalStatus` of the Combine Technology Overlay plugin, which turns the
+-- target character's biosignal on or off with `cwCTO:SetPlayerBiosignal`.
+
 local cwCTO = cwCTO
 
 local COMMAND = cw.command:New('CharSetBiosignalStatus')

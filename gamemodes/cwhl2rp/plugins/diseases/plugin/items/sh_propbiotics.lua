@@ -1,3 +1,6 @@
+--- Defines the `Pack of Probiotics` medical item (`probiotics`) of the Diseases plugin, which cures diarrhea when it is
+-- swallowed or given to the player being looked at with its `Give` action.
+
 ITEM.name = 'Pack of Probiotics'
 ITEM.PrintName = '#Item_Probiotics_PrintName'
 ITEM.uniqueID = 'probiotics'

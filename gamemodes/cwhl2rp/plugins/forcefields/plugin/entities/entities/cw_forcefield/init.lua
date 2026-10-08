@@ -1,3 +1,11 @@
+--- Server side of the `cw_forcefield` entity of the Force Fields plugin, a Combine force field between two posts whose
+-- mode a Combine player cycles with the use key.
+--
+-- `ENT:Initialize` spawns the far post at the nearest wall and builds the collision mesh between the posts; the
+-- networked int 0 holds the mode and the networked entity 0 the far post. The field hums while powered, plays a sound
+-- on non-Combine players who touch it and saves all forcefields when its mode changes. `ENT:OnRemove` is defined
+-- twice, and the second definition is the one in effect.
+
 include('shared.lua')
 
 AddCSLuaFile('cl_init.lua')

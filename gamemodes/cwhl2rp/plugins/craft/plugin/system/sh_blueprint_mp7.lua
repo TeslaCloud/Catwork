@@ -1,3 +1,8 @@
+--- Registers the MP7 blueprint (`blueprint_mp7`) of the Craft plugin, which makes one `sxbase_mp7` at the weapon
+-- workbench (`cw_craft_wep`) from two `broken_mp7`, three `reclaimed_metal`, two `box_of_screws` and two
+-- `box_of_bolts`, using `screw_driver`, `weld` and `wrench` as tools, requiring 70 Repair (`rem`) and progressing it
+-- by 30.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintMp7_Name'

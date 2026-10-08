@@ -1,3 +1,7 @@
+--- Registers the Antidepressants blueprint (`blueprint_antidepressants`) of the Craft plugin, which makes one
+-- `antidepressants` at the chemical laboratory (`cw_craft_chem`) from three `weed`, progressing Chemistry (`chem`) by
+-- 15.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintAntidepressants_Name'

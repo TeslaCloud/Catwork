@@ -1,3 +1,8 @@
+--- Registers the M4A1 blueprint (`blueprint_m4a1`) of the Craft plugin, which makes one `sxbase_m4a1` at the weapon
+-- workbench (`cw_craft_wep`) from two `broken_m4a1`, three `reclaimed_metal`, three `box_of_screws`, two
+-- `box_of_bolts` and two `plastic`, using `screw_driver`, `weld` and `wrench` as tools, requiring 50 Repair (`rem`)
+-- and progressing it by 40.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintM4a1_Name'

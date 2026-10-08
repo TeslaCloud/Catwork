@@ -1,3 +1,7 @@
+--- Server side of the Force Fields plugin: `cwForceField:LoadForceFields` and `cwForceField:SaveForceFields`, which
+-- keep the position, angles, mode and power state of every `cw_forcefield` in the schema data
+-- `plugins/forcefields/<map>`.
+
 --- Spawns the forcefields saved for the current map with their saved mode and power state.
 --
 -- Restored fields keep their exact position instead of snapping to the floor.

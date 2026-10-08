@@ -1,3 +1,6 @@
+--- Shared definition of the `hl2_combinemonitor` entity of the Combine Civil Authority plugin, a spawnable entity named
+-- `Check monitor` that uses the small Combine monitor model and is drawn in the translucent render group.
+
 ENT.Base = 'base_gmodentity'
 ENT.Type = 'anim'
 

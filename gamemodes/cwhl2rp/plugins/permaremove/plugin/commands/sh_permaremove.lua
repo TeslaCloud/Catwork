@@ -1,3 +1,6 @@
+--- Registers the superadmin command `/EntPermaRemove` of the Perma Remove plugin, which removes the entity the player
+-- is looking at and saves it so that it stays removed after a map restart.
+
 local PLUGIN = PLUGIN
 
 local COMMAND = cw.command:New('EntPermaRemove')

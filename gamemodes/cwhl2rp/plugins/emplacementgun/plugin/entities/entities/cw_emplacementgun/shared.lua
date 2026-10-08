@@ -1,6 +1,13 @@
 -- All credit for the emplacement gun entity goes to Zaubermuffin and his/her affiliates.
 -- His/her steam profile: http://steamcommunity.com/id/zaubermuffin
 
+--- Shared definition of the `cw_emplacementgun` entity of the Emplacement Gun plugin, a spawnable `anim` entity named
+-- `Emplacement Gun` that cannot be physgunned and allows only a few tools and properties.
+--
+-- Defines the helpers that find the gun mounted on a barricade, handed to `init.lua` and `cl_init.lua` through
+-- temporary globals, and adds the `zar3_collision_off` and `zar3_collision_on` properties that freeze the barricade
+-- without world collisions and restore it.
+
 ENT.Type 			= 'anim'
 ENT.Base 			= 'base_anim'
 ENT.PrintName = 'Emplacement Gun'

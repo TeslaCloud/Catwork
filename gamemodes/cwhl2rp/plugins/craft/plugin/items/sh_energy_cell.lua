@@ -1,3 +1,5 @@
+--- Defines the Energy Cell item (`energy_cell`) of the Craft plugin, a crafting material used by the handheld radio,
+-- flashlight, breaching charge and pulse rifle ammunition blueprints.
 
 ITEM.name = 'Energy Cell'
 ITEM.PrintName = '#Item_EnergyCell_Name'

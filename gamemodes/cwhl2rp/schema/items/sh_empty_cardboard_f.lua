@@ -1,3 +1,5 @@
+--- Defines the Empty Cardboard box junk item, `empty_cardboard`, which is left behind by the loyalist and premium
+-- supplements and has no behaviour of its own.
 
 ITEM.name = 'Empty Cardboard box'
 ITEM.PrintName = '#Item_EmptyCardboardF_PrintName'

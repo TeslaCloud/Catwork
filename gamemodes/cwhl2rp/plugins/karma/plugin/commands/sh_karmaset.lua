@@ -1,3 +1,6 @@
+--- Registers the operator command `/KarmaSet` (aliases `/CharSetKarma` and `/SetKarma`) of the Karma plugin, which sets
+-- the target character's karma to a value from -100 to 100.
+
 COMMAND = cw.command:New('KarmaSet')
 COMMAND.tip = '#Command_Karmaset_Description'
 COMMAND.text = '#Command_Karmaset_Syntax'

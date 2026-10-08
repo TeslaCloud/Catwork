@@ -1,3 +1,11 @@
+--- Defines the `cwCombinePDA` main menu panel of the Combine Civil Authority plugin, a mock web browser for looking up
+-- players by name, and the `cwCombinePlayerCard` window it opens for a player.
+--
+-- The PDA shows a search bar under a random search engine name, lists up to six matching players while typing
+-- (refugees and rebels are left out) and opens the card when enter is pressed. The card shows the player's model,
+-- faction, residence, points, loyalist tier, citizen status and civil record (`cwCombinePlayerLog`), plus the action
+-- buttons that the `AddCombinePDAButons` hook adds with `AddButton`.
+
 local combine_search_engine_name = 'Combinoogle'
 local engineNames = {
   'Combinoogle',

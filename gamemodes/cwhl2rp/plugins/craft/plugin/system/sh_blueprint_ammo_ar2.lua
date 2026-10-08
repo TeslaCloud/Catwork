@@ -1,3 +1,7 @@
+--- Registers the Pulse Rifle Energy Cell blueprint (`blueprint_ammo_ar2`) of the Craft plugin, which makes one
+-- `ammo_ar2` at the ammo workbench (`cw_craft_bullet`) from one `energy_cell` and one `refined_metal`, using `weld` as
+-- a tool, requiring 55 Repair (`rem`) and progressing it by 35.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintAmmoAr2_Name'

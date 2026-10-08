@@ -1,3 +1,7 @@
+--- Registers the AK-74 blueprint (`blueprint_ak74`) of the Craft plugin, which makes one `sxbase_ak74` at the weapon
+-- workbench (`cw_craft_wep`) from two `broken_ak74`, three `reclaimed_metal`, three `box_of_screws` and two
+-- `wooden_parts`, using `screw_driver` and `weld` as tools, requiring 50 Repair (`rem`) and progressing it by 30.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintAk74_Name'

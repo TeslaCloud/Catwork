@@ -1,3 +1,11 @@
+--- Main file of the Force Fields plugin, which adds Combine force fields that citizens cannot pass through; exposes the
+-- plugin as `cwForceField`, defines the collision rules of `cw_forcefield` and includes the plugin's server and client
+-- files.
+--
+-- The `ShouldCollide` hook lets projectiles, Combine NPCs and vehicles, Combine players and holders of a forcefield
+-- card through, and asks the `ShouldForcefieldCollide` hook about everyone else. That hook decides by the field's
+-- mode, one of the four listed in `cwForceField.modes`: no one, Civil Workers' Union, everyone or off.
+
 PLUGIN:SetGlobalAlias('cwForceField')
 
 cwForceField.Blocked = {}

@@ -1,3 +1,5 @@
+--- Defines the Bullet Casings item (`bullet_casings`) of the Craft plugin, a crafting material used by the ammunition
+-- blueprints.
 
 ITEM.name = 'Bullet Casings'
 ITEM.PrintName = '#Item_BulletCasings_Name'

@@ -1,3 +1,5 @@
+--- Defines the Broken MP5K item (`broken_mp5k`) of the Craft plugin, a crafting material that the `blueprint_mp5k`
+-- blueprint rebuilds into the `sxbase_mp5k` weapon.
 
 ITEM.name = 'Broken MP5K'
 ITEM.PrintName = '#Item_BrokenMp5k_Name'

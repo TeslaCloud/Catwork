@@ -1,3 +1,5 @@
+--- Defines the Broken USP Match item (`broken_uspmatch`) of the Craft plugin, a crafting material that the
+-- `blueprint_uspmatch` blueprint rebuilds into the `sxbase_uspmatch` weapon.
 
 ITEM.name = 'Broken USP Match'
 ITEM.PrintName = '#Item_BrokenUspmatch_Name'

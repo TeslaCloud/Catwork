@@ -1,3 +1,5 @@
+--- Defines the Scrap Metal item (`scrap_metal`) of the Craft plugin, a crafting material smelted from empty cans and
+-- used to make `reclaimed_metal` and buckshot.
 
 ITEM.name = 'Scrap Metal'
 ITEM.PrintName = '#Item_ScrapMetal_Name'

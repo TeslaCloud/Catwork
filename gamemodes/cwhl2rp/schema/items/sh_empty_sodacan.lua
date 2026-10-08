@@ -1,3 +1,5 @@
+--- Defines the Empty Soda Can junk item, `empty_soda_can`, which is left behind by Breen's water and juices, serves as
+-- a crafting material and has no behaviour of its own.
 
 ITEM.name = 'Empty Soda Can'
 ITEM.PrintName = '#Item_EmptySodacan_PrintName'

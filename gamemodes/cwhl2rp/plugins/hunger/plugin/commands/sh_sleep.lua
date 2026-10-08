@@ -1,3 +1,6 @@
+--- Registers the `/Sleep` command of the Hunger plugin, which knocks the player out for 30 seconds and resets their
+-- `Fatigue` to 0, provided it is at least 30.
+
 local PLUGIN = PLUGIN
 
 local COMMAND = cw.command:New('Sleep')

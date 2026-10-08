@@ -1,3 +1,11 @@
+--- Server side of the Combine Technology Overlay plugin: the tracking of Combine cameras and the movement violations
+-- they see, the switching of unit biosignals and the requests for assistance sent to Combine units.
+--
+-- `cwCTO:SafelyPrepareCamera` hooks every `npc_combine_camera` up to the plugin, and the `HalfSecond` hook checks the
+-- players the cameras see and sends the result with the `UpdateBiosignalCameraData` netstream.
+-- `cwCTO:SetPlayerBiosignal` and `cwCTO:DoPostBiosignalLoss` change a unit's `IsBiosignalGone` shared var and alert
+-- the other units, and `cwCTO:DispatchRequestSignal` sends the `CombineRequestSignal` netstream.
+
 local cwCTO = cwCTO
 
 cwCTO.printServerDebug = false

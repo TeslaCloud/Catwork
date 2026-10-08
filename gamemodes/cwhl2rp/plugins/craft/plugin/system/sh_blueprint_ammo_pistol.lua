@@ -1,3 +1,7 @@
+--- Registers the 9x19mm Rounds blueprint (`blueprint_ammo_pistol`) of the Craft plugin, which makes one `ammo_pistol`
+-- at the ammo workbench (`cw_craft_bullet`) from one `bullet_casings`, one `gunpowder` and one `refined_metal`,
+-- requiring 25 Repair (`rem`) and progressing it by 15.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintAmmoPistol_Name'

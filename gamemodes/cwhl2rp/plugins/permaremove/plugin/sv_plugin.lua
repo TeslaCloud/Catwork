@@ -1,3 +1,9 @@
+--- Server side of the Perma Remove plugin: `PLUGIN:LoadRemoves` and `PLUGIN:SaveRemoves`, which keep the class and
+-- position of every permanently removed entity in the schema data `plugins/removeData/<map>`.
+--
+-- Loading removes every map entity whose class and exact position match a saved entry and keeps the entries in
+-- `PLUGIN.removeData`, to which `/EntPermaRemove` adds.
+
 local PLUGIN = PLUGIN
 
 --- Removes every map entity whose class and exact position match an entry saved for the current map.

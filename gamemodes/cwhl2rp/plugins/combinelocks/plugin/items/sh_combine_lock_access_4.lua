@@ -1,3 +1,5 @@
+--- Defines the level 4 `Combine Lock Access Card` item (`combine_lock_access_4`) of the Combine Locks plugin, the
+-- orange card that lets a non-Combine player open Combine locks with access level 4.
 
 ITEM.name = 'Combine Lock Access Card'
 ITEM.PrintName = '#Item_CombineLockAccess4_PrintName'

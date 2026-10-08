@@ -1,3 +1,7 @@
+--- Defines the `Syringe of Strychnine` item (`green_liquid`) of the Diseases plugin, a slow lethal poison sold to
+-- `FACTION_MPF` that gives its user, or the player being looked at through its `Inject` action, the
+-- `slow_deathinjection` disease.
+
 ITEM.name = 'Syringe of Strychnine'
 ITEM.PrintName = '#Item_GreenLiquid_PrintName'
 ITEM.uniqueID = 'green_liquid'

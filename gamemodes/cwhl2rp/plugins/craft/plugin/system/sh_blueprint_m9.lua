@@ -1,3 +1,7 @@
+--- Registers the M9 Beretta blueprint (`blueprint_m9`) of the Craft plugin, which makes one `sxbase_m9` at the weapon
+-- workbench (`cw_craft_wep`) from two `broken_m9`, two `reclaimed_metal` and two `box_of_screws`, using `screw_driver`
+-- and `wrench` as tools, requiring 35 Repair (`rem`) and progressing it by 20.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintM9_Name'

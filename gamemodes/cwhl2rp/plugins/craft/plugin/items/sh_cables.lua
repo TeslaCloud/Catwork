@@ -1,3 +1,5 @@
+--- Defines the Cables item (`cables`) of the Craft plugin, a crafting material used by the backpack, bag, breaching
+-- charge and zip tie blueprints.
 
 ITEM.name = 'Cables'
 ITEM.PrintName = '#Item_Cables_Name'

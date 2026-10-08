@@ -1,3 +1,5 @@
+--- Defines the Broken M1911 item (`broken_m1911`) of the Craft plugin, a crafting material that the `blueprint_m1911`
+-- blueprint rebuilds into the `sxbase_m1911` weapon.
 
 ITEM.name = 'Broken M1911'
 ITEM.PrintName = '#Item_BrokenM1911_Name'

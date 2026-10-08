@@ -1,3 +1,8 @@
+--- Defines the `ammo_545x39` item, a box of 30 rifle rounds sold to the Elite Metropolice and Elite Overwatch Soldier
+-- classes.
+--
+-- Its ammo class is `5.45x39mm`.
+
 ITEM.baseItem = 'ammo_base'
 ITEM.name = 'Ammo 545x39'
 ITEM.PrintName = '#Item_Ammo545x39_PrintName'

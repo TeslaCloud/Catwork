@@ -1,3 +1,5 @@
+--- Defines the level 2 `Combine Lock Access Card` item (`combine_lock_access_2`) of the Combine Locks plugin, the
+-- purple card that lets a non-Combine player open Combine locks with access level 2.
 
 ITEM.name = 'Combine Lock Access Card'
 ITEM.PrintName = '#Item_CombineLockAccess2_PrintName'

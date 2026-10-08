@@ -1,3 +1,7 @@
+--- Defines the Biohazard Suit Mk.2 item (`biohazard_suit_mk2`), a heavier and more protective version of
+-- `biohazard_suit` based on `clothes_base` that replaces the wearer's model with `industrial_uniform2` and is also
+-- marked `radProtection`.
+
 ITEM.baseItem = 'clothes_base'
 ITEM.name = 'Biohazard Suit Mk.2'
 ITEM.PrintName = '#ITEM_Biohazard_Suit_Mk2_Name'

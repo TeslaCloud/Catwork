@@ -1,3 +1,4 @@
+--- Defines the Empty Cup junk item, `empty_cup`, which is found in garbage piles and has no behaviour of its own.
 
 ITEM.name = 'Empty Cup'
 ITEM.PrintName = '#Item_EmptyCup_PrintName'

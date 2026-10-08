@@ -1,3 +1,5 @@
+--- Defines the Broken 357 Magnum item (`broken_357`) of the Craft plugin, a broken revolver in the Materials category
+-- that no blueprint uses yet.
 
 ITEM.name = 'Broken 357 Magnum'
 ITEM.PrintName = '#Item_Broken357_Name'

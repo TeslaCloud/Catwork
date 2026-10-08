@@ -1,3 +1,6 @@
+--- Registers the Zip Ties blueprint (`blueprint_zip_tie`) of the Craft plugin, which makes two `zip_tie` at the
+-- workbench (`cw_crafttable`) from one `cables`, progressing Repair (`rem`) by 5.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintZipTie_Name'

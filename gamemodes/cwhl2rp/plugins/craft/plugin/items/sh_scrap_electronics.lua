@@ -1,3 +1,5 @@
+--- Defines the Scrap Electronics item (`scrap_electronics`) of the Craft plugin, a crafting material used by the
+-- flashlight blueprint and to make `refined_electronics`.
 
 ITEM.name = 'Scrap Electronics'
 ITEM.PrintName = '#Item_ScrapElectronics_Name'

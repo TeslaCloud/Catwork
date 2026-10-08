@@ -1,3 +1,9 @@
+--- Client side of the `cw_forcefield` entity of the Force Fields plugin, which builds the field's client-side collision
+-- mesh and draws the post and the shield stretched to the far post.
+--
+-- The shield is drawn on both sides with the `effects/com_shield003a` material and is hidden while the field is in
+-- mode 4, which is off.
+
 include('shared.lua')
 
 local material = Material('effects/com_shield003a')

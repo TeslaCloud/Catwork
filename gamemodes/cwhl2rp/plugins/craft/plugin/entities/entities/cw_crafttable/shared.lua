@@ -1,3 +1,6 @@
+--- Shared definition of the `cw_crafttable` entity of the Craft plugin, the workbench that is both the default crafting
+-- station and the base of the other `cw_craft_*` stations, which it marks with `IsCraft`.
+
 DEFINE_BASECLASS('base_gmodentity')
 
 ENT.Type = 'anim'

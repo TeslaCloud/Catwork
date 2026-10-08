@@ -1,3 +1,7 @@
+--- Defines the `Potassium Cyanide` item (`fast_green_liquid`) of the Diseases plugin, a fast-acting lethal poison sold
+-- to `FACTION_MPF` that gives its user, or the player being looked at through its `Inject` action, the
+-- `fast_deathinjection` disease.
+
 ITEM.name = 'Potassium Cyanide'
 ITEM.PrintName = '#Item_FastGreenLiquid_PrintName'
 ITEM.uniqueID = 'fast_green_liquid'

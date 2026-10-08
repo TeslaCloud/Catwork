@@ -1,3 +1,7 @@
+--- Registers the Short-Sleeved Citizen Uniform blueprint (`blueprint_uniform_2`) of the Craft plugin, which makes one
+-- `cit_uniform_2` at the workbench (`cw_crafttable`) from four `cloth`, requiring 10 Clothes making (`cloth`) and
+-- progressing it by 35.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintCitUniform2_Name'

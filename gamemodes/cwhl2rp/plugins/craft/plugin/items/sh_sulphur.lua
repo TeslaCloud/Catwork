@@ -1,3 +1,4 @@
+--- Defines the Sulphur item (`sulphur`) of the Craft plugin, a crafting material used to make `gunpowder`.
 
 ITEM.name = 'Sulphur'
 ITEM.PrintName = '#Item_Sulphur_Name'

@@ -1,3 +1,14 @@
+--- Single-file definition of the `cw_factory_garbage_metal` entity (print name Garbage Recycler - Metal), a machine
+-- that turns metal junk items into `scrap_metal` items.
+--
+-- An idle recycler absorbs `empty_soda_can` and `empty_can` item entities placed on top of it, and the Factories
+-- plugin's entity menu options call `ENT:StartWork` to run a 30 second cycle once the garbage count is 10,
+-- `ENT:StopWork` to pause it and `ENT:Eject` to move the collected garbage into the linked storage entity. The client
+-- draws a status screen with the garbage count and cycle progress on the model, using the `_GR_CMB_FONT_1` to
+-- `_GR_CMB_FONT_4` fonts that this file creates for all three recyclers. The same class is also defined by the
+-- `cw_factory_garbage_metal/` folder, which the entity loader includes first, so this file's definition is the one
+-- that stays registered.
+
 -- models/props/de_train/processor_nobase.mdl
 -- models/props/de_train/biohazardtank.mdl
 if SERVER then AddCSLuaFile() end

@@ -1,3 +1,6 @@
+--- Registers the admin command `/CharSetHunger` (alias `/SetHunger`) of the Hunger plugin, which sets the target
+-- character's `Hunger` character data to the given amount, 100 by default.
+
 local PLUGIN = PLUGIN
 
 local COMMAND = cw.command:New('CharSetHunger')

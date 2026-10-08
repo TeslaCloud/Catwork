@@ -1,3 +1,11 @@
+--- Main file of the Factories plugin, which adds start, stop and eject options to the entity menu of factory entities
+-- and saves the garbage recyclers with the map; exposes the plugin as `cwFactories`.
+--
+-- On the server, `cwFactories:SaveFactories` and `cwFactories:LoadFactories` keep the `cw_factory_garbage_metal`,
+-- `cw_factory_garbage_plastic` and `cw_factory_garbage_paper` entities and their contents in the schema data under
+-- `plugins/factories/`, and `EntityHandleMenuOption` runs the chosen option on any entity with `IsFactory` set. On the
+-- client, `GetEntityMenuOptions` adds the options.
+
 PLUGIN:SetGlobalAlias('cwFactories')
 
 if SERVER then

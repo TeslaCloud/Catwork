@@ -1,3 +1,5 @@
+--- Defines the Newspaper item (`newspaper`) of the Craft plugin, an item in the Materials category that no blueprint
+-- uses yet.
 
 ITEM.name = 'Newspaper'
 ITEM.PrintName = '#Item_Newspaper_Name'

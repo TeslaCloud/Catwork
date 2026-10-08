@@ -1,3 +1,5 @@
+--- Defines the Refined Metal item (`refined_metal`) of the Craft plugin, a crafting material smelted from
+-- `reclaimed_metal` and used by the ammunition, tool and a few clothing blueprints.
 
 ITEM.name = 'Refined Metal'
 ITEM.PrintName = '#Item_RefinedMetal_Name'

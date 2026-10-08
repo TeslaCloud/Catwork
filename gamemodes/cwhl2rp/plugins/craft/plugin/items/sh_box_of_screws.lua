@@ -1,3 +1,5 @@
+--- Defines the Box of Screws item (`box_of_screws`) of the Craft plugin, a crafting material used by every weapon
+-- blueprint.
 
 ITEM.name = 'Box of Screws'
 ITEM.PrintName = '#Item_BoxOfScrews_Name'

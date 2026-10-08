@@ -1,3 +1,6 @@
+--- Client-side hook of the Diseases plugin that applies the screen effects of the disease in the local player's
+-- `diseases` net var: motion blur for fever and the lethal injections, and a greyscale screen for colour blindness.
+
 local PLUGIN = PLUGIN
 
 --- Called when the local player's motion blurs should be adjusted; applies disease screen effects.

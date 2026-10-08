@@ -6,6 +6,10 @@
         Heavily based off the works of Cervidae Kosmonaut in Faction Doors.
 --]]
 
+--- Registers the operator command `/DoorSetAccess` of the Personal Doors plugin, which gives the target character
+-- personal access to the door the player is looking at, makes the door unownable and optionally sets whether it starts
+-- locked.
+
 local PLUGIN = PLUGIN
 
 local COMMAND = cw.command:New('DoorSetAccess')

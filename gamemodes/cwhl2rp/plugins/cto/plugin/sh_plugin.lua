@@ -1,3 +1,10 @@
+--- Main file of the Combine Technology Overlay plugin, which gives Combine units a HUD overlay of unit biosignals,
+-- Combine cameras, movement violations and the city's socio-status; exposes the plugin as `cwCTO` and includes its
+-- client and server files.
+--
+-- Defines the `cwCTO.sociostatusColors` table, the `cwCTO.ERROR_*` results of a biosignal change and the
+-- `cwCTO.VIOLATION_*` movement violations used when networking cameras.
+
 PLUGIN:SetGlobalAlias('cwCTO')
 
 cwCTO.sociostatusColors = {

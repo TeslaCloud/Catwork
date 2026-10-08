@@ -1,3 +1,10 @@
+--- Defines the `cwCraft` panel of the Craft plugin, the menu a crafting station opens to browse and craft its
+-- blueprints.
+--
+-- The left third lists the blueprints whose `craftplace` is the station's class and that `cwCraft:PlayerCanSeeCraft`
+-- allows, grouped by category. Selecting one shows its model, description, attribute and custom requirements,
+-- materials and tools with the amounts the player has, and a button that sends `Craft::CraftItem` to the server.
+
 local PANEL = {}
 
 --- Builds the craft menu's blueprint list and detail area, then fills them on the next frame.

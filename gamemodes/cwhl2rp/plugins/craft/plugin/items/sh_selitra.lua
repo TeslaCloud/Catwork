@@ -1,3 +1,4 @@
+--- Defines the Selitra item (`selitra`) of the Craft plugin, saltpeter, a crafting material used to make `gunpowder`.
 
 ITEM.name = 'Selitra'
 ITEM.PrintName = '#Item_Selitra_Name'

@@ -1,3 +1,8 @@
+--- Registers the PP19 blueprint (`blueprint_pp19`) of the Craft plugin, which makes one `sxbase_pp19` at the weapon
+-- workbench (`cw_craft_wep`) from two `broken_pp19`, three `reclaimed_metal`, two `box_of_screws` and two
+-- `box_of_bolts`, using `screw_driver`, `weld` and `wrench` as tools, requiring 65 Repair (`rem`) and progressing it
+-- by 40.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintPp19_Name'

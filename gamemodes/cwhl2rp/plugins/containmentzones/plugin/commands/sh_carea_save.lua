@@ -1,3 +1,6 @@
+--- Registers the `/ContainmentSave` superadmin command of the Radiation plugin, which saves the containment zones of
+-- the current map with `cwRadSystem:SaveAreas`.
+
 local COMMAND = cw.command:New('ContainmentSave')
 COMMAND.tip = ''
 COMMAND.text = ''

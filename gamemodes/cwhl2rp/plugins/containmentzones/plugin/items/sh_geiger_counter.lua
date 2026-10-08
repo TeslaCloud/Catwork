@@ -1,3 +1,5 @@
+--- Defines the Geiger Counter item (`geiger_counter`) of the Radiation plugin, which has no use action and lets its
+-- carrier hear and see radiation levels through `cwRadSystem:PlayerHasGeigerCounter`.
 
 ITEM.name = 'Geiger Counter'
 ITEM.PrintName = '#Item_GeigerCounter_PrintName'

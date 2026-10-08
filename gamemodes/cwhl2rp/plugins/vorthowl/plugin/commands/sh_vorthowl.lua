@@ -1,3 +1,10 @@
+--- Registers the `/VortHowl` command (alias `/vhowl`), which lets a vortigaunt howl a message that every living
+-- vortigaunt reads in full while other players within 500 units only see that something is shouted in Vortigese.
+--
+-- A random vortigaunt call from the global `Shouts` list is played to everyone through the `PlayLocalSound` netstream.
+-- Other factions get a refusal notice instead, except `FACTION_ADMIN`, whose message is also sent out with
+-- `Schema:SayBroadcast`.
+
 COMMAND = cw.command:New('VortHowl')
 COMMAND.tip = '#Command_Vorthowl_Description'
 COMMAND.text = '#Command_Vorthowl_Syntax'

@@ -1,3 +1,6 @@
+--- Registers the `/ContainmentBoxPlace` superadmin command of the Radiation plugin, which adds a box containment zone
+-- with the given radiation level between the corners set with `/ContainmentBoxStartPos` and `/ContainmentBoxEndPos`.
+
 local COMMAND = cw.command:New('ContainmentBoxPlace')
 COMMAND.tip = ''
 COMMAND.text = '#Command_Containmentboxplace_Syntax'

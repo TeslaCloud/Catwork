@@ -1,3 +1,7 @@
+--- Registers the Refined Metal blueprint (`blueprint_refined_metal`) of the Craft plugin, which makes two
+-- `refined_metal` at the furnace (`cw_craft_furnace`) from five `reclaimed_metal` and three `charcoal`, progressing
+-- Repair (`rem`) by 5.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintRefinedMetal_Name'

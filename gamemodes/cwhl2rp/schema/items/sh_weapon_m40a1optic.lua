@@ -1,3 +1,6 @@
+--- Defines the M40A1 Optic sniper rifle item, which gives the `sxbase_m40a1optic` weapon and is sold to the Elite
+-- Overwatch Soldier class.
+
 ITEM.baseItem = 'weapon_base'
 ITEM.name = 'M40A1 Optic'
 ITEM.PrintName = '#Item_WeaponM40a1optic_PrintName'

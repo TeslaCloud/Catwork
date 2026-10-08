@@ -1,3 +1,6 @@
+--- Registers the Bandana blueprint (`blueprint_bandana`) of the Craft plugin, which makes one `bandana` at the
+-- workbench (`cw_crafttable`) from one `cloth`, progressing Clothes making (`cloth`) by 15.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintBandana_Name'

@@ -1,3 +1,6 @@
+--- Registers the Scrap Metal blueprint (`blueprint_scrapmetal_2`) of the Craft plugin, which makes one `scrap_metal` at
+-- the furnace (`cw_craft_furnace`) from three `empty_can` and one `charcoal`, progressing Repair (`rem`) by 7.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintScrapmetal2_Name'

@@ -1,3 +1,5 @@
+--- Defines the level 3 `Combine Lock Access Card` item (`combine_lock_access_3`) of the Combine Locks plugin, the pink
+-- card that lets a non-Combine player open Combine locks with access level 3.
 
 ITEM.name = 'Combine Lock Access Card'
 ITEM.PrintName = '#Item_CombineLockAccess3_PrintName'

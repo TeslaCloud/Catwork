@@ -1,3 +1,6 @@
+--- Registers the admin command `/CharGetDisease` of the Diseases plugin, which tells the player the disease stored in
+-- the target character's `diseases` character data.
+
 COMMAND = cw.command:New('CharGetDisease')
 COMMAND.tip = '#Command_Chargetdisease_Description'
 COMMAND.text = '#Command_Chargetdisease_Syntax'

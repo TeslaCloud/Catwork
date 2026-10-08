@@ -1,3 +1,6 @@
+--- Client side of the `cw_unionlight` entity: draws the model and keeps a pale blue dynamic light with an 800 unit
+-- radius at its position.
+
 include('shared.lua')
 
 --- Does nothing on the client.

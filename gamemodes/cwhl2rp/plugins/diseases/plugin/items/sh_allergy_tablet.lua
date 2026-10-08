@@ -1,3 +1,7 @@
+--- Defines the `Pack of Allergy Tablets` medical item (`allergy_tablet`) of the Diseases plugin, which cures an allergy
+-- 30 to 60 seconds after it is given to the player being looked at with its `Give` action, while swallowing it oneself
+-- cures gastritis instead.
+
 ITEM.name = 'Pack of Allergy Tablets'
 ITEM.PrintName = '#Item_AllergyTablet_PrintName'
 ITEM.uniqueID = 'allergy_tablet'

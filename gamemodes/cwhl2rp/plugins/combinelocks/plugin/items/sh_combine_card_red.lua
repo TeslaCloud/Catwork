@@ -1,3 +1,5 @@
+--- Defines the universal `Combine Lock Access Card` item (`combine_lock_access_x`) of the Combine Locks plugin, the red
+-- card that opens Combine locks of every access level.
 
 ITEM.name = 'Combine Lock Access Card'
 ITEM.PrintName = '#Item_CombineLockAccessX_PrintName'

@@ -1,3 +1,8 @@
+--- Registers the SPAS-12 blueprint (`blueprint_shotgun`) of the Craft plugin, which makes one `sxbase_spas12` at the
+-- weapon workbench (`cw_craft_wep`) from two `broken_shotgun`, four `reclaimed_metal`, two `box_of_screws` and two
+-- `box_of_bolts`, using `screw_driver`, `weld` and `wrench` as tools, requiring 65 Repair (`rem`) and progressing it
+-- by 25.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintShotgun_Name'

@@ -1,3 +1,7 @@
+--- Registers the Welding Tool blueprint (`blueprint_weld`) of the Craft plugin, which makes one `weld` at the workbench
+-- (`cw_crafttable`) from two `refined_metal` and one `refined_electronics`, requiring 20 Repair (`rem`) and
+-- progressing it by 25.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintWeld_Name'

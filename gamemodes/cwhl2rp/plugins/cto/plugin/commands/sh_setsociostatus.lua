@@ -1,3 +1,7 @@
+--- Registers the `/SetSocioStatus` command (alias `/VisorStatus`) of the Combine Technology Overlay plugin, which lets
+-- Combine units of rank SCN, OfC, EpU, DvL or SeC and Overwatch soldiers set the city's socio-status to GREEN, BLUE,
+-- YELLOW, RED or BLACK and announces it to every unit with a biosignal.
+
 local cwCTO = cwCTO
 
 local COMMAND = cw.command:New('SetSocioStatus')

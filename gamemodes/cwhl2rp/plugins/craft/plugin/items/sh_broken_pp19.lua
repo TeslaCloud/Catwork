@@ -1,3 +1,5 @@
+--- Defines the Broken PP19 item (`broken_pp19`) of the Craft plugin, a crafting material that the `blueprint_pp19`
+-- blueprint rebuilds into the `sxbase_pp19` weapon.
 
 ITEM.name = 'Broken PP19'
 ITEM.PrintName = '#Item_BrokenPp19_Name'

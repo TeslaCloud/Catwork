@@ -1,3 +1,5 @@
+--- Defines the Refined Electronics item (`refined_electronics`) of the Craft plugin, a crafting material made from
+-- `scrap_electronics` and used by the handheld radio, health kit, breaching charge and welding tool blueprints.
 
 ITEM.name = 'Refined Electronics'
 ITEM.PrintName = '#Item_RefinedElectronics_Name'

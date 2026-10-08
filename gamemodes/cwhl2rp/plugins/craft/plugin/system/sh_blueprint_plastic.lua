@@ -1,3 +1,6 @@
+--- Registers the Plastic blueprint (`blueprint_plastic`) of the Craft plugin, which makes one `plastic` at the furnace
+-- (`cw_craft_furnace`) from three `empty_tin_can`, progressing Repair (`rem`) by 5.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintPlastic_Name'

@@ -1,3 +1,6 @@
+--- Registers the Baked Potato blueprint (`blueprint_baked_potato`) of the Craft plugin, which makes one `baked_potato`
+-- at the cooking stove (`cw_craft_cook`) from one `potato`, progressing Cooking (`cook`) by 10.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintBakedPotato_Name'

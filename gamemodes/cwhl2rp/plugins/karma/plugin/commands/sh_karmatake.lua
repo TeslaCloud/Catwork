@@ -1,3 +1,6 @@
+--- Registers the operator command `/KarmaTake` (aliases `/CharTakeKarma`, `/TakeKarma`, `/ReduceKarma` and
+-- `/KarmaReduce`) of the Karma plugin, which removes between 1 and 100 karma from the target character.
+
 COMMAND = cw.command:New('KarmaTake')
 COMMAND.tip = '#Command_Karmatake_Description'
 COMMAND.text = '#Command_Karmatake_Syntax'

@@ -1,3 +1,6 @@
+--- Defines the `Pack of Sorbents` medical item (`sorbent`) of the Diseases plugin, which cures diarrhea and restores
+-- health when it is swallowed or given to the player being looked at with its `Give` action.
+
 ITEM.name = 'Pack of Sorbents'
 ITEM.PrintName = '#Item_Sorbent_PrintName'
 ITEM.uniqueID = 'sorbent'

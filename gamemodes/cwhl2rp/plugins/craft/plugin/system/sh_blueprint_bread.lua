@@ -1,3 +1,7 @@
+--- Registers the Bread blueprint (`blueprint_bread`) of the Craft plugin, which makes one `bread`, one `empty_carton`
+-- and one `empty_soda_can` at the cooking stove (`cw_craft_cook`) from one `flour` and one `breens_water`, requiring 5
+-- Cooking (`cook`) and progressing it by 30.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintBread_Name'

@@ -1,3 +1,5 @@
+--- Defines the Empty Can junk item, `empty_can`, which has no behaviour of its own and is accepted as garbage by the
+-- metal recycler.
 
 ITEM.name = 'Empty Can'
 ITEM.PrintName = '#Item_EmptyCan_PrintName'

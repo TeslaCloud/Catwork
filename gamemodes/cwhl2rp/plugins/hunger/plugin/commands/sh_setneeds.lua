@@ -1,3 +1,6 @@
+--- Registers the admin command `/CharResetNeeds` (alias `/ResetNeeds`) of the Hunger plugin, which resets a non-Combine
+-- character's hunger, thirst and stamina to 100 and fatigue to 0.
+
 local PLUGIN = PLUGIN
 
 local COMMAND = cw.command:New('CharResetNeeds')

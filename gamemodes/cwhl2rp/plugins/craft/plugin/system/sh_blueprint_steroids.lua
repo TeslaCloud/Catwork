@@ -1,3 +1,7 @@
+--- Registers the Steroids blueprint (`blueprint_steroids`) of the Craft plugin, which makes one `steroids` at the
+-- chemical laboratory (`cw_craft_chem`) from one `health_vial` and one `antidepressants`, requiring 25 Chemistry
+-- (`chem`) and progressing it by 45.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintSteroids_Name'

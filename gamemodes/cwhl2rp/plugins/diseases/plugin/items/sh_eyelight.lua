@@ -1,3 +1,6 @@
+--- Defines the `Medical Penlight` item of the Diseases plugin, a reusable diagnostic tool that tells its user whether
+-- the player being looked at is blind or colour blind.
+
 ITEM.name = 'Medical Penlight'
 ITEM.PrintName = '#Item_Eyelight_PrintName'
 ITEM.cost = 50

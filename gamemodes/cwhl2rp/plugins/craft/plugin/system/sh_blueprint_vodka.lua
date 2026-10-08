@@ -1,3 +1,7 @@
+--- Registers the Vodka blueprint (`blueprint_vodka`) of the Craft plugin, which makes one `vodka` and one
+-- `empty_soda_can` at the chemical laboratory (`cw_craft_chem`) from one `empty_glass_bottle`, one `breens_water` and
+-- two `potato`, requiring 5 Chemistry (`chem`) and progressing it by 25.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintVodka_Name'

@@ -1,3 +1,10 @@
+--- Server-side functions of the Nutscript Vending Machines plugin that save and load the `nut_vend` entities of the
+-- current map.
+--
+-- `PLUGIN:SaveNuttyVendingMachines` writes each machine's position, angles, active state and the stock of its four
+-- buttons to the schema data under `plugins/nutVend/<map>`, and `PLUGIN:LoadNuttyVendingMachines` spawns them again
+-- from it.
+
 local PLUGIN = PLUGIN
 
 --- Spawns the vending machines saved for the current map.

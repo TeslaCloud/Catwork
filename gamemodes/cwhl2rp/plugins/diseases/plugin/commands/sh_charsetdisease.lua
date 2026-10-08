@@ -1,3 +1,6 @@
+--- Registers the admin command `/CharSetDisease` of the Diseases plugin, which sets the target character's `diseases`
+-- character data to the given disease name, where `none` cures the character.
+
 COMMAND = cw.command:New('CharSetDisease')
 COMMAND.tip = '#Command_Charsetdisease_Description'
 COMMAND.text = '#Command_Charsetdisease_Syntax'

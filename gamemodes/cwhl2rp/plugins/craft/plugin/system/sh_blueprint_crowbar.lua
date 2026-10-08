@@ -1,3 +1,6 @@
+--- Registers the Crowbar blueprint (`blueprint_crowbar`) of the Craft plugin, which makes one `weapon_crowbar` at the
+-- workbench (`cw_crafttable`) from two `refined_metal`, requiring 20 Repair (`rem`) and progressing it by 20.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintCrowbar_Name'

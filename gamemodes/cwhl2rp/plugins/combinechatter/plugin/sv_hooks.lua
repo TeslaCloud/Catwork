@@ -1,3 +1,9 @@
+--- Server-side hooks of the Combine Chatter plugin that play a random Overwatch radio voice line from a Combine player
+-- every 30 to 50 seconds.
+--
+-- `OneSecond` runs a single timer shared by all Combine players, so only one of them chatters per interval, and
+-- `PLUGIN:EmitRandomChatter` picks the sound from the local `randomSounds` list.
+
 local PLUGIN = PLUGIN
 
 local randomSounds = {

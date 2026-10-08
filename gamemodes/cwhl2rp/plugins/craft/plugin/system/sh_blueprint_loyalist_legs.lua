@@ -1,3 +1,7 @@
+--- Registers the Black Jeans blueprint (`blueprint_loyalist_legs`) of the Craft plugin, which makes one `loyalist_legs`
+-- at the workbench (`cw_crafttable`) from four `cloth`, requiring 25 Clothes making (`cloth`) and progressing it by
+-- 35.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintLoyalistLegs_Name'

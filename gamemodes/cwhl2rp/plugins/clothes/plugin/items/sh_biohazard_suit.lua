@@ -1,3 +1,6 @@
+--- Defines the Biohazard Suit item (`biohazard_suit`), clothing based on `clothes_base` that replaces the wearer's
+-- model with `industrial_uniform` and is marked `radProtection`, which shields the wearer from radiation.
+
 --[[
 models/barnes/refugee/female_72.mdl
 --]]

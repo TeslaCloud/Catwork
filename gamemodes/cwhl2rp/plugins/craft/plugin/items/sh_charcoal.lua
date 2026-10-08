@@ -1,3 +1,6 @@
+--- Defines the Charcoal item (`charcoal`) of the Craft plugin, a crafting material made from `wooden_parts` at the
+-- furnace and used by the metal smelting and gunpowder blueprints, which is not sold in the business menu and whose
+-- dropped entity gets a tree bark material.
 
 ITEM.name = 'Charcoal'
 ITEM.PrintName = '#Item_Charcoal_Name'

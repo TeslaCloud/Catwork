@@ -1,3 +1,7 @@
+--- Registers the Corn Beer blueprint (`blueprint_beer`) of the Craft plugin, which makes one `beer` and one
+-- `empty_soda_can` at the chemical laboratory (`cw_craft_chem`) from two `corn`, one `empty_glass_bottle` and one
+-- `breens_water`, progressing Chemistry (`chem`) by 25.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintBeer_Name'

@@ -1,3 +1,7 @@
+--- Registers the Chips blueprint (`blueprint_chips`) of the Craft plugin, which makes one `chips` at the cooking stove
+-- (`cw_craft_cook`) from one `potato` and one `vegetable_oil`, using `weapon_knife` and `weapon_hl2pan` as tools,
+-- requiring 10 Cooking (`cook`) and progressing it by 15.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintChips_Name'

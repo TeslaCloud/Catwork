@@ -1,3 +1,6 @@
+--- Registers the `/ContainmentBoxStartPos` superadmin command of the Radiation plugin, which sets the start corner of
+-- the box containment zone being placed to where the player is looking.
+
 local COMMAND = cw.command:New('ContainmentBoxStartPos')
 COMMAND.tip = ''
 COMMAND.text = ''

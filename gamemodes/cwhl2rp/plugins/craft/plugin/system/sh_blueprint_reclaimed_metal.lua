@@ -1,3 +1,7 @@
+--- Registers the Reclaimed Metal blueprint (`blueprint_reclaimed_metal`) of the Craft plugin, which makes one
+-- `reclaimed_metal` at the furnace (`cw_craft_furnace`) from five `scrap_metal` and two `charcoal`, progressing Repair
+-- (`rem`) by 5.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintReclaimedMetal_Name'

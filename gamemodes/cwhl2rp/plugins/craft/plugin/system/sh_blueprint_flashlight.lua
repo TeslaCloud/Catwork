@@ -1,3 +1,7 @@
+--- Registers the Makeshift Flashlight blueprint (`blueprint_flashlight`) of the Craft plugin, which makes one
+-- `flashlight` at the workbench (`cw_crafttable`) from two `empty_soda_can`, one `energy_cell` and one
+-- `scrap_electronics`, requiring 15 Repair (`rem`) and progressing it by 15.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintFlashlight_Name'

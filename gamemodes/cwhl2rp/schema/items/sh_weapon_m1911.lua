@@ -1,3 +1,6 @@
+--- Defines the M1911 pistol item, which gives the `sxbase_m1911` weapon and is sold to the Elite Overwatch Soldier
+-- class.
+
 ITEM.baseItem = 'weapon_base'
 ITEM.name = 'M1911'
 ITEM.PrintName = '#Item_WeaponM1911_PrintName'

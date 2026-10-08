@@ -1,3 +1,6 @@
+--- Defines the M9 Beretta Suppressor pistol item, which gives the `sxbase_m9_2` weapon and is not sold in the business
+-- menu.
+
 ITEM.baseItem = 'weapon_base'
 ITEM.name = 'M9 Beretta Suppressor'
 ITEM.PrintName = '#Item_WeaponM92_PrintName'

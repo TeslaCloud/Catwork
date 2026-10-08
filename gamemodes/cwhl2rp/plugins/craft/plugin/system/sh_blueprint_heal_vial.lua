@@ -1,3 +1,7 @@
+--- Registers the Biogel blueprint (`blueprint_heal_vial`) of the Craft plugin, which makes one `health_vial` and one
+-- `empty_glass_bottle` at the chemical laboratory (`cw_craft_chem`) from one `plastic`, one `citizen_supplements` and
+-- one `vodka`, requiring 10 Chemistry (`chem`) and progressing it by 35.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintHealVial_Name'

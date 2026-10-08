@@ -1,3 +1,6 @@
+--- Defines the `Pack of Activated Charcoal` medical item (`activated_coal`) of the Diseases plugin, which cures
+-- gastritis 30 to 60 seconds after it is swallowed or given to the player being looked at with its `Give` action.
+
 ITEM.name = 'Pack of Activated Charcoal'
 ITEM.PrintName = '#Item_ActivatedCoal_PrintName'
 ITEM.uniqueID = 'activated_coal'

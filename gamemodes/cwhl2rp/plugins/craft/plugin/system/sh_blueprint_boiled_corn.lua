@@ -1,3 +1,6 @@
+--- Registers the Boiled Corn blueprint (`blueprint_boiled_corn`) of the Craft plugin, which makes one `boiled_corn` at
+-- the cooking stove (`cw_craft_cook`) from one `corn`, progressing Cooking (`cook`) by 10.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintBoiledCorn_Name'

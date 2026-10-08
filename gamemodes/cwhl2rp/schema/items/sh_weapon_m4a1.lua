@@ -1,3 +1,5 @@
+--- Defines the M4A1 weapon item, which gives the `sxbase_m4a1` weapon and is sold to the Elite Overwatch Soldier class.
+
 ITEM.baseItem = 'weapon_base'
 ITEM.name = 'M4A1'
 ITEM.PrintName = '#Item_WeaponM4a1_PrintName'

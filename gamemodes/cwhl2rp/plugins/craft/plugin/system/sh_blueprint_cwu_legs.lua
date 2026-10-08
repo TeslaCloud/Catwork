@@ -1,3 +1,6 @@
+--- Registers the Bright Jeans blueprint (`blueprint_cwu_legs`) of the Craft plugin, which makes one `cwu_legs` at the
+-- workbench (`cw_crafttable`) from three `cloth`, requiring 15 Clothes making (`cloth`) and progressing it by 45.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintCwuLegs_Name'

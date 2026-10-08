@@ -1,3 +1,6 @@
+--- Registers the Wrench blueprint (`blueprint_wrench`) of the Craft plugin, which makes one `wrench` at the workbench
+-- (`cw_crafttable`) from one `refined_metal`, requiring 10 Repair (`rem`) and progressing it by 15.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintWrench_Name'

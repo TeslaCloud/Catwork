@@ -1,3 +1,8 @@
+--- Server-side functions of the Union Light plugin that save and load the placed `cw_unionlight` entities.
+--
+-- `PLUGIN:SaveUnionLights` writes each light's owner, position, angles and whether it can move to the schema data
+-- under `plugins/unionlights/<map>`, and `PLUGIN:LoadUnionLights` spawns them again from it.
+
 local PLUGIN = PLUGIN
 
 --- Spawns the union lights saved for the current map.

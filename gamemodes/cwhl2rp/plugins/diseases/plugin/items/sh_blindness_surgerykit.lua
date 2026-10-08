@@ -1,3 +1,6 @@
+--- Defines the `Eye Surgery Kit` medical item of the Diseases plugin, sold to holders of the `Q` heavy medicaments
+-- flag, which is applied to the player being looked at and cures their blindness or colour blindness.
+
 ITEM.name = 'Eye Surgery Kit'
 ITEM.PrintName = '#Item_BlindnessSurgerykit_PrintName'
 ITEM.cost = 150

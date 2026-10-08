@@ -1,3 +1,5 @@
+--- Defines the Plastic item (`plastic`) of the Craft plugin, a crafting material recycled from empty tin cans and
+-- plastic bottles and used by medical, radio, gas mask and some weapon blueprints.
 
 ITEM.name = 'Plastic'
 ITEM.PrintName = '#Item_Plastic_Name'

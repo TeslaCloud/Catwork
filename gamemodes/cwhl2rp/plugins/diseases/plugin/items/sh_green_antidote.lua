@@ -1,3 +1,7 @@
+--- Defines the `Syringe of Alomorphine` item of the Diseases plugin, an antidote sold to `FACTION_MPF` that cures the
+-- slow lethal injection (`slow_deathinjection`) of its user, or of the player being looked at through its `Inject`
+-- action, but has no effect on the fast one.
+
 ITEM.name = 'Syringe of Alomorphine'
 ITEM.PrintName = '#Item_GreenAntidote_PrintName'
 ITEM.cost = 50

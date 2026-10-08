@@ -1,3 +1,6 @@
+--- Defines the AK-74N Foregrip Aimpoint Suppressor weapon item, which gives the `sxbase_ak74n_2` weapon and is not sold
+-- in the business menu.
+
 ITEM.baseItem = 'weapon_base'
 ITEM.name = 'AK-74N Foregrip Aimpoint Suppressor'
 ITEM.PrintName = '#Item_WeaponAk74n2_PrintName'

@@ -1,3 +1,6 @@
+--- Registers the Green Beanie blueprint (`blueprint_green_beanie`) of the Craft plugin, which makes one `green_beanie`
+-- at the workbench (`cw_crafttable`) from two `cloth`, progressing Clothes making (`cloth`) by 25.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintGreenBeanie_Name'

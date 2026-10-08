@@ -1,3 +1,6 @@
+--- Defines the `Combine Forcefield Pass` item (`combine_forcefield_card`) of the Combine Locks plugin, a card with no
+-- use action whose bearer the Force Fields plugin lets through force fields.
+
 ITEM.name = 'Combine Forcefield Pass'
 ITEM.PrintName = '#Item_CombineForcefieldCard_PrintName'
 ITEM.uniqueID = 'combine_forcefield_card'

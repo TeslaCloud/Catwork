@@ -1,3 +1,9 @@
+--- Server-side hooks of the Force Fields plugin, which load and save the forcefields with the map and let holders of a
+-- `combine_forcefield_card` item pass through them.
+--
+-- `PlayerItemGiven` and `PlayerItemTaken` set the player's `ShouldForceFieldCollide` net var, which the plugin's
+-- `ShouldCollide` hook reads.
+
 --- Called after Catwork has loaded the map entities; restores the saved forcefields.
 function cwForceField:ClockworkInitPostEntity()
   self:LoadForceFields()

@@ -1,3 +1,6 @@
+--- Defines the `Paracetamol` medical item (`paracetamol`) of the Diseases plugin, which cures a fever when it is
+-- swallowed or given to the player being looked at with its `Give` action.
+
 ITEM.name = 'Paracetamol'
 ITEM.PrintName = '#Item_Paracetamol_PrintName'
 ITEM.uniqueID = 'paracetamol'

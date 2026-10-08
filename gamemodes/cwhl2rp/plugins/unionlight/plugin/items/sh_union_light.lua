@@ -1,3 +1,8 @@
+--- Defines the Union Light item, which places a `cw_unionlight` entity where the player is looking and is sold to the
+-- Elite Metropolice and Elite Overwatch Soldier classes.
+--
+-- The spot must be within 192 units. The light becomes the player's property and, when the item is used from the
+-- ground, takes the item entity's place and stays frozen if the item was.
 
 ITEM.name = 'Union Light'
 ITEM.PrintName = '#Item_UnionLight_PrintName'

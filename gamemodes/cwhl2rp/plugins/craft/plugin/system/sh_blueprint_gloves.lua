@@ -1,3 +1,6 @@
+--- Registers the Gloves blueprint (`blueprint_gloves`) of the Craft plugin, which makes one `gloves` at the workbench
+-- (`cw_crafttable`) from one `cloth`, progressing Clothes making (`cloth`) by 15.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintGloves_Name'

@@ -1,3 +1,7 @@
+--- Defines the `Special Diet Ration` medical item (`special_ration`) of the Diseases plugin, a food item with a
+-- `hunger` value of 40 that cures gastritis and restores health when it is eaten or given to the player being looked
+-- at with its `Give` action.
+
 ITEM.name = 'Special Diet Ration'
 ITEM.PrintName = '#Item_SpecialRation_PrintName'
 ITEM.uniqueID = 'special_ration'

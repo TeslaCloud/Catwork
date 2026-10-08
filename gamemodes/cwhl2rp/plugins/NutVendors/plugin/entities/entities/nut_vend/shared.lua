@@ -1,3 +1,12 @@
+--- Defines the `nut_vend` entity of the Nutscript Vending Machines plugin, an admin-spawnable vending machine with four
+-- buttons that sell drinks and supplements for tokens.
+--
+-- The file holds both realms. On the server `ENT:Use` finds the button the player aims at with `ENT:GetNearestButton`
+-- and sells `breens_water`, `smooth_breens_water`, `special_breens_water` or `citizen_supplements` from that button's
+-- stock, while Combine players switch the machine on and off or, holding sprint, refill an empty button for 25 tokens.
+-- On the client `ENT:Draw` draws the product labels and a glowing sprite per button, green with stock, red when empty
+-- and orange when the machine is off. The active state is kept in DT bool 0 and the four stocks in DT floats 1 to 4.
+
 AddCSLuaFile()
 
 ENT.Type = 'anim'

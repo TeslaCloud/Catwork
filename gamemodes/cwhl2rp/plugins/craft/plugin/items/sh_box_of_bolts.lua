@@ -1,3 +1,5 @@
+--- Defines the Box of Bolts item (`box_of_bolts`) of the Craft plugin, a crafting material used by several of the
+-- weapon blueprints.
 
 ITEM.name = 'Box of Bolts'
 ITEM.PrintName = '#Item_BoxOfBolts_Name'

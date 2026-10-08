@@ -1,3 +1,9 @@
+--- Client-side hooks of the Third Person plugin that create the `cwThirdPerson` client convar and run the `chasecam`
+-- console command whenever it changes.
+--
+-- `Initialize` stores the convar as `CW_CONVAR_THIRDPERSON`, and `ClockworkConVarChanged` runs `chasecam 1` or
+-- `chasecam 0` to match it.
+
 local PLUGIN = PLUGIN
 local Clockwork = Clockwork
 cw.core = cw.core

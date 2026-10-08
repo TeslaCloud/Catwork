@@ -1,3 +1,7 @@
+--- Registers the Health Kit blueprint (`blueprint_health_kit`) of the Craft plugin, which makes one `health_kit` at the
+-- chemical laboratory (`cw_craft_chem`) from one `plastic`, one `health_vial` and one `refined_electronics`, requiring
+-- 30 Chemistry (`chem`) and progressing it by 55.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintHealthKit_Name'

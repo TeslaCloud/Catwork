@@ -1,3 +1,7 @@
+--- Registers the Gunpowder blueprint (`blueprint_gunpowder`) of the Craft plugin, which makes three `gunpowder` at the
+-- chemical laboratory (`cw_craft_chem`) from two `selitra`, one `charcoal` and one `sulphur`, progressing Chemistry
+-- (`chem`) by 15.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintGunpowder_Name'

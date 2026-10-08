@@ -1,3 +1,10 @@
+--- Main file of the FactionNPC plugin, which makes Half-Life 2 NPCs like or hate players according to the player's
+-- faction; exposes the plugin as `factionnpc`.
+--
+-- `factionnpc.stored` lists the NPC classes that side with the Combine or with the rebels, checked by
+-- `factionnpc:IsNPCCombine` and `factionnpc:IsNPCRebel`. `factionnpc:UpdateNPCRelations` and
+-- `factionnpc:UpdateNPCRelation` set the relationships, and the `PlayerSpawn` and `PlayerSpawnedNPC` hooks apply them.
+
 local PLUGIN = PLUGIN
 PLUGIN:SetGlobalAlias('factionnpc')
 

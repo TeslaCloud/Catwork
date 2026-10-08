@@ -1,3 +1,7 @@
+--- Registers the Noodles blueprint (`blueprint_takeout`) of the Craft plugin, which makes one `chinese_takeout` and one
+-- `empty_soda_can` at the cooking stove (`cw_craft_cook`) from one `flour` and one `breens_water`, progressing Cooking
+-- (`cook`) by 15.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintTakeout_Name'

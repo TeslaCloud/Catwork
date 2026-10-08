@@ -1,3 +1,7 @@
+--- Defines the `Sleeping Pills (Prescription)` medical item (`snot`) of the Diseases plugin, which cures insomnia and
+-- sets the `Fatigue` character data to 100 when swallowed, or to 0 when given to the player being looked at with its
+-- `Give` action.
+
 ITEM.name = 'Sleeping Pills (Prescription)'
 ITEM.PrintName = '#Item_Snot_PrintName'
 ITEM.uniqueID = 'snot'

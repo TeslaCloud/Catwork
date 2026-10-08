@@ -1,3 +1,7 @@
+--- Registers the Potatoes with Vegetables blueprint (`blueprint_potato_dish`) of the Craft plugin, which makes one
+-- `potato_dish` at the cooking stove (`cw_craft_cook`) from one `potato`, one `tomato` and one `corn`, using
+-- `weapon_knife` and `weapon_hl2pan` as tools, requiring 20 Cooking (`cook`) and progressing it by 40.
+
 local BLUEPRINT = cw.blueprints:New()
 
 BLUEPRINT.name = '#Blueprint_BlueprintPotatoDish_Name'
