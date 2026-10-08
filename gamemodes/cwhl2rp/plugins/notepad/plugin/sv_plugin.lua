@@ -1,11 +1,11 @@
---- Defines the server-side `EditNotepad` netstream handler of the Notepad plugin, which writes a player's text to a
+--- Defines the server-side `EditNotepad` Cable handler of the Notepad plugin, which writes a player's text to a
 -- `cw_notepad`, and `cwNotepad:LoadNotepad` and `cwNotepad:SaveNotepad`, which persist the notepads per map.
 --
 -- The handler requires a living player who may use the notepad, is within 192 units of it and looking at it, lets
 -- only the owner change written text and accepts one edit a second per player. Notepads are stored in
 -- `plugins/notepad/<map>` with their owner, text, position, angles and whether they can move.
 
-netstream.Hook('EditNotepad', function(player, entity, text)
+cw.transfer:Receive('EditNotepad', function(player, entity, text)
   if !isentity(entity) or !IsValid(entity) or entity:GetClass() != 'cw_notepad' or !isstring(text) then return end
   if !player:HasInitialized() or !player:Alive() or player:IsRagdolled() then return end
 

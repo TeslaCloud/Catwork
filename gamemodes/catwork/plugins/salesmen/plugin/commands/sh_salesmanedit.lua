@@ -33,7 +33,7 @@ function COMMAND:OnRun(player, arguments)
         player.cwSalesmanAnim = salesmanTable.animation
       end
 
-      netstream.Start(player, 'SalesmanEdit', salesmanTable)
+      cable.send(player, 'SalesmanEdit', salesmanTable)
     else
       cw.player:Notify(player, L('Salesman_NotSalesman'))
     end

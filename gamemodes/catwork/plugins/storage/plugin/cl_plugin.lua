@@ -1,7 +1,7 @@
---- Client-side netstream handlers of the Storage plugin: `StorageMessage` stores a container's message on the entity
+--- Client-side Cable handlers of the Storage plugin: `StorageMessage` stores a container's message on the entity
 -- and `ContainerPassword` asks the player for a container's password.
 
-netstream.Hook('StorageMessage', function(data)
+cable.receive('StorageMessage', function(data)
   local entity = data.entity
   local message = data.message
 
@@ -10,10 +10,10 @@ netstream.Hook('StorageMessage', function(data)
   end
 end)
 
-netstream.Hook('ContainerPassword', function(data)
+cable.receive('ContainerPassword', function(data)
   local entity = data
 
   Derma_StringRequest('#Container_Password', '#Container_PasswordRequest', nil, function(text)
-    netstream.Start('ContainerPassword', { text, entity })
+    cable.send('ContainerPassword', { text, entity })
   end)
 end)

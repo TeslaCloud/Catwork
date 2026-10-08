@@ -25,7 +25,7 @@ do
   --- Sets the player's model and announces the change.
   --
   -- Overrides `Entity:SetModel` for players: runs the `PlayerModelChanged` hook first and, on the
-  -- server, sends a `PlayerModelChanged` netstream message to every client so they run the hook too.
+  -- server, sends a `PlayerModelChanged` Cable message to every client so they run the hook too.
   -- @param strPath [String Path of the new model]
   -- @return [Any Whatever the original `Entity:SetModel` returns]
   function playerMeta:SetModel(strPath)
@@ -34,7 +34,7 @@ do
     hook.Run('PlayerModelChanged', self, strPath, oldModel)
 
     if SERVER then
-      netstream.Start(nil, 'PlayerModelChanged', self:EntIndex(), strPath, oldModel)
+      cable.send(nil, 'PlayerModelChanged', self:EntIndex(), strPath, oldModel)
     end
 
     return self:oldSetModel(strPath)

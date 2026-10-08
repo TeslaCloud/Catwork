@@ -428,7 +428,7 @@ if SERVER then
     end
   end
 
-  --- Sends shared config values to players over the `Config` netstream message.
+  --- Sends shared config values to players over the `Config` Cable message.
   --
   -- Only keys added as shared are sent. Bots are marked as config initialized straight away and fire
   -- `PlayerConfigInitialized` instead of being sent anything.
@@ -456,7 +456,7 @@ if SERVER then
             key = indexes[key]
           end
 
-          netstream.Start(player, 'Config', { [key] = value })
+          cable.send(player, 'Config', { [key] = value })
         end
       end
     else
@@ -474,7 +474,7 @@ if SERVER then
         end
       end
 
-      netstream.Start(player, 'Config', cfg)
+      cable.send(player, 'Config', cfg)
     end
   end
 
@@ -699,7 +699,7 @@ if SERVER then
     end
   end
 
-  netstream.Hook('ConfigInitialized', function(player, data)
+  cable.receive('ConfigInitialized', function(player, data)
     if !player:HasConfigInitialized() then
       player:SetConfigInitialized(true)
       hook.Run('PlayerConfigInitialized', player)
@@ -708,7 +708,7 @@ if SERVER then
 else
   config.system = config.system or {}
 
-  netstream.Hook('Config', function(data)
+  cable.receive('Config', function(data)
     for k, v in pairs(data) do
       if indexes[k] then
         k = indexes[k]
@@ -729,7 +729,7 @@ else
       end
 
       if IsValid(cw.client) and !config.HasSentInitialized() then
-        netstream.Start('ConfigInitialized', true)
+        cable.send('ConfigInitialized', true)
         config.SetSentInitialized(true)
       end
     end

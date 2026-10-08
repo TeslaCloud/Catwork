@@ -1,9 +1,9 @@
---- Client-side `ViewBook` netstream handler of the Books plugin, which opens the `cwViewBook` panel for a `cw_book`
+--- Client-side `ViewBook` Cable handler of the Books plugin, which opens the `cwViewBook` panel for a `cw_book`
 -- entity.
 
 local PLUGIN = PLUGIN
 
-netstream.Hook('ViewBook', function(data)
+cable.receive('ViewBook', function(data)
   local entity = data
 
   if IsValid(entity) then

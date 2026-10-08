@@ -1,16 +1,16 @@
 --- Client-side functions of the Area Displays plugin that receive the area list and show area names as scrolling, 3D or
 -- cinematic text.
 --
--- Hooks the `AreaDisplays`, `AreaAdd` and `AreaRemove` netstreams and adds the `cwShowAreas` setting. Expiring areas
--- are shown only once: the ones already seen are remembered in the `plugins/displays/<map>` schema data file on the
--- client.
+-- Hooks the `AreaDisplays`, `AreaAdd` and `AreaRemove` Cable messages and adds the `cwShowAreas` setting. Expiring
+-- areas are shown only once: the ones already seen are remembered in the `plugins/displays/<map>` schema data file on
+-- the client.
 
 cwAreaDisplays.activeDisplays = cwAreaDisplays.activeDisplays or {}
 cwAreaDisplays.expiredList = cw.core:RestoreSchemaData('plugins/displays/'..game.GetMap())
 
 cw.setting:AddCheckBox('#Framework', '#ShowAreas', 'cwShowAreas', '#ShowAreasDesc')
 
-netstream.Hook('AreaDisplays', function(data)
+cable.receive('AreaDisplays', function(data)
   for k, v in pairs(data) do
     if cwAreaDisplays:HasExpired(v) then
       data[k] = nil
@@ -20,14 +20,14 @@ netstream.Hook('AreaDisplays', function(data)
   cwAreaDisplays.storedList = data
 end)
 
-netstream.Hook('AreaAdd', function(data)
+cable.receive('AreaAdd', function(data)
   if !cwAreaDisplays:HasExpired(data) then
     cwAreaDisplays.storedList[#cwAreaDisplays.storedList + 1] = data
     cwAreaDisplays:AddAreaDisplayDisplay(data)
   end
 end)
 
-netstream.Hook('AreaRemove', function(data)
+cable.receive('AreaRemove', function(data)
   for k, v in pairs(cwAreaDisplays.storedList) do
     if v.name == data.name and v.minimum == data.minimum
     and v.maximum == data.maximum then

@@ -86,7 +86,7 @@ function COMMAND:OnRun(player, arguments)
       end
 
       player.cwNextOrderTime = CurTime() + (2 * itemTable.batch)
-      netstream.Start(player, "OrderTime", player.cwNextOrderTime)
+      cable.send(player, "OrderTime", player.cwNextOrderTime)
     else
       cw.player:Notify(player, "You cannot order this item that far away!")
     end

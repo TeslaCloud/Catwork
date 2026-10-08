@@ -37,7 +37,7 @@ function COMMAND:OnRun(player, arguments)
       end
 
       if #recipients > 0 then
-        netstream.Start(recipients, 'SystemPluginSet', { pluginTable.name, false })
+        cable.send(recipients, 'SystemPluginSet', { pluginTable.name, false })
       end
     else
       cw.player:Notify(player, L('PluginManage_CouldNotLoad'))

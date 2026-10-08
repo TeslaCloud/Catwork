@@ -1,13 +1,13 @@
 --- Server-side functions of the Storage plugin that open containers and pick the random items they are filled with.
 --
 -- `cwStorage:OpenContainer` gives the entity an inventory and cash on first use and opens it with `cw.storage:Open`,
--- and the `ContainerPassword` netstream opens a container when the entered password matches. `GetRandomItem`,
+-- and the `ContainerPassword` Cable message opens a container when the entered password matches. `GetRandomItem`,
 -- `CategoryExists` and `FillContainer` work on the list from `cwStorage:GetRandomItems`. `SaveStorage` and
 -- `LoadStorage` are empty stubs, as persistence is left to the Static Entities plugin.
 
 cwStorage.storage = cwStorage.storage or {}
 
-netstream.Hook('ContainerPassword', function(player, data)
+cable.receive('ContainerPassword', function(player, data)
   if !istable(data) then return end
 
   local password = data[1]
@@ -191,7 +191,7 @@ function cwStorage:OpenContainer(player, entity, weight)
   end
 
   if entity.cwMessage then
-    netstream.Start(player, 'StorageMessage', {
+    cable.send(player, 'StorageMessage', {
       entity = entity, message = entity.cwMessage
     })
   end

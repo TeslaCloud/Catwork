@@ -9,7 +9,7 @@ function cwMapScene:PlayerSendDataStreamInfo(player)
     player.cwMapScene = self.storedList[math.random(1, #self.storedList)]
 
     if player.cwMapScene then
-      netstream.Start(player, 'MapScene', player.cwMapScene)
+      cable.send(player, 'MapScene', player.cwMapScene)
     end
   end
 end

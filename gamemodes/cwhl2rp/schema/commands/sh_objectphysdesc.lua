@@ -1,6 +1,6 @@
 --- Registers `/ObjectPhysDesc`, which lets the owner of the physics prop being looked at set its physical description.
 --
--- The command only checks ownership and distance, then sends the `ObjectPhysDesc` netstream message so the client
+-- The command only checks ownership and distance, then sends the `ObjectPhysDesc` Cable message so the client
 -- prompts for the text.
 
 local COMMAND = cw.command:New('ObjectPhysDesc')
@@ -9,7 +9,7 @@ COMMAND.flags = CMD_DEFAULT
 
 --- Asks the owner of the prop being looked at for its physical description; takes no arguments.
 --
--- The client answers with the `ObjectPhysDesc` netstream message.
+-- The client answers with the `ObjectPhysDesc` Cable message.
 function COMMAND:OnRun(player, arguments)
   local target = player:GetEyeTraceNoCursor().Entity
 
@@ -19,7 +19,7 @@ function COMMAND:OnRun(player, arguments)
         if player:QueryCharacter('key') == target:GetOwnerKey() then
           player.objectPhysDesc = target
 
-          netstream.Start(player, 'ObjectPhysDesc', target)
+          cable.send(player, 'ObjectPhysDesc', target)
         else
           cw.player:Notify(player, L('Err_NotEntityOwner'))
         end

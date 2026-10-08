@@ -1,6 +1,6 @@
 --- Defines the client-side `cw.salesmenu` library, which holds the data of the salesman whose trade menu is open.
 --
--- The data arrives in the `Salesmenu` netstream message; the getters expose the salesman entity, its sells and buys
+-- The data arrives in the `Salesmenu` Cable message; the getters expose the salesman entity, its sells and buys
 -- lists, stock, cash, prices and trade restrictions to the `cwSalesmenu` panel.
 
 library.New('salesmenu', cw)

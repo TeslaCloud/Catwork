@@ -2,7 +2,7 @@
 --
 -- `Rebuild` creates the Close and Characters buttons and a `cw.menuButton` for each item collected by the
 -- `MenuItemsAdd` and `MenuItemsDestroy` hooks, keeping the tab panels in `cw.menu.stored`; `OpenPanel` fades between
--- tabs. The `MenuOpen` netstream opens, closes or creates the menu.
+-- tabs. The `MenuOpen` Cable message opens, closes or creates the menu.
 
 local PANEL = {}
 
@@ -444,7 +444,7 @@ hook.Add('VGUIMousePressed', 'cw.menu:VGUIMousePressed', function(panel, code)
   end
 end)
 
-netstream.Hook('MenuOpen', function(data)
+cable.receive('MenuOpen', function(data)
   local panel = cw.menu:GetPanel()
 
   if panel then

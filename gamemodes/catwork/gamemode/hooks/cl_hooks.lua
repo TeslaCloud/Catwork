@@ -288,7 +288,7 @@ function GM:LocalPlayerCreated()
   end)
 
   timer.Simple(1, function()
-    netstream.Start('LocalPlayerCreated', true)
+    cable.send('LocalPlayerCreated', true)
   end)
 end
 
@@ -1590,7 +1590,7 @@ function GM:HUDDrawTargetID()
 
                   if !cw.nextCheckRecognises or curTime >= cw.nextCheckRecognises[1]
                   or cw.nextCheckRecognises[2] != entity then
-                    netstream.Start('GetTargetRecognises', entity)
+                    cable.send('GetTargetRecognises', entity)
 
                     cw.nextCheckRecognises = { curTime + 2, entity }
                   end
@@ -1947,7 +1947,7 @@ end
 -- @param panel [Panel The character menu]
 function GM:PlayerCharacterScreenCreated(panel)
   if cw.quiz:GetEnabled() then
-    netstream.Start('GetQuizStatus', true)
+    cable.send('GetQuizStatus', true)
   end
 end
 

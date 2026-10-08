@@ -15,7 +15,7 @@ function COMMAND:OnRun(player, arguments)
 
   for k, v in pairs(cwAreaDisplays.storedList) do
     if string.lower(v.name) == name then
-      netstream.Start(nil, 'AreaRemove', {
+      cable.send(nil, 'AreaRemove', {
         name = v.name,
         minimum = v.minimum,
         maximum = v.maximum

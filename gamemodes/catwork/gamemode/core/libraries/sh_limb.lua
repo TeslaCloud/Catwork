@@ -59,7 +59,7 @@ if SERVER then
     if limbData then
       limbData[hitGroup] = math.min((limbData[hitGroup] or 0) + newDamage, 100)
 
-      netstream.Start(player, 'TakeLimbDamage', {
+      cable.send(player, 'TakeLimbDamage', {
         hitGroup = hitGroup, damage = newDamage
       })
 
@@ -102,7 +102,7 @@ if SERVER then
         limbData[hitGroup] = nil
       end
 
-      netstream.Start(player, 'HealLimbDamage', {
+      cable.send(player, 'HealLimbDamage', {
         hitGroup = hitGroup, amount = newAmount
       })
 
@@ -119,7 +119,7 @@ if SERVER then
   function cw.limb:ResetDamage(player)
     player:SetCharacterData('LimbData', {})
 
-    netstream.Start(player, 'ResetLimbDamage', true)
+    cable.send(player, 'ResetLimbDamage', true)
 
     hook.Run('PlayerLimbDamageReset', player)
   end
@@ -279,17 +279,17 @@ else
     return table.Count(self.stored) > 0
   end
 
-  netstream.Hook('ReceiveLimbDamage', function(data)
+  cable.receive('ReceiveLimbDamage', function(data)
     cw.limb.stored = data
     hook.Run('PlayerLimbDamageReceived')
   end)
 
-  netstream.Hook('ResetLimbDamage', function(data)
+  cable.receive('ResetLimbDamage', function(data)
     cw.limb.stored = {}
     hook.Run('PlayerLimbDamageReset')
   end)
 
-  netstream.Hook('TakeLimbDamage', function(data)
+  cable.receive('TakeLimbDamage', function(data)
     local hitGroup = data.hitGroup
     local damage = data.damage
 
@@ -297,7 +297,7 @@ else
     hook.Run('PlayerLimbTakeDamage', hitGroup, damage)
   end)
 
-  netstream.Hook('HealLimbDamage', function(data)
+  cable.receive('HealLimbDamage', function(data)
     local hitGroup = data.hitGroup
     local amount = data.amount
 

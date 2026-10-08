@@ -67,7 +67,7 @@ function cwSpawnPoints:SaveSpawnPoints()
 
   for k, player in ipairs(_player.GetAll()) do
     if player:IsAdmin() then
-      netstream.Start(player, 'SpawnPointESPSync', self:GetSpawnPoints())
+      cable.send(player, 'SpawnPointESPSync', self:GetSpawnPoints())
     end
   end
 

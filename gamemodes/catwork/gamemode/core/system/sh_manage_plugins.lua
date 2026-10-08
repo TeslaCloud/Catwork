@@ -1,7 +1,7 @@
 --- Registers the `Manage Plugins` system, which lists every plugin by author and lets admins load or unload them.
 --
--- The page is shown to players with access to `/PluginLoad` or `/PluginUnload`. The unloaded plugins are requested
--- over the `SystemPluginGet` netstream, and `SystemPluginSet` toggles a plugin with `plugin.SetUnloaded` on the server
+-- The page is shown to players with access to `/PluginLoad` or `/PluginUnload`. The unloaded plugins are requested over
+-- the `SystemPluginGet` Cable message, and `SystemPluginSet` toggles a plugin with `plugin.SetUnloaded` on the server
 -- and updates the page for every admin.
 
 if CLIENT then
@@ -29,7 +29,7 @@ if CLIENT then
 
   --- Lists every plugin except the schema, grouped by author, colored by state, as buttons that toggle loading.
   --
-  -- Asks the server for the unloaded plugins with the `SystemPluginGet` netstream; clicking a plugin that is not
+  -- Asks the server for the unloaded plugins with the `SystemPluginGet` Cable message; clicking a plugin that is not
   -- disabled sends `SystemPluginSet` to load or unload it.
   -- @param systemPanel [Panel The system panel to add the plugin lists to]
   -- @param systemForm [Panel The system's form (unused, the system does not create one)]
@@ -62,7 +62,7 @@ if CLIENT then
       return a.category < b.category
     end)
 
-    netstream.Start('SystemPluginGet', true)
+    cable.send('SystemPluginGet', true)
 
     if #mainPlugins > 0 then
       local label = vgui.Create('cwInfoText', systemPanel)
@@ -95,9 +95,9 @@ if CLIENT then
           pluginButtons[v2.name].DoClick = function(button)
             if !plugin.IsDisabled(v2.name) then
               if plugin.IsUnloaded(v2.name) then
-                netstream.Start('SystemPluginSet', { v2.name, false })
+                cable.send('SystemPluginSet', { v2.name, false })
               else
-                netstream.Start('SystemPluginSet', { v2.name, true })
+                cable.send('SystemPluginSet', { v2.name, true })
               end
             end
           end
@@ -143,7 +143,7 @@ if CLIENT then
 
   SYSTEM:Register()
 
-  netstream.Hook('SystemPluginGet', function(data)
+  cable.receive('SystemPluginGet', function(data)
     local systemTable = cw.system:FindByID('Manage Plugins')
     local unloaded = data
 
@@ -160,7 +160,7 @@ if CLIENT then
     end
   end)
 
-  netstream.Hook('SystemPluginSet', function(data)
+  cable.receive('SystemPluginSet', function(data)
     local systemTable = cw.system:FindByID('Manage Plugins')
     local pluginTable = plugin.FindByID(data[1])
 
@@ -186,16 +186,16 @@ else
     return false
   end
 
-  netstream.Hook('SystemPluginGet', function(player, data)
+  cable.receive('SystemPluginGet', function(player, data)
     local unloadTable = cw.command:FindByID('PluginUnload')
     local loadTable = cw.command:FindByID('PluginLoad')
 
     if loadTable and unloadTable and CanManagePlugins(player, loadTable, unloadTable) then
-      netstream.Start(player, 'SystemPluginGet', plugin.GetUnloaded())
+      cable.send(player, 'SystemPluginGet', plugin.GetUnloaded())
     end
   end)
 
-  netstream.Hook('SystemPluginSet', function(player, data)
+  cable.receive('SystemPluginSet', function(player, data)
     if !istable(data) or !isstring(data[1]) or !isbool(data[2]) then
       return
     end
@@ -239,7 +239,7 @@ else
         end
 
         if #recipients > 0 then
-          netstream.Start(recipients, 'SystemPluginSet', { pluginTable.name, isUnloaded })
+          cable.send(recipients, 'SystemPluginSet', { pluginTable.name, isUnloaded })
         end
       elseif isUnloaded then
         cw.player:Notify(player, L('PluginManage_CouldNotUnload'))

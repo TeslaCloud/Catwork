@@ -1,11 +1,11 @@
 --- Client-side part of the Dynamic Adverts plugin, which receives the advert list from the server and downloads each
 -- advert's image.
 --
--- Handles the `DynamicAdverts`, `DynamicAdvertAdd` and `DynamicAdvertRemove` netstream messages and defines
+-- Handles the `DynamicAdverts`, `DynamicAdvertAdd` and `DynamicAdvertRemove` Cable messages and defines
 -- `cwDynamicAdverts:CacheMaterial`, which fetches a `png` or `jpg` URL, caches the file under `data/` by the CRC of
 -- the URL and stores the resulting material on the advert.
 
-netstream.Hook('DynamicAdverts', function(data)
+cable.receive('DynamicAdverts', function(data)
   for k, v in ipairs(data) do
     cwDynamicAdverts:CacheMaterial(v)
   end
@@ -13,13 +13,13 @@ netstream.Hook('DynamicAdverts', function(data)
   cwDynamicAdverts.storedList = data
 end)
 
-netstream.Hook('DynamicAdvertAdd', function(data)
+cable.receive('DynamicAdvertAdd', function(data)
   cwDynamicAdverts:CacheMaterial(data)
 
   cwDynamicAdverts.storedList[#cwDynamicAdverts.storedList + 1] = data
 end)
 
-netstream.Hook('DynamicAdvertRemove', function(data)
+cable.receive('DynamicAdvertRemove', function(data)
   local storedList = cwDynamicAdverts.storedList
 
   for k = #storedList, 1, -1 do

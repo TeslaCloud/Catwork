@@ -7,7 +7,7 @@ AllReaders:
   Include:
     - 'gamemodes/**/*.lua'                           # nothing outside gamemodes/ is linted
   Exclude:
-    - 'gamemodes/catwork/gamemode/thirdparty/**/*'   # md5, netstream, pon, utf8: vendored as-is
+    - 'gamemodes/catwork/gamemode/thirdparty/**/*'   # cable, md5, pon, sfs, utf8: vendored
 
 Layout/LineLength:
   Exclude:                               # one record or one sentence per line, whatever its length

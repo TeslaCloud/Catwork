@@ -346,7 +346,7 @@ function Schema:PlayerStunEntity(player, entity)
 
     target:ViewPunch(Angle(12 + strength, 0, 0))
 
-    netstream.Start(target, 'Stunned', 0.5)
+    cable.send(target, 'Stunned', 0.5)
   end
 end
 
@@ -714,7 +714,7 @@ function Schema:KeyPress(player, key)
                   end
                 end
 
-                netstream.Start(v, 'Stunned', 3)
+                cable.send(v, 'Stunned', 3)
               end
             end
           end
@@ -1776,7 +1776,7 @@ function Schema:PostPlayerSpawn(player, lightSpawn, changeClass, firstSpawn)
   if !lightSpawn then
     player:SetNetVar('antidepressants', 0)
 
-    netstream.Start(player, 'ClearEffects', true)
+    cable.send(player, 'ClearEffects', true)
 
     player.beingSearched = nil
     player.searching = nil
@@ -1886,9 +1886,9 @@ end
 -- @param damageInfo [CTakeDamageInfo The damage]
 function Schema:PlayerTakeDamage(player, inflictor, attacker, hitGroup, damageInfo)
   if player:Armor() <= 0 then
-    netstream.Start(player, 'Stunned', 0.5)
+    cable.send(player, 'Stunned', 0.5)
   else
-    netstream.Start(player, 'Stunned', 1)
+    cable.send(player, 'Stunned', 1)
   end
 end
 

@@ -1,7 +1,7 @@
 --- Defines the `cwEditNotepad` panel of the Notepad plugin, the window in which a player writes or edits a notepad's
 -- text.
 --
--- The text is capped at 64000 characters and sent to the server with the `EditNotepad` netstream when the button is
+-- The text is capped at 64000 characters and sent to the server with the `EditNotepad` Cable message when the button is
 -- pressed. The window closes by itself when the notepad is removed or more than 192 units away.
 
 local PANEL = {}
@@ -52,7 +52,7 @@ end
 --- Adds the text box and the button that sends the text to the server.
 --
 -- The text box is capped at 64000 characters. Pressing the button closes the window and
--- sends the text with the `EditNotepad` netstream.
+-- sends the text with the `EditNotepad` Cable message.
 --
 -- @param notepad [String The notepad's current text]
 function PANEL:Populate(notepad)
@@ -91,7 +91,7 @@ function PANEL:Populate(notepad)
     gui.EnableScreenClicker(false)
 
     if IsValid(self.entity) then
-      netstream.Heavy('EditNotepad', self.entity, string.utf8sub(textEntry:GetValue(), 0, 64000))
+      cw.transfer:Send('EditNotepad', self.entity, string.utf8sub(textEntry:GetValue(), 0, 64000))
     end
   end
 

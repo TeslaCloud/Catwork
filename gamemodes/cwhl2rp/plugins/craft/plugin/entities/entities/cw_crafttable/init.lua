@@ -1,8 +1,8 @@
 --- Server side of the `cw_crafttable` entity of the Craft plugin, the crafting station that opens the craft menu when
 -- used.
 --
--- `ENT:Use` sends the `Craft::OpenMenu` netstream with the entity's class and name, at most once a second per player,
--- so the menu lists the blueprints whose `craftplace` is that class, and remembers the station in
+-- `ENT:Use` sends the `Craft::OpenMenu` Cable message with the entity's class and name, at most once a second per
+-- player, so the menu lists the blueprints whose `craftplace` is that class, and remembers the station in
 -- `player.cwCraftStation` for the `Craft::CraftItem` handler to check. The other stations inherit this behaviour.
 
 include('shared.lua')
@@ -36,7 +36,7 @@ function ENT:Use(activator)
   local curTime = CurTime()
 
   if !activator.nextUse or activator.nextUse <= curTime then
-    netstream.Start(activator, 'Craft::OpenMenu', self:GetClass(), self.PrintName)
+    cable.send(activator, 'Craft::OpenMenu', self:GetClass(), self.PrintName)
     activator.cwCraftStation = self
     activator.nextUse = curTime + 1
   end

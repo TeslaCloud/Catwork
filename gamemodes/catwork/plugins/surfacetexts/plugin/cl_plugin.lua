@@ -1,24 +1,24 @@
 --- Client-side functions of the Surface Texts plugin that receive the text list from the server and find the text under
 -- the crosshair for removal.
 --
--- The `cwLoad3DTexts`, `cw3DText_Add` and `cw3DText_Remove` netstreams keep `cwSurfaceTexts.stored` in sync, and
+-- The `cwLoad3DTexts`, `cw3DText_Add` and `cw3DText_Remove` Cable messages keep `cwSurfaceTexts.stored` in sync, and
 -- `cwSurfaceTexts:RemoveAtTrace` asks the server to remove the text a trace runs through.
 --
 -- Backported from the [Flux](https://github.com/TeslaCloud/flux-ce) project.
 
-netstream.Hook('cwLoad3DTexts', function(data)
+cw.transfer:Receive('cwLoad3DTexts', function(data)
   cwSurfaceTexts.stored = data or {}
 end)
 
-netstream.Hook('cw3DText_Add', function(idx, data)
+cable.receive('cw3DText_Add', function(idx, data)
   cwSurfaceTexts.stored[idx] = data
 end)
 
-netstream.Hook('cw3DText_Remove', function(idx)
+cable.receive('cw3DText_Remove', function(idx)
   cwSurfaceTexts.stored[idx] = nil
 end)
 
-netstream.Hook('cw3DText_Calculate', function()
+cable.receive('cw3DText_Calculate', function()
   cwSurfaceTexts:RemoveAtTrace(cw.client:GetEyeTraceNoCursor())
 end)
 
@@ -48,7 +48,7 @@ function cwSurfaceTexts:RemoveAtTrace(trace)
 
     if math.abs(math.abs(hitPos.z) - math.abs(pos.z)) < 5 * v.scale then
       if util.VectorsIntersect(traceStart, hitPos, startPos, endPos) then
-        netstream.Start('cw3DText_Remove', k)
+        cable.send('cw3DText_Remove', k)
 
         return true
       end

@@ -1,12 +1,12 @@
 --- Server-side functions of the Area Displays plugin that load and save the map's areas.
 --
--- The areas are kept in the `plugins/areas/<map>` schema data file. The `EnteredArea` netstream sent by clients runs
--- the `PlayerEnteredArea` hook on the server, once the area is known to exist and the player is found near it.
+-- The areas are kept in the `plugins/areas/<map>` schema data file. The `EnteredArea` Cable message sent by clients
+-- runs the `PlayerEnteredArea` hook on the server, once the area is known to exist and the player is found near it.
 
 -- How far outside an area a player may be when their client reports entering it, to allow for lag.
 local areaTolerance = Vector(64, 64, 64)
 
-netstream.Hook('EnteredArea', function(player, data)
+cable.receive('EnteredArea', function(player, data)
   if !istable(data) or !isstring(data[1]) or !isvector(data[2]) or !isvector(data[3]) then return end
   if !player:HasInitialized() then return end
 

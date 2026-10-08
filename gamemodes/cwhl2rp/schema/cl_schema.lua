@@ -1,4 +1,4 @@
---- Client-side core of the HL2RP schema: its config menu entries, netstream receivers and the `Schema` helpers for
+--- Client-side core of the HL2RP schema: its config menu entries, Cable receivers and the `Schema` helpers for
 -- stun, flash and Combine display effects.
 --
 -- Adds the schema's config keys (such as `permits`, `business_cost`, `knockout_time` and `enable_permakill`) to the
@@ -45,7 +45,7 @@ cw.icon:PlayerSet('STEAM_0:1:44952839', 'AleXXX_007', 'icon16/tag.png')
 cw.icon:PlayerSet('STEAM_0:0:26343107', 'Helly', 'data/catwork/icon_luna.png')
 --[[  (нет)  ]] --
 
-netstream.Hook('PlayerSetCustomIcon', function(player, iconData, bReset)
+cable.receive('PlayerSetCustomIcon', function(player, iconData, bReset)
   if IsValid(player) and player:IsPlayer() and istable(iconData) then
     local icon = iconData.icon
     local path = iconData.path
@@ -71,7 +71,7 @@ netstream.Hook('PlayerSetCustomIcon', function(player, iconData, bReset)
   end
 end)
 
-netstream.Hook('RebuildBusiness', function(data)
+cable.receive('RebuildBusiness', function(data)
   if cw.menu:GetOpen() and IsValid(Schema.businessPanel) then
     if cw.menu:GetActivePanel() == Schema.businessPanel then
       Schema.businessPanel:Rebuild()
@@ -79,17 +79,17 @@ netstream.Hook('RebuildBusiness', function(data)
   end
 end)
 
-netstream.Hook('ObjectPhysDesc', function(data)
+cable.receive('ObjectPhysDesc', function(data)
   local entity = data
 
   if IsValid(entity) then
     Derma_StringRequest('#ObjectPhysDesc_Title', '#ObjectPhysDesc_Request', nil, function(text)
-      netstream.Start('ObjectPhysDesc', { text, entity })
+      cable.send('ObjectPhysDesc', { text, entity })
     end)
   end
 end)
 
-netstream.Hook('Frequency', function(data)
+cable.receive('Frequency', function(data)
   Derma_StringRequest('#Radio_Frequency_Title', '#Radio_Frequency_Request', data, function(text)
     cw.core:RunCommand('SetFreq', text)
 
@@ -103,7 +103,7 @@ netstream.Hook('Frequency', function(data)
   end
 end)
 
-netstream.Hook('EditObjectives', function(data)
+cable.receive('EditObjectives', function(data)
   if Schema.objectivesPanel and Schema.objectivesPanel:IsValid() then
     Schema.objectivesPanel:Close()
     Schema.objectivesPanel:Remove()
@@ -116,7 +116,7 @@ netstream.Hook('EditObjectives', function(data)
   gui.EnableScreenClicker(true)
 end)
 
-netstream.Hook('EditData', function(data)
+cable.receive('EditData', function(data)
   if IsValid(data[1]) then
     if Schema.dataPanel and Schema.dataPanel:IsValid() then
       Schema.dataPanel:Close()
@@ -131,11 +131,11 @@ netstream.Hook('EditData', function(data)
   end
 end)
 
-netstream.Hook('Stunned', function(data)
+cable.receive('Stunned', function(data)
   Schema:AddStunEffect(data)
 end)
 
-netstream.Hook('Flashed', function(data)
+cable.receive('Flashed', function(data)
   Schema:AddFlashEffect()
 end)
 
@@ -165,7 +165,7 @@ end
 --
 -- Adds a ten second white-out (see `Schema:HUDPaintForeground`), a twenty second colour shift and motion
 -- blur (see `Schema:RenderScreenspaceEffects`) and plays a flatline sound. Triggered by the `Flashed`
--- netstream message.
+-- Cable message.
 function Schema:AddFlashEffect()
   local curTime = CurTime()
 
@@ -178,7 +178,7 @@ end
 --- Starts a stun effect on the local player.
 --
 -- Adds a white-out lasting `duration` seconds and a flash blur lasting twice as long. Triggered by the
--- `Stunned` netstream message.
+-- `Stunned` Cable message.
 -- @param duration=1 [Number Length of the white-out in seconds; `0` also means one second]
 function Schema:AddStunEffect(duration)
   local curTime = CurTime()
@@ -191,12 +191,12 @@ function Schema:AddStunEffect(duration)
   self.flashEffect = { curTime + (duration * 2), duration * 2, true }
 end
 
-netstream.Hook('ClearEffects', function(data)
+cable.receive('ClearEffects', function(data)
   Schema.stunEffects = {}
   Schema.flashEffect = nil
 end)
 
-netstream.Hook('CombineDisplayLine', function(data)
+cable.receive('CombineDisplayLine', function(data)
   Schema:AddCombineDisplayLine(data[1], data[2])
 end)
 
@@ -229,7 +229,7 @@ end
 --
 -- The text is translated and shown for eight seconds by `Schema:HUDPaintTopScreen`. Uncoloured lines are
 -- suppressed while the player's biosignal is gone, and also refresh the biosignal locations of the
--- `cwCTO` plugin. Sent from the server with the `CombineDisplayLine` netstream message.
+-- `cwCTO` plugin. Sent from the server with the `CombineDisplayLine` Cable message.
 -- @param text [String The text or language key to show]
 -- @param color=nil [Color Colour of the line; white when `nil`]
 function Schema:AddCombineDisplayLine(text, color)

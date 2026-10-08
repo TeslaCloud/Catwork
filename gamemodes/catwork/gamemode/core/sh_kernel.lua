@@ -2,10 +2,11 @@
 -- functions.
 --
 -- `cw.core` holds the file and plugin includers (also exposed as `util.Include` and `util.IncludeDirectory`),
--- `cw.core:Serialize` and `cw.core:Deserialize`, console logging filtered by `cw.LogLevel`, and string, table and
--- color helpers. The file also replaces the engine `Color` so that it accepts hex strings and CSS color names, adds
--- helpers such as `string.MakeID`, `typeof` and `util.WaitForEntity`, and creates the timers that run the
--- `HalfSecond`, `OneSecond`, `OneMinute` and `LazyTick` hooks.
+-- `cw.core:Serialize` and `cw.core:Deserialize`, which turn the tables of every data file into JSON and back, console
+-- logging filtered by `cw.LogLevel`, and string, table and color helpers. The file also replaces the engine `Color`
+-- so that it accepts hex strings and CSS color names, adds helpers such as `string.MakeID`, `typeof` and
+-- `util.WaitForEntity`, and creates the timers that run the `HalfSecond`, `OneSecond`, `OneMinute` and `LazyTick`
+-- hooks.
 
 cw.core = cw.core or {}
 library = library or {}
@@ -937,75 +938,343 @@ function cw.core:Pluralize(text)
   return text
 end
 
---- Serializes a table to a string.
---
--- Uses pON unless `bForceJSON` is set or pON fails, then falls back to JSON. Prints an error
--- and returns an empty string when the table cannot be serialized or is not a table.
--- @param tTable [Map The table to serialize]
--- @param bForceJSON=false [Boolean Always use JSON]
--- @return [String The serialized data]
--- @see cw.core:Deserialize
-function cw.core:Serialize(tTable, bForceJSON)
-  if istable(tTable) then
-    local bSuccess, value
+do
+  -- Table keys that `util.JSONToTable` may turn into something other than a string.
+  local reservedKeys = { ['true'] = true, ['false'] = true, ['inf'] = true, ['infinity'] = true, ['nan'] = true }
 
-    if !bForceJSON then
-      bSuccess, value = pcall(pon.encode, tTable)
+  --- Returns a number that JSON and `string.format` can spell the same way everywhere.
+  -- @param number [Number A vector or angle component]
+  -- @return [Number The component, or 0 when it is NaN or infinite]
+  local function GetFinite(number)
+    if number != number or number == math.huge or number == -math.huge then
+      return 0
     end
 
-    if !bSuccess or bForceJSON then
-      bSuccess, value = pcall(util.TableToJSON, tTable)
+    return number
+  end
 
-      if !bSuccess then
-        ErrorNoHalt('[Catwork] Failed to serialize a table!\n')
-        ErrorNoHalt(value..'\n')
-        debug.Trace()
+  --- Returns the JSON object key that stands for a table key.
+  --
+  -- Every JSON key is a string, so a number is written as its digits and a string that could be read back as
+  -- anything else (it does not start with a letter or an underscore, or it is a reserved word) gets a `~` in front.
+  -- @param key [Any A string or number key]
+  -- @return [String The key to save]
+  local function EncodeKey(key)
+    if isnumber(key) then
+      local text = tostring(key)
 
-        return ''
+      -- tostring keeps 14 significant digits, which is not enough for every number.
+      if tonumber(text) != key then
+        text = string.format('%.17g', key)
+      end
+
+      return text
+    end
+
+    if !string.find(key, '^[%a_]') or reservedKeys[string.lower(key)] then
+      return '~'..key
+    end
+
+    return key
+  end
+
+  --- Returns the table key that a JSON object key stands for.
+  -- @param key [Any The saved key]
+  -- @return [Any The original string or number key]
+  local function DecodeKey(key)
+    if !isstring(key) then
+      return key
+    end
+
+    if string.sub(key, 1, 1) == '~' then
+      return string.sub(key, 2)
+    end
+
+    return tonumber(key) or key
+  end
+
+  local EncodeTable
+
+  --- Returns the value to hand to `util.TableToJSON` for a value.
+  --
+  -- Vectors and angles become the `[x y z]` and `{p y r}` strings JSON files hold them as, with enough digits to
+  -- read back the very same value, since door data is matched by position. NaN and infinity, which are not JSON,
+  -- become `~nan`, `~inf` and `~-inf`, and a string that starts with `~`, `[` or `{` gets a `~` in front, so that it
+  -- is not taken for any of those when it is read.
+  -- @param value [Any The value]
+  -- @param visiting [Map The tables that are being encoded right now]
+  -- @param skipped [Map Filled with the kinds of values that were left out]
+  -- @return [Any The value to save, or `nil` when JSON cannot hold it]
+  local function EncodeValue(value, visiting, skipped)
+    local valueType = type(value)
+
+    if valueType == 'table' then
+      return EncodeTable(value, visiting, skipped)
+    elseif valueType == 'string' then
+      local first = string.sub(value, 1, 1)
+
+      if first == '~' or first == '[' or first == '{' then
+        return '~'..value
+      end
+
+      return value
+    elseif valueType == 'number' then
+      if value != value then
+        return '~nan'
+      elseif value == math.huge then
+        return '~inf'
+      elseif value == -math.huge then
+        return '~-inf'
+      end
+
+      return value
+    elseif valueType == 'boolean' then
+      return value
+    elseif valueType == 'Vector' then
+      return string.format('[%.9g %.9g %.9g]', GetFinite(value.x), GetFinite(value.y), GetFinite(value.z))
+    elseif valueType == 'Angle' then
+      return string.format('{%.9g %.9g %.9g}', GetFinite(value.p), GetFinite(value.y), GetFinite(value.r))
+    end
+
+    skipped[valueType] = true
+  end
+
+  --- Returns a copy of a table that `util.TableToJSON` writes without losing anything.
+  --
+  -- A table whose keys are exactly 1 to n stays a list and becomes a JSON array. Any other table becomes a JSON
+  -- object, with its keys turned into strings by `EncodeKey`. Values that JSON cannot hold (entities, functions,
+  -- userdata, keys that are neither strings nor numbers, a table inside itself) are left out.
+  -- @param tTable [Map The table]
+  -- @param visiting [Map The tables that are being encoded right now]
+  -- @param skipped [Map Filled with the kinds of values that were left out]
+  -- @return [Map The table to save, or `nil` when the table contains itself]
+  function EncodeTable(tTable, visiting, skipped)
+    if visiting[tTable] then
+      skipped['a table inside itself'] = true
+
+      return
+    end
+
+    visiting[tTable] = true
+
+    local values = {}
+    local count = 0
+
+    for k, v in pairs(tTable) do
+      if isstring(k) or isnumber(k) then
+        local value = EncodeValue(v, visiting, skipped)
+
+        if value != nil then
+          values[k] = value
+          count = count + 1
+        end
+      else
+        skipped[type(k)..' key'] = true
+      end
+    end
+
+    visiting[tTable] = nil
+
+    local bIsList = true
+
+    for i = 1, count do
+      if values[i] == nil then
+        bIsList = false
+
+        break
+      end
+    end
+
+    if bIsList then
+      return values
+    end
+
+    local object = {}
+
+    for k, v in pairs(values) do
+      object[EncodeKey(k)] = v
+    end
+
+    return object
+  end
+
+  --- Turns a value read by `util.JSONToTable` back into what `EncodeValue` was given.
+  -- @param value [Any The value that was read]
+  -- @return [Any The original value]
+  local function DecodeValue(value)
+    if istable(value) then
+      local result = {}
+
+      for k, v in pairs(value) do
+        result[DecodeKey(k)] = DecodeValue(v)
+      end
+
+      return result
+    elseif isstring(value) then
+      local first = string.sub(value, 1, 1)
+
+      if first == '~' then
+        if value == '~nan' then
+          return 0 / 0
+        elseif value == '~inf' then
+          return math.huge
+        elseif value == '~-inf' then
+          return -math.huge
+        end
+
+        return string.sub(value, 2)
+      elseif first == '[' then
+        -- util.JSONToTable has usually made the vector already; this is for when it has not.
+        local x, y, z = string.match(value, '^%[(%S+) (%S+) (%S+)%]$')
+        x, y, z = tonumber(x), tonumber(y), tonumber(z)
+
+        if x and y and z then
+          return Vector(x, y, z)
+        end
+      elseif first == '{' then
+        local pitch, yaw, roll = string.match(value, '^{(%S+) (%S+) (%S+)}$')
+        pitch, yaw, roll = tonumber(pitch), tonumber(yaw), tonumber(roll)
+
+        if pitch and yaw and roll then
+          return Angle(pitch, yaw, roll)
+        end
       end
     end
 
     return value
-  else
-    print('[Catwork] You must serialize a table, not '..type(tTable)..'!')
+  end
 
-    return ''
+  --- Returns whether a string has the outline of a JSON array or object.
+  --
+  -- The legacy pON format starts with the same characters, but it never ends in `]`, and after an opening brace
+  -- it only continues like JSON does when it is `{}`, an empty table in both formats, or holds a list whose first
+  -- value is a string with a `;` in it. JSON needs a `:` after that string, where pON has a `;`, so the parser
+  -- rejects it.
+  -- @param strData [String The data]
+  -- @return [Boolean Whether the data should be given to the JSON parser]
+  local function IsJSON(strData)
+    local trimmed = string.Trim(strData)
+    local first, last = string.sub(trimmed, 1, 1), string.sub(trimmed, -1)
+
+    if first == '[' then
+      return last == ']'
+    end
+
+    return first == '{' and last == '}' and string.find(trimmed, '^{%s*["}]') != nil
+  end
+
+  --- Serializes a table to a JSON string.
+  --
+  -- Everything Catwork writes to disk goes through this function. String and number keys, strings, numbers,
+  -- booleans, vectors, angles and nested tables are read back by `cw.core:Deserialize` exactly as they were;
+  -- colors come back as plain tables with `r`, `g`, `b` and `a`. Values that JSON cannot hold (entities,
+  -- functions, userdata, a table inside itself) are left out and reported with `cw.core:Debug`. Prints an error
+  -- and returns an empty string when the table cannot be serialized or is not a table.
+  -- @param tTable [Map The table to serialize]
+  -- @return [String The serialized data]
+  -- @see cw.core:Deserialize
+  function cw.core:Serialize(tTable)
+    if !istable(tTable) then
+      print('[Catwork] You must serialize a table, not '..type(tTable)..'!')
+
+      return ''
+    end
+
+    local skipped = {}
+    local bSuccess, value = pcall(EncodeTable, tTable, {}, skipped)
+
+    if bSuccess then
+      bSuccess, value = pcall(util.TableToJSON, value)
+    end
+
+    if !bSuccess or !isstring(value) then
+      ErrorNoHalt('[Catwork] Failed to serialize a table!\n')
+      ErrorNoHalt(tostring(value)..'\n')
+      debug.Trace()
+
+      return ''
+    end
+
+    if next(skipped) then
+      self:Debug('Serialize left out what JSON cannot hold: '..table.concat(table.GetKeys(skipped), ', ')..'.')
+    end
+
+    return value
+  end
+
+  --- Deserializes a string created by `cw.core:Serialize`.
+  --
+  -- Prints an error and returns an empty table when the data is not a string.
+  -- @param strData [String The serialized data]
+  -- @return [Map The decoded table, or `nil` when the data cannot be decoded]
+  -- @see cw.core:Serialize
+  function cw.core:Deserialize(strData)
+    if !isstring(strData) then
+      print('[Catwork] You must deserialize a string, not '..type(strData)..'!')
+
+      return {}
+    end
+
+    if !IsJSON(strData) then
+      return
+    end
+
+    -- The data is our own, so the size limits are off, and so are the key conversions, which DecodeKey does.
+    local bSuccess, value = pcall(util.JSONToTable, strData, true, true)
+
+    if bSuccess and istable(value) then
+      return DecodeValue(value)
+    end
   end
 end
 
---- Deserializes a string created by `cw.core:Serialize`.
+-- LEGACY pON SUPPORT
 --
--- Tries pON unless `bForceJSON` is set, then falls back to JSON. Prints an error and returns an
--- empty table when decoding raises an error or the data is not a string.
--- @param strData [String The serialized data]
--- @param bForceJSON=false [Boolean Always use JSON]
--- @return [Map The decoded table, or `nil` when the data is neither valid pON nor valid JSON]
--- @see cw.core:Serialize
-function cw.core:Deserialize(strData, bForceJSON)
-  if isstring(strData) then
-    local bSuccess, value
+-- Data files that were written before the switch to JSON are pON. This block is the only code that still knows about
+-- pON: it loads thirdparty/pon.lua for its decoder alone and makes cw.core:Deserialize fall back to it for data that
+-- is not JSON. Such data is written back as JSON the next time it is saved.
+--
+-- Once every server and client has saved its data files again, delete this block and thirdparty/pon.lua.
+do
+  if SERVER then
+    AddCSLuaFile('catwork/gamemode/thirdparty/pon.lua')
+  end
 
-    if !bForceJSON then
-      bSuccess, value = pcall(pon.decode, strData)
+  include('catwork/gamemode/thirdparty/pon.lua')
+
+  local DecodePON = pon.decode
+  local DeserializeJSON = cw.core.Deserialize
+
+  -- Nothing else gets to use pON, least of all to write with it.
+  pon = nil
+
+  function cw.core:Deserialize(strData)
+    local value = DeserializeJSON(self, strData)
+
+    if value != nil or !isstring(strData) then
+      return value
     end
 
-    if !bSuccess or bForceJSON then
-      bSuccess, value = pcall(util.JSONToTable, strData)
+    local trimmed = string.Trim(strData)
+    local first = string.sub(trimmed, 1, 1)
 
-      if !bSuccess then
-        ErrorNoHalt('[Catwork] Failed to deserialize a string!\n')
-        ErrorNoHalt(tostring(value)..'\n')
-        debug.Trace()
-
-        return {}
-      end
+    -- pON starts with a brace or a bracket and always ends with a closing brace.
+    if (first != '{' and first != '[') or string.sub(trimmed, -1) != '}' then
+      return
     end
 
-    return value
-  else
-    print('[Catwork] You must deserialize a string, not '..type(strData)..'!')
+    -- Broken JSON is not pON either: an object has a colon after its first string, where pON has a semicolon.
+    if string.find(trimmed, '^{%s*"[^"]*"%s*:') then
+      return
+    end
 
-    return {}
+    local bSuccess, legacy = pcall(DecodePON, trimmed)
+
+    if bSuccess and istable(legacy) then
+      self:Warning('Read data in the legacy pON format. It becomes JSON the next time it is saved.')
+
+      return legacy
+    end
   end
 end
 
@@ -1098,7 +1367,7 @@ end
 
 -- Awful code because I'm out of time and Catwork is obsolete.
 if CLIENT then
-  netstream.Hook('PlayerModelChanged', function(nPlyIndex, sNewModel, sOldModel)
+  cable.receive('PlayerModelChanged', function(nPlyIndex, sNewModel, sOldModel)
     util.WaitForEntity(nPlyIndex, function(player)
       hook.Run('PlayerModelChanged', player, sNewModel, sOldModel)
     end)

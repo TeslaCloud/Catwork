@@ -111,7 +111,7 @@ function cwStaticEnts:PersistenceSave()
 
   if !istable(toSave) then return end
 
-  cw.core:SaveSchemaData('static', toSave, true)
+  cw.core:SaveSchemaData('static', toSave)
 
   self.bUnsavedChanges = nil
 end
@@ -143,7 +143,7 @@ end
 -- Custom fields saved with each entity are merged back into its table, and the items of a saved `cwInventory`
 -- are created again as item instances.
 function cwStaticEnts:PersistenceLoad()
-  local loaded = cw.core:RestoreSchemaData('static', {}, true)
+  local loaded = cw.core:RestoreSchemaData('static', {})
 
   if istable(loaded) and loaded.Entities and loaded.Constraints then
     local entities, constraints = duplicator.Paste(nil, loaded.Entities, loaded.Constraints)

@@ -2,7 +2,7 @@
 -- the hooks that apply its protection.
 --
 -- `Player:SetBodygroupClothes` and `Player:SetSkinClothes` track the worn items in `player.bgClothesData` and
--- `player.skinClothesData` and send them to the client with the `BGClothes` and `SkinClothes` netstreams.
+-- `player.skinClothesData` and send them to the client with the `BGClothes` and `SkinClothes` Cable messages.
 -- `EntityTakeDamage` reduces non-fall damage by the summed `protection` of the worn items, capped at 60 percent, when
 -- the player wears no model-replacing clothes item, and lets `radProtection` clothes block everything but bullets,
 -- explosions and falls. The clothing is cleared when the character is unloaded and reapplied to the model when the
@@ -96,7 +96,7 @@ end
 --
 -- Calls the item's `OnChangeClothes`, which sets the bodygroup, records the item in
 -- `player.bgClothesData` under its bodygroup, updates the total `protection` of the worn
--- items and sends the data to the player with the `BGClothes` netstream. An item already
+-- items and sends the data to the player with the `BGClothes` Cable message. An item already
 -- worn in the same bodygroup is taken off first. Taking off an item that is not the one
 -- worn in its bodygroup does nothing. Errors in `OnChangeClothes` are printed and do not
 -- stop the change.
@@ -124,7 +124,7 @@ function playerMeta:SetBodygroupClothes(itemTable, bShouldUnwear)
   end
 
   clothesData.plyProtection = SumProtection(clothesData)
-  netstream.Start(self, 'BGClothes', clothesData)
+  cable.send(self, 'BGClothes', clothesData)
 
   self.bgClothesData = clothesData
 end
@@ -133,7 +133,7 @@ end
 --
 -- Calls the item's `OnChangeClothes`, which sets the skin, records the item in
 -- `player.skinClothesData` under its skin, updates the total `protection` and sends the
--- data to the player with the `SkinClothes` netstream. A model has a single skin, so any
+-- data to the player with the `SkinClothes` Cable message. A model has a single skin, so any
 -- other skin item is taken off first. Taking off an item that is not worn does nothing.
 --
 -- @param itemTable [Item The item, based on `skin_base`]
@@ -162,7 +162,7 @@ function playerMeta:SetSkinClothes(itemTable, bShouldUnwear)
   end
 
   clothesData.plyProtection = SumProtection(clothesData)
-  netstream.Start(self, 'SkinClothes', clothesData)
+  cable.send(self, 'SkinClothes', clothesData)
 
   self.skinClothesData = clothesData
 end
@@ -205,14 +205,14 @@ end
 --
 -- @param player [Player The player whose character was unloaded]
 function PLUGIN:PlayerCharacterUnloaded(player)
-  netstream.Start(player, 'BGClothes', nil, true)
+  cable.send(player, 'BGClothes', nil, true)
   player.bgClothesData = nil
 
   for i = 0, player:GetNumBodyGroups() - 1 do
     player:SetBodygroup(i, 0)
   end
 
-  netstream.Start(player, 'SkinClothes', nil, true)
+  cable.send(player, 'SkinClothes', nil, true)
   player.skinClothesData = nil
 
   player:SetSkin(0)

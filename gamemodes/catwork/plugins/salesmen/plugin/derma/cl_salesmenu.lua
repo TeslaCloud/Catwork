@@ -2,7 +2,7 @@
 -- it shows for each item.
 --
 -- Lists the items the salesman sells and buys from `cw.salesmenu`, grouped by category. Clicking an icon sends a
--- `Salesmenu` netstream message to buy or sell the item, and closing the menu sends `SalesmanDone`.
+-- `Salesmenu` Cable message to buy or sell the item, and closing the menu sends `SalesmanDone`.
 
 local PANEL = {}
 
@@ -21,7 +21,7 @@ function PANEL:Init()
     CloseDermaMenus()
     self:Close() self:Remove()
 
-    netstream.Start('SalesmanDone', cw.salesmenu.entity)
+    cable.send('SalesmanDone', cw.salesmenu.entity)
       cw.salesmenu.buyInShipments = nil
       cw.salesmenu.priceScale = nil
       cw.salesmenu.factions = nil
@@ -254,7 +254,7 @@ function PANEL:Init()
     local entity = cw.salesmenu:GetEntity()
 
     if IsValid(entity) then
-      netstream.Start('Salesmenu', {
+      cable.send('Salesmenu', {
         tradeType = self.typeName,
         uniqueID = self.itemTable.uniqueID,
         itemID = self.itemTable.itemID,

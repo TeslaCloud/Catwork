@@ -194,7 +194,7 @@ function cw.character:OpenNextCreationPanel()
       'PlayerAdjustCharacterCreationInfo', self:GetActivePanel(), info
     )
 
-    netstream.Start('CreateCharacter', info)
+    cable.send('CreateCharacter', info)
   else
     info.index = nextPanel.index
     panel:OpenPanel(nextPanel.vguiName, info)

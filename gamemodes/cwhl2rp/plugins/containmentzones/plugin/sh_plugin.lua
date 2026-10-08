@@ -463,10 +463,10 @@ if SERVER then
 
   concommand.Add('cwradsys_get', function(ply)
     if IsValid(ply) and ply:IsSuperAdmin() then
-      netstream.Start(ply, 'cwRadSystemDataClear', {})
+      cable.send(ply, 'cwRadSystemDataClear', {})
 
       for k, v in pairs(cwRadSystem.stored) do
-        netstream.Start(ply, 'cwRadSystemData', {
+        cable.send(ply, 'cwRadSystemData', {
           pos = v.pos,
           pos1 = v.pos1,
           pos2 = v.pos2,
@@ -669,11 +669,11 @@ else
     end
   end)
 
-  netstream.Hook('cwRadSystemDataClear', function(data)
+  cable.receive('cwRadSystemDataClear', function(data)
     cwRadSystem.localstored = {}
   end)
 
-  netstream.Hook('cwRadSystemData', function(data)
+  cable.receive('cwRadSystemData', function(data)
     cwRadSystem.localstored[#cwRadSystem.localstored + 1] = {
       pos = data.pos,
       pos1 = data.pos1,

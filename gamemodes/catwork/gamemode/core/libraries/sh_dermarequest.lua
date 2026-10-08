@@ -65,7 +65,7 @@ if SERVER then
   -- @param Callback [Function Called with the entered String]
   -- @see cw.dermaRequest:RequestConfirmation
   function cw.dermaRequest:RequestString(player, title, question, default, Callback)
-    netstream.Start(player, 'dermaRequest_stringQuery', {
+    cable.send(player, 'dermaRequest_stringQuery', {
       id = AddRequest(player, Callback, true),
       title = title,
       question = question,
@@ -84,7 +84,7 @@ if SERVER then
   -- @param Callback [Function Called with `true` when the player confirms]
   -- @see cw.dermaRequest:RequestString
   function cw.dermaRequest:RequestConfirmation(player, title, question, Callback)
-    netstream.Start(player, 'dermaRequest_confirmQuery', {
+    cable.send(player, 'dermaRequest_confirmQuery', {
       id = AddRequest(player, Callback, false),
       title = title,
       question = question
@@ -98,7 +98,7 @@ if SERVER then
   -- @param title=nil [String Window title]
   -- @param button=nil [String Text of the close button]
   function cw.dermaRequest:Message(player, message, title, button)
-    netstream.Start(player, 'dermaRequest_message', { message = message, title = title, button = button })
+    cable.send(player, 'dermaRequest_message', { message = message, title = title, button = button })
   end
 
   --- Returns whether a request answer from a client is valid.
@@ -109,7 +109,7 @@ if SERVER then
   -- @param player [Player The player who sent the answer]
   -- @param data [Map The answer, with `id` and `recv` keys]
   -- @return [Boolean Whether the answer is valid]
-  -- @warning [Internal] Called by the `dermaRequestCallback` netstream receiver.
+  -- @warning [Internal] Called by the `dermaRequestCallback` Cable receiver.
   function cw.dermaRequest:Validate(player, data)
     if !istable(data) then return false end
 
@@ -126,7 +126,7 @@ if SERVER then
     return data.recv == true
   end
 
-  netstream.Hook('dermaRequestCallback', function(player, data)
+  cable.receive('dermaRequestCallback', function(player, data)
     if !istable(data) then return end
 
     local request = hooks[data.id]
@@ -149,10 +149,10 @@ else
   -- @param recv [Any The answer: the entered String or the confirmation Boolean]
   -- @warning [Internal] Called by the Derma request receivers.
   function cw.dermaRequest:Send(id, recv)
-    netstream.Start('dermaRequestCallback', { id = id, recv = recv })
+    cable.send('dermaRequestCallback', { id = id, recv = recv })
   end
 
-  netstream.Hook('dermaRequest_stringQuery', function(data)
+  cable.receive('dermaRequest_stringQuery', function(data)
     Derma_StringRequest(data.title, data.question, data.default, function(recv)
       cw.dermaRequest:Send(data.id, recv)
     end, function()
@@ -160,13 +160,13 @@ else
     end)
   end)
 
-  netstream.Hook('dermaRequest_confirmQuery', function(data)
+  cable.receive('dermaRequest_confirmQuery', function(data)
     Derma_Query(data.question, data.title,
       '#DermaRequest_confirmQuery_Confirm', function() cw.dermaRequest:Send(data.id, true) end,
       '#DermaRequest_confirmQuery_Cancel', function() cw.dermaRequest:Send(data.id, false) end)
   end)
 
-  netstream.Hook('dermaRequest_message', function(data)
+  cable.receive('dermaRequest_message', function(data)
     Derma_Message(data.message, data.title, data.button)
   end)
 end

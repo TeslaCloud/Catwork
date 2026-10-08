@@ -4,7 +4,7 @@
 --
 -- `cwCTO:UpdateBiosignalLocations` keeps the marker tables current, and `cwCTO:HUDPaintForeground` and
 -- `cwCTO:HUDPaintTopScreen` draw them for Combine players. The data arrives from the server through the
--- `CombineRequestSignal`, `UpdateBiosignalCameraData` and `RecalculateHUDObjectives` netstreams; the camera text is
+-- `CombineRequestSignal`, `UpdateBiosignalCameraData` and `RecalculateHUDObjectives` Cable messages; the camera text is
 -- built once per update and kept in `cwCTO.cameraInfo`.
 
 local cwCTO = cwCTO
@@ -267,7 +267,7 @@ function cwCTO:HUDPaintForeground()
   end
 end
 
-netstream.Hook('CombineRequestSignal', function(data)
+cable.receive('CombineRequestSignal', function(data)
   local player = data[1]
   local text = data[2]
 
@@ -312,7 +312,7 @@ local function BuildCameraInfo(combineCamera, players)
   return info
 end
 
-netstream.Hook('UpdateBiosignalCameraData', function(data)
+cable.receive('UpdateBiosignalCameraData', function(data)
   local newCameraData = {}
   local newCameraInfo = {}
 
@@ -329,7 +329,7 @@ netstream.Hook('UpdateBiosignalCameraData', function(data)
   cwCTO.cameraInfo = newCameraInfo
 end)
 
-netstream.Hook('RecalculateHUDObjectives', function(data)
+cable.receive('RecalculateHUDObjectives', function(data)
   local lines = {}
 
   for k, v in ipairs(string.Split(data[2] or '', '\n')) do

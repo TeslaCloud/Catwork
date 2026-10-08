@@ -1,5 +1,5 @@
 --- Registers `/ViewObjectives`, which opens the Combine objectives editor for a Combine player by sending
--- `Schema.combineObjectives` with the `EditObjectives` netstream message.
+-- `Schema.combineObjectives` with the `EditObjectives` Cable message.
 
 local COMMAND = cw.command:New('ViewObjectives')
 COMMAND.tip = '#Command_Viewobjectives_Description'
@@ -8,7 +8,7 @@ COMMAND.flags = CMD_DEFAULT
 --- Opens the Combine objectives editor for a Combine player; takes no arguments.
 function COMMAND:OnRun(player, arguments)
   if player:IsCombine() then
-    netstream.Start(player, 'EditObjectives', Schema.combineObjectives)
+    cable.send(player, 'EditObjectives', Schema.combineObjectives)
 
     player.editObjectivesAuthorised = true
   else

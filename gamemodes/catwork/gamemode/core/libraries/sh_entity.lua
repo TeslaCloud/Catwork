@@ -393,7 +393,7 @@ if CLIENT then
     return entity.cwItemTable
   end
 
-  --- Requests the item instance of an entity from the server over the `FetchItemData` netstream message.
+  --- Requests the item instance of an entity from the server over the `FetchItemData` Cable message.
   --
   -- Requests are sent at most every four seconds per entity. The reply creates the instance, after
   -- which `cw.entity:HasFetchedItemData` returns `true` and `cw.entity:FetchItemTable` returns it.
@@ -409,14 +409,14 @@ if CLIENT then
       entity.m_iNextFetchItemData = curTime + 4
 
       if entity:IsVehicle() then
-        netstream.Start('FetchItemData', entity:EntIndex())
+        cable.send('FetchItemData', entity:EntIndex())
       else
-        netstream.Start('FetchItemData', entity)
+        cable.send('FetchItemData', entity)
       end
     end
   end
 
-  netstream.Hook('FetchItemData', function(data)
+  cable.receive('FetchItemData', function(data)
     if type(data.entity) == 'number' then
       data.entity = ents.GetByIndex(data.entity)
     end
@@ -433,7 +433,7 @@ if CLIENT then
     end
   end)
 else
-  netstream.Hook('FetchItemData', function(player, data)
+  cable.receive('FetchItemData', function(player, data)
     local entity = data
 
     if type(data) == 'number' then
@@ -460,7 +460,7 @@ else
         data = entity:EntIndex()
       end
 
-      netstream.Start(player, 'FetchItemData', {
+      cable.send(player, 'FetchItemData', {
         definition = definition,
         entity = data
       })
@@ -1639,12 +1639,12 @@ else
     }
   end
 
-  --- Runs an entity menu option on the server over the `EntityMenuOption` netstream message.
+  --- Runs an entity menu option on the server over the `EntityMenuOption` Cable message.
   -- @param entity [Entity The entity]
   -- @param option [String Name of the option]
   -- @param arguments [Any Arguments of the option, such as the action to run]
   function cw.entity:ForceMenuOption(entity, option, arguments)
-    netstream.Start('EntityMenuOption', { entity, option, arguments })
+    cable.send('EntityMenuOption', { entity, option, arguments })
   end
 
   --- Returns whether an entity is owned by a character, through its `Owned` networked boolean.

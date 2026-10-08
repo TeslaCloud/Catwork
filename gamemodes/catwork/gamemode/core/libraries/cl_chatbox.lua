@@ -4,7 +4,7 @@
 -- The last `chatbox.maxHistory` received messages are kept in `chatbox.history` and turned into wrapped lines by
 -- `chatbox.ParseText`; filters (`chatbox.AddFilter`), message types (`chatbox.AddType`) and BB-codes
 -- (`chatbox.AddBBCode`) decide how each one is drawn. `chat.AddText` is replaced to go through `chatbox.AddText`,
--- typed text is sent to the server over the `ChatboxTextEntered` netstream, and the `cw_resetchat` console command
+-- typed text is sent to the server over the `ChatboxTextEntered` Cable message, and the `cw_resetchat` console command
 -- rebuilds the panels.
 
 if chatbox then return end
@@ -1142,7 +1142,7 @@ end
 function PANEL:OnEnter()
   local text = self:GetValue()
 
-  netstream.Start('ChatboxTextEntered', text)
+  cable.send('ChatboxTextEntered', text)
 
   hook.Run('ChatBoxTextTyped', text)
 
@@ -1434,7 +1434,7 @@ end
 --
 -- @param ... [Any Strings, `Color`s, players and message option tables]
 function chatbox.AddText(...)
-  netstream.Start('ChatboxAddText', ...)
+  cable.send('ChatboxAddText', ...)
 end
 
 --[[
@@ -1489,12 +1489,12 @@ local function AddMessage(messageData, sender)
   chatbox.UpdateDisplay()
 end
 
-netstream.Hook('ChatboxTextEnter', function(player, messageData)
+cable.receive('ChatboxTextEnter', function(player, messageData)
   if IsValid(player) then
     AddMessage(messageData, player)
   end
 end)
 
-netstream.Hook('ChatboxAddText', function(messageData)
+cable.receive('ChatboxAddText', function(messageData)
   AddMessage(messageData)
 end)

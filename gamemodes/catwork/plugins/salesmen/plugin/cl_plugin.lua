@@ -1,4 +1,4 @@
---- Client-side netstream receivers of the Salesmen plugin that open the trade menu and the salesman editor.
+--- Client-side Cable receivers of the Salesmen plugin that open the trade menu and the salesman editor.
 --
 -- `Salesmenu` and `SalesmenuRebuild` fill `cw.salesmenu` and show the `cwSalesmenu` panel, `SalesmanAdd` and
 -- `SalesmanEdit` ask for a name, fill `cw.salesman` and show the `cwSalesman` editor, and `SalesmanPlaySound` plays a
@@ -14,7 +14,7 @@
 -- @return [Boolean Return `true` to draw the salesman's name and description]
 function cwSalesmen:SalesmanTargetID(entity, x, y, alpha) end
 
-netstream.Hook('Salesmenu', function(data)
+cable.receive('Salesmenu', function(data)
   cw.salesmenu.buyInShipments = data.buyInShipments
   cw.salesmenu.priceScale = data.priceScale
   cw.salesmenu.factions = data.factions
@@ -34,7 +34,7 @@ netstream.Hook('Salesmenu', function(data)
   cw.salesmenu.panel:MakePopup()
 end)
 
-netstream.Hook('SalesmenuRebuild', function(cash, stock)
+cable.receive('SalesmenuRebuild', function(cash, stock)
   if cw.salesmenu:IsSalesmenuOpen() then
     cw.salesmenu.cash = cash
     cw.salesmenu.stock = stock or cw.salesmenu.stock
@@ -42,13 +42,13 @@ netstream.Hook('SalesmenuRebuild', function(cash, stock)
   end
 end)
 
-netstream.Hook('SalesmanPlaySound', function(data)
+cable.receive('SalesmanPlaySound', function(data)
   if IsValid(data[2]) then
     data[2]:EmitSound(data[1])
   end
 end)
 
-netstream.Hook('SalesmanAdd', function(data)
+cable.receive('SalesmanAdd', function(data)
   if cw.salesman:IsSalesmanOpen() then
     CloseDermaMenus()
 
@@ -97,7 +97,7 @@ netstream.Hook('SalesmanAdd', function(data)
   end)
 end)
 
-netstream.Hook('SalesmanEdit', function(data)
+cable.receive('SalesmanEdit', function(data)
   if cw.salesman:IsSalesmanOpen() then
     CloseDermaMenus()
 

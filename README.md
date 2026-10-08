@@ -24,3 +24,8 @@ Original code by Alex Grist, 'impulse and Conna Wiles, with contributions from t
 This notice applies to every file in this repository, unless the file itself says otherwise.
 
 Parts of Catwork are borrowed from [Flux](https://github.com/TeslaCloud/flux-ce), which is released under the [MIT License](https://github.com/TeslaCloud/flux-ce/blob/master/LICENSE).
+
+Networking is done by two libraries vendored in `gamemodes/catwork/gamemode/thirdparty`, which keep their own notices:
+
+- `cable.lua` ([Meow/cable](https://github.com/Meow/cable)) © 2018 TeslaCloud Studios, under the MIT License like the edition of it that [Flux](https://github.com/TeslaCloud/flux-ce) ships. The copy here is adapted for Catwork; the note at the top of the file lists the changes.
+- `sfs.lua` ([Srlion/sfs](https://github.com/Srlion/sfs), version 7.0.9) © 2024 Srlion, under the [MIT License](https://github.com/Srlion/sfs/blob/master/LICENSE).

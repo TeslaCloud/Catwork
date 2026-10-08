@@ -77,7 +77,7 @@ end
 -- @param showDuplicated=nil [Boolean Show the hint even if the same text is already on screen]
 -- @see cw.hint:SendCenterAll
 function cw.hint:SendCenter(player, text, delay, color, bNoSound, showDuplicated)
-  netstream.Start(player, 'Hint', {
+  cable.send(player, 'Hint', {
     text = cw.core:ParseData(text),
     delay = delay,
     color = color,
@@ -112,7 +112,7 @@ end
 -- @param showDuplicated=nil [Boolean Show the hint even if the same text is already on screen]
 -- @see cw.hint:SendAll
 function cw.hint:Send(player, text, delay, color, bNoSound, showDuplicated)
-  netstream.Start(player, 'Hint', {
+  cable.send(player, 'Hint', {
     text = cw.core:ParseData(text), delay = delay, color = color, noSound = bNoSound, showDuplicates = showDuplicated
   })
 end

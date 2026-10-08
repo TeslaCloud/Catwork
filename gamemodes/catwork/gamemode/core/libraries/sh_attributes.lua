@@ -129,7 +129,7 @@ if SERVER then
         end
       end
 
-      netstream.Start(player, 'AttrUpdate', {
+      cable.send(player, 'AttrUpdate', {
         index = attributeTable.index, amount = attributes[attribute].amount
       })
 
@@ -150,7 +150,7 @@ if SERVER then
   --
   -- @param player [Player The player to clear]
   function cw.attributes:ClearBoosts(player)
-    netstream.Start(player, 'AttrBoostClear', true)
+    cable.send(player, 'AttrBoostClear', true)
 
     player.cwAttrBoosts = {}
   end
@@ -251,7 +251,7 @@ if SERVER then
         local cwEndTime = player.cwAttrBoosts[attribute][identifier].endTime
         local cwIdentifier = identifier
 
-        netstream.Start(player, 'AttrBoost', {
+        cable.send(player, 'AttrBoost', {
           index = cwIndex, amount = cwAmount, duration = cwDuration, endTime = cwEndTime, identifier = cwIdentifier
         })
 
@@ -262,14 +262,14 @@ if SERVER then
             player.cwAttrBoosts[attribute][identifier] = nil
           end
 
-          netstream.Start(player, 'AttrBoostClear', {
+          cable.send(player, 'AttrBoostClear', {
             index = attributeTable.index, identifier = identifier
           })
         end
 
         return true
       elseif player.cwAttrBoosts[attribute] then
-        netstream.Start(player, 'AttrBoostClear', {
+        cable.send(player, 'AttrBoostClear', {
           index = attributeTable.index
         })
 
@@ -288,7 +288,7 @@ if SERVER then
         if v[identifier] then
           v[identifier] = nil
 
-          netstream.Start(player, 'AttrBoostClear', {
+          cable.send(player, 'AttrBoostClear', {
             index = cw.attribute:FindByID(k).index, identifier = identifier
           })
         end
@@ -491,7 +491,7 @@ else
     end
   end
 
-  netstream.Hook('AttrBoostClear', function(data)
+  cable.receive('AttrBoostClear', function(data)
     local index = nil
     local identifier = nil
 
@@ -519,7 +519,7 @@ else
     RebuildActivePanel()
   end)
 
-  netstream.Hook('AttrBoost', function(data)
+  cable.receive('AttrBoost', function(data)
     local index = data.index
     local amount = data.amount
     local duration = data.duration
@@ -554,7 +554,7 @@ else
     end
   end)
 
-  netstream.Hook('AttributeProgress', function(data)
+  cable.receive('AttributeProgress', function(data)
     local index = data.index
     local amount = data.amount
     local attributeTable = cw.attribute:FindByID(index)
@@ -570,7 +570,7 @@ else
     end
   end)
 
-  netstream.Hook('AttrUpdate', function(data)
+  cable.receive('AttrUpdate', function(data)
     local index = data.index
     local amount = data.amount
     local attributeTable = cw.attribute:FindByID(index)
@@ -586,7 +586,7 @@ else
     end
   end)
 
-  netstream.Hook('AttrClear', function(data)
+  cable.receive('AttrClear', function(data)
     cw.attributes.stored = {}
     cw.attributes.boosts = {}
 

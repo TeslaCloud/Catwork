@@ -3,8 +3,8 @@
 -- Holds the character carousel (`cw.characterList`, `cw.characterPanel`, `cw.characterModel`) and the four creation
 -- steps `cw.characterStageOne` to `cw.characterStageFour` (faction and gender, name and description, class,
 -- attributes), which are registered with `cw.character:RegisterCreationPanel`. Also handles the `CharacterMenu`,
--- `CharacterOpen`, `CharacterAdd`, `CharacterRemove`, `CharacterFinish` and `SetWhitelisted` netstreams; the character
--- cards send `InteractCharacter` to use or delete a character.
+-- `CharacterOpen`, `CharacterAdd`, `CharacterRemove`, `CharacterFinish` and `SetWhitelisted` Cable messages; the
+-- character cards send `InteractCharacter` to use or delete a character.
 
 -- Reused every frame by the paint functions below instead of allocating new colors.
 local barColor = Color(0, 0, 0, 100)
@@ -863,7 +863,7 @@ local PANEL = {}
 -- Extra buttons come from the `GetCustomCharacterButtons` hook, extra labels from
 -- `GetCharacterPanelLabels` and the model's animation from `GetCharacterPanelSequence`. Clicking the
 -- model of the selected card opens a menu with the options from `GetCustomCharacterOptions`; clicking
--- another card selects it. Every action is sent to the server with the `InteractCharacter` netstream.
+-- another card selects it. Every action is sent to the server with the `InteractCharacter` Cable message.
 function PANEL:Init()
   local smallTextFont = cw.option:GetFont('menu_text_small')
   local tinyTextFont = cw.option:GetFont('menu_text_tiny')
@@ -958,7 +958,7 @@ function PANEL:Init()
     -- Called when the button is clicked.
     function button.DoClick(button)
       local function Callback()
-        netstream.Start('InteractCharacter', {
+        cable.send('InteractCharacter', {
           characterID = characterID, action = k
         })
       end
@@ -971,7 +971,7 @@ function PANEL:Init()
 
   -- Called when the button is clicked.
   function self.useButton.DoClick(spawnIcon)
-    netstream.Start('InteractCharacter', {
+    cable.send('InteractCharacter', {
       characterID = characterID, action = 'use' }
     )
   end
@@ -980,7 +980,7 @@ function PANEL:Init()
   function self.deleteButton.DoClick(spawnIcon)
     cw.core:AddMenuFromData(nil, {
       [L('Yes')] = function()
-        netstream.Start('InteractCharacter', {
+        cable.send('InteractCharacter', {
           characterID = characterID, action = 'delete' }
         )
       end,
@@ -1002,7 +1002,7 @@ function PANEL:Init()
       local options = {}
 
       options[L('Use')] = function()
-        netstream.Start('InteractCharacter', {
+        cable.send('InteractCharacter', {
           characterID = characterID, action = 'use' }
         )
       end
@@ -1010,7 +1010,7 @@ function PANEL:Init()
       options[L('Delete')] = {}
       options[L('Delete')][L('No')] = function() end
       options[L('Delete')][L('Yes')] = function()
-        netstream.Start('InteractCharacter', {
+        cable.send('InteractCharacter', {
           characterID = characterID, action = 'delete' }
         )
       end
@@ -1021,7 +1021,7 @@ function PANEL:Init()
 
       cw.core:AddMenuFromData(nil, options, function(menu, key, value)
         menu:AddOption(key, function()
-          netstream.Start('InteractCharacter', {
+          cable.send('InteractCharacter', {
             characterID = characterID, action = value }
           )
         end)
@@ -2183,7 +2183,7 @@ end
 
 vgui.Register('cw.characterStageOne', PANEL, 'EditablePanel')
 
-netstream.Hook('CharacterRemove', function(data)
+cable.receive('CharacterRemove', function(data)
   local characters = cw.character:GetAll()
   local characterID = data
 
@@ -2208,7 +2208,7 @@ netstream.Hook('CharacterRemove', function(data)
   end
 end)
 
-netstream.Hook('SetWhitelisted', function(data)
+cable.receive('SetWhitelisted', function(data)
   local whitelisted = cw.character:GetWhitelisted()
 
   for k, v in pairs(whitelisted) do
@@ -2226,7 +2226,7 @@ netstream.Hook('SetWhitelisted', function(data)
   end
 end)
 
-netstream.Hook('CharacterAdd', function(data)
+cable.receive('CharacterAdd', function(data)
   cw.character:Add(data.characterID, data)
 
   if !cw.character:IsPanelLoading() then
@@ -2234,7 +2234,7 @@ netstream.Hook('CharacterAdd', function(data)
   end
 end)
 
-netstream.Hook('CharacterMenu', function(data)
+cable.receive('CharacterMenu', function(data)
   local menuState = data
 
   if menuState == CHARACTER_MENU_LOADED then
@@ -2256,7 +2256,7 @@ netstream.Hook('CharacterMenu', function(data)
   end
 end)
 
-netstream.Hook('CharacterOpen', function(data)
+cable.receive('CharacterOpen', function(data)
   cw.character:SetPanelOpen(true)
 
   if data then
@@ -2264,7 +2264,7 @@ netstream.Hook('CharacterOpen', function(data)
   end
 end)
 
-netstream.Hook('CharacterFinish', function(data)
+cable.receive('CharacterFinish', function(data)
   if data.bSuccess then
     cw.character:SetPanelMainMenu()
     cw.character:SetPanelOpen(false, true)

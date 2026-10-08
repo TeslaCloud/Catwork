@@ -1,4 +1,4 @@
---- Server-side netstream receivers for the requests the client sends to the framework.
+--- Server-side Cable receivers for the requests the client sends to the framework.
 --
 -- Handles `CreateCharacter`, `InteractCharacter`, `DoorManagement`, `EntityMenuOption`, `MenuOption`,
 -- `RecogniseOption`, `GetTargetRecognises`, `UnequipItem`, the quiz messages (`GetQuizStatus`, `QuizAnswer`,
@@ -58,14 +58,14 @@ local function GetCustomCreationFields(fields)
 end
 
 -- GetTargetRecognises datastream callback.
-netstream.Hook('GetTargetRecognises', function(player, data)
+cable.receive('GetTargetRecognises', function(player, data)
   if IsValidEntity(data) and data:IsPlayer() then
     player:SetNetVar('TargetKnows', cw.player:DoesRecognise(data, player))
   end
 end)
 
 -- EntityMenuOption datastream callback.
-netstream.Hook('EntityMenuOption', function(player, data)
+cable.receive('EntityMenuOption', function(player, data)
   if !istable(data) or !player:HasInitialized() or !player:Alive() then
     return
   end
@@ -99,7 +99,7 @@ netstream.Hook('EntityMenuOption', function(player, data)
 end)
 
 -- MenuOption datastream callback.
-netstream.Hook('MenuOption', function(player, data)
+cable.receive('MenuOption', function(player, data)
   if !istable(data) or !isstring(data.option) or !player:HasInitialized() or !player:Alive() then
     return
   end
@@ -131,13 +131,13 @@ netstream.Hook('MenuOption', function(player, data)
 end)
 
 -- DataStreamInfoSent datastream callback.
-netstream.Hook('DataStreamInfoSent', function(player, data)
+cable.receive('DataStreamInfoSent', function(player, data)
   if !player.cwDatastreamInfoSent then
     hook.Run('PlayerDataStreamInfoSent', player)
 
     timer.Simple(FrameTime() * 32, function()
       if IsValid(player) then
-        netstream.Start(player, 'DataStreamed', true)
+        cable.send(player, 'DataStreamed', true)
       end
     end)
 
@@ -146,7 +146,7 @@ netstream.Hook('DataStreamInfoSent', function(player, data)
 end)
 
 -- LocalPlayerCreated datastream callback.
-netstream.Hook('LocalPlayerCreated', function(player, data)
+cable.receive('LocalPlayerCreated', function(player, data)
   if IsValid(player) and !player:HasConfigInitialized() then
     timer.Create('SendCfg'..player:UniqueID(), FrameTime(), 1, function()
       if IsValid(player) then
@@ -157,7 +157,7 @@ netstream.Hook('LocalPlayerCreated', function(player, data)
 end)
 
 -- InteractCharacter datastream callback.
-netstream.Hook('InteractCharacter', function(player, data)
+cable.receive('InteractCharacter', function(player, data)
   if !istable(data) or !isnumber(data.characterID) or (!isstring(data.action) and !isnumber(data.action)) then
     return
   end
@@ -202,16 +202,16 @@ netstream.Hook('InteractCharacter', function(player, data)
 end)
 
 -- GetQuizStatus datastream callback.
-netstream.Hook('GetQuizStatus', function(player, data)
+cable.receive('GetQuizStatus', function(player, data)
   if !cw.quiz:GetEnabled() or cw.quiz:GetCompleted(player) then
-    netstream.Start(player, 'QuizCompleted', true)
+    cable.send(player, 'QuizCompleted', true)
   else
-    netstream.Start(player, 'QuizCompleted', false)
+    cable.send(player, 'QuizCompleted', false)
   end
 end)
 
 -- DoorManagement datastream callback.
-netstream.Hook('DoorManagement', function(player, data)
+cable.receive('DoorManagement', function(player, data)
   if !istable(data) or !player:HasInitialized() or !player:Alive() then
     return
   end
@@ -284,11 +284,11 @@ netstream.Hook('DoorManagement', function(player, data)
     end
 
     if cw.player:HasDoorAccess(target, door, DOOR_ACCESS_COMPLETE) then
-      netstream.Start(player, 'DoorAccess', { target, DOOR_ACCESS_COMPLETE })
+      cable.send(player, 'DoorAccess', { target, DOOR_ACCESS_COMPLETE })
     elseif cw.player:HasDoorAccess(target, door, DOOR_ACCESS_BASIC) then
-      netstream.Start(player, 'DoorAccess', { target, DOOR_ACCESS_BASIC })
+      cable.send(player, 'DoorAccess', { target, DOOR_ACCESS_BASIC })
     else
-      netstream.Start(player, 'DoorAccess', { target })
+      cable.send(player, 'DoorAccess', { target })
     end
   elseif action == 'Share' or action == 'Unshare' then
     if !cw.entity:IsDoorParent(door) or !cw.player:HasDoorAccess(player, door, DOOR_ACCESS_COMPLETE) then
@@ -298,11 +298,11 @@ netstream.Hook('DoorManagement', function(player, data)
     local bShare = (action == 'Share')
 
     if data[3] == 'Text' then
-      netstream.Start(player, 'SetSharedText', bShare)
+      cable.send(player, 'SetSharedText', bShare)
 
       door.cwDoorSharedTxt = bShare or nil
     else
-      netstream.Start(player, 'SetSharedAccess', bShare)
+      cable.send(player, 'SetSharedAccess', bShare)
 
       door.cwDoorSharedAxs = bShare or nil
     end
@@ -326,7 +326,7 @@ netstream.Hook('DoorManagement', function(player, data)
 end)
 
 -- CreateCharacter datastream callback.
-netstream.Hook('CreateCharacter', function(player, data)
+cable.receive('CreateCharacter', function(player, data)
   if !istable(data) then
     return
   end
@@ -378,7 +378,7 @@ netstream.Hook('CreateCharacter', function(player, data)
 end)
 
 -- RecogniseOption datastream callback.
-netstream.Hook('RecogniseOption', function(player, data)
+cable.receive('RecogniseOption', function(player, data)
   if !isstring(data) or !config.Get('recognise_system'):Get() or !player:HasInitialized() or !player:Alive() then
     return
   end
@@ -434,7 +434,7 @@ netstream.Hook('RecogniseOption', function(player, data)
 end)
 
 -- QuizCompleted datastream callback.
-netstream.Hook('QuizCompleted', function(player, data)
+cable.receive('QuizCompleted', function(player, data)
   if player.cwQuizAnswers and !cw.quiz:GetCompleted(player) then
     local questionsAmount = cw.quiz:GetQuestionsAmount()
     local correctAnswers = 0
@@ -457,7 +457,7 @@ netstream.Hook('QuizCompleted', function(player, data)
 end)
 
 -- UnequipItem datastream callback.
-netstream.Hook('UnequipItem', function(player, data)
+cable.receive('UnequipItem', function(player, data)
   if !istable(data) or !player:HasInitialized() or !player:Alive() or player:IsRagdolled() then
     return
   end
@@ -489,7 +489,7 @@ netstream.Hook('UnequipItem', function(player, data)
 end)
 
 -- QuizAnswer datastream callback.
-netstream.Hook('QuizAnswer', function(player, data)
+cable.receive('QuizAnswer', function(player, data)
   if !istable(data) then
     return
   end

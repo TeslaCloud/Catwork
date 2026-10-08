@@ -263,7 +263,7 @@ end
 --
 -- ```
 -- pda:AddButton('jail', '#PDA_Jail', true, function(card, button)
---   netstream.Start('Application::PDA::Controller::Jail', card.player)
+--   cable.send('Application::PDA::Controller::Jail', card.player)
 -- end)
 -- ```
 --

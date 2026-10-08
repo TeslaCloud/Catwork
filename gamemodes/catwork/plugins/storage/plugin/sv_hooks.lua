@@ -46,7 +46,7 @@ function cwStorage:EntityHandleMenuOption(player, entity, option, arguments)
         if !entity.cwPassword or entity.cwIsBreached then
           self:OpenContainer(player, entity, containerWeight)
         else
-          netstream.Start(player, 'ContainerPassword', entity)
+          cable.send(player, 'ContainerPassword', entity)
         end
       end
     end

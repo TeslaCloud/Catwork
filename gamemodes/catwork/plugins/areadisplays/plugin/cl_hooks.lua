@@ -15,7 +15,7 @@ end
 -- @param minimum [Vector One corner of the area's box]
 -- @param maximum [Vector The opposite corner of the area's box]
 function cwAreaDisplays:PlayerEnteredArea(name, minimum, maximum)
-  netstream.Start('EnteredArea', { name, minimum, maximum })
+  cable.send('EnteredArea', { name, minimum, maximum })
 end
 
 --- Called when the local player leaves an area; forgets the current area.

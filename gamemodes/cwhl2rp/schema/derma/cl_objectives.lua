@@ -1,6 +1,6 @@
 --- Defines the `cwObjectives` panel, a small frame for editing the Combine objectives.
 --
--- It is opened by the `EditObjectives` netstream message (see `/ViewObjectives`) and holds a multiline text entry
+-- It is opened by the `EditObjectives` Cable message (see `/ViewObjectives`) and holds a multiline text entry
 -- limited to 500 characters. Pressing Okay sends the text back to the server with `EditObjectives`.
 
 local PANEL = {}
@@ -36,7 +36,7 @@ end
 --- Fills the panel with an editor for the Combine objectives.
 --
 -- The text is limited to 500 characters. Pressing Okay sends it to the server with the `EditObjectives`
--- netstream message, which saves it and updates the Combine HUD.
+-- Cable message, which saves it and updates the Combine HUD.
 -- @param objectives [String The current objectives]
 function PANEL:Populate(objectives)
   self:SetTitle('#Objectives_Title')
@@ -71,7 +71,7 @@ function PANEL:Populate(objectives)
 
   -- Called when the button is clicked.
   function button.DoClick(button)
-    netstream.Start('EditObjectives', string.sub(textEntry:GetValue(), 0, 500))
+    cable.send('EditObjectives', string.sub(textEntry:GetValue(), 0, 500))
 
     self:Close() self:Remove()
 

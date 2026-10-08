@@ -64,7 +64,7 @@ function ENT:TalkToPlayer(player, text, default)
   end
 
   if text.sound and text.sound != '' then
-    netstream.Start(player, 'SalesmanPlaySound', { text.sound, self })
+    cable.send(player, 'SalesmanPlaySound', { text.sound, self })
   end
 end
 

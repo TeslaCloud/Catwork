@@ -6,7 +6,8 @@
 --
 -- @param player [Player The player receiving the data]
 function cwSurfaceTexts:PlayerSendDataStreamInfo(player)
-  netstream.Start(player, 'cwLoad3DTexts', self.stored)
+  -- Every text of the map at once, which can be more than one net message holds.
+  cw.transfer:Send(player, 'cwLoad3DTexts', self.stored)
 end
 
 --- Called after Catwork has loaded all of its entities; loads the saved surface texts.

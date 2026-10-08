@@ -99,7 +99,7 @@ function cw.command:SetHidden(name, bHidden)
   end
 
   if SERVER then
-    netstream.Start(nil, 'HideCommand', {
+    cable.send(nil, 'HideCommand', {
       index = cw.core:GetShortCRC(uniqueID), hidden = bHidden
     })
   elseif bHidden and hidden[uniqueID] then
@@ -315,7 +315,7 @@ if SERVER then
       hiddenCommands[#hiddenCommands + 1] = cw.core:GetShortCRC(k)
     end
 
-    netstream.Start(player, 'HiddenCommands', hiddenCommands)
+    cable.send(player, 'HiddenCommands', hiddenCommands)
   end)
 else
   --- Adds a command's syntax and tip to the Commands page of the directory.

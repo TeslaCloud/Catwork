@@ -142,16 +142,32 @@ local function IsDataFileNameSafe(fileName)
   return false
 end
 
+--- Keeps a copy of a data file that could not be read, next to it and with `.unreadable` added to its name.
+--
+-- Whoever asked for the data gets nothing and saves over the file sooner or later, so without the copy a file in
+-- a format that `cw.core:Deserialize` fails to recognise would be lost for good.
+-- @param path [String Path of the data file, relative to the `garrysmod` folder]
+-- @param data [String The contents of the file]
+local function KeepUnreadableData(path, data)
+  if data == '' then return end
+
+  File.write(path..'.unreadable', data)
+
+  MsgC(
+    Color(255, 100, 0, 255),
+    "[CW:Kernel] '"..path.."' could not be read. A copy was kept as '"..path..".unreadable'.\n"
+  )
+end
+
 --- Serializes a table and writes it to the current schema's data folder.
 --
--- The file is `settings/catwork/schemas/<schema>/<fileName>.cw`, encoded with `cw.core:Serialize`.
+-- The file is `settings/catwork/schemas/<schema>/<fileName>.cw`, encoded as JSON with `cw.core:Serialize`.
 -- Prints an error and saves nothing when `data` is not a table or the file name contains `..`.
 -- @param fileName [String File name without extension; may contain subfolders]
 -- @param data [Map Table to save]
--- @param bForceJSON=nil [Boolean Whether to encode as JSON instead of pON]
 -- @return [Boolean The result of `File.write`, or `nil` when nothing was saved]
 -- @see cw.core:RestoreSchemaData
-function cw.core:SaveSchemaData(fileName, data, bForceJSON)
+function cw.core:SaveSchemaData(fileName, data)
   if !IsDataFileNameSafe(fileName) then
     return
   end
@@ -165,7 +181,7 @@ function cw.core:SaveSchemaData(fileName, data, bForceJSON)
     return
   end
 
-  return File.write('settings/catwork/schemas/'..cw.Schema..'/'..fileName..'.cw', self:Serialize(data, bForceJSON))
+  return File.write('settings/catwork/schemas/'..cw.Schema..'/'..fileName..'.cw', self:Serialize(data))
 end
 
 --- Deletes a file from the current schema's data folder.
@@ -258,22 +274,27 @@ end
 
 --- Reads and deserializes a file from the current schema's data folder.
 --
--- If the file cannot be deserialized, an error is printed and the file is deleted.
+-- If deserializing the file raises an error, the error is printed and the file is deleted. A file that is neither
+-- JSON nor legacy pON is left alone. Either way a copy of the unreadable file is kept, see `KeepUnreadableData`.
 -- @param fileName [String File name without extension, as passed to `cw.core:SaveSchemaData`]
 -- @param failSafe=nil [Any Value to return when the file is missing or invalid; an empty table if `nil`]
--- @param bForceJSON=nil [Boolean Whether the file is JSON instead of pON]
 -- @return [Any The stored table, or `failSafe` when it could not be restored]
 -- @see cw.core:SaveSchemaData
-function cw.core:RestoreSchemaData(fileName, failSafe, bForceJSON)
+function cw.core:RestoreSchemaData(fileName, failSafe)
   if self:SchemaDataExists(fileName) then
-    local data = File.read('settings/catwork/schemas/'..cw.Schema..'/'..fileName..'.cw')
+    local path = 'settings/catwork/schemas/'..cw.Schema..'/'..fileName..'.cw'
+    local data = File.read(path)
 
     if data then
-      local bSuccess, value = pcall(self.Deserialize, self, data, bForceJSON)
+      local bSuccess, value = pcall(self.Deserialize, self, data)
 
       if bSuccess and value != nil then
         return value
-      elseif !bSuccess then
+      end
+
+      KeepUnreadableData(path, data)
+
+      if !bSuccess then
         MsgC(
           Color(255, 100, 0, 255),
           "[CW:Kernel] '"..fileName.."' schema data has failed to restore.\n"..tostring(value)..'\n'
@@ -293,14 +314,16 @@ end
 
 --- Reads and deserializes a file from the framework-wide data folder, `settings/clockwork/`.
 --
--- If the file cannot be deserialized, an error is printed and the file is deleted.
+-- If the file cannot be deserialized, an error is printed and the file is deleted; a copy of it is kept, see
+-- `KeepUnreadableData`.
 -- @param fileName [String File name without extension, as passed to `cw.core:SaveClockworkData`]
 -- @param failSafe=nil [Any Value to return when the file is missing or invalid; an empty table if `nil`]
 -- @return [Any The stored table, or `failSafe` when it could not be restored]
 -- @see cw.core:SaveClockworkData
 function cw.core:RestoreClockworkData(fileName, failSafe)
   if self:ClockworkDataExists(fileName) then
-    local data = File.read('settings/clockwork/'..fileName..'.cw')
+    local path = 'settings/clockwork/'..fileName..'.cw'
+    local data = File.read(path)
 
     if data then
       local bSuccess, value = pcall(self.Deserialize, self, data)
@@ -308,6 +331,8 @@ function cw.core:RestoreClockworkData(fileName, failSafe)
       if bSuccess and value != nil then
         return value
       else
+        KeepUnreadableData(path, data)
+
         MsgC(
           Color(255, 100, 0, 255),
           "[CW:Kernel] '"..fileName.."' catwork data has failed to restore.\n"..tostring(value)..'\n'
@@ -325,7 +350,7 @@ function cw.core:RestoreClockworkData(fileName, failSafe)
   end
 end
 
---- Serializes a table with pON and writes it to `settings/clockwork/<fileName>.cw`.
+--- Serializes a table as JSON with `cw.core:Serialize` and writes it to `settings/clockwork/<fileName>.cw`.
 --
 -- Unlike schema data, this data is shared by every schema. Prints an error and saves nothing when `data`
 -- is not a table or the file name contains `..`.
@@ -828,9 +853,9 @@ function cw.core:PrintLog(logType, text)
     end
   end
 
-  -- netstream encodes the message before it looks at the recipients.
+  -- Usually nobody is listening, and then there is no message to build.
   if #listeners > 0 then
-    netstream.Start(listeners, 'Log', {
+    cable.send(listeners, 'Log', {
       logType = (logType or 5), text = text
     })
   end
@@ -1173,7 +1198,7 @@ function playerMeta:Give(class, itemTable, bForceReturn)
     local weapon = self:GetWeapon(class)
 
     if IsValid(weapon) and itemTable then
-      netstream.Start(self, 'WeaponItemData', {
+      cable.send(self, 'WeaponItemData', {
         definition = item.GetDefinition(itemTable, true),
         weapon = weapon:EntIndex()
       })
@@ -1404,7 +1429,7 @@ function playerMeta:HandleAttributeProgress(curTime)
       local attributeTable = cw.attribute:FindByID(k)
 
       if attributeTable then
-        netstream.Start(self, 'AttributeProgress', {
+        cable.send(self, 'AttributeProgress', {
           index = attributeTable.index, amount = v
         })
       end
@@ -1801,7 +1826,7 @@ end
 -- The client refuses to run `cwlua` this way.
 -- @param ... [String The command and its arguments, as for `RunConsoleCommand`]
 function playerMeta:RunCommand(...)
-  netstream.Start(self, 'RunCommand', { ... })
+  cable.send(self, 'RunCommand', { ... })
 end
 
 --- Runs a Catwork command as the player.
@@ -2239,7 +2264,7 @@ function playerMeta:GiveItem(itemTable, bForce)
     cw.core:PrintLog(LOGTYPE_GENERIC, self:Name()..' has gained a '..itemTable.name..' '..itemTable.itemID..'.')
 
     cw.inventory:AddInstance(inventory, itemTable)
-      netstream.Start(self, 'InvGive', item.GetDefinition(itemTable, true))
+      cable.send(self, 'InvGive', item.GetDefinition(itemTable, true))
     hook.Run('PlayerItemGiven', self, itemTable, bForce)
 
     cw.inventory:Rebuild(self)
@@ -2272,7 +2297,7 @@ function playerMeta:TakeItem(itemTable)
 
   hook.Run('PlayerItemTaken', self, itemTable)
     cw.inventory:RemoveInstance(inventory, itemTable)
-  netstream.Start(self, 'InvTake', { itemTable.index, itemTable.itemID })
+  cable.send(self, 'InvTake', { itemTable.index, itemTable.itemID })
 
   cw.inventory:Rebuild(self)
 
@@ -3003,7 +3028,7 @@ local playerMeta = FindMetaTable('Player')
 function playerMeta:NetworkAccessories()
   local accessoryData = self:GetAccessoryData()
 
-  netstream.Start(self, 'AllAccessories', accessoryData)
+  cable.send(self, 'AllAccessories', accessoryData)
 end
 
 --- Takes off an accessory the player is wearing.
@@ -3018,7 +3043,7 @@ function playerMeta:RemoveAccessory(itemTable)
   local itemID = itemTable.itemID
 
   accessoryData[itemID] = nil
-    netstream.Start(
+    cable.send(
       self, 'RemoveAccessory', { itemID = itemID }
     )
 
@@ -3068,7 +3093,7 @@ function playerMeta:WearAccessory(itemTable)
   local itemID = itemTable.itemID
 
   accessoryData[itemID] = itemTable.uniqueID
-  netstream.Start(
+  cable.send(
     self, 'AddAccessory', { itemID = itemID, uniqueID = uniqueID }
   )
 

@@ -23,9 +23,9 @@ function cwNotepad:EntityHandleMenuOption(player, entity, option, arguments)
         end
 
         player.notepadIDs[entity.uniqueID] = true
-        netstream.Heavy(player, 'ViewNotepad', entity, entity.uniqueID, entity.text)
+        cw.transfer:Send(player, 'ViewNotepad', entity, entity.uniqueID, entity.text)
       else
-        netstream.Heavy(player, 'ViewNotepad', entity, entity.uniqueID)
+        cw.transfer:Send(player, 'ViewNotepad', entity, entity.uniqueID)
       end
     elseif arguments == 'cw_notepadEditOption' then
       if cw.entity:QueryProperty(entity, 'uniqueID') == player:UniqueID() then
@@ -35,15 +35,15 @@ function cwNotepad:EntityHandleMenuOption(player, entity, option, arguments)
           end
 
           player.notepadIDs[entity.uniqueID] = true
-          netstream.Heavy(player, 'EditNotepad', entity, entity.uniqueID, entity.text)
+          cw.transfer:Send(player, 'EditNotepad', entity, entity.uniqueID, entity.text)
         else
-          netstream.Heavy(player, 'EditNotepad', entity, entity.uniqueID)
+          cw.transfer:Send(player, 'EditNotepad', entity, entity.uniqueID)
         end
       else
         cw.player:Notify(player, '#Notepad_CannotEdit')
       end
     else
-      netstream.Heavy(player, 'EditNotepad', entity, entity.uniqueID)
+      cw.transfer:Send(player, 'EditNotepad', entity, entity.uniqueID)
     end
   end
 end

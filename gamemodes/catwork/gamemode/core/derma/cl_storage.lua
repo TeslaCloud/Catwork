@@ -1,5 +1,5 @@
 --- Defines the `cwStorage` window, which shows an open storage next to the player's inventory, and handles the storage
--- netstreams.
+-- Cable messages.
 --
 -- `cwStorageItem` is an item icon that moves the item with the `StorageGiveItem` and `StorageTakeItem` commands, and
 -- `cwStorageWeight` and `cwStorageSpace` are the weight and space bars. The `StorageStart`, `StorageCash`,
@@ -524,7 +524,7 @@ end
 
 vgui.Register('cwStorageSpace', PANEL, 'DPanel')
 
-netstream.Hook('StorageStart', function(data)
+cable.receive('StorageStart', function(data)
   if cw.storage:IsStorageOpen() then
     CloseDermaMenus()
     cw.storage.panel:Close()
@@ -550,28 +550,28 @@ netstream.Hook('StorageStart', function(data)
   cw.core:RegisterBackgroundBlur(cw.storage:GetPanel(), SysTime())
 end)
 
-netstream.Hook('StorageCash', function(data)
+cable.receive('StorageCash', function(data)
   if cw.storage:IsStorageOpen() then
     cw.storage.cash = data
     cw.storage:GetPanel():QueueRebuild()
   end
 end)
 
-netstream.Hook('StorageWeight', function(data)
+cable.receive('StorageWeight', function(data)
   if cw.storage:IsStorageOpen() then
     cw.storage.weight = data
     cw.storage:GetPanel():QueueRebuild()
   end
 end)
 
-netstream.Hook('StorageSpace', function(data)
+cable.receive('StorageSpace', function(data)
   if cw.storage:IsStorageOpen() then
     cw.storage.space = data
     cw.storage:GetPanel():QueueRebuild()
   end
 end)
 
-netstream.Hook('StorageClose', function(data)
+cable.receive('StorageClose', function(data)
   if cw.storage:IsStorageOpen() then
     cw.core:RemoveBackgroundBlur(cw.storage:GetPanel())
 
@@ -590,7 +590,7 @@ netstream.Hook('StorageClose', function(data)
   end
 end)
 
-netstream.Hook('StorageTake', function(data)
+cable.receive('StorageTake', function(data)
   if cw.storage:IsStorageOpen() then
     cw.inventory:RemoveUniqueID(
       cw.storage.inventory, data.uniqueID, data.itemID
@@ -600,7 +600,7 @@ netstream.Hook('StorageTake', function(data)
   end
 end)
 
-netstream.Hook('StorageGive', function(data)
+cable.receive('StorageGive', function(data)
   if cw.storage:IsStorageOpen() then
     local itemTable = item.FindByID(data.index)
 

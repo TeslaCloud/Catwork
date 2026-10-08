@@ -229,11 +229,11 @@ function surface.DrawRotated(x, y, angle, callback)
 end
 
 concommand.Add('cwSay', function(player, command, arguments)
-  return netstream.Start('PlayerSay', table.concat(arguments, ' '))
+  return cable.send('PlayerSay', table.concat(arguments, ' '))
 end)
 
 -- Developer tool: runs Lua typed into the local console. Superadmins only; the 'RunCommand' net hook
--- refuses to relay it, so its arguments never come from netstream data.
+-- refuses to relay it, so its arguments never come from network data.
 concommand.Add('cwLua', function(player, command, arguments)
   if !IsValid(player) then return end
 
@@ -536,7 +536,7 @@ end
 --
 -- Options come from the `GetEntityMenuOptions` hook and, for `cw_item` entities, from the item's
 -- `GetOptions`. Item options are handled by the item's `HandleOptions` and sent to the server
--- with the `MenuOption` netstream; other options are sent with `cw.entity:ForceMenuOption`.
+-- with the `MenuOption` Cable message; other options are sent with `cw.entity:ForceMenuOption`.
 -- Option tables may set `isOrdered` (show first) and `toolTip`. Does nothing when there are no
 -- options.
 -- @param entity [Entity The entity the menu is for]
@@ -574,7 +574,7 @@ function cw.core:HandleEntityMenu(entity)
             local transmit, data = itemTable:HandleOptions(arguments.name, nil, nil, entity)
 
             if transmit then
-              netstream.Start('MenuOption', {
+              cable.send('MenuOption', {
                 option = arguments.name,
                 data = data,
                 item = itemTable.itemID,
@@ -2250,7 +2250,7 @@ function cw.core:HandleItemSpawnIconClick(itemTable, spawnIcon, Callback)
           local transmit, data = itemTable:HandleOptions(v.name)
 
           if transmit then
-            netstream.Start('MenuOption', { option = v.name, data = data, item = itemTable.itemID })
+            cable.send('MenuOption', { option = v.name, data = data, item = itemTable.itemID })
             defaultAction = false
           end
         end

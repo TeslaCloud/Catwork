@@ -1,7 +1,7 @@
 --- Registers the `Manage Config` system, which lists the config keys and lets admins edit their values in-game.
 --
 -- The page is shown to players with access to `/CfgSetVar`. Keys and values are requested over the `SystemCfgKeys` and
--- `SystemCfgValue` netstreams, with private values masked, and `SystemCfgSet` applies a change on the server,
+-- `SystemCfgValue` Cable messages, with private values masked, and `SystemCfgSet` applies a change on the server,
 -- optionally for a single map. The server answers all three only for players with that access.
 
 if CLIENT then
@@ -23,7 +23,7 @@ if CLIENT then
 
   --- Builds the config key list and the (hidden) edit form, requesting the key list from the server if needed.
   --
-  -- Selecting a row requests that key's value with the `SystemCfgValue` netstream.
+  -- Selecting a row requests that key's value with the `SystemCfgValue` Cable message.
   -- @param systemPanel [Panel The system panel to add the forms to]
   -- @param systemForm [Panel The system's form (unused, the system does not create one)]
   function SYSTEM:OnDisplay(systemPanel, systemForm)
@@ -48,7 +48,7 @@ if CLIENT then
     systemPanel.panelList:AddItem(self.editForm)
 
     if !self.activeKey then
-      netstream.Start('SystemCfgKeys', true)
+      cable.send('SystemCfgKeys', true)
     end
 
     self.listView = vgui.Create('DListView')
@@ -60,7 +60,7 @@ if CLIENT then
     self:PopulateComboBox()
 
     function self.listView.OnRowSelected(parent, lineID, line)
-      netstream.Start('SystemCfgValue', line.key)
+      cable.send('SystemCfgValue', line.key)
     end
 
     self.configForm:AddItem(self.listView)
@@ -69,7 +69,7 @@ if CLIENT then
   --- Fills the edit form for the selected config key (`self.activeKey`).
   --
   -- Shows the key's help text, a map entry and a text entry, slider or checkbox depending on the value's type;
-  -- the okay button sends the new value to the server with the `SystemCfgSet` netstream.
+  -- the okay button sends the new value to the server with the `SystemCfgSet` Cable message.
   function SYSTEM:PopulateConfigBox()
     if !IsValid(self.editForm) then
       return
@@ -108,7 +108,7 @@ if CLIENT then
 
           -- Called when the button is clicked.
           function okayButton.DoClick(okayButton)
-            netstream.Start('SystemCfgSet', {
+            cable.send('SystemCfgSet', {
               key = self.activeKey.name,
               value = textEntry:GetValue(),
               useMap = mapEntry:GetValue()
@@ -123,7 +123,7 @@ if CLIENT then
 
           -- Called when the button is clicked.
           function okayButton.DoClick(okayButton)
-            netstream.Start('SystemCfgSet', {
+            cable.send('SystemCfgSet', {
               key = self.activeKey.name,
               value = numSlider:GetValue(),
               useMap = mapEntry:GetValue()
@@ -137,7 +137,7 @@ if CLIENT then
 
           -- Called when the button is clicked.
           function okayButton.DoClick(okayButton)
-            netstream.Start('SystemCfgSet', {
+            cable.send('SystemCfgSet', {
               key = self.activeKey.name,
               value = checkBox:GetChecked(),
               useMap = mapEntry:GetValue()
@@ -185,7 +185,7 @@ if CLIENT then
 
   SYSTEM:Register()
 
-  netstream.Hook('SystemCfgKeys', function(data)
+  cable.receive('SystemCfgKeys', function(data)
     local systemTable = cw.system:FindByID('Manage Config')
 
     if systemTable then
@@ -194,7 +194,7 @@ if CLIENT then
     end
   end)
 
-  netstream.Hook('SystemCfgValue', function(data)
+  cable.receive('SystemCfgValue', function(data)
     local systemTable = cw.system:FindByID('Manage Config')
 
     if systemTable then
@@ -227,10 +227,10 @@ else
       value = '****'
     end
 
-    netstream.Start(player, 'SystemCfgValue', { key, value })
+    cable.send(player, 'SystemCfgValue', { key, value })
   end
 
-  netstream.Hook('SystemCfgSet', function(player, data)
+  cable.receive('SystemCfgSet', function(player, data)
     if !istable(data) or !isstring(data.key) or !CanManageConfig(player) then
       return
     end
@@ -304,7 +304,7 @@ else
     SendConfigValue(player, key, configObject)
   end)
 
-  netstream.Hook('SystemCfgKeys', function(player, data)
+  cable.receive('SystemCfgKeys', function(player, data)
     if !CanManageConfig(player) then
       return
     end
@@ -319,10 +319,10 @@ else
 
     table.sort(configKeys)
 
-    netstream.Start(player, 'SystemCfgKeys', configKeys)
+    cable.send(player, 'SystemCfgKeys', configKeys)
   end)
 
-  netstream.Hook('SystemCfgValue', function(player, data)
+  cable.receive('SystemCfgValue', function(player, data)
     if !isstring(data) or !CanManageConfig(player) then
       return
     end

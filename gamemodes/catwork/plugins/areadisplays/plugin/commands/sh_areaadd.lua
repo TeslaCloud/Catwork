@@ -64,7 +64,7 @@ function COMMAND:OnRun(player, arguments)
   data.angles:RotateAroundAxis(data.angles:Forward(), 90)
   data.angles:RotateAroundAxis(data.angles:Right(), 270)
 
-  netstream.Start(nil, 'AreaAdd', data)
+  cable.send(nil, 'AreaAdd', data)
     cwAreaDisplays.storedList[#cwAreaDisplays.storedList + 1] = data
     cwAreaDisplays:SaveAreaDisplays()
   cw.player:Notify(player, L('AreaDisplays_Added').." '"..data.name.."'.")

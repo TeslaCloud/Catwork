@@ -1,7 +1,7 @@
 --- Defines `cw.quiz`, the full-screen quiz a player has to answer before playing.
 --
 -- `Populate` adds a combo box for each question from `cw.quiz:GetQuestions`; picking an answer sends the `QuizAnswer`
--- netstream and the Continue button sends `QuizCompleted`, after which the server decides whether the answers pass.
+-- Cable message and the Continue button sends `QuizCompleted`, after which the server decides whether the answers pass.
 
 local backdropColor = Color(0, 0, 0, 255)
 
@@ -9,7 +9,7 @@ local PANEL = {}
 
 --- Builds the full-screen quiz with its question list and the Disconnect and Continue buttons.
 --
--- Continue sends the `QuizCompleted` netstream; the server decides whether the answers pass.
+-- Continue sends the `QuizCompleted` Cable message; the server decides whether the answers pass.
 function PANEL:Init()
   local smallTextFont = cw.option:GetFont('menu_text_small')
   local scrH = ScrH()
@@ -48,7 +48,7 @@ function PANEL:Init()
   self.continueButton:SetText('#QuizPanel_Continue')
   self.continueButton:FadeIn(0.5)
   self.continueButton:SetCallback(function(panel)
-    netstream.Start('QuizCompleted', true)
+    cable.send('QuizCompleted', true)
   end)
 
   self.continueButton:SizeToContents()
@@ -71,7 +71,7 @@ end
 
 --- Fills the quiz with a combo box for each question from `cw.quiz:GetQuestions`, sorted by question text.
 --
--- Each answer is sent to the server with the `QuizAnswer` netstream as soon as it is picked.
+-- Each answer is sent to the server with the `QuizAnswer` Cable message as soon as it is picked.
 function PANEL:Populate()
   local quizQuestions = cw.quiz:GetQuestions()
   local questions = {}
@@ -112,7 +112,7 @@ function PANEL:Populate()
 
     -- Called when an option is selected.
     function panel:OnSelect(index, value, data)
-      netstream.Start('QuizAnswer', { key, index })
+      cable.send('QuizAnswer', { key, index })
     end
 
     for k2, v2 in pairs(v[2].possibleAnswers) do

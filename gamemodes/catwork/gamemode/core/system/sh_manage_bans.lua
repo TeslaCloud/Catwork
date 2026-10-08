@@ -1,7 +1,7 @@
 --- Registers the `Manage Bans` system, a paged list of banned players that can be unbanned with a click.
 --
 -- The page is shown to players with access to `/PlyUnban`. The server sends the bans eight per page over the
--- `SystemUnbanGet` netstream and unbans through the `PlyUnban` command when it receives `SystemUnbanDo`.
+-- `SystemUnbanGet` Cable message and unbans through the `PlyUnban` command when it receives `SystemUnbanDo`.
 
 if CLIENT then
   local SYSTEM = cw.system:New()
@@ -23,13 +23,13 @@ if CLIENT then
 
   --- Lists the current page of banned players with their remaining time and reason, and page buttons.
   --
-  -- Requests the page from the server with the `SystemUnbanGet` netstream unless `noRefresh` is set;
+  -- Requests the page from the server with the `SystemUnbanGet` Cable message unless `noRefresh` is set;
   -- clicking a ban asks for confirmation and sends `SystemUnbanDo`.
   -- @param systemPanel [Panel The system panel to add the ban list to]
   -- @param systemForm [Panel The system's form (unused, the system does not create one)]
   function SYSTEM:OnDisplay(systemPanel, systemForm)
     if !self.noRefresh then
-      netstream.Start('SystemUnbanGet', self.bannedPage)
+      cable.send('SystemUnbanGet', self.bannedPage)
     else
       self.noRefresh = nil
     end
@@ -66,7 +66,7 @@ if CLIENT then
           -- Called when the button is clicked.
           function label.DoClick(button)
             Derma_Query(L('#System_ManageBans_UnbanConfirm'), v.steamName, L('Yes'), function()
-              netstream.Start('SystemUnbanDo', v.identifier)
+              cable.send('SystemUnbanDo', v.identifier)
             end, L('No'), function() end)
           end
         end
@@ -82,7 +82,7 @@ if CLIENT then
 
             -- Called when the button is clicked.
             function nextButton.DoClick(button)
-              netstream.Start('SystemUnbanGet', self.bannedPage + 1)
+              cable.send('SystemUnbanGet', self.bannedPage + 1)
             end
           end
 
@@ -91,7 +91,7 @@ if CLIENT then
 
             -- Called when the button is clicked.
             function backButton.DoClick(button)
-              netstream.Start('SystemUnbanGet', self.bannedPage - 1)
+              cable.send('SystemUnbanGet', self.bannedPage - 1)
             end
           end
         end
@@ -113,7 +113,7 @@ if CLIENT then
 
   SYSTEM:Register()
 
-  netstream.Hook('SystemUnbanRebuild', function(data)
+  cable.receive('SystemUnbanRebuild', function(data)
     local systemTable = cw.system:FindByID('Manage Bans')
 
     if systemTable and systemTable:IsActive() then
@@ -121,7 +121,7 @@ if CLIENT then
     end
   end)
 
-  netstream.Hook('SystemUnbanGet', function(data)
+  cable.receive('SystemUnbanGet', function(data)
     if type(data) == 'table' then
       local systemTable = cw.system:FindByID('Manage Bans')
 
@@ -149,15 +149,15 @@ if CLIENT then
     end
   end)
 else
-  netstream.Hook('SystemUnbanDo', function(player, data)
+  cable.receive('SystemUnbanDo', function(player, data)
     if type(data) == 'string' then
       cw.player:RunClockworkCommand(player, 'PlyUnban', data)
 
-      netstream.Start(player, 'SystemUnbanRebuild', true)
+      cable.send(player, 'SystemUnbanRebuild', true)
     end
   end)
 
-  netstream.Hook('SystemUnbanGet', function(player, data)
+  cable.receive('SystemUnbanGet', function(player, data)
     local unbanTable = cw.command:FindByID('PlyUnban')
     local page = tonumber(data)
 
@@ -204,7 +204,7 @@ else
     end
 
     if #sendPlayers > 0 then
-      netstream.Start(player, 'SystemUnbanGet', {
+      cable.send(player, 'SystemUnbanGet', {
         pageCount = math.ceil(#bannedPlayers / 8),
         players = sendPlayers,
         isNext = (bannedPlayers[finishIndex + 1] != nil),
@@ -212,7 +212,7 @@ else
         page = page
       })
     else
-      netstream.Start(player, 'SystemUnbanGet', false)
+      cable.send(player, 'SystemUnbanGet', false)
     end
   end)
 end

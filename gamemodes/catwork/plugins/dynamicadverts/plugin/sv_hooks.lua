@@ -8,5 +8,5 @@ function cwDynamicAdverts:ClockworkInitPostEntity() self:LoadDynamicAdverts() en
 --
 -- @param player [Player The player receiving the data]
 function cwDynamicAdverts:PlayerSendDataStreamInfo(player)
-  netstream.Start(player, 'DynamicAdverts', self.storedList)
+  cable.send(player, 'DynamicAdverts', self.storedList)
 end

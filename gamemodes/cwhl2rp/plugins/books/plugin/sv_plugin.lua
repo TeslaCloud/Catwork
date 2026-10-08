@@ -1,5 +1,5 @@
 --- Server-side functions of the Books plugin that pick up, save and restore the placed `cw_book` entities, plus the
--- `TakeBook` netstream handler.
+-- `TakeBook` Cable handler.
 --
 -- Books are kept per map in the schema data under `plugins/books/<map>` with their item, owner, position, angles and
 -- whether they were frozen.
@@ -25,7 +25,7 @@ function PLUGIN:TakeBook(player, entity)
   end
 end
 
-netstream.Hook('TakeBook', function(player, data)
+cable.receive('TakeBook', function(player, data)
   if !isentity(data) or !IsValid(data) or data:GetClass() != 'cw_book' then return end
   if !player:HasInitialized() or !player:Alive() or player:IsRagdolled() then return end
 

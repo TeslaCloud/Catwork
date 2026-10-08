@@ -25,7 +25,7 @@ function COMMAND:OnRun(player, arguments)
     player.cwSalesmanAnim = tonumber(_G[arguments[1]])
   end
 
-  netstream.Start(player, 'SalesmanAdd', true)
+  cable.send(player, 'SalesmanAdd', true)
 end
 
 COMMAND:Register()

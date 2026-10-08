@@ -160,7 +160,7 @@ else
       player:SetData('Quiz', nil)
     end
 
-    netstream.Start(player, 'QuizCompleted', completed)
+    cable.send(player, 'QuizCompleted', completed)
   end
 
   --- Returns whether a player has completed the current quiz.

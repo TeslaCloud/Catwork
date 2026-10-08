@@ -143,7 +143,7 @@ end
 -- @param data [Map The creation request from the client: `faction`, `gender`, `model`, `class`, `attributes`,
 -- `forename` and `surname` or `fullName`, `physDesc` and `plugin` (values of the custom choices)]
 -- @return [Nil Nothing; the result is sent to the client]
--- @warning [Internal] Called by the `CreateCharacter` netstream receiver.
+-- @warning [Internal] Called by the `CreateCharacter` Cable receiver.
 function cw.player:CreateCharacterFromData(player, data)
   if !istable(data) or !player:GetCharacters() then return end
 
@@ -443,7 +443,7 @@ function cw.player:CreateCharacterFromData(player, data)
                   player:SteamName()..' has created a '..info.faction.." character called '"..info.name.."'."
                 )
 
-                netstream.Start(player, 'CharacterFinish', { bSuccess = true })
+                cable.send(player, 'CharacterFinish', { bSuccess = true })
 
                 player.cwIsCreatingChar = nil
 
@@ -474,7 +474,7 @@ end
 -- they pick a character]
 function cw.player:SetCharacterMenuOpen(player, bReset)
   if player:HasInitialized() then
-    netstream.Start(player, 'CharacterOpen', (bReset == true))
+    cable.send(player, 'CharacterOpen', (bReset == true))
 
     if bReset then
       player.cwCharMenuReset = true
@@ -500,7 +500,7 @@ function cw.player:StartSound(player, uniqueID, sound, fVolume)
   or player.cwSoundsPlaying[uniqueID] != sound then
     player.cwSoundsPlaying[uniqueID] = sound
 
-    netstream.Start(player, 'StartSound', {
+    cable.send(player, 'StartSound', {
       uniqueID = uniqueID, sound = sound, volume = (fVolume or 0.75)
     })
   end
@@ -518,7 +518,7 @@ function cw.player:StopSound(player, uniqueID, iFadeOut)
   if player.cwSoundsPlaying[uniqueID] then
     player.cwSoundsPlaying[uniqueID] = nil
 
-    netstream.Start(player, 'StopSound', {
+    cable.send(player, 'StopSound', {
       uniqueID = uniqueID, fadeOut = (iFadeOut or 0)
     })
   end
@@ -719,7 +719,7 @@ end
 -- @param player [Player The player]
 -- @param state [Number One of the `CHARACTER_MENU_*` values]
 function cw.player:SetCharacterMenuState(player, state)
-  netstream.Start(player, 'CharacterMenu', state)
+  cable.send(player, 'CharacterMenu', state)
 end
 
 --- Returns the player's current action.
@@ -1204,7 +1204,7 @@ function cw.player:SetWhitelisted(player, faction, isWhitelisted)
     end
   end
 
-  netstream.Start(
+  cable.send(
     player, 'SetWhitelisted', { faction, isWhitelisted }
   )
 end
@@ -1465,7 +1465,7 @@ end
 -- @param player [Player The player, a list of players, or `nil` for everyone]
 -- @param sound [String Path of the sound file]
 function cw.player:PlaySound(player, sound)
-  netstream.Start(player, 'PlaySound', sound)
+  cable.send(player, 'PlaySound', sound)
 end
 
 --- Returns how many characters the player may have.
@@ -1679,7 +1679,7 @@ end
 -- @param player [Player The player]
 -- @param isOpen [Boolean Whether the menu should be open]
 function cw.player:SetMenuOpen(player, isOpen)
-  netstream.Start(player, 'MenuOpen', isOpen)
+  cable.send(player, 'MenuOpen', isOpen)
 end
 
 --- Sets whether the player has initialized, through the `Initialized` net var.
@@ -1879,7 +1879,7 @@ function cw.player:GiveDeathCode(player)
   player.cwDeathCodeIdx = math.random(0, 99999)
   player.cwDeathCodeAuth = nil
 
-  netstream.Start(player, 'ChatBoxDeathCode', player.cwDeathCodeIdx)
+  cable.send(player, 'ChatBoxDeathCode', player.cwDeathCodeIdx)
 end
 
 --- Takes a door from the player and refunds half the `door_cost` config.
@@ -2128,7 +2128,7 @@ function cw.player:SetCreateFault(player, fault)
     fault = L('CharFault_Unknown')
   end
 
-  netstream.Start(player, 'CharacterFinish', { bSuccess = false, fault = fault })
+  cable.send(player, 'CharacterFinish', { bSuccess = false, fault = fault })
 end
 
 --- Deletes one of the player's characters without asking any hooks first.
@@ -2157,7 +2157,7 @@ function cw.player:ForceDeleteCharacter(player, characterID)
 
     player.cwCharacterList[characterID] = nil
 
-    netstream.Start(player, 'CharacterRemove', characterID)
+    cable.send(player, 'CharacterRemove', characterID)
   end
 end
 
@@ -2348,7 +2348,7 @@ end
 -- Restoring only happens when the `save_recognised_names` config is on.
 -- @param player [Player The player]
 function cw.player:RestoreRecognisedNames(player)
-  netstream.Start(player, 'ClearRecognisedNames', true)
+  cable.send(player, 'ClearRecognisedNames', true)
 
   if config.Get('save_recognised_names'):Get() then
     for k, v in ipairs(_player.GetAll()) do
@@ -2392,7 +2392,7 @@ function cw.player:SetRecognises(player, target, status, bForce)
   if !status or bForce or !self:DoesRecognise(player, target, status) then
     recognisedNames[key] = status or nil
 
-    netstream.Start(player, 'RecognisedName', {
+    cable.send(player, 'RecognisedName', {
       key = key, status = (status or 0)
     })
   end
@@ -2446,7 +2446,7 @@ function cw.player:ClearRecognisedNames(player, status, isAccurate)
     if character then
       character.recognisedNames = {}
 
-      netstream.Start(player, 'ClearRecognisedNames', true)
+      cable.send(player, 'ClearRecognisedNames', true)
     end
   else
     for k, v in ipairs(_player.GetAll()) do
@@ -2736,7 +2736,7 @@ end
 -- @param barLength=nil [Number Length of the black bars, as used by `cw.core:AddCinematicText`]
 -- @param hangTime=nil [Number Seconds the text stays on screen; defaults to 3]
 function cw.player:CinematicText(player, text, color, barLength, hangTime)
-  netstream.Start(player, 'CinematicText', {
+  cable.send(player, 'CinematicText', {
     text = text,
     color = color,
     barLength = barLength,
@@ -2881,7 +2881,7 @@ function cw.player:Notify(player, text, class, icon)
       chatbox.AddText(player, text)
     end
   else
-    netstream.Start(player, 'Notification', { text = text, class = class })
+    cable.send(player, 'Notification', { text = text, class = class })
   end
 end
 
@@ -3630,7 +3630,7 @@ function cw.player:CharacterScreenAdd(player, character)
   end
 
   hook.Run('PlayerAdjustCharacterScreenInfo', player, character, info)
-  netstream.Start(player, 'CharacterAdd', info)
+  cable.send(player, 'CharacterAdd', info)
 end
 
 --- Decodes the JSON and numeric fields of a character loaded from the database, in place.

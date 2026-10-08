@@ -1,7 +1,7 @@
 --- Server-side part of the Salesmen plugin, which carries out trades, spawns salesmen from the editor's data and saves
 -- the map's salesmen.
 --
--- The `Salesmenu` netstream receiver performs a purchase or a sale, `SalesmanAdd` validates the editor's data and
+-- The `Salesmenu` Cable receiver performs a purchase or a sale, `SalesmanAdd` validates the editor's data and
 -- spawns a `cw_salesman`, and `SalesmanDone` plays the farewell response. `cwSalesmen:LoadSalesmen` and
 -- `cwSalesmen:SaveSalesmen` keep the salesmen in the schema data under `plugins/salesmen/<map>`.
 
@@ -39,7 +39,7 @@ local function CanTradeWith(player, entity)
 end
 
 local function SendRebuild(player, entity)
-  netstream.Start(player, 'SalesmenuRebuild', entity.cwCash, entity.cwStock)
+  cable.send(player, 'SalesmenuRebuild', entity.cwCash, entity.cwStock)
 end
 
 local function SellToPlayer(player, entity, uniqueID)
@@ -152,13 +152,13 @@ local function BuyFromPlayer(player, entity, uniqueID, itemID)
   SendRebuild(player, entity)
 end
 
-netstream.Hook('SalesmanDone', function(player, data)
+cable.receive('SalesmanDone', function(player, data)
   if IsSalesman(data) then
     data:TalkToPlayer(player, data.cwTextTab.doneBusiness, L('Salesman_Default_DoneBusiness'))
   end
 end)
 
-netstream.Hook('Salesmenu', function(player, data)
+cable.receive('Salesmenu', function(player, data)
   if !istable(data) or !isstring(data.uniqueID) then return end
 
   local entity = data.entity
@@ -220,7 +220,7 @@ local function IsValidSalesmanData(data)
     and (data.stock == -1 or IsValidAmount(data.stock)) and (data.cash == -1 or IsValidAmount(data.cash))
 end
 
-netstream.Hook('SalesmanAdd', function(player, data)
+cable.receive('SalesmanAdd', function(player, data)
   local bSetup = player.cwSalesmanSetup
   local position = player.cwSalesmanPos or player.cwSalesmanHitPos
   local angles = player.cwSalesmanAng

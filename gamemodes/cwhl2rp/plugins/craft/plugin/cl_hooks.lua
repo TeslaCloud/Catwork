@@ -1,6 +1,6 @@
 --- Client-side code of the Craft plugin that opens the `cwCraft` menu and decides which blueprints it lists.
 --
--- The `Craft::OpenMenu` netstream creates the menu for a crafting station, and `cwCraft:PlayerCanSeeCraft` hides
+-- The `Craft::OpenMenu` Cable message creates the menu for a crafting station, and `cwCraft:PlayerCanSeeCraft` hides
 -- blueprints whose attribute requirements are well above the player's attributes. `PlayerItemGiven` and
 -- `PlayerItemTaken` refresh the open menu, so that its item counts follow the inventory.
 
@@ -50,7 +50,7 @@ function cwCraft:PlayerItemTaken(itemTable)
   RebuildMenu()
 end
 
-netstream.Hook('Craft::OpenMenu', function(class, name)
+cable.receive('Craft::OpenMenu', function(class, name)
   if IsValid(CRAFT_TABLE_MENU) then
     CRAFT_TABLE_MENU:Remove()
   end

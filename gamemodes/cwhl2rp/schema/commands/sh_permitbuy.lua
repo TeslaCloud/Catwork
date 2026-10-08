@@ -57,7 +57,7 @@ function COMMAND:OnRun(player, arguments)
 
                 timer.Simple(0.5, function()
                   if IsValid(player) then
-                    netstream.Start(player, 'RebuildBusiness', true)
+                    cable.send(player, 'RebuildBusiness', true)
                   end
                 end)
               else
@@ -86,7 +86,7 @@ function COMMAND:OnRun(player, arguments)
 
           timer.Simple(0.25, function()
             if IsValid(player) then
-              netstream.Start(player, 'RebuildBusiness', true)
+              cable.send(player, 'RebuildBusiness', true)
             end
           end)
         else

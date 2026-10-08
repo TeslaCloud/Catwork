@@ -43,7 +43,7 @@ function COMMAND:OnRun(player, arguments)
   data.angles:RotateAroundAxis(data.angles:Forward(), 90)
   data.angles:RotateAroundAxis(data.angles:Right(), 270)
 
-  netstream.Start(nil, 'DynamicAdvertAdd', data)
+  cable.send(nil, 'DynamicAdvertAdd', data)
 
   cwDynamicAdverts.storedList[#cwDynamicAdverts.storedList + 1] = data
   cwDynamicAdverts:SaveDynamicAdverts()

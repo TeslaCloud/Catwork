@@ -1,6 +1,6 @@
 --- Defines the `cwData` panel, a small frame for editing a player's Combine data record.
 --
--- It is opened by the `EditData` netstream message and holds a multiline text entry limited to 500 characters.
+-- It is opened by the `EditData` Cable message and holds a multiline text entry limited to 500 characters.
 -- Pressing Okay sends the text back with `EditData`, and the server saves it as the player's `combinedata` character
 -- data.
 
@@ -37,7 +37,7 @@ end
 --- Fills the panel with an editor for a player's Combine data.
 --
 -- The text is limited to 500 characters. Pressing Okay sends it to the server with the `EditData`
--- netstream message, which saves it as the player's `combinedata` character data.
+-- Cable message, which saves it as the player's `combinedata` character data.
 -- @param player [Player The player whose data is edited]
 -- @param data [String The current data]
 function PANEL:Populate(player, data)
@@ -76,7 +76,7 @@ function PANEL:Populate(player, data)
     self:Close() self:Remove()
 
     if IsValid(player) then
-      netstream.Start('EditData', { player, string.sub(textEntry:GetValue(), 0, 500) })
+      cable.send('EditData', { player, string.sub(textEntry:GetValue(), 0, 500) })
     end
 
     gui.EnableScreenClicker(false)

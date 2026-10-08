@@ -5,7 +5,7 @@
 -- the class of the station that lists it, `recipe` the materials it consumes, `required` the tools it needs, `reqatt`
 -- and `updatt` the attributes it requires and progresses, and `finish` the items it produces. The files in the
 -- plugin's `system` folder each register one blueprint, and `cw.blueprints:FindByID` and `cw.blueprints:GetAll` are
--- how the craft menu and the `Craft::CraftItem` netstream find them.
+-- how the craft menu and the `Craft::CraftItem` Cable message find them.
 
 library.New('blueprints', cw)
 

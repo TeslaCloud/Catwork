@@ -1,7 +1,7 @@
 --- Server-side functions of the Surface Texts plugin that add, remove, save and load the map's 3D texts.
 --
 -- `cwSurfaceTexts:AddText` stores a text and sends it to every client, and `cwSurfaceTexts:Remove` has an admin's
--- client pick the text under the crosshair, which the `cw3DText_Remove` netstream then deletes. The texts are saved
+-- client pick the text under the crosshair, which the `cw3DText_Remove` Cable message then deletes. The texts are saved
 -- per map in the `plugins/3dtexts` schema data.
 --
 -- Backported from the [Flux](https://github.com/TeslaCloud/flux-ce) project.
@@ -47,7 +47,7 @@ function cwSurfaceTexts:AddText(data)
 
   self:Save()
 
-  netstream.Start(nil, 'cw3DText_Add', self.count, data)
+  cable.send(nil, 'cw3DText_Add', self.count, data)
 end
 
 --- Removes the surface text an admin is looking at.
@@ -58,16 +58,16 @@ end
 -- @param player [Player The admin removing the text]
 function cwSurfaceTexts:Remove(player)
   if player:IsAdmin() then
-    netstream.Start(player, 'cw3DText_Calculate', true)
+    cable.send(player, 'cw3DText_Calculate', true)
   end
 end
 
-netstream.Hook('cw3DText_Remove', function(player, idx)
+cable.receive('cw3DText_Remove', function(player, idx)
   if player:IsAdmin() and idx != nil and cwSurfaceTexts.stored[idx] then
     cwSurfaceTexts.stored[idx] = nil
     cwSurfaceTexts:Save()
 
-    netstream.Start(nil, 'cw3DText_Remove', idx)
+    cable.send(nil, 'cw3DText_Remove', idx)
 
     cw.player:Notify(player, L('SurfaceTexts_Removed'))
   end

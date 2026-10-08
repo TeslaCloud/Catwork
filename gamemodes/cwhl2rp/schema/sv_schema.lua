@@ -1,4 +1,4 @@
---- Server-side core of the HL2RP schema, which registers its config keys, hints and netstream receivers and defines the
+--- Server-side core of the HL2RP schema, which registers its config keys, hints and Cable receivers and defines the
 -- `Schema` functions that the schema's hooks, commands, items and entities call.
 --
 -- The functions cover citizen records (loyalty, criminal and work points, status, residence, job), player-controlled
@@ -125,7 +125,7 @@ cw.hint:Add('PainRP', '#Hints_HL2RP_PainRP')
 cw.hint:Add('FearRP', '#Hints_HL2RP_FearRP')
 cw.hint:Add('Original', '#Hints_HL2RP_Original')
 
-netstream.Hook('EditObjectives', function(player, data)
+cable.receive('EditObjectives', function(player, data)
   if !player.editObjectivesAuthorised or type(data) != 'string' then return end
 
   player.editObjectivesAuthorised = nil
@@ -155,11 +155,11 @@ netstream.Hook('EditObjectives', function(player, data)
       end
     end
 
-    netstream.Start(players, 'RecalculateHUDObjectives', { cwCTO.socioStatus, Schema.combineObjectives })
+    cable.send(players, 'RecalculateHUDObjectives', { cwCTO.socioStatus, Schema.combineObjectives })
   end)
 end)
 
-netstream.Hook('ObjectPhysDesc', function(player, data)
+cable.receive('ObjectPhysDesc', function(player, data)
   if type(data) != 'table' or type(data[1]) != 'string' then return end
 
   local entity = player.objectPhysDesc
@@ -177,7 +177,7 @@ netstream.Hook('ObjectPhysDesc', function(player, data)
   entity:SetNWString('physDesc', physDesc)
 end)
 
-netstream.Hook('EditData', function(player, data)
+cable.receive('EditData', function(player, data)
   if type(data) != 'table' or type(data[2]) != 'string' then return end
 
   local target = player.editDataAuthorised
@@ -189,7 +189,7 @@ netstream.Hook('EditData', function(player, data)
   target:SetCharacterData('combinedata', string.sub(data[2], 1, 500))
 end)
 
---- Sends custom scoreboard icons over the `PlayerSetCustomIcon` netstream message.
+--- Sends custom scoreboard icons over the `PlayerSetCustomIcon` Cable message.
 --
 -- The player's own `CustomIcon` data is sent to everyone; unless `bOneWay` is set, every other player's
 -- icon is then sent to this player, as needed when they have just connected.
@@ -200,7 +200,7 @@ function Schema:SendIconData(player, bOneWay)
   local iconData = player:GetData('CustomIcon')
 
   if istable(iconData) then
-    netstream.Start(nil, 'PlayerSetCustomIcon', player, iconData, bOneWay)
+    cable.send(nil, 'PlayerSetCustomIcon', player, iconData, bOneWay)
   end
 
   if !bOneWay then
@@ -211,7 +211,7 @@ function Schema:SendIconData(player, bOneWay)
       iconData = v:GetData('CustomIcon')
 
       if istable(iconData) then
-        netstream.Start(player, 'PlayerSetCustomIcon', v, iconData)
+        cable.send(player, 'PlayerSetCustomIcon', v, iconData)
       end
     end
   end
@@ -477,7 +477,7 @@ end
 
 --- Adds a line to the Combine display of one or all Combine players.
 --
--- Sent with the `CombineDisplayLine` netstream message; the client side is
+-- Sent with the `CombineDisplayLine` Cable message; the client side is
 -- `Schema:AddCombineDisplayLine` in `cl_schema.lua`.
 -- @param text [String The text or language key to show]
 -- @param color=nil [Color Colour of the line; white when `nil`]
@@ -485,7 +485,7 @@ end
 -- @param exclude=nil [Player A Combine player who does not receive the line]
 function Schema:AddCombineDisplayLine(text, color, player, exclude)
   if player then
-    netstream.Start(player, 'CombineDisplayLine', { text, color })
+    cable.send(player, 'CombineDisplayLine', { text, color })
   else
     local players = {}
 
@@ -495,7 +495,7 @@ function Schema:AddCombineDisplayLine(text, color, player, exclude)
       end
     end
 
-    netstream.Start(players, 'CombineDisplayLine', { text, color })
+    cable.send(players, 'CombineDisplayLine', { text, color })
   end
 end
 

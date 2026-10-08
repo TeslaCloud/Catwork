@@ -90,7 +90,7 @@ function cw.storage:Close(player, bServer)
   end
 
   if !bServer then
-    netstream.Start(player, 'StorageClose', true)
+    cable.send(player, 'StorageClose', true)
   end
 
   player.cwStorageTab = nil
@@ -217,7 +217,7 @@ function cw.storage:Open(player, data)
 
   player.cwStorageTab = data
 
-  netstream.Start(player, 'StorageStart', {
+  cable.send(player, 'StorageStart', {
     noCashWeight =
       data.noCashWeight, noCashSpace = data.noCashSpace, isOneSided = data.isOneSided, entity = data.entity,
     name = data.name
@@ -249,7 +249,7 @@ function cw.storage:UpdateCash(player, cash)
           if self:Query(v, 'inventory') == inventory then
             v.cwStorageTab.cash = cash
 
-            netstream.Start(v, 'StorageCash', cash)
+            cable.send(v, 'StorageCash', cash)
           end
         end
       end
@@ -269,7 +269,7 @@ function cw.storage:UpdateWeight(player, weight)
         if self:Query(v, 'inventory') == inventory then
           v.cwStorageTab.weight = weight
 
-          netstream.Start(v, 'StorageWeight', weight)
+          cable.send(v, 'StorageWeight', weight)
         end
       end
     end
@@ -288,7 +288,7 @@ function cw.storage:UpdateSpace(player, space)
         if self:Query(v, 'inventory') == inventory then
           v.cwStorageTab.space = space
 
-          netstream.Start(v, 'StorageSpace', space)
+          cable.send(v, 'StorageSpace', space)
         end
       end
     end
@@ -376,7 +376,7 @@ function cw.storage:SyncCash(player)
     end
   end
 
-  netstream.Start(recipients, 'StorageCash', cash)
+  cable.send(recipients, 'StorageCash', cash)
 end
 
 --- Sends an item change in the player's inventory to everyone who has it open as storage.
@@ -404,9 +404,9 @@ function cw.storage:SyncItem(player, itemTable)
       local definition = item.GetDefinition(itemTable, true)
         definition.index = nil
 
-      netstream.Start(players, 'StorageGive', { index = itemTable.index, itemList = { definition } })
+      cable.send(players, 'StorageGive', { index = itemTable.index, itemList = { definition } })
     else
-      netstream.Start(players, 'StorageTake', item.GetSignature(itemTable))
+      cable.send(players, 'StorageTake', item.GetSignature(itemTable))
     end
   end
 end
@@ -479,7 +479,7 @@ function cw.storage:GiveTo(player, itemTable)
     end
   end
 
-  netstream.Start(
+  cable.send(
     players, 'StorageGive', { index = itemTable.index, itemList = { definition } }
   )
 
@@ -558,7 +558,7 @@ function cw.storage:TakeFrom(player, itemTable)
       end
     end
 
-    netstream.Start(
+    cable.send(
       players, 'StorageTake', item.GetSignature(itemTable)
     )
 
@@ -606,6 +606,6 @@ function cw.storage:UpdateByID(player, uniqueID)
       }
     end
 
-    netstream.Start(player, 'StorageGive', { index = itemTable.index, itemList = itemList })
+    cable.send(player, 'StorageGive', { index = itemTable.index, itemList = itemList })
   end
 end

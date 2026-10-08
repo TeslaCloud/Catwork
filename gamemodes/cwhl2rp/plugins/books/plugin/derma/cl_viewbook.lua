@@ -1,7 +1,7 @@
 --- Defines the `cwViewBook` panel, the window that shows a book's HTML text above a Take button.
 --
--- Opened by the `ViewBook` netstream handler. It closes itself when the book entity is removed or more than 192 units
--- away, and Take sends the `TakeBook` netstream.
+-- Opened by the `ViewBook` Cable handler. It closes itself when the book entity is removed or more than 192 units
+-- away, and Take sends the `TakeBook` Cable message.
 
 local PANEL = {}
 
@@ -42,7 +42,7 @@ end
 
 --- Shows the book's HTML text and a Take button that picks the book up.
 --
--- The button closes the window and sends the `TakeBook` netstream.
+-- The button closes the window and sends the `TakeBook` Cable message.
 --
 -- @param itemTable [Item The book's item, with its `bookInformation` HTML]
 function PANEL:Populate(itemTable)
@@ -64,7 +64,7 @@ function PANEL:Populate(itemTable)
     gui.EnableScreenClicker(false)
 
     if IsValid(self.entity) then
-      netstream.Start('TakeBook', self.entity)
+      cable.send('TakeBook', self.entity)
     end
   end
 

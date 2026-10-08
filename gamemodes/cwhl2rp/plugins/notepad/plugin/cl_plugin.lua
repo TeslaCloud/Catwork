@@ -1,10 +1,10 @@
---- Client-side netstream handlers of the Notepad plugin: `ViewNotepad` opens the `cwViewNotepad` window and
+--- Client-side Cable handlers of the Notepad plugin: `ViewNotepad` opens the `cwViewNotepad` window and
 -- `EditNotepad` the `cwEditNotepad` window for a notepad entity.
 --
 -- The server sends a notepad's text only the first time, so it is cached in `cwNotepad.notepadIDs` by the notepad's ID
 -- and reused when a later message arrives without text.
 
-netstream.Hook('ViewNotepad', function(entity, uniqueID, text)
+cw.transfer:Receive('ViewNotepad', function(entity, uniqueID, text)
   if IsValid(entity) then
     if IsValid(cwNotepad.notepadPanel) then
       cwNotepad.notepadPanel:Close()
@@ -30,7 +30,7 @@ netstream.Hook('ViewNotepad', function(entity, uniqueID, text)
   end
 end)
 
-netstream.Hook('EditNotepad', function(entity, uniqueID, text)
+cw.transfer:Receive('EditNotepad', function(entity, uniqueID, text)
   if IsValid(entity) then
     if IsValid(cwNotepad.notepadPanel) then
       cwNotepad.notepadPanel:Close()

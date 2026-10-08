@@ -297,7 +297,7 @@ end
 --
 -- Fires `ChatAddText(listeners, message)`, then `ChatboxAdjustMessageInfo(message,
 -- listeners)` (returning `false` there cancels the message), sends the message
--- over the `ChatboxAddText` netstream to the listeners that pass its filter (an
+-- over the `ChatboxAddText` Cable message to the listeners that pass its filter (an
 -- unknown filter counts as `'default'`) and finally fires
 -- `ChatboxMessageSent(message)`.
 --
@@ -402,7 +402,7 @@ function chatbox.AddText(listeners, ...)
   end
 
   -- Sent in one go, so that the message is only encoded once.
-  netstream.Start(recipients, 'ChatboxAddText', message)
+  cable.send(recipients, 'ChatboxAddText', message)
 
   message.listeners = recipients
 
@@ -431,7 +431,7 @@ end
 
 --- Sets `chatbox.clientMode`, which marks that the message being built was requested by a client.
 --
--- The `ChatboxAddText` netstream receiver turns it on around its call to
+-- The `ChatboxAddText` Cable receiver turns it on around its call to
 -- `chatbox.AddText`.
 -- @param isclient [Boolean Whether client mode is on]
 function chatbox.SetClientMode(isclient)
@@ -441,7 +441,7 @@ end
 -- Message fields that server code acts on. A client asking for a message in its own chat box may not set them.
 local clientBlockedFields = { 'voice', 'listeners', 'players', 'position' }
 
-netstream.Hook('ChatboxAddText', function(player, ...)
+cable.receive('ChatboxAddText', function(player, ...)
   local args = {}
 
   for i = 1, math.min(select('#', ...), 64) do
@@ -500,7 +500,7 @@ local slanderPhrases = {
   ['пони для девочек'] = true, ['пони для долбоебов'] = true
 }
 
-netstream.Hook('ChatboxTextEntered', function(player, msgText)
+cable.receive('ChatboxTextEntered', function(player, msgText)
   if !isstring(msgText) or msgText == '' then return end
 
   if !IsValid(player) then
@@ -674,7 +674,7 @@ netstream.Hook('ChatboxTextEntered', function(player, msgText)
   end
 
   -- Sent in one go, so that the message is only encoded once.
-  netstream.Start(listeners, 'ChatboxTextEnter', player, message)
+  cable.send(listeners, 'ChatboxTextEnter', player, message)
 
   message.listeners = listeners
 

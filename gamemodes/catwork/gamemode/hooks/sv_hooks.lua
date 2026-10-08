@@ -1398,7 +1398,7 @@ end
 function GM:PlayerDataLoaded(player)
   if config.GetVal('clockwork_intro_enabled') then
     if !player:GetData('ClockworkIntro') then
-      netstream.Start(player, 'ClockworkIntro', true)
+      cable.send(player, 'ClockworkIntro', true)
 
       player:SetData('ClockworkIntro', true)
     end
@@ -1559,7 +1559,7 @@ function GM:PlayerDataStreamInfoSent(player)
       if whitelisted then
         for k, v in pairs(whitelisted) do
           if _faction.GetStored()[v] then
-            netstream.Start(player, 'SetWhitelisted', { v, true })
+            cable.send(player, 'SetWhitelisted', { v, true })
           else
             whitelisted[k] = nil
           end
@@ -1609,10 +1609,10 @@ end
 --- Called when a player's initial data stream info should be sent; sends the shared tables and any colour mod override.
 -- @param player [Player The player to send the data to]
 function GM:PlayerSendDataStreamInfo(player)
-  netstream.Start(player, 'SharedTables', cw.SharedTables)
+  cable.send(player, 'SharedTables', cw.SharedTables)
 
   if cw.OverrideColorMod and cw.OverrideColorMod != nil then
-    netstream.Start(player, 'SystemColGet', cw.OverrideColorMod)
+    cable.send(player, 'SystemColGet', cw.OverrideColorMod)
   end
 end
 
@@ -3467,9 +3467,9 @@ end
 -- rank's class and model.
 -- @param player [Player The player]
 function GM:PlayerCharacterInitialized(player)
-  netstream.Start(player, 'InvClear', true)
-  netstream.Start(player, 'AttrClear', true)
-  netstream.Start(player, 'ReceiveLimbDamage', player:GetCharacterData('LimbData'))
+  cable.send(player, 'InvClear', true)
+  cable.send(player, 'AttrClear', true)
+  cable.send(player, 'ReceiveLimbDamage', player:GetCharacterData('LimbData'))
 
   if !cw.class:FindByID(player:Team()) and !player:GetCharacterData('Class') then
     cw.class:AssignToDefault(player)
@@ -3528,7 +3528,7 @@ function GM:PlayerCharacterInitialized(player)
     end
   end)
 
-  netstream.Start(player, 'CharacterInit', player:GetCharacterKey())
+  cable.send(player, 'CharacterInit', player:GetCharacterKey())
 
   local playerFaction = player:GetFaction()
   local spawnRank = _faction.GetDefaultRank(playerFaction) or _faction.GetLowestRank(playerFaction)
@@ -3682,7 +3682,7 @@ function GM:PlayerConfigInitialized(player)
   if !player:IsBot() then
     timer.Simple(FrameTime() * 32, function()
       if IsValid(player) then
-        netstream.Start(player, 'DataStreaming', true)
+        cable.send(player, 'DataStreaming', true)
       end
     end)
   else
@@ -4094,7 +4094,7 @@ end
 --- Called when a player presses F1; toggles their information menu.
 -- @param player [Player The player]
 function GM:ShowHelp(player)
-  netstream.Start(player, 'InfoToggle', true)
+  cable.send(player, 'InfoToggle', true)
 end
 
 --- Called when a player presses F2.
@@ -4138,10 +4138,10 @@ function GM:ShowTeam(ply)
                   end
                 end
 
-                netstream.Start(ply, 'DoorManagement', data)
+                cable.send(ply, 'DoorManagement', data)
               end
             else
-              netstream.Start(ply, 'PurchaseDoor', entity)
+              cable.send(ply, 'PurchaseDoor', entity)
             end
           end
         end
@@ -4152,7 +4152,7 @@ function GM:ShowTeam(ply)
 
     if config.Get('recognise_system'):Get() then
       if doRecogniseMenu then
-        netstream.Start(ply, 'RecogniseMenu', true)
+        cable.send(ply, 'RecogniseMenu', true)
       end
     end
   end

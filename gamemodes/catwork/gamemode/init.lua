@@ -1,7 +1,7 @@
 --- Server entry point of the Catwork gamemode.
 --
 -- Requires the `file` binary module (gmsv_file) and aborts start-up without it, sends and includes the third-party
--- libraries (UTF-8, pON, netstream and MD5), then includes `shared.lua` and prints how long the boot or AutoRefresh
+-- libraries (UTF-8, Cable with SFS, and MD5), then includes `shared.lua` and prints how long the boot or AutoRefresh
 -- took. Defines the global `GetTimeSinceBoot`.
 
 cw = cw or {}
@@ -47,23 +47,22 @@ do
   end
 
   -- No need to re-include the stuff that doesn't change.
-  if !string.utf8len or !pon or !netstream then
+  if !string.utf8len or !sfs or !cable then
     AddCSLuaFile('thirdparty/utf8.lua')
-    AddCSLuaFile('thirdparty/pon.lua')
-    AddCSLuaFile('thirdparty/netstream.lua')
+    AddCSLuaFile('thirdparty/sfs.lua')
+    AddCSLuaFile('thirdparty/cable.lua')
     AddCSLuaFile('thirdparty/md5.lua')
   end
 
   AddCSLuaFile('cl_init.lua')
 
   --[[
-    Include pON and UTF-8 library.
+    Include the UTF-8 library, Cable (which includes SFS) and MD5.
   --]]
 
-  if !string.utf8len or !pon or !netstream then
+  if !string.utf8len or !sfs or !cable then
     include('thirdparty/utf8.lua')
-    include('thirdparty/pon.lua')
-    include('thirdparty/netstream.lua')
+    include('thirdparty/cable.lua')
     include('thirdparty/md5.lua')
   end
 

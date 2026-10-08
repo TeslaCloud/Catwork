@@ -1,8 +1,8 @@
 --- Entry point of the Craft plugin, which lets players craft items from blueprints at crafting stations.
 --
 -- Sets the `cwCraft` global alias and defines `cwCraft:PlayerCanCraft` with its checks for materials, tools,
--- attributes, custom requirements and a one second cooldown. The `Craft::CraftItem` netstream looks the blueprint up
--- by ID in `cw.blueprints`, makes sure the player is able to act and still stands at a station of the blueprint's
+-- attributes, custom requirements and a one second cooldown. The `Craft::CraftItem` Cable message looks the blueprint
+-- up by ID in `cw.blueprints`, makes sure the player is able to act and still stands at a station of the blueprint's
 -- `craftplace` class, runs the checks and crafts it.
 
 PLUGIN:SetGlobalAlias('cwCraft')
@@ -128,7 +128,7 @@ function cwCraft:PlayerMeetsRequirements(player, bpTable)
 end
 
 if SERVER then
-  netstream.Hook('Craft::CraftItem', function(player, bpTable)
+  cable.receive('Craft::CraftItem', function(player, bpTable)
     local curTime = CurTime()
 
     if player.cwNextCraftAttempt and player.cwNextCraftAttempt > curTime then return end

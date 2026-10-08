@@ -159,7 +159,7 @@ if SERVER then
       self.player = _player.GetAll()
     end
 
-    netstream.Start(self.player, 'Selector', {
+    cable.send(self.player, 'Selector', {
       paginateText = self.paginateText,
       canExit = self.canExit,
       data = self.data
@@ -170,7 +170,7 @@ if SERVER then
     end
   end
 
-  netstream.Hook('Selector', function(player, data)
+  cable.receive('Selector', function(player, data)
     if !istable(data) then return end
 
     local text = data[3]
@@ -342,14 +342,14 @@ else
     end)
   end
 
-  netstream.Hook('Selector', function(data)
+  cable.receive('Selector', function(data)
     local selector = cw.selector:New()
 
     selector:SetPaginateText(data.paginateText)
     selector:SetCanExit(data.canExit)
 
     selector:SetCallback(function(page, key, text)
-      netstream.Start('Selector', { page, key, text })
+      cable.send('Selector', { page, key, text })
     end)
 
     for k, v in pairs(data.data) do

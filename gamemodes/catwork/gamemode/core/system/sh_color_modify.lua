@@ -2,7 +2,7 @@
 -- every player.
 --
 -- The client page has an enable checkbox and sliders for brightness, contrast, color and the add and multiply
--- channels. Changes go to the server over the `SystemColSet` netstream, are validated and stored in
+-- channels. Changes go to the server over the `SystemColSet` Cable message, are validated and stored in
 -- `cw.OverrideColorMod`, saved to the `color` schema data file (which the server loads again when it starts) and
 -- broadcast back to all clients.
 
@@ -99,7 +99,7 @@ if CLIENT then
 
   --- Builds the enable checkbox and one slider per color modification value.
   --
-  -- Changes are sent to the server with the `SystemColSet` netstream once the mouse button is released.
+  -- Changes are sent to the server with the `SystemColSet` Cable message once the mouse button is released.
   -- @param systemPanel [Panel The system panel to add the form to]
   -- @param systemForm [Panel The system's form (unused, the system does not create one)]
   function SYSTEM:OnDisplay(systemPanel, systemForm)
@@ -123,7 +123,7 @@ if CLIENT then
     local checkBox = self.colorModForm:CheckBox('#System_Enabled')
     checkBox.OnChange = function(checkBox, value)
       if value != cw.OverrideColorMod.enabled then
-        netstream.Start('SystemColSet', { key = 'enabled', value = value })
+        cable.send('SystemColSet', { key = 'enabled', value = value })
       end
     end
 
@@ -137,7 +137,7 @@ if CLIENT then
           local timerName = 'ColorModifySet: '..k
           timer.Create(timerName, 1, 0, function()
             if !input.IsMouseDown(MOUSE_LEFT) then
-              netstream.Start('SystemColSet', { key = k, value = value })
+              cable.send('SystemColSet', { key = k, value = value })
               timer.Remove(timerName)
             end
           end)
@@ -150,7 +150,7 @@ if CLIENT then
 
   SYSTEM:Register()
 
-  netstream.Hook('SystemColSet', function(data)
+  cable.receive('SystemColSet', function(data)
     local value = GetValidValue(data.key, data.value)
 
     if value == nil then
@@ -166,14 +166,14 @@ if CLIENT then
     end
   end)
 
-  netstream.Hook('SystemColGet', function(data)
+  cable.receive('SystemColGet', function(data)
     cw.OverrideColorMod = SanitizeColorMod(data)
     cw.core:SaveSchemaData('color', cw.OverrideColorMod)
   end)
 else
   cw.OverrideColorMod = SanitizeColorMod(cw.OverrideColorMod or cw.core:RestoreSchemaData('color', false))
 
-  netstream.Hook('SystemColSet', function(player, data)
+  cable.receive('SystemColSet', function(player, data)
     if !istable(data) or !cw.player:HasFlags(player, ACCESS_FLAG) then
       return
     end
@@ -187,6 +187,6 @@ else
 
     cw.OverrideColorMod[key] = value
     cw.core:SaveSchemaData('color', cw.OverrideColorMod)
-    netstream.Start(nil, 'SystemColSet', { key = key, value = value })
+    cable.send(nil, 'SystemColSet', { key = key, value = value })
   end)
 end

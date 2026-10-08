@@ -17,7 +17,7 @@ function COMMAND:OnRun(player, arguments)
     local advertPosition = storedList[k].position
 
     if advertPosition:Distance(position) <= 256 then
-      netstream.Start(nil, 'DynamicAdvertRemove', advertPosition)
+      cable.send(nil, 'DynamicAdvertRemove', advertPosition)
       table.remove(storedList, k)
 
       removed = removed + 1

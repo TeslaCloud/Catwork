@@ -3,14 +3,14 @@
 --
 -- The editor has sells, buys, items and settings tabs backed by `cw.salesman`; the settings cover prices, stock, cash,
 -- model, responses and the factions and classes allowed to trade. Closing it sends the result to the server in the
--- `SalesmanAdd` netstream message.
+-- `SalesmanAdd` Cable message.
 
 local PANEL = {}
 local colorSettings = Color(200, 200, 200)
 
 --- Builds the salesman editor: the sells, buys, items and settings tabs, filled from `cw.salesman`.
 --
--- Closing the frame sends the edited salesman to the server with the `SalesmanAdd` netstream message.
+-- Closing the frame sends the edited salesman to the server with the `SalesmanAdd` Cable message.
 function PANEL:Init()
   local salesmanName = cw.salesman:GetName()
 
@@ -23,7 +23,7 @@ function PANEL:Init()
     CloseDermaMenus()
     self:Close() self:Remove()
 
-    netstream.Start('SalesmanAdd', {
+    cable.send('SalesmanAdd', {
       showChatBubble = cw.salesman.showChatBubble,
       buyInShipments = cw.salesman.buyInShipments,
       priceScale = cw.salesman.priceScale,

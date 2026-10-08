@@ -124,7 +124,7 @@ function cwDoorCmds:SendParentESP(player)
     end
   end
 
-  netstream.Start(player, 'doorParentESP', doors)
+  cable.send(player, 'doorParentESP', doors)
 end
 
 --- Saves `cwDoorCmds.parentData` to the schema data file `plugins/parents/<map>` as door positions.

@@ -2,7 +2,7 @@
 -- lets them be demoted.
 --
 -- The page is shown to players with access to `/PlySetGroup` unless the `use_own_group_system` config is on. Members
--- are read from the players database table and sent eight per page over the `SystemGroupGet` netstream;
+-- are read from the players database table and sent eight per page over the `SystemGroupGet` Cable message;
 -- `SystemGroupDemote` demotes through the `PlyDemote` command.
 
 local GROUP_SUPER = 1
@@ -32,7 +32,7 @@ if CLIENT then
 
   --- Shows the user group buttons, or the paged member list of the selected group with demote buttons.
   --
-  -- Members are requested with the `SystemGroupGet` netstream unless `noRefresh` is set; demoting asks for
+  -- Members are requested with the `SystemGroupGet` Cable message unless `noRefresh` is set; demoting asks for
   -- confirmation, requires the `PlyDemote` command's access and sends `SystemGroupDemote`.
   -- @param systemPanel [Panel The system panel to add the group buttons or member list to]
   -- @param systemForm [Panel The system's form (unused, the system does not create one)]
@@ -82,7 +82,7 @@ if CLIENT then
       systemPanel.navigationForm:AddItem(backButton)
 
       if !self.noRefresh then
-        netstream.Start('SystemGroupGet', { self.groupType, self.groupPage })
+        cable.send('SystemGroupGet', { self.groupType, self.groupPage })
       else
         self.noRefresh = nil
       end
@@ -103,7 +103,7 @@ if CLIENT then
 
               if commandTable and cw.player:HasFlags(cw.client, commandTable.access) then
                 Derma_Query(L('#System_ManageGroups_DemoteConfirm'), v.steamName, L('Yes'), function()
-                  netstream.Start('SystemGroupDemote', { v.steamID, v.steamName, self.groupType })
+                  cable.send('SystemGroupDemote', { v.steamID, v.steamName, self.groupType })
                 end, L('No'), function() end)
               end
             end
@@ -120,7 +120,7 @@ if CLIENT then
 
               -- Called when the button is clicked.
               function nextButton.DoClick(button)
-                netstream.Start('SystemGroupGet', { self.groupType, self.groupPage + 1 })
+                cable.send('SystemGroupGet', { self.groupType, self.groupPage + 1 })
               end
             end
 
@@ -129,7 +129,7 @@ if CLIENT then
 
               -- Called when the button is clicked.
               function backButton.DoClick(button)
-                netstream.Start('SystemGroupGet', { self.groupType, self.groupPage - 1 })
+                cable.send('SystemGroupGet', { self.groupType, self.groupPage - 1 })
               end
             end
           end
@@ -150,7 +150,7 @@ if CLIENT then
 
   SYSTEM:Register()
 
-  netstream.Hook('SystemGroupRebuild', function(data)
+  cable.receive('SystemGroupRebuild', function(data)
     local systemTable = cw.system:FindByID('Manage Groups')
 
     if systemTable and systemTable:IsActive() then
@@ -158,7 +158,7 @@ if CLIENT then
     end
   end)
 
-  netstream.Hook('SystemGroupGet', function(data)
+  cable.receive('SystemGroupGet', function(data)
     if type(data) == 'table' then
       local systemTable = cw.system:FindByID('Manage Groups')
 
@@ -207,7 +207,7 @@ else
     return false
   end
 
-  netstream.Hook('SystemGroupDemote', function(player, data)
+  cable.receive('SystemGroupDemote', function(player, data)
     local commandTable = cw.command:FindByID('PlyDemote')
 
     if !commandTable or !istable(data) or !isstring(data[1])
@@ -226,7 +226,7 @@ else
 
       timer.Simple(1, function()
         if IsValid(player) then
-          netstream.Start(player, 'SystemGroupRebuild', true)
+          cable.send(player, 'SystemGroupRebuild', true)
         end
       end)
 
@@ -256,7 +256,7 @@ else
       queryObj:Where('_SteamID', steamID)
       queryObj:Callback(function(result)
         if IsValid(player) then
-          netstream.Start(player, 'SystemGroupRebuild', true)
+          cable.send(player, 'SystemGroupRebuild', true)
         end
       end)
     queryObj:Execute()
@@ -266,7 +266,7 @@ else
     )
   end)
 
-  netstream.Hook('SystemGroupGet', function(player, data)
+  cable.receive('SystemGroupGet', function(player, data)
     local commandTable = cw.command:FindByID('PlySetGroup')
 
     if !commandTable or !istable(data) or !cw.player:HasFlags(player, commandTable.access) then
@@ -317,7 +317,7 @@ else
         end
 
         if #sendPlayers > 0 then
-          netstream.Start(player, 'SystemGroupGet', {
+          cable.send(player, 'SystemGroupGet', {
             pageCount = math.ceil(#groupPlayers / 8),
             players = sendPlayers,
             isNext = (groupPlayers[finishIndex + 1] != nil),
@@ -325,7 +325,7 @@ else
             page = groupPage
           })
         else
-          netstream.Start(player, 'SystemGroupGet', false)
+          cable.send(player, 'SystemGroupGet', false)
         end
       end)
     queryObj:Execute()

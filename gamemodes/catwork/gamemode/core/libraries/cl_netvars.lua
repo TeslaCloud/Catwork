@@ -1,7 +1,7 @@
 --- Client side of the global `netvars` library, which keeps the networked variables received from the server and reads
 -- them back with `Entity:GetNetVar` and `netvars.GetNetVar`.
 --
--- Values arrive over the `nVar`, `nLcl`, `nDel` and `gVar` netstreams and are stored by entity index.
+-- Values arrive over the `nVar`, `nLcl`, `nDel` and `gVar` Cable messages and are stored by entity index.
 -- `Player:GetLocalVar` is the same function as `Entity:GetNetVar`, so the local player's private variables are read
 -- the same way.
 
@@ -15,23 +15,23 @@ local playerMeta = FindMetaTable('Player')
 local stored = {}
 local globals = {}
 
-netstream.Hook('nVar', function(index, key, value)
+cw.transfer:Receive('nVar', function(index, key, value)
   stored[index] = stored[index] or {}
   stored[index][key] = value
 end)
 
-netstream.Hook('nDel', function(index)
+cable.receive('nDel', function(index)
   stored[index] = nil
 end)
 
-netstream.Hook('nLcl', function(key, value)
+cw.transfer:Receive('nLcl', function(key, value)
   local index = LocalPlayer():EntIndex()
 
   stored[index] = stored[index] or {}
   stored[index][key] = value
 end)
 
-netstream.Hook('gVar', function(key, value)
+cw.transfer:Receive('gVar', function(key, value)
   globals[key] = value
 end)
 

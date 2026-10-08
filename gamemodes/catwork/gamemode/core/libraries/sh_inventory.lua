@@ -452,12 +452,12 @@ if CLIENT then
     end
   end
 
-  netstream.Hook('InvClear', function(data)
+  cable.receive('InvClear', function(data)
     cw.inventory.client = {}
     cw.inventory:Rebuild()
   end)
 
-  netstream.Hook('InvGive', function(data)
+  cable.receive('InvGive', function(data)
     local itemTable = item.CreateInstance(
       data.index, data.itemID, data.data
     )
@@ -472,7 +472,7 @@ if CLIENT then
     hook.Run('PlayerItemGiven', itemTable)
   end)
 
-  netstream.Hook('InvNetwork', function(data)
+  cable.receive('InvNetwork', function(data)
     local itemTable = item.FindInstance(data.itemID)
 
     if itemTable then
@@ -489,11 +489,11 @@ if CLIENT then
     end
   end)
 
-  netstream.Hook('InvRebuild', function(data)
+  cable.receive('InvRebuild', function(data)
     cw.inventory:Rebuild()
   end)
 
-  netstream.Hook('InvTake', function(data)
+  cable.receive('InvTake', function(data)
     local itemTable = cw.inventory:FindItemByID(
       cw.inventory.client, data[1], data[2]
     )
@@ -508,7 +508,7 @@ if CLIENT then
     end
   end)
 
-  netstream.Hook('InvUpdate', function(data)
+  cable.receive('InvUpdate', function(data)
     for k, v in pairs(data) do
       local itemTable = item.CreateInstance(
         v.index, v.itemID, v.data
@@ -522,12 +522,12 @@ if CLIENT then
     cw.inventory:Rebuild()
   end)
 else
-  --- Sends an item instance in a player's inventory to that player over the `InvUpdate` netstream message.
+  --- Sends an item instance in a player's inventory to that player over the `InvUpdate` Cable message.
   -- @param player [Player The player to send to]
   -- @param itemTable [Item The item instance; nothing is sent when `nil`]
   function cw.inventory:SendUpdateByInstance(player, itemTable)
     if itemTable then
-      netstream.Start(
+      cable.send(
         player, 'InvUpdate', { item.GetDefinition(itemTable, true) }
       )
     end
@@ -545,7 +545,7 @@ else
   end
 
   --- Sends every instance of an item in a player's inventory to that player over the `InvUpdate`
-  -- netstream message.
+  -- Cable message.
   -- @param player [Player The player to send to]
   -- @param uniqueID [String Unique ID, index or name of the item, as accepted by `item.FindByID`]
   function cw.inventory:SendUpdateByID(player, uniqueID)
@@ -558,7 +558,7 @@ else
         definitions[#definitions + 1] = item.GetDefinition(v, true)
       end
 
-      netstream.Start(player, 'InvUpdate', definitions)
+      cable.send(player, 'InvUpdate', definitions)
     end
   end
 
@@ -569,7 +569,7 @@ else
   function cw.inventory:Rebuild(player)
     cw.core:OnNextFrame('RebuildInv'..player:UniqueID(), function()
       if IsValid(player) then
-        netstream.Start(player, 'InvRebuild')
+        cable.send(player, 'InvRebuild')
       end
     end)
   end

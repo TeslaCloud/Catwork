@@ -1,7 +1,7 @@
 --- Server-side hooks of the Salesmen plugin that load and save the map's salesmen and handle a player using one.
 --
 -- `PlayerCanUseSalesman` enforces the salesman's faction, class and flag restrictions, and `PlayerUseSalesman` sends
--- its inventory to the player in the `Salesmenu` netstream message.
+-- its inventory to the player in the `Salesmenu` Cable message.
 
 --- Called after Catwork has loaded all map entities; spawns the salesmen saved for the current map.
 function cwSalesmen:ClockworkInitPostEntity()
@@ -58,12 +58,12 @@ end
 
 --- Called when a player uses a salesman; opens the trade menu on the player's client.
 --
--- Sends the salesman's stock, prices, cash and restrictions with the `Salesmenu` netstream message and
+-- Sends the salesman's stock, prices, cash and restrictions with the `Salesmenu` Cable message and
 -- makes the salesman say its `start` line.
 -- @param player [Player The player using the salesman]
 -- @param entity [Entity The `cw_salesman` entity]
 function cwSalesmen:PlayerUseSalesman(player, entity)
-  netstream.Start(player, 'Salesmenu', {
+  cable.send(player, 'Salesmenu', {
     buyInShipments = entity.cwBuyInShipments,
     priceScale = entity.cwPriceScale,
     factions = entity.cwFactions,

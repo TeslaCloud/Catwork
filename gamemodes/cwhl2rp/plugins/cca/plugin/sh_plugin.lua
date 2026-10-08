@@ -85,8 +85,8 @@ function cca.AppendLog(appender, player, entry, type)
     player:SetCharacterData('CCA_Logs', logs)
     player:SetNetVar('CCA_Logs', logs)
 
-    -- Without a recipient the netstream would go to every player.
-    if SERVER and IsValid(appender) then netstream.Start(appender, 'CCA::Response::Update', true) end
+    -- Without a recipient the message would go to every player.
+    if SERVER and IsValid(appender) then cable.send(appender, 'CCA::Response::Update', true) end
   end
 end
 

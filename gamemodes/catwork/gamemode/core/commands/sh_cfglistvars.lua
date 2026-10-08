@@ -9,7 +9,7 @@ COMMAND.access = 's'
 --- Prints the config variables to the caller's console; the optional argument is a search filter.
 function COMMAND:OnRun(player, arguments)
   local searchData = arguments[1] or ''
-    netstream.Start(player, 'CfgListVars', searchData)
+    cable.send(player, 'CfgListVars', searchData)
   cw.player:Notify(player, L(player, 'ConfigVariablesPrinted'))
 end
 

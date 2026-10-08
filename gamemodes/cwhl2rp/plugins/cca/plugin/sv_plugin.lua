@@ -1,7 +1,7 @@
 --- Server-side part of the Combine Civil Authority plugin, which handles the Combine PDA requests to change a citizen's
 -- status, residence, job, points and jail state.
 --
--- Each `Application::PDA::Controller::` netstream receiver checks that the request is acceptable (a living sender with
+-- Each `Application::PDA::Controller::` Cable receiver checks that the request is acceptable (a living sender with
 -- a character, a non-Combine target with a character, no more than two requests a second) and that the sender is
 -- Combine (or CWU where that is allowed), applies the change through the schema (`Schema:SetCitizenStatus`,
 -- `Schema:AddLP`, `Schema:SetJailed` and so on), writes a server log line and appends an entry to the target's civil
@@ -51,7 +51,7 @@ function PLUGIN:PlayerCharacterLoaded(player)
   player:SetNetVar('CCA_Logs', cca.TrimLogs(logs))
 end
 
-netstream.Hook('Application::PDA::Controller::CitizenStatus', function(player, target, status)
+cable.receive('Application::PDA::Controller::CitizenStatus', function(player, target, status)
   if !isstring(status) or statusCombineOnly[status] == nil then return end
   if !CanRequest(player, target) then return end
 
@@ -78,7 +78,7 @@ netstream.Hook('Application::PDA::Controller::CitizenStatus', function(player, t
   cw.player:Notify(player, L('PDA_CitizenStatusSet', target:Name())..' #Status_'..status..':;.')
 end)
 
-netstream.Hook('Application::PDA::Controller::Residence', function(player, target, address)
+cable.receive('Application::PDA::Controller::Residence', function(player, target, address)
   if !isstring(address) then return end
   if !CanRequest(player, target) then return end
 
@@ -96,7 +96,7 @@ netstream.Hook('Application::PDA::Controller::Residence', function(player, targe
   end
 end)
 
-netstream.Hook('Application::PDA::Controller::Job', function(player, target, job)
+cable.receive('Application::PDA::Controller::Job', function(player, target, job)
   if !isstring(job) then return end
   if !CanRequest(player, target) then return end
 
@@ -119,7 +119,7 @@ local translation = {
   ['remove'] = ''
 }
 
-netstream.Hook('Application::PDA::Controller::LP', function(player, target, value, bSubstract)
+cable.receive('Application::PDA::Controller::LP', function(player, target, value, bSubstract)
   value = tonumber(value)
 
   -- NaN would end up in the character data and break every integer format after it.
@@ -147,7 +147,7 @@ netstream.Hook('Application::PDA::Controller::LP', function(player, target, valu
   end
 end)
 
-netstream.Hook('Application::PDA::Controller::CP', function(player, target, value, bSubstract)
+cable.receive('Application::PDA::Controller::CP', function(player, target, value, bSubstract)
   value = tonumber(value)
 
   -- NaN would end up in the character data and break every integer format after it.
@@ -175,7 +175,7 @@ netstream.Hook('Application::PDA::Controller::CP', function(player, target, valu
   end
 end)
 
-netstream.Hook('Application::PDA::Controller::WP', function(player, target, value)
+cable.receive('Application::PDA::Controller::WP', function(player, target, value)
   value = tonumber(value)
 
   -- NaN would end up in the character data and break every integer format after it.
@@ -198,7 +198,7 @@ netstream.Hook('Application::PDA::Controller::WP', function(player, target, valu
   end
 end)
 
-netstream.Hook('Application::PDA::Controller::Jail', function(player, target)
+cable.receive('Application::PDA::Controller::Jail', function(player, target)
   if !CanRequest(player, target) then return end
 
   if player:IsCombine() then
@@ -215,7 +215,7 @@ netstream.Hook('Application::PDA::Controller::Jail', function(player, target)
   end
 end)
 
-netstream.Hook('Application::PDA::Controller::Unjail', function(player, target)
+cable.receive('Application::PDA::Controller::Unjail', function(player, target)
   if !CanRequest(player, target) then return end
 
   if player:IsCombine() then

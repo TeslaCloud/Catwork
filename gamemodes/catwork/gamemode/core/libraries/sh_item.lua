@@ -454,12 +454,12 @@ if SERVER then
     end)
   end
 else
-  --- Sends a menu option chosen for the item to the server over the `MenuOption` netstream message.
+  --- Sends a menu option chosen for the item to the server over the `MenuOption` Cable message.
   -- @param option [String The option chosen]
   -- @param data [Any Extra data for the option]
   -- @param entity [Entity The item entity the option was chosen on, if any]
   function CItem:SubmitOption(option, data, entity)
-    netstream.Start('MenuOption', { option = option, data = data, item = self.itemID, entity = entity })
+    cable.send('MenuOption', { option = option, data = data, item = self.itemID, entity = entity })
   end
 end
 
@@ -1033,20 +1033,20 @@ if SERVER then
     end
   end
 
-  --- Sends an item instance and its networked data to a player over the `ItemData` netstream message.
+  --- Sends an item instance and its networked data to a player over the `ItemData` Cable message.
   --
   -- The client creates the instance without adding it to an inventory.
   -- @param player [Player The player to send to]
   -- @param itemTable [Item The item instance; nothing is sent when `nil`]
   function item.SendToPlayer(player, itemTable)
     if itemTable then
-      netstream.Start(
+      cable.send(
         player, 'ItemData', item.GetDefinition(itemTable, true)
       )
     end
   end
 
-  --- Sends changed item data to the item's observers over the `InvNetwork` netstream message.
+  --- Sends changed item data to the item's observers over the `InvNetwork` Cable message.
   --
   -- The observers are collected with the `ItemGetNetworkObservers` hook, which fills `info.observers`;
   -- returning `true` from it or setting `info.sendToAll` sends the update to every player.
@@ -1065,13 +1065,13 @@ if SERVER then
     and !info.sendToAll then
       recipients = {}
 
-      -- The hook indexes the observers by player, while netstream wants a list.
+      -- The hook indexes the observers by player, while cable.send wants a list.
       for k, v in pairs(info.observers) do
         recipients[#recipients + 1] = v
       end
     end
 
-    netstream.Start(recipients, 'InvNetwork', {
+    cable.send(recipients, 'InvNetwork', {
       itemID = itemTable.itemID,
       data = data
     })
@@ -1236,7 +1236,7 @@ else
     return markupObject:GetText()
   end
 
-  netstream.Hook('ItemData', function(data)
+  cable.receive('ItemData', function(data)
     item.CreateInstance(
       data.index, data.itemID, data.data
     )

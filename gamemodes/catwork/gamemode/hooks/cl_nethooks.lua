@@ -1,23 +1,23 @@
---- Client-side netstream receivers for the framework's core messages.
+--- Client-side Cable receivers for the framework's core messages.
 --
 -- Handles shared variables and tables (`SharedVar`, `SharedTables`), `Notification`, `Hint`, `CinematicText`, sounds
 -- (`StartSound`, `StopSound`, `PlaySound`), the recognition and quiz messages, accessories, `Log`, `CfgListVars`, the
 -- `ClockworkIntro` and the `DataStreaming` and `DataStreamed` steps of the join handshake.
 
-netstream.Hook('RunCommand', function(data)
+cable.receive('RunCommand', function(data)
   -- Never let network data reach the cwLua (RunString) developer command.
   if !istable(data) or string.lower(tostring(data[1])) == 'cwlua' then return end
 
   RunConsoleCommand(unpack(data))
 end)
 
-netstream.Hook('SharedTables', function(data)
+cable.receive('SharedTables', function(data)
   if istable(data) then
     cw.SharedTables = data
   end
 end)
 
-netstream.Hook('SetSharedTableVar', function(data)
+cable.receive('SetSharedTableVar', function(data)
   if !istable(data) or data.sharedTable == nil or data.key == nil then return end
 
   cw.SharedTables = cw.SharedTables or {}
@@ -25,7 +25,7 @@ netstream.Hook('SetSharedTableVar', function(data)
   cw.SharedTables[data.sharedTable][data.key] = data.value
 end)
 
-netstream.Hook('HiddenCommands', function(data)
+cable.receive('HiddenCommands', function(data)
   if !istable(data) then return end
 
   -- The checksum of every command is worked out once, instead of once for each hidden command.
@@ -47,7 +47,7 @@ netstream.Hook('HiddenCommands', function(data)
   end
 end)
 
-netstream.Hook('OrderTime', function(data)
+cable.receive('OrderTime', function(data)
   cw.OrderCooldown = data
 
   local activePanel = cw.menu:GetActivePanel()
@@ -57,17 +57,17 @@ netstream.Hook('OrderTime', function(data)
   end
 end)
 
-netstream.Hook('CharacterInit', function(data)
+cable.receive('CharacterInit', function(data)
   hook.Run('PlayerCharacterInitialized', data)
 end)
 
-netstream.Hook('Log', function(data)
+cable.receive('Log', function(data)
   if !istable(data) or data.text == nil then return end
 
   cw.core:PrintColoredText(cw.core:GetLogTypeColor(data.logType), tostring(data.text))
 end)
 
-netstream.Hook('StartSound', function(data)
+cable.receive('StartSound', function(data)
   if !istable(data) or data.uniqueID == nil or !isstring(data.sound) then return end
 
   if IsValid(cw.client) then
@@ -88,7 +88,7 @@ netstream.Hook('StartSound', function(data)
   end
 end)
 
-netstream.Hook('StopSound', function(data)
+cable.receive('StopSound', function(data)
   if !istable(data) or data.uniqueID == nil then return end
 
   local uniqueID = data.uniqueID
@@ -109,7 +109,7 @@ netstream.Hook('StopSound', function(data)
   end
 end)
 
-netstream.Hook('InfoToggle', function(data)
+cable.receive('InfoToggle', function(data)
   if IsValid(cw.client) and cw.client:HasInitialized() then
     if !cw.InfoMenuOpen then
       cw.InfoMenuOpen = true
@@ -122,21 +122,21 @@ netstream.Hook('InfoToggle', function(data)
   end
 end)
 
-netstream.Hook('PlaySound', function(data)
+cable.receive('PlaySound', function(data)
   if isstring(data) then
     surface.PlaySound(data)
   end
 end)
 
-netstream.Hook('DataStreaming', function(data)
-  netstream.Start('DataStreamInfoSent', true)
+cable.receive('DataStreaming', function(data)
+  cable.send('DataStreamInfoSent', true)
 end)
 
-netstream.Hook('DataStreamed', function(data)
+cable.receive('DataStreamed', function(data)
   cw.DataHasStreamed = true
 end)
 
-netstream.Hook('QuizCompleted', function(data)
+cable.receive('QuizCompleted', function(data)
   if !data then
     if !cw.quiz:GetCompleted() then
       gui.EnableScreenClicker(true)
@@ -156,19 +156,19 @@ netstream.Hook('QuizCompleted', function(data)
   end
 end)
 
-netstream.Hook('RecogniseMenu', function(data)
+cable.receive('RecogniseMenu', function(data)
   local menuPanel = cw.core:AddMenuFromData(nil, {
     ['#RecogniseMenu_whisper'] = function()
-      netstream.Start('RecogniseOption', 'whisper')
+      cable.send('RecogniseOption', 'whisper')
     end,
     ['#RecogniseMenu_yell'] = function()
-      netstream.Start('RecogniseOption', 'yell')
+      cable.send('RecogniseOption', 'yell')
     end,
     ['#RecogniseMenu_talk'] = function()
-      netstream.Start('RecogniseOption', 'talk')
+      cable.send('RecogniseOption', 'talk')
     end,
     ['#RecogniseMenu_look'] = function()
-      netstream.Start('RecogniseOption', 'look')
+      cable.send('RecogniseOption', 'look')
     end
   })
 
@@ -181,7 +181,7 @@ netstream.Hook('RecogniseMenu', function(data)
   cw.core:SetRecogniseMenu(menuPanel)
 end)
 
-netstream.Hook('ClockworkIntro', function(data)
+cable.receive('ClockworkIntro', function(data)
   if !cw.ClockworkIntroFadeOut then
     local introImage = cw.option:GetKey('intro_image')
     local introSound = cw.option:GetKey('intro_sound')
@@ -214,7 +214,7 @@ netstream.Hook('ClockworkIntro', function(data)
   end
 end)
 
-netstream.Hook('SharedVar', function(data)
+cable.receive('SharedVar', function(data)
   if !istable(data) or data.key == nil then return end
 
   local sharedVars = cw.core:GetSharedVars():Player()
@@ -225,7 +225,7 @@ netstream.Hook('SharedVar', function(data)
   end
 end)
 
-netstream.Hook('HideCommand', function(data)
+cable.receive('HideCommand', function(data)
   if !istable(data) then return end
 
   local index = data.index
@@ -239,7 +239,7 @@ netstream.Hook('HideCommand', function(data)
   end
 end)
 
-netstream.Hook('CfgListVars', function(data)
+cable.receive('CfgListVars', function(data)
   cw.client:PrintMessage(2, '######## [Catwork] Config ########\n')
     local sSearchData = nil
     local tConfigRes = {}
@@ -281,11 +281,11 @@ netstream.Hook('CfgListVars', function(data)
   cw.client:PrintMessage(2, '######## [Catwork] Config ########\n')
 end)
 
-netstream.Hook('ClearRecognisedNames', function(data)
+cable.receive('ClearRecognisedNames', function(data)
   cw.RecognisedNames = {}
 end)
 
-netstream.Hook('RecognisedName', function(data)
+cable.receive('RecognisedName', function(data)
   if !istable(data) or data.key == nil then return end
 
   local key = data.key
@@ -298,7 +298,7 @@ netstream.Hook('RecognisedName', function(data)
   end
 end)
 
-netstream.Hook('Hint', function(data)
+cable.receive('Hint', function(data)
   if istable(data) and isstring(data.text) then
     if data.center then
       cw.core:AddCenterHint(
@@ -312,7 +312,7 @@ netstream.Hook('Hint', function(data)
   end
 end)
 
-netstream.Hook('WeaponItemData', function(data)
+cable.receive('WeaponItemData', function(data)
   if !istable(data) or !isnumber(data.weapon) or !istable(data.definition) then return end
 
   local weapon = Entity(data.weapon)
@@ -324,25 +324,25 @@ netstream.Hook('WeaponItemData', function(data)
   end
 end)
 
-netstream.Hook('CinematicText', function(data)
+cable.receive('CinematicText', function(data)
   if istable(data) and data.text != nil then
     cw.core:AddCinematicText(data.text, data.color, data.barLength, data.hangTime)
   end
 end)
 
-netstream.Hook('AddAccessory', function(data)
+cable.receive('AddAccessory', function(data)
   if istable(data) and data.itemID != nil then
     cw.AccessoryData[data.itemID] = data.uniqueID
   end
 end)
 
-netstream.Hook('RemoveAccessory', function(data)
+cable.receive('RemoveAccessory', function(data)
   if istable(data) and data.itemID != nil then
     cw.AccessoryData[data.itemID] = nil
   end
 end)
 
-netstream.Hook('AllAccessories', function(data)
+cable.receive('AllAccessories', function(data)
   cw.AccessoryData = {}
 
   if !istable(data) then return end
@@ -352,7 +352,7 @@ netstream.Hook('AllAccessories', function(data)
   end
 end)
 
-netstream.Hook('Notification', function(data)
+cable.receive('Notification', function(data)
   if !istable(data) or data.text == nil then return end
 
   local text = tostring(data.text)

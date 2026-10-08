@@ -3,7 +3,7 @@
 -- https://github.com/Chessnut/NutScript
 
 --- Server side of the global `netvars` library, which stores networked variables on entities and globally and sends
--- them to clients over netstream.
+-- them to clients over Cable.
 --
 -- `Entity:SetNetVar` and `netvars.SetNetVar` send a value to everyone or to chosen receivers, and `Player:SetLocalVar`
 -- sends it only to that player; a value that is or contains a function is rejected with an error. A joining player
@@ -40,6 +40,21 @@ local function CheckBadType(name, object)
   end
 end
 
+--- Sends a net var message, in chunks when the value is a table.
+--
+-- Only tables can outgrow a single net message; everything else skips the chunking of `cw.transfer`.
+-- @param value [Any The value of the variable, which has to be among the sent values as well]
+-- @param receiver [Player A player or list of players to send to; `nil` sends to everyone]
+-- @param name [String Name of the message]
+-- @param ... [Any The values to send]
+local function Send(value, receiver, name, ...)
+  if istable(value) then
+    cw.transfer:Send(receiver, name, ...)
+  else
+    cable.send(receiver, name, ...)
+  end
+end
+
 --- Sets a global networked variable and sends it to clients.
 --
 -- Does nothing if a non-table value is unchanged, or if the value contains a
@@ -54,7 +69,7 @@ function netvars.SetNetVar(key, value, receiver)
   if !istable(value) and globals[key] == value then return end
 
   globals[key] = value
-  netstream.Start(receiver, 'gVar', key, value)
+  Send(value, receiver, 'gVar', key, value)
 end
 
 --- Returns whether two values are equal, comparing tables by content.
@@ -82,14 +97,14 @@ function playerMeta:SyncVars()
 
       for k, v in pairs(data) do
         if !entityLocalKeys or !entityLocalKeys[k] then
-          netstream.Start(self, 'nVar', entity:EntIndex(), k, v)
+          Send(v, self, 'nVar', entity:EntIndex(), k, v)
         end
       end
     end
   end
 
   for k, v in pairs(globals) do
-    netstream.Start(self, 'gVar', k, v)
+    Send(v, self, 'gVar', k, v)
   end
 end
 
@@ -99,12 +114,7 @@ end
 function entityMeta:SendNetVar(key, receiver)
   local value = stored[self] and stored[self][key]
 
-  -- Only tables can outgrow a single net message; everything else skips the chunking of netstream.Heavy.
-  if istable(value) then
-    netstream.Heavy(receiver, 'nVar', self:EntIndex(), key, value)
-  else
-    netstream.Start(receiver, 'nVar', self:EntIndex(), key, value)
-  end
+  Send(value, receiver, 'nVar', self:EntIndex(), key, value)
 end
 
 --- Removes all networked variables of the entity on the server and on clients.
@@ -114,7 +124,7 @@ end
 function entityMeta:ClearNetVars(receiver)
   stored[self] = nil
   localKeys[self] = nil
-  netstream.Start(receiver, 'nDel', self:EntIndex())
+  cable.send(receiver, 'nDel', self:EntIndex())
 end
 
 --- Sets a networked variable on the entity and sends it to clients.
@@ -175,7 +185,7 @@ function playerMeta:SetLocalVar(key, value)
   localKeys[self] = localKeys[self] or {}
   localKeys[self][key] = true
 
-  netstream.Start(self, 'nLcl', key, value)
+  Send(value, self, 'nLcl', key, value)
 end
 
 playerMeta.GetLocalVar = entityMeta.GetNetVar

@@ -2,9 +2,9 @@
 -- they see, the switching of unit biosignals and the requests for assistance sent to Combine units.
 --
 -- `cwCTO:SafelyPrepareCamera` hooks every `npc_combine_camera` up to the plugin, and the `HalfSecond` hook checks the
--- players the cameras see and sends the result with the `UpdateBiosignalCameraData` netstream.
+-- players the cameras see and sends the result with the `UpdateBiosignalCameraData` Cable message.
 -- `cwCTO:SetPlayerBiosignal` and `cwCTO:DoPostBiosignalLoss` change a unit's `IsBiosignalGone` shared var and alert
--- the other units, and `cwCTO:DispatchRequestSignal` sends the `CombineRequestSignal` netstream.
+-- the other units, and `cwCTO:DispatchRequestSignal` sends the `CombineRequestSignal` Cable message.
 
 local cwCTO = cwCTO
 
@@ -67,7 +67,7 @@ end
 -- An alert camera drops players more than 450 units away or out of sight, and flags
 -- running, jumping, crouching or fallen players that are not Combine with a biosignal; a
 -- flagged player makes the camera angry. The camera data, `0` for idle cameras, is sent to
--- every Combine player with a biosignal with the `UpdateBiosignalCameraData` netstream; nothing
+-- every Combine player with a biosignal with the `UpdateBiosignalCameraData` Cable message; nothing
 -- is sent while the map has no cameras.
 function cwCTO:HalfSecond()
   local networkedCameraData = {}
@@ -136,7 +136,7 @@ function cwCTO:HalfSecond()
   end
 
   if #players > 0 then
-    netstream.Start(players, 'UpdateBiosignalCameraData', networkedCameraData)
+    cable.send(players, 'UpdateBiosignalCameraData', networkedCameraData)
   end
 end
 
@@ -286,7 +286,7 @@ function cwCTO:PostPlayerSpawn(player, lightSpawn, changeClass, firstSpawn)
   player:SetSharedVar('IsBiosignalGone', false)
 
   if player:IsCombine() then
-    netstream.Start(player, 'RecalculateHUDObjectives', { cwCTO.socioStatus, Schema.combineObjectives })
+    cable.send(player, 'RecalculateHUDObjectives', { cwCTO.socioStatus, Schema.combineObjectives })
   end
 
   if !self.fixedCameras then
@@ -311,8 +311,8 @@ end
 
 --- Sends a request for assistance from a player to every Combine unit with a biosignal.
 --
--- Plays the "all teams respond, code 3" radio call and sends the `CombineRequestSignal`
--- netstream, which marks the player's position on the units' HUD for 60 seconds.
+-- Plays the "all teams respond, code 3" radio call and sends the `CombineRequestSignal` Cable message, which marks the
+-- player's position on the units' HUD for 60 seconds.
 --
 -- @param player [Player The player requesting help]
 -- @param text [String The request text]
@@ -336,7 +336,7 @@ function cwCTO:DispatchRequestSignal(player, text)
     end
   end)
 
-  netstream.Start(players, 'CombineRequestSignal', { player, text })
+  cable.send(players, 'CombineRequestSignal', { player, text })
 end
 
 --- Called when a player is ragdolled; reports Combine units with a biosignal that are knocked out.

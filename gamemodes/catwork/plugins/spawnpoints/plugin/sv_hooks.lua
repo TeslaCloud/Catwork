@@ -46,7 +46,7 @@ function cwSpawnPoints:PlayerSpawn(player)
     end
 
     if player:IsAdmin() then
-      netstream.Start(player, 'SpawnPointESPSync', self:GetSpawnPoints())
+      cable.send(player, 'SpawnPointESPSync', self:GetSpawnPoints())
     end
   end
 end
@@ -64,6 +64,6 @@ local groupCheck = {
 -- @param usergroup [String The new user group]
 function cwSpawnPoints:OnPlayerUserGroupSet(player, usergroup)
   if groupCheck[string.lower(usergroup)] then
-    netstream.Start(player, 'SpawnPointESPSync', self:GetSpawnPoints())
+    cable.send(player, 'SpawnPointESPSync', self:GetSpawnPoints())
   end
 end

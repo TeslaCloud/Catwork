@@ -41,7 +41,7 @@ end
 --- Asks the server to unequip an item, letting the item pick extra arguments first.
 --
 -- When the item has an `OnHandleUnequip` method, it is called with a function that sends the request,
--- optionally with arguments; otherwise the request is sent at once with the `UnequipItem` netstream.
+-- optionally with arguments; otherwise the request is sent at once with the `UnequipItem` Cable message.
 --
 -- @param itemTable [Item The equipped item to unequip]
 function PANEL:HandleUnequip(itemTable)
@@ -49,17 +49,17 @@ function PANEL:HandleUnequip(itemTable)
     itemTable:OnHandleUnequip(
       function(arguments)
         if arguments then
-          netstream.Start(
+          cable.send(
             'UnequipItem', { itemTable.uniqueID, itemTable.itemID, arguments }
           )
         else
-          netstream.Start(
+          cable.send(
             'UnequipItem', { itemTable.uniqueID, itemTable.itemID }
           )
         end
       end)
   else
-    netstream.Start(
+    cable.send(
       'UnequipItem', { itemTable.uniqueID, itemTable.itemID }
     )
   end

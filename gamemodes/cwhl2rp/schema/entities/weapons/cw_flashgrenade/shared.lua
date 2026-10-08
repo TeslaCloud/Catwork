@@ -2,7 +2,7 @@
 -- it.
 --
 -- Holding primary fire charges the throw and releasing it throws a `prop_physics` grenade that explodes after four
--- seconds and sends the `Flashed` netstream message to the affected players. Each throw uses up one grenade, and the
+-- seconds and sends the `Flashed` Cable message to the affected players. Each throw uses up one grenade, and the
 -- weapon is stripped when none are left.
 
 if SERVER then
@@ -193,7 +193,7 @@ function SWEP:CreateGrenade(power)
             if v:HasInitialized() then
               if v:GetPos():Distance(position) <= 768 then
                 if cw.player:CanSeeEntity(v, entity, 0.9, true) then
-                  netstream.Start(v, 'Flashed', true)
+                  cable.send(v, 'Flashed', true)
                 end
               end
             end

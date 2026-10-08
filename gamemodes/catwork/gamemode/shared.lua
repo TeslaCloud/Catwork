@@ -87,7 +87,7 @@ include('catwork/gamemode/core/sh_kernel.lua')
 
 if CLIENT then
   if CW_SCRIPT_SHARED then
-    CW_SCRIPT_SHARED = cw.core:Deserialize(CW_SCRIPT_SHARED)
+    CW_SCRIPT_SHARED = cw.core:Deserialize(CW_SCRIPT_SHARED) or {}
   else
     CW_SCRIPT_SHARED = {}
   end
@@ -132,6 +132,11 @@ if plugin then plugin.ClearCache() end
 
 if !pipeline then
   util.Include('catwork/gamemode/core/libraries/sh_pipeline.lua')
+end
+
+-- Files that load before the libraries register their receivers with it.
+if !cw.transfer then
+  util.Include('catwork/gamemode/core/libraries/sh_transfer.lua')
 end
 
 util.Include('catwork/gamemode/core/sv_kernel.lua')

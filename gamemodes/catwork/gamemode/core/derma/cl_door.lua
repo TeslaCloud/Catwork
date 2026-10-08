@@ -1,7 +1,7 @@
---- Defines the `cwDoor` door management window and handles the door netstreams sent by the server.
+--- Defines the `cwDoor` door management window and handles the door Cable messages sent by the server.
 --
 -- The window has a Players tab for granting basic or complete access and a Settings tab with the door text, parent
--- sharing options and a Sell or Unown button; every change is sent with the `DoorManagement` netstream. The
+-- sharing options and a Sell or Unown button; every change is sent with the `DoorManagement` Cable message. The
 -- `PurchaseDoor`, `DoorManagement`, `DoorAccess`, `SetSharedAccess` and `SetSharedText` hooks open the purchase query
 -- or the window and keep `cw.door` up to date.
 
@@ -10,7 +10,7 @@ local PANEL = {}
 --- Builds the door management window: a Players tab and a Settings tab with the door text entry and,
 -- for the owner, parent sharing options and a Sell or Unown button.
 --
--- Changes are sent to the server with the `DoorManagement` netstream. Door text containing "this door
+-- Changes are sent to the server with the `DoorManagement` Cable message. Door text containing "this door
 -- can be purchased" is not sent.
 function PANEL:Init()
   self:SetTitle(cw.door:GetName())
@@ -56,7 +56,7 @@ function PANEL:Init()
     local text = textEntry:GetValue()
 
     if !string.find(string.gsub(string.lower(text), '%s', ''), 'thisdoorcanbepurchased') then
-      netstream.Start('DoorManagement', { cw.door:GetEntity(), 'Text', textEntry:GetValue() })
+      cable.send('DoorManagement', { cw.door:GetEntity(), 'Text', textEntry:GetValue() })
     end
   end
 
@@ -75,9 +75,9 @@ function PANEL:Init()
       -- Called when an option is selected.
       self.comboBox.OnSelect = function(multiChoice, index, value, data)
         if value == L('#DoorMenu_ShareAccess') then
-          netstream.Start('DoorManagement', { cw.door:GetEntity(), 'Share' })
+          cable.send('DoorManagement', { cw.door:GetEntity(), 'Share' })
         else
-          netstream.Start('DoorManagement', { cw.door:GetEntity(), 'Unshare' })
+          cable.send('DoorManagement', { cw.door:GetEntity(), 'Unshare' })
         end
       end
 
@@ -94,9 +94,9 @@ function PANEL:Init()
       -- Called when an option is selected.
       self.parentText.OnSelect = function(multiChoice, index, value, data)
         if value == L('#DoorMenu_ShareText') then
-          netstream.Start('DoorManagement', { cw.door:GetEntity(), 'Share', 'Text' })
+          cable.send('DoorManagement', { cw.door:GetEntity(), 'Share', 'Text' })
         else
-          netstream.Start('DoorManagement', { cw.door:GetEntity(), 'Unshare', 'Text' })
+          cable.send('DoorManagement', { cw.door:GetEntity(), 'Unshare', 'Text' })
         end
       end
     end
@@ -124,7 +124,7 @@ function PANEL:Init()
 
           -- The window closes itself when the player walks away from the door while the query is open.
           if IsValid(self) then
-            netstream.Start('DoorManagement', { cw.door:GetEntity(), 'Sell' })
+            cable.send('DoorManagement', { cw.door:GetEntity(), 'Sell' })
 
             self:Close() self:Remove()
           end
@@ -230,25 +230,25 @@ function PANEL:Rebuild()
           if access == DOOR_ACCESS_COMPLETE then
             options = {
               [L('#DoorMenu_TakeCompleteAccess')] = function()
-                netstream.Start('DoorManagement', { door, 'Access', player, access })
+                cable.send('DoorManagement', { door, 'Access', player, access })
               end
             }
           elseif access == DOOR_ACCESS_BASIC then
             options = {
               [L('#DoorMenu_TakeBasicAccess')] = function()
-                netstream.Start('DoorManagement', { door, 'Access', player, access })
+                cable.send('DoorManagement', { door, 'Access', player, access })
               end,
               [L('#DoorMenu_GiveCompleteAccess')] = function()
-                netstream.Start('DoorManagement', { door, 'Access', player, DOOR_ACCESS_COMPLETE })
+                cable.send('DoorManagement', { door, 'Access', player, DOOR_ACCESS_COMPLETE })
               end
             }
           else
             options = {
               [L('#DoorMenu_GiveBasicAccess')] = function()
-                netstream.Start('DoorManagement', { door, 'Access', player, DOOR_ACCESS_BASIC })
+                cable.send('DoorManagement', { door, 'Access', player, DOOR_ACCESS_BASIC })
               end,
               [L('#DoorMenu_GiveCompleteAccess')] = function()
-                netstream.Start('DoorManagement', { door, 'Access', player, DOOR_ACCESS_COMPLETE })
+                cable.send('DoorManagement', { door, 'Access', player, DOOR_ACCESS_COMPLETE })
               end
             }
           end
@@ -309,7 +309,7 @@ end
 
 vgui.Register('cwDoor', PANEL, 'DFrame')
 
-netstream.Hook('PurchaseDoor', function(data)
+cable.receive('PurchaseDoor', function(data)
   local doorCost = config.GetVal('door_cost')
   local query, title = '#DoorMenu_OwnQuery', '#DoorMenu_OwnTitle'
 
@@ -319,7 +319,7 @@ netstream.Hook('PurchaseDoor', function(data)
   end
 
   Derma_Query(L(query), L(title), L('Yes'), function()
-    netstream.Start('DoorManagement', { data, 'Purchase' })
+    cable.send('DoorManagement', { data, 'Purchase' })
 
     gui.EnableScreenClicker(false)
   end, L('No'), function()
@@ -329,7 +329,7 @@ netstream.Hook('PurchaseDoor', function(data)
   gui.EnableScreenClicker(true)
 end)
 
-netstream.Hook('SetSharedAccess', function(data)
+cable.receive('SetSharedAccess', function(data)
   if cw.door:GetPanel() then
     cw.door.cwDoorSharedAxs = data
 
@@ -337,7 +337,7 @@ netstream.Hook('SetSharedAccess', function(data)
   end
 end)
 
-netstream.Hook('SetSharedText', function(data)
+cable.receive('SetSharedText', function(data)
   if cw.door:GetPanel() then
     cw.door.cwDoorSharedTxt = data
 
@@ -345,7 +345,7 @@ netstream.Hook('SetSharedText', function(data)
   end
 end)
 
-netstream.Hook('DoorAccess', function(data)
+cable.receive('DoorAccess', function(data)
   if cw.door:GetPanel() then
     local accessList = cw.door:GetAccessList()
 
@@ -361,7 +361,7 @@ netstream.Hook('DoorAccess', function(data)
   end
 end)
 
-netstream.Hook('DoorManagement', function(data)
+cable.receive('DoorManagement', function(data)
   if cw.door:GetPanel() then
     cw.door:GetPanel():Remove()
   end

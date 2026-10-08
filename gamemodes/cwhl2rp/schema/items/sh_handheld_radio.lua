@@ -20,7 +20,7 @@ if SERVER then
   --- Opens the frequency prompt on the player's client with their current frequency when Frequency is chosen.
   function ITEM:OnCustomFunction(player, name)
     if name == 'Frequency' then
-      netstream.Start(player, 'Frequency', player:GetCharacterData('frequency', ''))
+      cable.send(player, 'Frequency', player:GetCharacterData('frequency', ''))
     end
   end
 end
