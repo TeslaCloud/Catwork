@@ -8,7 +8,9 @@
 
 local PANEL = {}
 
--- Called when the panel is initialized.
+--- Builds the salesman editor: the sells, buys, items and settings tabs, filled from `cw.salesman`.
+--
+-- Closing the frame sends the edited salesman to the server with the `SalesmanAdd` netstream message.
 function PANEL:Init()
   local salesmanName = cw.salesman:GetName()
 
@@ -257,7 +259,10 @@ function PANEL:Init()
   cw.core:SetNoticePanel(self)
 end
 
--- A function to rebuild a panel.
+--- Refills one tab of the editor with item icons grouped by category and sorted by cost.
+-- @param panelList [Panel The `cwPanelList` of the tab]
+-- @param typeName [String Which tab this is: `'Sells'`, `'Buys'` or `'Items'`]
+-- @param inventory [Map The items to show, keyed by item unique ID]
 function PANEL:RebuildPanel(panelList, typeName, inventory)
   panelList:Clear(true)
   panelList.typeName = typeName
@@ -320,7 +325,7 @@ function PANEL:RebuildPanel(panelList, typeName, inventory)
   end
 end
 
--- A function to rebuild the panel.
+--- Refills the sells, buys and items tabs from `cw.salesman`.
 function PANEL:Rebuild()
   self:RebuildPanel(self.sellsPanel, 'Sells',
     cw.salesman:GetSells()
@@ -335,7 +340,7 @@ function PANEL:Rebuild()
   )
 end
 
--- Called each frame.
+--- Keeps the editor centred and copies the settings and response fields back into `cw.salesman`.
 function PANEL:Think()
   self:SetSize(ScrW() * 0.5, ScrH() * 0.75)
   self:SetPos((ScrW() / 2) - (self:GetWide() / 2), (ScrH() / 2) - (self:GetTall() / 2))
@@ -384,7 +389,7 @@ function PANEL:Think()
   cw.salesman.flags = self.flagsEntry:GetValue() or ''
 end
 
--- Called when the layout should be performed.
+--- Stretches the property sheet to fill the frame.
 function PANEL:PerformLayout(w, h)
   DFrame.PerformLayout(self)
 
@@ -397,7 +402,8 @@ vgui.Register('cwSalesman', PANEL, 'DFrame')
 
 local PANEL = {}
 
--- Called when the panel is initialized.
+--- Creates the item's spawn icon; clicking it adds the item to the sells or buys list (asking for a
+-- price when cash is enabled), or removes it from the list it is shown in.
 function PANEL:Init()
   local itemData = self:GetParent().itemData or CURRENT_ITEM_DATA
   self:SetSize(40, 40)
@@ -467,7 +473,7 @@ function PANEL:Init()
   self.spawnIcon:SetSize(40, 40)
 end
 
--- Called each frame.
+--- Updates the icon's tooltip with the item's price, shipment size and stock.
 function PANEL:Think()
   local function DisplayCallback(displayInfo)
     local priceScale = 1

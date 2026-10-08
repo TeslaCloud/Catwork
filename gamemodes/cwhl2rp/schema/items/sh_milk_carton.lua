@@ -18,7 +18,8 @@ ITEM.business = true
 ITEM.description = '#ITEM_Milk_Carton_Desc'
 ITEM.thirst = 25
 
--- Called when a player uses the item.
+--- Heals 5 health (up to 100), boosts endurance and strength by 1 for two minutes and gives back an empty
+-- carton.
 function ITEM:OnUse(player, itemEntity)
   player:SetHealth(math.Clamp(player:Health() + 5, 0, 100))
 
@@ -28,5 +29,5 @@ function ITEM:OnUse(player, itemEntity)
   player:GiveItem('empty_carton', true)
 end
 
--- Called when a player drops the item.
+--- Lets the item be dropped; nothing else happens.
 function ITEM:OnDrop(player, position) end

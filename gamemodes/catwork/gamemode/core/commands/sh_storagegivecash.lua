@@ -13,7 +13,10 @@ COMMAND.flags = CMD_DEFAULT
 COMMAND.arguments = 1
 COMMAND.cooldown = 5
 
--- Called when the command has been run.
+--- Puts some of the caller's cash into the open storage; the argument is the amount.
+--
+-- For a player storage the cash goes to that player. Respects the storage's weight and space and its
+-- `CanGiveCash`/`OnGiveCash` callbacks.
 function COMMAND:OnRun(player, arguments)
   local storageTable = player:GetStorageTable()
 

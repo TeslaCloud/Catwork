@@ -8,7 +8,7 @@
 
 include('shared.lua')
 
--- Called when the target ID HUD should be painted.
+--- Draws the belongings title and the hint for opening them when the entity is looked at.
 function ENT:HUDPaintTargetID(x, y, alpha)
   local colorTargetID = cw.option:GetColor('target_id')
   local colorWhite = cw.option:GetColor('white')
@@ -17,7 +17,7 @@ function ENT:HUDPaintTargetID(x, y, alpha)
   y = cw.core:DrawInfo('#Belongings_TargetHint', x, y, colorWhite, alpha)
 end
 
--- Called when the entity should draw.
+--- Draws the belongings model.
 function ENT:Draw()
   self:DrawModel()
 end

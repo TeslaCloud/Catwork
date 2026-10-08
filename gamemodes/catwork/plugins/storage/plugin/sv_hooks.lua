@@ -6,21 +6,33 @@
   with contributions from Cloud Sixteen community.
 --]]
 
--- Called when a player attempts to breach an entity.
+--- Called when a player attempts to breach an entity; allows breaching password protected containers.
+-- @param player [Player The player breaching]
+-- @param entity [Entity The entity to breach]
+-- @return [Boolean `true` for a container with a password]
 function cwStorage:PlayerCanBreachEntity(player, entity)
   if entity.cwInventory and entity.cwPassword then
     return true
   end
 end
 
--- Called when an entity attempts to be auto-removed.
+--- Called when an entity is about to be removed automatically; keeps containers that have been opened
+-- or named.
+-- @param entity [Entity The entity to remove]
+-- @return [Boolean `false` to keep the entity]
 function cwStorage:EntityCanAutoRemove(entity)
   if self.storage[entity] or entity:GetNWString('Name') != '' then
     return false
   end
 end
 
--- Called when an entity's menu option should be handled.
+--- Called when a player picks an entity menu option; opens a container or lockers for the "Open" option.
+--
+-- Password protected containers that are not breached ask the player for the password first.
+-- @param player [Player The player who picked the option]
+-- @param entity [Entity The entity the menu was for]
+-- @param option [String The option label]
+-- @param arguments [Any The option's arguments; `'cwContainerOpen'` for the "Open" option]
 function cwStorage:EntityHandleMenuOption(player, entity, option, arguments)
   local class = entity:GetClass()
 
@@ -43,7 +55,10 @@ function cwStorage:EntityHandleMenuOption(player, entity, option, arguments)
   end
 end
 
--- Called when an entity has been breached.
+--- Called when an entity has been breached; lets anyone open a password protected container for two
+-- minutes.
+-- @param entity [Entity The breached entity]
+-- @param activator [Entity The entity that breached it]
 function cwStorage:EntityBreached(entity, activator)
   if entity.cwInventory and entity.cwPassword then
     entity.cwIsBreached = true
@@ -56,7 +71,9 @@ function cwStorage:EntityBreached(entity, activator)
   end
 end
 
--- Called when an entity is removed.
+--- Called when an entity is removed; drops the container's items and cash on the ground, unless the
+-- entity is a belongings bag.
+-- @param entity [Entity The removed entity]
 function cwStorage:EntityRemoved(entity)
   if IsValid(entity) and !entity.cwIsBelongings then
     cw.entity:DropItemsAndCash(entity.cwInventory, entity.cwCash, entity:GetPos(), entity)
@@ -65,7 +82,10 @@ function cwStorage:EntityRemoved(entity)
   end
 end
 
--- Called when a player's prop cost info should be adjusted.
+--- Called when a player's prop cost is worked out; names the charge after the container type.
+-- @param player [Player The player spawning the prop]
+-- @param entity [Entity The spawned prop]
+-- @param info [Map Prop cost info with `cost` and `name`; changed in place]
 function cwStorage:PlayerAdjustPropCostInfo(player, entity, info)
   local model = string.lower(entity:GetModel())
 

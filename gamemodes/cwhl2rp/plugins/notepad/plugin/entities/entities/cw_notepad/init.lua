@@ -8,7 +8,7 @@ include('shared.lua')
 AddCSLuaFile('cl_init.lua')
 AddCSLuaFile('shared.lua')
 
--- Called when the entity initializes.
+--- Sets the clipboard model and physics and gives the notepad 25 health.
 function ENT:Initialize()
   self:SetModel('models/props_lab/clipboard.mdl')
 
@@ -26,12 +26,14 @@ function ENT:Initialize()
   end
 end
 
--- Called when the entity's transmit state should be updated.
+--- Returns `TRANSMIT_ALWAYS`, so the notepad is networked to every client.
+--
+-- @return [Number `TRANSMIT_ALWAYS`]
 function ENT:UpdateTransmitState()
   return TRANSMIT_ALWAYS
 end
 
--- A function to explode the entity.
+--- Plays the effect and sound of the notepad being destroyed.
 function ENT:Explode()
   local effectData = EffectData()
 
@@ -44,7 +46,7 @@ function ENT:Explode()
   self:EmitSound('physics/body/body_medium_impact_soft'..math.random(1, 7)..'.wav')
 end
 
--- Called when the entity takes damage.
+--- Subtracts the damage from the notepad's health and destroys it at 0.
 function ENT:OnTakeDamage(damageInfo)
   self:SetHealth(math.max(self:Health() - damageInfo:GetDamage(), 0))
 
@@ -53,7 +55,12 @@ function ENT:OnTakeDamage(damageInfo)
   end
 end
 
--- A function to set the text.
+--- Sets the notepad's text and marks it as written.
+--
+-- The text's CRC becomes the notepad's `uniqueID`, which clients use to cache it. Does
+-- nothing when `text` is `nil`.
+--
+-- @param text [String The new text]
 function ENT:SetText(text)
   if text then
     self.text = text

@@ -18,7 +18,8 @@ TOOL.ClientConVar['mode'] = '1'
 TOOL.ClientConVar['doorname']	= 'A Door'
 TOOL.ClientConVar['doordesc']	= 'It seems to have a handle.'
 
--- Called when the player clicks the left mouse button while the tool is equipped.
+--- Runs the command for the selected mode on the door being looked at: `DoorLock` (mode 1),
+-- `DoorSetOwnable` with the name (mode 2) or `DoorSetUnownable` with the name and text (mode 3).
 function TOOL:LeftClick(trace)
   if CLIENT then return true end
 
@@ -34,7 +35,7 @@ function TOOL:LeftClick(trace)
   end
 end
 
--- Called when the player clicks the right mouse button while the tool is equipped.
+--- Runs `DoorUnlock` on the door being looked at when the tool is in lock mode (mode 1).
 function TOOL:RightClick(trace)
   if CLIENT then return true end
 
@@ -110,7 +111,7 @@ if CLIENT then
     end
   end
 
-  -- Called to build the controls in the tool menu.
+  --- Builds the tool menu controls: the mode list and the fields the selected mode uses.
   function TOOL.BuildCPanel(panel)
     AddDefControls(panel)
   end

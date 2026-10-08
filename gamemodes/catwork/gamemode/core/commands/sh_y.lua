@@ -12,7 +12,7 @@ COMMAND.text = '#Command_Y_Syntax'
 COMMAND.flags = bit.bor(CMD_DEFAULT, CMD_DEATHCODE)
 COMMAND.arguments = 1
 
--- Called when the command has been run.
+--- Yells a message to nearby players in character; the arguments are the message.
 function COMMAND:OnRun(player, arguments)
   local text = table.concat(arguments, ' ')
 

@@ -9,7 +9,9 @@ ITEM.protection = 0.7
 ITEM.description = '#ITEM_Biohazard_Suit_Mk2_Desc'
 ITEM.radProtection = true
 
--- Called when a replacement is needed for a player.
+--- Returns the Mk.2 biohazard suit model for players using the `jasona` citizen model.
+--
+-- @return [String The replacement model, or `nil` to use the item's default `replacement`]
 function ITEM:GetReplacement(player)
   if string.lower(player:GetModel()) == 'models/humans/group01/jasona.mdl' then
     return 'models/industrial_uniforms/industrial_uniform2.mdl'

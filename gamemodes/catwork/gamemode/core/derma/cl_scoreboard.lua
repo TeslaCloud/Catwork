@@ -8,7 +8,7 @@
 
 local PANEL = {}
 
--- Called when the panel is initialized.
+--- Sizes the scoreboard menu tab to the menu, stores it as `cw.scoreboard` and builds it.
 function PANEL:Init()
   self:SetSize(cw.menu:GetWidth(), cw.menu:GetHeight())
 
@@ -22,7 +22,11 @@ function PANEL:Init()
   cw.scoreboard:Rebuild()
 end
 
--- A function to rebuild the panel.
+--- Rebuilds the scoreboard, grouping initialized players by scoreboard class.
+--
+-- The class comes from the `GetPlayerScoreboardClass` hook, and players are listed when
+-- `PlayerShouldShowOnScoreboard` allows it. Players in a class are sorted with the
+-- `ScoreboardSortClassPlayers` hook and classes by name; each player is a `cwScoreboardItem`.
 function PANEL:Rebuild()
   self.panelList:Clear()
 
@@ -128,20 +132,20 @@ function PANEL:Rebuild()
   self.panelList:InvalidateLayout(true)
 end
 
--- Called when the menu is opened.
+--- Rebuilds the scoreboard when the menu is opened while this tab is active.
 function PANEL:OnMenuOpened()
   if cw.menu:IsPanelActive(self) then
     self:Rebuild()
   end
 end
 
--- Called when the panel is selected.
+--- Rebuilds the scoreboard when the tab is selected in the menu.
 function PANEL:OnSelected() self:Rebuild() end
 
--- Called when the layout should be performed.
+--- Does nothing; the list lays itself out.
 function PANEL:PerformLayout(w, h) end
 
--- Called when the panel is painted.
+--- Draws the outlined panel background.
 function PANEL:Paint(w, h)
   draw.RoundedBox(0, 0, 0, w, h, cw.option:GetColor('panel_outline'))
   draw.RoundedBox(0, 1, 1, w - 2, h - 2, cw.option:GetColor('panel_background'))
@@ -153,7 +157,13 @@ vgui.Register('cwScoreboard', PANEL, 'EditablePanel')
 
 local PANEL = {}
 
--- Called when the panel is initialized.
+--- Builds a player row (`cwScoreboardItem`) from the parent's `playerData`: name, faction or custom text,
+-- model (or an unknown icon when the player is not recognised) and Steam avatar.
+--
+-- The text comes from the `GetPlayerScoreboardText` hook and the whole info table can be changed with
+-- `ScoreboardAdjustPlayerInfo`. Clicking the model opens a menu with the options from
+-- `GetPlayerScoreboardOptions`; clicking the avatar opens the Steam profile. The global
+-- `SCOREBOARD_PANEL` is `true` while the row is being built.
 function PANEL:Init()
   SCOREBOARD_PANEL = true
 
@@ -242,13 +252,14 @@ function PANEL:Init()
   SCOREBOARD_PANEL = nil
 end
 
+--- Draws the player row's grey background.
 function PANEL:Paint(width, height)
   draw.RoundedBox(2, 0, 0, width, height, Color(75, 75, 75))
 
   return true
 end
 
--- Called each frame.
+--- Shows the player's ping, or the custom tooltip, on the row's icon.
 function PANEL:Think()
   if IsValid(self.player) then
     if self.toolTip then
@@ -262,7 +273,7 @@ function PANEL:Think()
   self.spawnIcon:SetSize(40, 40)
 end
 
--- Called when the layout should be performed.
+--- Places the player row's icon, avatar and labels.
 function PANEL:PerformLayout(w, h)
   self.factionLabel:SizeToContents()
 

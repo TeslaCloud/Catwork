@@ -8,13 +8,13 @@
 
 util.Include('shared.lua')
 
--- Called when the entity is drawn.
+--- Draws the chat bubble at 60% of its model's size.
 function ENT:Draw()
   self:SetModelScale(0.6, 0)
   self:DrawModel()
 end
 
--- Called every frame.
+--- Bobs the chat bubble above its salesman and slowly spins it.
 function ENT:Think()
   local salesman = self:GetNWEntity('salesman')
 
@@ -28,7 +28,7 @@ function ENT:Think()
   end
 end
 
--- Called when the entity initializes.
+--- Starts the chat bubble's rotation timer.
 function ENT:Initialize()
   self.cwNextChangeAngle = UnPredictedCurTime()
 end

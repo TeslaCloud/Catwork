@@ -1,15 +1,15 @@
 include('shared.lua')
 
--- Called when the entity initializes.
+--- Does nothing on the client.
 function ENT:Initialize()
 end
 
--- Called when the entity should draw.
+--- Draws the light's model.
 function ENT:Draw()
   self.Entity:DrawModel()
 end
 
--- Called when the entity should think.
+--- Keeps a pale blue dynamic light with an 800 unit radius at the light's position.
 function ENT:Think()
   local dlight = DynamicLight(self:EntIndex())
 

@@ -8,7 +8,7 @@ COMMAND.access = 'a'
 COMMAND.arguments = 2
 COMMAND.alias = { 'SetHunger' }
 
--- Called when the command has been run.
+--- Sets a character's hunger to the given amount, 100 by default.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
   local amount = arguments[2]

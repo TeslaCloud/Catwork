@@ -5,7 +5,7 @@
 
 local PANEL = {}
 
--- Called when the panel is initialized.
+--- Sets up the read-only notepad window and its scrolling list.
 function PANEL:Init()
   self:SetBackgroundBlur(true)
   self:SetDeleteOnClose(false)
@@ -25,7 +25,7 @@ function PANEL:Init()
   self.panelList:EnableVerticalScrollbar()
 end
 
--- Called each frame.
+--- Keeps the window centred and closes it when the notepad is removed or more than 192 units away.
 function PANEL:Think()
   local scrW = ScrW()
   local scrH = ScrH()
@@ -40,7 +40,9 @@ function PANEL:Think()
   end
 end
 
--- A function to set the panel's entity.
+--- Sets the notepad entity the window shows.
+--
+-- @param entity [Entity The `cw_notepad` entity]
 function PANEL:SetEntity(entity)
   self.entity = entity
 end
@@ -52,7 +54,9 @@ surface.CreateFont('cwNotepadFont', {
   size = 16
 })
 
--- A function to populate the panel.
+--- Fills the window with the notepad's text in a read-only text box.
+--
+-- @param text [String The text to show]
 function PANEL:Populate(text)
   local colorWhite = cw.option:GetColor('white')
 
@@ -77,12 +81,13 @@ function PANEL:Populate(text)
   self.panelList:AddItem(self.textPanel)
 end
 
+--- Paints the window's dark background.
 function PANEL:Paint(w, h)
   draw.RoundedBox(2, 0, 0, w, h, Color(35, 35, 35, 235))
   draw.RoundedBox(2, 4, 28, w - 8, h - 32, Color(30, 30, 30, 255))
 end
 
--- Called when the layout should be performed.
+--- Stretches the list to fill the window below the title bar.
 function PANEL:PerformLayout()
   self.panelList:StretchToParent(4, 28, 4, 4)
 

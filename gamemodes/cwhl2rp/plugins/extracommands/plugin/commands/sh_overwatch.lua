@@ -10,7 +10,9 @@ COMMAND.text = '#Command_Overwatch_Syntax'
 COMMAND.access = 's'
 COMMAND.arguments = 1
 
--- Called when the command has been run.
+--- Sends a green Overwatch message to every Combine player.
+--
+-- Messages shorter than 6 characters are rejected.
 function COMMAND:OnRun(player, arguments)
   local message = tostring(table.concat(arguments, ' '))
 

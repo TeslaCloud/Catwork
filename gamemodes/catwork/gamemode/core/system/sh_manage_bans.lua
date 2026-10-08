@@ -14,7 +14,8 @@ if CLIENT then
   SYSTEM.bannedPlayers = nil
   SYSTEM.doesCreateForm = false
 
-  -- Called to get whether the local player has access to the system.
+  --- Shows the Manage Bans system to players who may use the `PlyUnban` command.
+  -- @return [Boolean `true` when the player has the command's access flags, otherwise `nil`]
   function SYSTEM:HasAccess()
     local unbanTable = cw.command:FindByID('PlyUnban')
 
@@ -23,7 +24,12 @@ if CLIENT then
     end
   end
 
-  -- Called when the system should be displayed.
+  --- Lists the current page of banned players with their remaining time and reason, and page buttons.
+  --
+  -- Requests the page from the server with the `SystemUnbanGet` netstream unless `noRefresh` is set;
+  -- clicking a ban asks for confirmation and sends `SystemUnbanDo`.
+  -- @param systemPanel [Panel The system panel to add the ban list to]
+  -- @param systemForm [Panel The system's form (unused, the system does not create one)]
   function SYSTEM:OnDisplay(systemPanel, systemForm)
     if !self.noRefresh then
       netstream.Start('SystemUnbanGet', self.bannedPage)

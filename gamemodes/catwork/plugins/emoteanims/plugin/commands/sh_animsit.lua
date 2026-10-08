@@ -10,7 +10,7 @@ local COMMAND = cw.command:New('AnimSit')
 COMMAND.tip = '#Command_Animsit_Description'
 COMMAND.flags = CMD_DEFAULT
 
--- Called when the command has been run.
+--- Makes a human player sit down on the ground, or stand back up when already sitting.
 function COMMAND:OnRun(player, arguments)
   local curTime = CurTime()
 

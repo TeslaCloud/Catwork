@@ -8,7 +8,9 @@
 
 library.New('storage', cw)
 
--- A function to get a player's storage entity.
+--- Returns the entity whose storage the player has open.
+-- @param player [Player The player]
+-- @return [Entity The storage entity, or `nil` if no storage is open or the entity is no longer valid]
 function cw.storage:GetEntity(player)
   if player:GetStorageTable() then
     local entity = self:Query(player, 'entity')
@@ -19,12 +21,17 @@ function cw.storage:GetEntity(player)
   end
 end
 
--- A function to get a player's storage table.
+--- Returns the storage table of the storage the player has open.
+-- @param player [Player The player]
+-- @return [Map The storage table passed to `cw.storage:Open`, or `nil` if no storage is open]
 function cw.storage:GetTable(player)
   return player.cwStorageTab
 end
 
--- A function to get whether a player's storage has an item.
+--- Returns whether the player's open storage contains an item instance.
+-- @param player [Player The player]
+-- @param itemTable [Item The item instance to look for]
+-- @return [Boolean Whether the storage contains the item]
 function cw.storage:HasItem(player, itemTable)
   local inventory = self:Query(player, 'inventory')
 
@@ -37,7 +44,11 @@ function cw.storage:HasItem(player, itemTable)
   return false
 end
 
--- A function to query a player's storage.
+--- Returns a value from the storage table of the player's open storage.
+-- @param player [Player The player]
+-- @param key [String Key in the storage table, such as `'inventory'`, `'entity'` or `'cash'`]
+-- @param default=nil [Any Value to return if no storage is open or the value is `nil` or `false`]
+-- @return [Any The value, or `default`]
 function cw.storage:Query(player, key, default)
   local storageTable = player:GetStorageTable()
 
@@ -48,7 +59,12 @@ function cw.storage:Query(player, key, default)
   end
 end
 
--- A function to close storage for a player.
+--- Closes the player's open storage.
+--
+-- Calls the storage's `OnClose(player, storageTable, entity)` callback first.
+-- @param player [Player The player]
+-- @param bServer=false [Boolean Only close it on the server, without telling the client to close the menu]
+-- @see cw.storage:Open
 function cw.storage:Close(player, bServer)
   local storageTable = player:GetStorageTable()
   local OnClose = self:Query(player, 'OnClose')
@@ -65,7 +81,12 @@ function cw.storage:Close(player, bServer)
   player.cwStorageTab = nil
 end
 
--- A function to get the weight of a player's storage.
+--- Returns the total weight of the cash and items in the player's open storage.
+--
+-- Items count their `storageWeight` if they have one, otherwise their
+-- `weight`. Cash counts unless the storage was opened with `noCashWeight`.
+-- @param player [Player The player]
+-- @return [Number The weight, or `0` if no storage is open]
 function cw.storage:GetWeight(player)
   if player:GetStorageTable() then
     local cash = self:Query(player, 'cash')
@@ -86,7 +107,12 @@ function cw.storage:GetWeight(player)
   end
 end
 
--- A function to get the space of a player's storage.
+--- Returns the total space taken by the cash and items in the player's open storage.
+--
+-- Items count their `storageSpace` if they have one, otherwise their `space`.
+-- Cash counts unless the storage was opened with `noCashSpace`.
+-- @param player [Player The player]
+-- @return [Number The space, or `0` if no storage is open]
 function cw.storage:GetSpace(player)
   if player:GetStorageTable() then
     local cash = self:Query(player, 'cash')
@@ -107,7 +133,42 @@ function cw.storage:GetSpace(player)
   end
 end
 
--- A function to open storage for a player.
+--- Opens a storage menu for the player.
+--
+-- Any storage the player already has open is closed through its `OnClose`
+-- callback first. Missing fields of `data` get defaults, then the table
+-- becomes the player's storage table and its contents are sent to the client.
+--
+-- `data` may contain: `name` (defaults to `'#Storage_Default'`), `inventory`
+-- (the storage's inventory, defaults to an empty one), `entity` (defaults to
+-- the player), `weight` and `space` (default to the `default_inv_weight` and
+-- `default_inv_space` configs), `cash` (removed when cash is disabled),
+-- `isOneSided`, `noCashWeight`, `noCashSpace`, and the callbacks
+-- `OnClose(player, storageTable, entity)`, `CanGiveItem` and `CanTakeItem`
+-- (`(player, storageTable, itemTable)`, return `false` to block) and
+-- `OnGiveItem` and `OnTakeItem` (same arguments, return `true` to close the
+-- storage). Other keys, such as `distance`, `OnGiveCash` and `OnTakeCash`, are
+-- kept in the table for other code to read.
+--
+-- ```
+-- cw.storage:Open(player, {
+--   name = 'Locker',
+--   weight = 20,
+--   space = 50,
+--   entity = entity,
+--   inventory = entity.cwInventory,
+--   cash = entity.cwCash,
+--   OnClose = function(player, storageTable, entity)
+--     if IsValid(entity) then
+--       entity.cwCash = storageTable.cash
+--     end
+--   end
+-- })
+-- ```
+--
+-- @param player [Player The player to open the storage for]
+-- @param data [Map The storage table; it is modified and kept]
+-- @see cw.storage:Close
 function cw.storage:Open(player, data)
   local storageTable = player:GetStorageTable()
   local OnClose = self:Query(player, 'OnClose')
@@ -156,7 +217,11 @@ function cw.storage:Open(player, data)
   end
 end
 
--- A function to update a player's storage cash.
+--- Sets the cash of the player's open storage for everyone viewing the same inventory.
+--
+-- Does nothing when cash is disabled.
+-- @param player [Player A player who has the storage open]
+-- @param cash [Number The new amount of cash]
 function cw.storage:UpdateCash(player, cash)
   if config.Get('cash_enabled'):Get() then
     local storageTable = player:GetStorageTable()
@@ -177,7 +242,9 @@ function cw.storage:UpdateCash(player, cash)
   end
 end
 
--- A function to update a player's storage weight.
+--- Sets the maximum weight of the player's open storage for everyone viewing the same inventory.
+-- @param player [Player A player who has the storage open]
+-- @param weight [Number The new maximum weight]
 function cw.storage:UpdateWeight(player, weight)
   if player:GetStorageTable() then
     local inventory = self:Query(player, 'inventory')
@@ -194,7 +261,9 @@ function cw.storage:UpdateWeight(player, weight)
   end
 end
 
--- A function to update a player's storage space.
+--- Sets the maximum space of the player's open storage for everyone viewing the same inventory.
+-- @param player [Player A player who has the storage open]
+-- @param space [Number The new maximum space]
 function cw.storage:UpdateSpace(player, space)
   if player:GetStorageTable() then
     local inventory = self:Query(player, 'inventory')
@@ -211,7 +280,16 @@ function cw.storage:UpdateSpace(player, space)
   end
 end
 
--- A function to get whether a player can give to storage.
+--- Returns whether an item may be put into the player's open storage.
+--
+-- Checks the item's `allowStorage`, `allowGive`, `allowPlayerStorage`,
+-- `allowPlayerGive`, `allowEntityStorage` and `allowEntityGive` fields
+-- against whether the storage belongs to a player. Shipments accept every
+-- item.
+-- @param player [Player The player who has the storage open]
+-- @param itemTable [Item The item instance]
+-- @return [Boolean `true` if the item is allowed, otherwise `nil`]
+-- @see cw.storage:GiveTo
 function cw.storage:CanGiveTo(player, itemTable)
   local entity = self:Query(player, 'entity')
   local isPlayer = (entity and entity:IsPlayer())
@@ -233,7 +311,16 @@ function cw.storage:CanGiveTo(player, itemTable)
   end
 end
 
--- A function to get whether a player can take from storage.
+--- Returns whether an item may be taken out of the player's open storage.
+--
+-- Checks the item's `allowStorage`, `allowTake`, `allowPlayerStorage`,
+-- `allowPlayerTake`, `allowEntityStorage` and `allowEntityTake` fields
+-- against whether the storage belongs to a player. Items in shipments can
+-- always be taken.
+-- @param player [Player The player who has the storage open]
+-- @param itemTable [Item The item instance]
+-- @return [Boolean `true` if the item is allowed, otherwise `nil`]
+-- @see cw.storage:TakeFrom
 function cw.storage:CanTakeFrom(player, itemTable)
   local entity = self:Query(player, 'entity')
   local isPlayer = (entity and entity:IsPlayer())
@@ -255,7 +342,10 @@ function cw.storage:CanTakeFrom(player, itemTable)
   end
 end
 
--- A function to sync a player's cash.
+--- Sends the player's cash to everyone who has the player's inventory open as storage.
+--
+-- Only sets their storage cash when cash is enabled.
+-- @param player [Player The player whose cash changed]
 function cw.storage:SyncCash(player)
   local recipients = {}
   local inventory = player:GetInventory()
@@ -274,7 +364,12 @@ function cw.storage:SyncCash(player)
   netstream.Start(recipients, 'StorageCash', cash)
 end
 
--- A function to sync a player's item.
+--- Sends an item change in the player's inventory to everyone who has it open as storage.
+--
+-- The item is added to their storage menus if the player still has it, and
+-- removed otherwise.
+-- @param player [Player The player whose inventory changed]
+-- @param itemTable [Item The item instance that was given or taken]
 function cw.storage:SyncItem(player, itemTable)
   local inventory = player:GetInventory()
 
@@ -297,7 +392,19 @@ function cw.storage:SyncItem(player, itemTable)
   end
 end
 
--- A function to give an item to a player's storage.
+--- Moves an item from the player's inventory into their open storage.
+--
+-- Fails if the storage does not allow the item (`cw.storage:CanGiveTo`), the
+-- player does not have it, the `PlayerCanGiveToStorage` hook does not return
+-- `true`, a non-player storage would exceed its weight or space, or the
+-- item's `CanGiveStorage` or the storage's `CanGiveItem` returns `false`.
+-- Fires `PlayerGiveToStorage` before and `PostPlayerGiveToStorage` after the
+-- move, and updates everyone viewing the same inventory. The storage closes if
+-- `OnGiveItem` or the item's `OnStorageGive` returns `true`.
+-- @param player [Player The player who has the storage open]
+-- @param itemTable [Item The item instance to give]
+-- @return [Boolean Whether the item was moved]
+-- @see cw.storage:TakeFrom
 function cw.storage:GiveTo(player, itemTable)
   local storageTable = player:GetStorageTable()
   if !storageTable then return false end
@@ -370,7 +477,21 @@ function cw.storage:GiveTo(player, itemTable)
   return true
 end
 
--- A function to take an item from a player's storage.
+--- Moves an item from the player's open storage into their inventory.
+--
+-- Fails if the storage does not allow it (`cw.storage:CanTakeFrom`), the
+-- `PlayerCanTakeFromStorage` hook does not return `true`, the storage does not
+-- contain the item, or the item's `CanTakeStorage` or the storage's
+-- `CanTakeItem` returns `false`. If the player cannot carry the item, they are
+-- notified of the reason. Fires `PlayerTakeFromStorage` and
+-- `PostPlayerTakeFromStorage`, and updates everyone viewing the same
+-- inventory. The storage closes if `OnTakeItem` or the item's `OnStorageTake`
+-- returns `true`.
+-- @param player [Player The player who has the storage open]
+-- @param itemTable [Item The item instance to take]
+-- @return [Boolean `true` if the item was moved, `false` if a check failed, `nil` if the player could not carry
+-- it]
+-- @see cw.storage:GiveTo
 function cw.storage:TakeFrom(player, itemTable)
   local storageTable = player:GetStorageTable()
   if !storageTable then return false end
@@ -435,7 +556,11 @@ function cw.storage:TakeFrom(player, itemTable)
   end
 end
 
--- A function to update storage for a player.
+--- Sends every instance of an item type in the player's open storage to their client.
+--
+-- Does nothing if no storage is open or the storage has no items of that type.
+-- @param player [Player The player who has the storage open]
+-- @param uniqueID [String Unique ID of the item type]
 function cw.storage:UpdateByID(player, uniqueID)
   if !player:GetStorageTable() then return end
 

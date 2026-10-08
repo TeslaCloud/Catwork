@@ -11,7 +11,7 @@ COMMAND.access = 'a'
 COMMAND.arguments = 2
 COMMAND.alias = { 'SetSkin', 'CharSkin' }
 
--- Called when the command has been run.
+--- Sets the target character's skin and saves it so it is reapplied on spawn.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
   local skin = tonumber(arguments[2])

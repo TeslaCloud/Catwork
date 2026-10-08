@@ -13,7 +13,8 @@ COMMAND.flags = CMD_DEFAULT
 COMMAND.access = 'a'
 COMMAND.arguments = 1
 
--- Called when the command has been run.
+--- Hides the door the player is looking at when the argument is true, or unhides it otherwise, and
+-- saves the door data.
 function COMMAND:OnRun(player, arguments)
   local door = player:GetEyeTraceNoCursor().Entity
 

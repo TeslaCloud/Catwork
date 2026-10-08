@@ -57,8 +57,8 @@ SWEP.NoIronSightAttack = true
 SWEP.LoweredAngles = Angle(0.000, 0.000, -22.000)
 SWEP.NeverRaised = true
 
--- Called when the player attempts to primary fire.
+--- Does nothing; the suitcase is only carried.
 function SWEP:PrimaryAttack() end
 
--- Called when the player attempts to secondary fire.
+--- Does nothing.
 function SWEP:SecondaryAttack() end

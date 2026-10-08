@@ -8,6 +8,7 @@ include('shared.lua')
 AddCSLuaFile('cl_init.lua')
 AddCSLuaFile('shared.lua')
 
+--- Attaches the Combine dispenser model, sets up the collision box and starts with five rations.
 function ENT:Initialize()
   self:SetModel('models/props_junk/watermelon01.mdl')
 
@@ -37,10 +38,12 @@ function ENT:Initialize()
   self:SetDTInt(0, 5)
 end
 
+--- Makes the dispenser always transmit to clients.
 function ENT:UpdateTransmitState()
   return TRANSMIT_ALWAYS
 end
 
+--- Locks the dispenser when it is unlocked and unlocks it otherwise.
 function ENT:Toggle()
   if self:IsLocked() then
     self:Unlock()
@@ -49,21 +52,28 @@ function ENT:Toggle()
   end
 end
 
+--- Locks the dispenser so citizens cannot take rations, with a button sound.
 function ENT:Lock()
   self:SetDTBool(0, true)
   self:EmitRandomSound()
 end
 
+--- Unlocks the dispenser so citizens can take rations again, with a button sound.
 function ENT:Unlock()
   self:SetDTBool(0, false)
   self:EmitRandomSound()
 end
 
+--- Flashes the dispenser's light red with a denial sound.
+-- @param duration [Number How long the light stays red, in seconds]
 function ENT:SetFlashDuration(duration)
   self:EmitSound('buttons/combine_button_locked.wav')
   self:SetDTFloat(1, CurTime() + duration)
 end
 
+--- Spawns a prop in front of the dispenser to play the dispensing animation with.
+-- @param model [String Model of the prop]
+-- @return [Entity The `prop_physics` prop]
 function ENT:CreateDummyRation(model)
   local forward = self:GetForward() * 15
   local right = self:GetRight() * 0
@@ -79,6 +89,17 @@ function ENT:CreateDummyRation(model)
   return entity
 end
 
+--- Starts dispensing a ration to a player after a delay.
+--
+-- The ration's quality and delay depend on the player's `civ_reputation` character data:
+-- `ration_high` after 8 seconds above 50 reputation (or for CWU members), `ration_medium`
+-- after 12 above 25, `ration_standard` after 18 above 10, and `ration_normal` after 26
+-- otherwise. When the delay ends the dispenser animates a package and spawns the ration item
+-- for the player. Does nothing while a previous ration is still being dispensed.
+--
+-- @param activator [Player The player who receives the ration]
+-- @param duration=nil [Number Unused; the delay always comes from the reputation]
+-- @param force=nil [Boolean Dispense even while a previous ration is still pending]
 function ENT:ActivateRation(activator, duration, force)
   local curTime = CurTime()
 
@@ -157,6 +178,7 @@ function ENT:ActivateRation(activator, duration, force)
   end
 end
 
+--- Plays one of the Combine button sounds at random.
 function ENT:EmitRandomSound()
   local randomSounds = {
     'buttons/combine_button1.wav',
@@ -169,6 +191,7 @@ function ENT:EmitRandomSound()
   self:EmitSound(randomSounds[math.random(1, #randomSounds)])
 end
 
+--- Keeps the dispenser still unless a player holds it or it is constrained.
 function ENT:PhysicsUpdate(physicsObject)
   if !self:IsPlayerHolding() and !self:IsConstrained() then
     physicsObject:SetVelocity(Vector(0, 0, 0))
@@ -176,6 +199,12 @@ function ENT:PhysicsUpdate(physicsObject)
   end
 end
 
+--- Handles a player using the dispenser, at most once every three seconds.
+--
+-- Citizens get a ration when the dispenser is unlocked, has rations left and their `nextration`
+-- character data time has passed, which is then set ten wage intervals ahead; otherwise the
+-- light flashes red. Combine players load a `ration_standard` from their inventory
+-- into it, or toggle the lock when they carry none.
 function ENT:Use(activator, caller)
   if activator:IsPlayer() and activator:GetEyeTraceNoCursor().Entity == self then
     local curTime = CurTime()
@@ -211,10 +240,13 @@ function ENT:Use(activator, caller)
   end
 end
 
+--- Blocks every toolgun action on the dispenser.
 function ENT:CanTool(player, trace, tool)
   return false
 end
 
+--- Sets how many rations the dispenser holds.
+-- @param count [Number The new ration count]
 function ENT:SetRationCount(count)
   self:SetDTInt(0, count)
 end

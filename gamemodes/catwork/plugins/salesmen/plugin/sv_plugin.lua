@@ -224,7 +224,12 @@ netstream.Hook('SalesmanAdd', function(player, data)
   player.cwSalesmanHitPos = nil
 end)
 
--- A function to load the salesmen.
+--- Spawns every salesman saved for the current map.
+--
+-- Reads `plugins/salesmen/<map>` from the schema data, creates a `cw_salesman` entity for each entry,
+-- restores its trade settings and makes it safe from removal. Replaces `cwSalesmen.salesmen` with the
+-- spawned entities.
+-- @see cwSalesmen:SaveSalesmen
 function cwSalesmen:LoadSalesmen()
   self.salesmen = cw.core:RestoreSchemaData('plugins/salesmen/'..game.GetMap())
 
@@ -256,7 +261,13 @@ function cwSalesmen:LoadSalesmen()
   end
 end
 
--- A function to get a salesman table from an entity.
+--- Builds the saveable settings table of a salesman entity.
+--
+-- The keys are `name`, `cash`, `stock`, `model`, `angles`, `buyRate`, `factions`, `buyTab`, `sellTab`,
+-- `textTab`, `classes`, `position`, `physDesc`, `animation`, `priceScale`, `buyInShipments`,
+-- `showChatBubble` and `flags`. `cwSalesmen:LoadSalesmen` and the `SalesmanEdit` command read this format.
+-- @param entity [Entity The `cw_salesman` entity]
+-- @return [Map The salesman's settings]
 function cwSalesmen:GetTableFromEntity(entity)
   return {
     name = entity:GetNWString('Name'),
@@ -280,7 +291,8 @@ function cwSalesmen:GetTableFromEntity(entity)
   }
 end
 
--- A function to save the salesmen.
+--- Saves every valid salesman on the map to the schema data file `plugins/salesmen/<map>`.
+-- @see cwSalesmen:GetTableFromEntity
 function cwSalesmen:SaveSalesmen()
   local salesmen = {}
 

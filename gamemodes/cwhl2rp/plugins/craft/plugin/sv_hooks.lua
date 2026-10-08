@@ -6,6 +6,14 @@
   with contributions from Cloud Sixteen community.
 --]]
 
+--- Crafts a blueprint for a player without checking whether they may.
+--
+-- Takes the recipe's materials, gives the resulting items (spawning them where the player looks
+-- when the inventory is full), progresses the blueprint's `updatt` attributes and notifies the
+-- player. Call `cwCraft:PlayerCanCraft` first.
+--
+-- @param player [Player The player who crafts]
+-- @param bpTable [Map The blueprint to craft]
 function cwCraft:PlayerCraftItem(player, bpTable)
   local materials = bpTable['recipe']
   local result = bpTable['finish']
@@ -38,6 +46,9 @@ function cwCraft:PlayerCraftItem(player, bpTable)
   cw.player:Notify(player, L('Craft_Notify', bpTable['name']))
 end
 
+--- Saves the class, position and angles of every crafting station on the map.
+--
+-- Stations are entities with `IsCraft` set; the data goes to `plugins/craft/<map>`.
 function cwCraft:SaveCraftTables()
   local craftTables = {}
 
@@ -54,6 +65,7 @@ function cwCraft:SaveCraftTables()
   cw.core:SaveSchemaData('plugins/craft/'..game.GetMap(), craftTables)
 end
 
+--- Spawns the crafting stations saved for the current map, frozen in place.
 function cwCraft:LoadCraftTables()
   local craftTables = cw.core:RestoreSchemaData('plugins/craft/'..game.GetMap())
 
@@ -69,10 +81,12 @@ function cwCraft:LoadCraftTables()
   end
 end
 
+--- Called after all map entities have been initialized; loads the saved crafting stations.
 function cwCraft:ClockworkInitPostEntity()
   self:LoadCraftTables()
 end
 
+--- Called after Catwork saves its data; saves the crafting stations.
 function cwCraft:PostSaveData()
   self:SaveCraftTables()
 end

@@ -9,14 +9,14 @@
 library.New('entity', cw)
 
 if CLIENT then
-  --[[
-    @codebase Client
-    @details A function to get a weapon's muzzle position from its viewmodel.
-    @param Entity The player's current weapon.
-    @param Entity The player's attachment on the weapon.
-    @returns Vector The coordinates of weapon's muzzle position.
-    @returns Angle The angle of the weapon's muzzle position.
-  --]]
+  --- Returns the position and angles of a weapon's muzzle attachment.
+  --
+  -- When the weapon is carried by the local player and seen in first person, the attachment is read
+  -- from the viewmodel instead of the world model.
+  -- @param weapon [Weapon The weapon]
+  -- @param attachment=1 [Number Index of the attachment]
+  -- @return [Vector The muzzle position, Angle The muzzle angles; the weapon's own position and angles when it has
+  -- no such attachment, the world origin when the weapon is invalid]
   function cw.entity:GetMuzzlePos(weapon, attachment)
     if !IsValid(weapon) then
       return vector_origin, Angle(0, 0, 0)
@@ -46,24 +46,19 @@ if CLIENT then
     return attachment.Pos, attachment.Ang
   end
 else
-  --[[
-    @codebase Server
-    @details A function to get all door entities which are stored from server start.
-    @return Table A list of all door entities.
-  --]]
+  --- Returns the doors that existed on the map when the server started.
+  -- @return [Map<Entity> The doors indexed by entity index]
   function cw.entity:GetDoorEntities()
     return self.DoorEntities or {}
   end
 end
 
---[[
-  @codebase Shared
-  @details A function to check if an entity is a door or not by seeing if its name includes "door" or if the entity is
-  one of the following classes: "func_door", "func_door_rotating", "prop_door_rotating", "func_movelinear"
-  @param Entity The entity being check as a door.
-  @returns Bool Whether the entity is a door or not.
---]]
-
+--- Returns whether an entity is a door.
+--
+-- Doors are `func_door`, `func_door_rotating`, `prop_door_rotating` and `func_movelinear`
+-- entities, and `prop_dynamic` entities whose model path contains `door`.
+-- @param entity [Entity The entity to check]
+-- @return [Boolean `true` when the entity is a door, `nil` otherwise]
 function cw.entity:IsDoor(entity)
   if IsValid(entity) then
     local class = entity:GetClass()
@@ -84,24 +79,19 @@ function cw.entity:IsDoor(entity)
   end
 end
 
---[[
-  @codebase Shared
-  @details A function to get whether an entity is decaying by being in the process of fading out and being removed.
-  @param Entity The entity being checked as decaying or not.
-  @returns Bool Whether or not the entity is decaying.
---]]
-
+--- Returns whether an entity is fading out to be removed by `cw.entity:Decay`.
+-- @param entity [Entity The entity to check]
+-- @return [Boolean Whether the entity is decaying; the decay timer's ID string when it is, `nil` otherwise]
 function cw.entity:IsDecaying(entity)
   return entity.cwIsDecaying
 end
 
---[[
-  @codebase Shared
-  @details A function to get a door entity's partners which are doors that open along with it.
-  @param Entity The entity to get the door partners from.
-  @return Table A list of partners on the door entity.
---]]
-
+--- Returns a door and the doors next to it that form a double door.
+--
+-- Partners have the same class, model and skin, sit 90 to 100 units away at the same height and
+-- face another direction.
+-- @param entity [Entity The door]
+-- @return [List<Entity> The door followed by its partners]
 function cw.entity:GetDoorPartners(entity)
   local doorPartners = { entity }
   local doorEntities = ents.FindByClass(entity:GetClass())
@@ -128,15 +118,13 @@ function cw.entity:GetDoorPartners(entity)
   return doorPartners
 end
 
---[[
-  @codebase Shared
-  @details A function to check if an entity is in a specified box area.
-  @param Entity The entity to check if it's in a box.
-  @param Int Minimum position to check in.
-  @param Int Maximum position to check in.
-  @returns Bool Whether or not an entity is within the defined box.
---]]
-
+--- Returns whether an entity is inside an axis-aligned box.
+--
+-- The shoot position is used for players and NPCs, the entity position for anything else.
+-- @param entity [Entity The entity to check]
+-- @param minimum [Vector One corner of the box]
+-- @param maximum [Vector The opposite corner of the box]
+-- @return [Boolean Whether the entity is inside the box]
 function cw.entity:IsInBox(entity, minimum, maximum)
   local position = entity:GetPos()
 
@@ -153,13 +141,9 @@ function cw.entity:IsInBox(entity, minimum, maximum)
   end
 end
 
---[[
-  @codebase Shared
-  @details A function to get a ragdoll entity's pelvis position.
-  @param Entity The entity to get the pelvis position from.
-  @returns Vector Coordinates of the entity's pelvis.
---]]
-
+--- Returns the position of an entity's pelvis bone, such as a ragdoll's.
+-- @param entity [Entity The entity]
+-- @return [Vector The pelvis position, or the entity's position when it has no pelvis bone]
 function cw.entity:GetPelvisPosition(entity)
   local position = entity:GetPos()
   local physBone = entity:LookupBone('ValveBiped.Bip01_Pelvis')
@@ -175,16 +159,15 @@ function cw.entity:GetPelvisPosition(entity)
   return position
 end
 
---[[
-  @codebase Shared
-  @details A function to get whether an entity can see a position from its own position.
-  @param Entity The entity that's being checked on if it can see a position.
-  @param Vector Location being checked if the entity can see it.
-  @param Int Optional: Variance around the position being checked.
-  @param Entity Optional: Entities that should be ignored when checking if an entity can see a position.
-  @returns Bool Whether or not the entity can see a position.
---]]
-
+--- Returns whether a position is visible from the centre of an entity.
+--
+-- Traces against solid, opaque and moveable contents, hitboxes and monsters, and counts the
+-- position as visible when the trace gets far enough.
+-- @param entity [Entity The entity looking]
+-- @param position [Vector The position to look at]
+-- @param iAllowance=0.75 [Number Fraction of the trace that must be clear, from `0` to `1`]
+-- @param tIgnoreEnts=nil [List<Entity> Extra entities the trace ignores; any other non-`nil` value ignores them all]
+-- @return [Boolean `true` when visible, `nil` otherwise]
 function cw.entity:CanSeePosition(entity, position, iAllowance, tIgnoreEnts)
   local trace = {}
 
@@ -209,16 +192,13 @@ function cw.entity:CanSeePosition(entity, position, iAllowance, tIgnoreEnts)
   end
 end
 
---[[
-  @codebase Shared
-  @details A function to get whether an entity can see an NPC from its own position.
-  @param Entity The entity that's being checked on if it can see an NPC.
-  @param Entity The NPC being check if it can be seen.
-  @param Int Optional: Variance around the position being checked.
-  @param Entity Optional: Entities that should be ignored when checking if an entity can see an NPC.
-  @returns Bool Whether or not the entity can see an NPC.
---]]
-
+--- Returns whether an NPC's shoot position is visible from the centre of an entity.
+-- @param entity [Entity The entity looking]
+-- @param target [NPC The NPC to look at]
+-- @param iAllowance=0.75 [Number Fraction of the trace that must be clear, from `0` to `1`]
+-- @param tIgnoreEnts=nil [List<Entity> Extra entities the trace ignores; any other non-`nil` value ignores them all]
+-- @return [Boolean `true` when visible, `nil` otherwise]
+-- @see cw.entity:CanSeePosition
 function cw.entity:CanSeeNPC(entity, target, iAllowance, tIgnoreEnts)
   local trace = {}
 
@@ -243,16 +223,16 @@ function cw.entity:CanSeeNPC(entity, target, iAllowance, tIgnoreEnts)
   end
 end
 
---[[
-  @codebase Shared
-  @details A function to get whether an entity can see a player from its own position.
-  @param Entity The entity that's being checked on if it can see a player.
-  @param Entity The player being checked if it can be seen.
-  @param Int Optional: Variance around the position being checked.
-  @param Entity Optional: Entities that should be ignored when checking if an entity can see a player.
-  @returns Bool Whether or not the entity can see a player.
---]]
-
+--- Returns whether a player and an entity can see each other.
+--
+-- Visible when the player is looking straight at the entity, or when the player's shoot position
+-- is visible from the centre of the entity.
+-- @param entity [Entity The entity looking]
+-- @param target [Player The player to look at]
+-- @param iAllowance=0.75 [Number Fraction of the trace that must be clear, from `0` to `1`]
+-- @param tIgnoreEnts=nil [List<Entity> Extra entities the trace ignores; any other non-`nil` value ignores them all]
+-- @return [Boolean `true` when visible, `nil` otherwise]
+-- @see cw.entity:CanSeePosition
 function cw.entity:CanSeePlayer(entity, target, iAllowance, tIgnoreEnts)
   if target:GetEyeTraceNoCursor().Entity == entity then
     return true
@@ -281,16 +261,13 @@ function cw.entity:CanSeePlayer(entity, target, iAllowance, tIgnoreEnts)
   end
 end
 
---[[
-  @codebase Shared
-  @details A function to get whether an entity can see an entity from its own position.
-  @param Entity The entity that's being checked on if it can see another entity.
-  @param Entity The entity being checked if it can be seen.
-  @param Int Optional: Variance around the entity being checked.
-  @param Entity Optional: Entities that should be ignored when checking if an entity can see another entity.
-  @returns Bool Whether or not the entity can see another entity.
---]]
-
+--- Returns whether the centre of an entity is visible from the centre of another.
+-- @param entity [Entity The entity looking]
+-- @param target [Entity The entity to look at]
+-- @param iAllowance=0.75 [Number Fraction of the trace that must be clear, from `0` to `1`]
+-- @param tIgnoreEnts=nil [List<Entity> Extra entities the trace ignores; any other non-`nil` value ignores them all]
+-- @return [Boolean `true` when visible, `nil` otherwise]
+-- @see cw.entity:CanSeePosition
 function cw.entity:CanSeeEntity(entity, target, iAllowance, tIgnoreEnts)
   local trace = {}
   trace.mask =
@@ -314,68 +291,46 @@ function cw.entity:CanSeeEntity(entity, target, iAllowance, tIgnoreEnts)
   end
 end
 
---[[
-  @codebase Shared
-  @details A function to get whether a door is unownable by a player.
-  @param Entity Door being checked as unownable.
-  @returns Bool Whether or not the door is unownable.
---]]
-
+--- Returns whether a door cannot be bought.
+-- @param entity [Entity The door]
+-- @return [Boolean The door's `Unownable` networked boolean]
 function cw.entity:IsDoorUnownable(entity)
   return entity:GetNWBool('Unownable')
 end
 
---[[
-  @codebase Shared
-  @details A function to get whether a door is false.
-  @param Entity Door being check as false.
-  @returns Bool Whether or not the door is false or not.
---]]
-
+--- Returns whether a door is a false door: unownable, named `false` and shown with no text.
+-- @param entity [Entity The door]
+-- @return [Boolean Whether the door is false]
+-- @see cw.entity:SetDoorFalse
 function cw.entity:IsDoorFalse(entity)
   return self:IsDoorUnownable(entity) and self:GetDoorName(entity) == 'false'
 end
 
---[[
-  @codebase Shared
-  @details A function to get whether a door is hidden.
-  @param Entity Door being checked as hidden.
-  @returns Bool Whether or not the door is hidden or not.
---]]
-
+--- Returns whether a door is hidden: unownable and named `hidden`.
+-- @param entity [Entity The door]
+-- @return [Boolean Whether the door is hidden]
+-- @see cw.entity:SetDoorHidden
 function cw.entity:IsDoorHidden(entity)
   return self:IsDoorUnownable(entity) and self:GetDoorName(entity) == 'hidden'
 end
 
---[[
-  @codebase Shared
-  @details A function to get a door's name.
-  @param Entity Door getting its name checked.
-  @returns String Name of the door.
---]]
-
+--- Returns a door's name.
+-- @param entity [Entity The door]
+-- @return [String The name, or `''` when not set]
 function cw.entity:GetDoorName(entity)
   return entity:GetNWString('Name')
 end
 
---[[
-  @codebase Shared
-  @details A function to get the text being displayed on a door.
-  @param Entity Door getting its text from.
-  @returns String Text being displayed on the door.
---]]
-
+--- Returns the text displayed on a door.
+-- @param entity [Entity The door]
+-- @return [String The text, or `''` when not set]
 function cw.entity:GetDoorText(entity)
   return entity:GetNWString('Text')
 end
 
---[[
-  @codebase Shared
-  @details A function to get whether an entity is a player in ragdoll form.
-  @param Entity The entity getting checked as a player ragdoll.
-  @returns Bool Whether or not the entity is a player ragdoll.
---]]
-
+--- Returns whether an entity is the ragdoll of a ragdolled player.
+-- @param entity [Entity The entity to check]
+-- @return [Boolean `true` when the entity is its player's current ragdoll, `nil` otherwise]
 function cw.entity:IsPlayerRagdoll(entity)
   local player = entity:GetNWEntity('Player')
 
@@ -386,13 +341,9 @@ function cw.entity:IsPlayerRagdoll(entity)
   end
 end
 
---[[
-  @codebase Shared
-  @details A function to get a player from an entity.
-  @param Entity The entity getting the player from.
-  @returns Entity The player from the entity.
---]]
-
+--- Returns the player an entity belongs to, such as a player's ragdoll.
+-- @param entity [Entity The entity]
+-- @return [Player The player set with `cw.entity:SetPlayer`, the entity itself when it is a player, or `nil`]
 function cw.entity:GetPlayer(entity)
   local player = entity:GetNWEntity('Player')
 
@@ -403,13 +354,12 @@ function cw.entity:GetPlayer(entity)
   end
 end
 
---[[
-  @codebase Shared
-  @details A function to get whether an entity is interactable.
-  @param Entity The entity being checked if it is interactable.
-  @returns Bool Whether or not the entity is interactable.
---]]
-
+--- Returns whether players can pick up and interact with an entity.
+--
+-- Frozen or pickup-protected props, NPCs, players, dynamic props, frozen physboxes, other `func_`
+-- brush entities and doors are not interactable.
+-- @param entity [Entity The entity to check]
+-- @return [Boolean Whether the entity is interactable]
 function cw.entity:IsInteractable(entity)
   local class = entity:GetClass()
 
@@ -438,13 +388,9 @@ function cw.entity:IsInteractable(entity)
   return true
 end
 
---[[
-  @codebase Shared
-  @details A function to get whether an entity is a physics entity.
-  @param Entity The entity being checked if it is a physics entity.
-  @return Bool Whether or not the entity is a physicas entity.
---]]
-
+--- Returns whether an entity is a `prop_physics` or `prop_physics_multiplayer`.
+-- @param entity [Entity The entity to check]
+-- @return [Boolean `true` when it is a physics prop, `nil` otherwise]
 function cw.entity:IsPhysicsEntity(entity)
   local class = string.lower(entity:GetClass())
 
@@ -453,13 +399,9 @@ function cw.entity:IsPhysicsEntity(entity)
   end
 end
 
---[[
-  @codebase Shared
-  @details A function to get whether an entity is a pod.
-  @param Entity The entity being checked if it is a pod entity.
-  @returns Bool Whether or not the entity is a pod entity.
---]]
-
+--- Returns whether an entity's model path contains `prisoner`, as prisoner pod vehicles do.
+-- @param entity [Entity The entity to check]
+-- @return [Boolean `true` when it is a pod, `nil` otherwise]
 function cw.entity:IsPodEntity(entity)
   local entityModel = string.lower(entity:GetModel())
 
@@ -468,13 +410,9 @@ function cw.entity:IsPodEntity(entity)
   end
 end
 
---[[
-  @codebase Shared
-  @details A function to get whether an entity is a chair.
-  @param Entity The Entity being checked if it is a chair entity.
-  @returns Bool Whether or not the entity is a chair entity.
---]]
-
+--- Returns whether an entity's model path contains `chair` or `seat`.
+-- @param entity [Entity The entity to check]
+-- @return [Boolean `true` when it is a chair, `nil` otherwise]
 function cw.entity:IsChairEntity(entity)
   if entity:GetModel() then
     local entityModel = string.lower(entity:GetModel())
@@ -486,33 +424,26 @@ function cw.entity:IsChairEntity(entity)
 end
 
 if CLIENT then
-  --[[
-    @codebase Client
-    @details A function to get whether an item's data has been fetched.
-    @param Entity The entity being checked if the item data has been fetched.
-    @returns Bool Whether or not the item data has been fetched.
-  --]]
+  --- Returns whether the item data of an item entity has been received from the server.
+  -- @param entity [Entity The item entity]
+  -- @return [Boolean Whether the item data has been fetched]
+  -- @see cw.entity:FetchItemData
   function cw.entity:HasFetchedItemData(entity)
     return (entity.cwFetchedItemData == true)
   end
 
-  --[[
-    @codebase Client
-    @details A function to fetch the entity's item table.
-    @param Entity The entity getting the item table from.
-    @returns Table Contains the entity's item table.
-  --]]
-
+  --- Returns the item instance received for an entity with `cw.entity:FetchItemData`.
+  -- @param entity [Entity The item entity]
+  -- @return [Item The item instance, or `nil` when not fetched yet]
   function cw.entity:FetchItemTable(entity)
     return entity.cwItemTable
   end
 
-  --[[
-    @codebase Client
-    @details A function to fetch the entity's item data.
-    @param Entity The entity getting the item data from.
-  --]]
-
+  --- Requests the item instance of an entity from the server over the `FetchItemData` netstream message.
+  --
+  -- Requests are sent at most every four seconds per entity. The reply creates the instance, after
+  -- which `cw.entity:HasFetchedItemData` returns `true` and `cw.entity:FetchItemTable` returns it.
+  -- @param entity [Entity The item entity or vehicle]
   function cw.entity:FetchItemData(entity)
     local curTime = CurTime()
 
@@ -578,16 +509,12 @@ else
     end
   end)
 
-  --[[
-    @codebase Server
-    @details A function to dissolve an entity using a Source effect.
-    @param Entity The entity that will be dissolved.
-    @param String Dissolving effect to be applied to the entity.
-    @param Int Optional: Time until the entity is removed.
-    @param Entity Optional: The entity that is set as the dissolved entity's attacker.
-    @returns Entity Reference to the entity making the dissolving effects.
-  --]]
-
+  --- Dissolves an entity with an `env_entity_dissolver`.
+  -- @param entity [Entity The entity to dissolve]
+  -- @param dissolveType [Number Dissolve effect, the dissolver's `dissolvetype` key value]
+  -- @param iRemoveDelay=nil [Number Seconds after which the entity is removed; it is not removed when `nil`]
+  -- @param attacker=nil [Entity Entity set as the dissolver's physics attacker]
+  -- @return [Entity The dissolver, already removed]
   function cw.entity:Dissolve(entity, dissolveType, iRemoveDelay, attacker)
     local dissolver = ents.Create('env_entity_dissolver')
     local oldName = entity:GetName()
@@ -625,12 +552,11 @@ else
     return dissolver
   end
 
-  --[[
-    @codebase Server
-    @details A function to temporarily set a door's speed to fast.
-    @param Entity The door getting its speed set to fast.
-  --]]
-
+  --- Makes a door move three times faster for one second.
+  --
+  -- Does nothing for entities that are not doors or have no speed, or when used on the same door
+  -- within two seconds.
+  -- @param entity [Entity The door]
   function cw.entity:SetDoorSpeedFast(entity)
     local curTime = CurTime()
     local iSpeed = entity:GetSaveTable().speed
@@ -649,14 +575,15 @@ else
     end
   end
 
-  --[[
-    @codebase Server
-    @details A function to blast down a door off its hinges.
-    @param Entity The door being blasted off its hinges.
-    @param Int The blast strength that should be applied to the door.
-    @param Entity The entity that is blasting the door off its hinges.
-  --]]
-
+  --- Blasts a door off its hinges, replacing it with a physics prop that decays after five minutes.
+  --
+  -- The door is unlocked and made invisible and non-solid, its Combine lock explodes and its breach
+  -- entity is breached. The prop is pushed away from the attacker, or by `force` when there is no
+  -- attacker. The timer meant to restore the door after five minutes checks an undefined `door`
+  -- variable, so the door is never restored.
+  -- @param entity [Entity The door]
+  -- @param force=nil [Vector Force applied to the prop]
+  -- @param attacker=nil [Entity The entity that blasted the door]
   function cw.entity:BlastDownDoor(entity, force, attacker)
     entity.cwIsBustedDown = true
     entity:SetNotSolid(true)
@@ -709,37 +636,31 @@ else
   end
 end
 
---[[
-  @codebase Shared
-  @details A function to get an entity's door state.
-  @returns Table The state of the door.
---]]
-
+--- Returns a door's state from its save table.
+-- @param entity [Entity The door]
+-- @return [Number A `DOOR_STATE_*` enum, `DOOR_STATE_CLOSED` when unknown]
 function cw.entity:GetDoorState(entity)
   return entity:GetSaveTable().m_eDoorState or DOOR_STATE_CLOSED
 end
 
---[[
-  @codebase Shared
-  @details A function to get whether a door is locked.
-  @returns Bool Whether or not the door is locked.
---]]
-
+--- Returns whether a door is locked.
+-- @param entity [Entity The door]
+-- @return [Boolean Whether the door's save table says it is locked]
 function cw.entity:IsDoorLocked(entity)
   return (entity:GetSaveTable().m_bLocked == true)
 end
 
 if SERVER then
-  --[[
-    @codebase Server
-    @details A function to open a door.
-    @param Entity The door to be opened.
-    @param Int Delay until the door should be opened.
-    @param Bool Whether or not the door should be unlocked.
-    @param Bool Whether or not a sound should be played for unlocking the door.
-    @param Vector Postition that the info_target is created at.
-    @param Float Not implemented.
-  --]]
+  --- Opens a door after a delay.
+  --
+  -- Dynamic prop doors play their open animation and close again after five seconds. Rotating prop
+  -- doors open away from `origin` when it is given.
+  -- @param entity [Entity The door]
+  -- @param delay [Number Seconds before the door opens]
+  -- @param bUnlock=nil [Boolean Unlock the door first]
+  -- @param bSound=nil [Boolean Play an impact sound when unlocking]
+  -- @param origin=nil [Vector Position the door opens away from]
+  -- @param fSpeed=nil [Number Unused]
   function cw.entity:OpenDoor(entity, delay, bUnlock, bSound, origin, fSpeed)
     if self:IsDoor(entity) then
       if bUnlock then
@@ -772,13 +693,11 @@ if SERVER then
     end
   end
 
-  --[[
-    @codebase Server
-    @details A function to bash in a door entity.
-    @param Entity The door being bashed in.
-    @param Entity The entity bashing in the door.
-  --]]
-
+  --- Bashes a closed door open, away from the entity bashing it.
+  --
+  -- The door opens fast and becomes non-solid to players until it stops overlapping anything.
+  -- @param entity [Entity The door]
+  -- @param eBasher [Entity The entity bashing the door]
   function cw.entity:BashInDoor(entity, eBasher)
     local curTime = CurTime()
 
@@ -802,15 +721,17 @@ if SERVER then
     )
   end
 
-  --[[
-    @codebase Server
-    @details A function to make an entity safe.
-    @param Entity The entity being made safe.
-    @param Bool Whether or not the entity should be safe from physguns.
-    @param Table List of tools that can't be used on the entity.
-    @param Bool Whether or not the entity should be frozen.
-  --]]
-
+  --- Protects an entity from the physics gun and tools and optionally freezes it.
+  --
+  -- ```
+  -- cw.entity:MakeSafe(entity, true, { 'remover', 'weld' }, true)
+  -- ```
+  --
+  -- @param entity [Entity The entity]
+  -- @param bPhysgunProtect=nil [Boolean Prevent the physics gun from picking it up]
+  -- @param tToolProtect=nil [List<String> Tool modes that cannot be used on it; any other non-`nil` value blocks every
+  -- tool]
+  -- @param bFreezeEntity=nil [Boolean Disable the entity's motion]
   function cw.entity:MakeSafe(entity, bPhysgunProtect, tToolProtect, bFreezeEntity)
     if bPhysgunProtect then
       entity.PhysgunDisabled = true
@@ -833,13 +754,11 @@ if SERVER then
     end
   end
 
-  --[[
-    @codebase Server
-    @details A function to statue a ragdoll.
-    @param Entity The entity being set as a statue.
-    @param Int How much force a bone can take before the weld breaks.
-  --]]
-
+  --- Welds every bone of a ragdoll together so it holds its pose like a statue.
+  --
+  -- The welds are stored in `entity.cwStatueInfo.Welds` and a glass effect plays on each bone.
+  -- @param entity [Entity The ragdoll]
+  -- @param forceLimit=0 [Number Force a weld takes before breaking; `0` never breaks]
   function cw.entity:StatueRagdoll(entity, forceLimit)
     local bones = entity:GetPhysicsObjectCount()
 
@@ -879,15 +798,11 @@ if SERVER then
     end
   end
 
-  --[[
-    @codebase Server
-    @details A function to drop items and cash.
-    @param Table The inventory being dropped.
-    @param Int How much cash to drop.
-    @param Vector Where the items and cash should drop.
-    @param Entity The owner of the items and cash being dropped.
-  --]]
-
+  --- Spawns every item of an inventory and an amount of cash at a position.
+  -- @param inventory [Inventory The items to drop]
+  -- @param cash [Number Amount of cash to drop; none when `nil` or not positive]
+  -- @param position [Vector Where to drop them]
+  -- @param entity=nil [Entity Entity whose ownership the item entities get, copied with `cw.entity:CopyOwner`]
   function cw.entity:DropItemsAndCash(inventory, cash, position, entity)
     if !cw.inventory:IsEmpty(inventory) then
       for k, v in pairs(inventory) do
@@ -906,15 +821,15 @@ if SERVER then
     end
   end
 
-  --[[
-    @codebase Server
-    @details A function to make an entity into a ragdoll.
-    @param Entity The entity being made in to a ragdoll.
-    @param Int The amount of force applied to the entity upon being made in to a ragdoll.
-    @param Int What the entity's velocity should be forcibly set to.
-    @param Angle What the entity's angles should be set to.
-  --]]
-
+  --- Creates a ragdoll copying an entity's model, appearance, pose and velocity.
+  --
+  -- The ragdoll's angles are always set from the entity's angles, so `overrideAngles` has no
+  -- effect. The head gets twice the velocity and force. Burning entities give a burning ragdoll.
+  -- @param entity [Entity The entity to copy]
+  -- @param force=nil [Vector Force applied to each bone]
+  -- @param overrideVelocity=nil [Vector Velocity given to the bones instead of 1.5 times the entity's]
+  -- @param overrideAngles=nil [Angle Angles to give the ragdoll]
+  -- @return [Entity The ragdoll]
   function cw.entity:MakeIntoRagdoll(entity, force, overrideVelocity, overrideAngles)
     local velocity = entity:GetVelocity() * 1.5
     local ragdoll = ents.Create('prop_ragdoll')
@@ -973,24 +888,20 @@ if SERVER then
     return ragdoll
   end
 
-  --[[
-    @codebase Server
-    @details A function to get whether a door is unsellable.
-    @param Entity The door being checked as unsellable.
-    @returns Bool Whether or not the door is unsellable.
-  --]]
-
+  --- Returns whether a door cannot be sold by its owner.
+  -- @param door [Entity The door]
+  -- @return [Boolean The door's `unsellable` field]
   function cw.entity:IsDoorUnsellable(door)
     return door.unsellable
   end
 
-  --[[
-    @codebase Server
-    @details A function to set a door's parent.
-    @param Entity The door being set as a child.
-    @param Entity The door being set as the parent for the child.
-  --]]
-
+  --- Sets the parent of a door, or removes it.
+  --
+  -- Children of the door are unparented first, and the door's shared access and text are reset.
+  -- Parents can share their access and text with their children.
+  -- @param door [Entity The door]
+  -- @param parent [Entity The parent door; anything that is not a valid door removes the parent]
+  -- @see cw.entity:SetDoorSharedAccess
   function cw.entity:SetDoorParent(door, parent)
     if self:IsDoor(door) then
       for k, v in pairs(self:GetDoorChildren(door)) do
@@ -1022,48 +933,34 @@ if SERVER then
     end
   end
 
-  --[[
-    @codebase Server
-    @details A function to get whether a door is a parent or not.
-    @param Entity The door being checked as a parent.
-    @return Bool Whether or not the door has any children (thus making it a parent door if it does, otherwise if not).
-  --]]
-
+  --- Returns whether a door has child doors.
+  -- @param door [Entity The door]
+  -- @return [Boolean Whether the door is a parent]
   function cw.entity:IsDoorParent(door)
     return table.Count(self:GetDoorChildren(door)) > 0
   end
 
-  --[[
-    @codebase Server
-    @details A function to get a door's parent.
-    @param Entity The door that the parent should be gotten from.
-    @returns Table The parent of the door (if it exists).
-  --]]
-
+  --- Returns the parent of a door.
+  -- @param door [Entity The door]
+  -- @return [Entity The parent door, or `nil` when it has none]
   function cw.entity:GetDoorParent(door)
     if IsValid(door.doorParent) then
       return door.doorParent
     end
   end
 
-  --[[
-    @codebase Server
-    @details A function to get a door's children.
-    @param Entity The door to get the children from.
-    @returns Table The children of the door.
-  --]]
-
+  --- Returns the child doors of a door.
+  -- @param door [Entity The door]
+  -- @return [Map<Entity> The children, indexed by themselves]
   function cw.entity:GetDoorChildren(door)
     return door.doorChildren or {}
   end
 
-  --[[
-    @codebase Server
-    @details A function to set a door as unownable.
-    @param Entity The door being set to unownable.
-    @param Bool Whether or not the door should be set to unownable.
-  --]]
-
+  --- Sets whether a door can be bought.
+  --
+  -- Making a door unownable takes it from its owner.
+  -- @param entity [Entity The door]
+  -- @param unownable [Boolean Whether the door should be unownable]
   function cw.entity:SetDoorUnownable(entity, unownable)
     if self:IsDoor(entity) then
       if unownable then
@@ -1080,13 +977,9 @@ if SERVER then
     end
   end
 
-  --[[
-    @codebase Server
-    @details A function to set whether a door is false.
-    @param Entity The door being set to false.
-    @param Bool Whether the door should be false or not.
-  --]]
-
+  --- Sets whether a door is a false door, an unownable door named `false`.
+  -- @param entity [Entity The door]
+  -- @param isFalse [Boolean Whether the door should be false; `false` makes it ownable and clears its name]
   function cw.entity:SetDoorFalse(entity, isFalse)
     if self:IsDoor(entity) then
       if isFalse then
@@ -1099,13 +992,9 @@ if SERVER then
     end
   end
 
-  --[[
-    @codebase Server
-    @details A function to set whether a door is hidden.
-    @param Entity The door being set to hidden.
-    @param Bool Whether or not the doro should be set to hidden.
-  --]]
-
+  --- Sets whether a door is hidden, an unownable door named `hidden`.
+  -- @param entity [Entity The door]
+  -- @param hidden [Boolean Whether the door should be hidden; `false` makes it ownable and clears its name]
   function cw.entity:SetDoorHidden(entity, hidden)
     if self:IsDoor(entity) then
       if hidden then
@@ -1118,26 +1007,22 @@ if SERVER then
     end
   end
 
-  --[[
-    @codebase Server
-    @details A function to set whether a door has shared access.
-    @param Entity The door being given shared access.
-    @param Entity What has shared access to the door.
-  --]]
-
+  --- Sets whether a parent door shares its access with its child doors.
+  --
+  -- Does nothing for doors without children.
+  -- @param entity [Entity The parent door]
+  -- @param sharedAccess [Boolean Whether access is shared]
   function cw.entity:SetDoorSharedAccess(entity, sharedAccess)
     if self:IsDoorParent(entity) then
       entity.cwDoorSharedAxs = sharedAccess
     end
   end
 
-  --[[
-    @codebase Server
-    @details A function to set a shared door's text
-    @param Entity The door having its shared text set.
-    @param String The text that will be displayed on the shared door.
-  --]]
-
+  --- Sets whether a parent door shares its text with its child doors.
+  --
+  -- Enabling it copies the parent's text to every child. Does nothing for doors without children.
+  -- @param entity [Entity The parent door]
+  -- @param sharedText [Boolean Whether text is shared]
   function cw.entity:SetDoorSharedText(entity, sharedText)
     if self:IsDoorParent(entity) then
       entity.cwDoorSharedTxt = sharedText
@@ -1152,35 +1037,25 @@ if SERVER then
     end
   end
 
-  --[[
-    @codebase Server
-    @details A function to get whether a door has shared access.
-    @param Entity The door being checked if it has a shared access.
-    @returns Bool Whether or not the door has a shared access to another door.
-  --]]
-
+  --- Returns whether a parent door shares its access with its children.
+  -- @param entity [Entity The door]
+  -- @return [Boolean Whether access is shared]
   function cw.entity:DoorHasSharedAccess(entity)
     return entity.cwDoorSharedAxs
   end
 
-  --[[
-    @codebase Server
-    @details A function to get whether a door has shared text.
-    @param Entity The door being checked if it has shared text.
-    @returns Bool Whether or not the door has shared text.
-  --]]
-
+  --- Returns whether a parent door shares its text with its children.
+  -- @param entity [Entity The door]
+  -- @return [Boolean Whether text is shared]
   function cw.entity:DoorHasSharedText(entity)
     return entity.cwDoorSharedTxt
   end
 
-  --[[
-    @codebase Server
-    @details A function to set a door's text.
-    @param Entity The door getting its text set.
-    @param String What the door's text will be set to.
-  --]]
-
+  --- Sets the text displayed on a door, and on its children when it shares its text.
+  --
+  -- Text containing "this door can be purchased" (ignoring case and spaces) is rejected.
+  -- @param entity [Entity The door]
+  -- @param text [String The text; `nil` clears it]
   function cw.entity:SetDoorText(entity, text)
     if self:IsDoor(entity) then
       if self:IsDoorParent(entity) then
@@ -1203,25 +1078,22 @@ if SERVER then
     end
   end
 
-  --[[
-    @codebase Server
-    @details A function to set a door's name.
-    @param Entity The door getting its name set.
-    @param String What the door's name will be set to.
-  --]]
-
+  --- Sets a door's name.
+  -- @param entity [Entity The door]
+  -- @param name [String The name; `nil` clears it]
   function cw.entity:SetDoorName(entity, name)
     if self:IsDoor(entity) then
       entity:SetNWString('Name', name or '')
     end
   end
 
-  --[[
-    @codebase Server
-    @details A function to set an entity's chair animations.
-    @param Entity The entity having its animation set.
-  --]]
-
+  --- Gives a chair vehicle the key values and members of its vehicle list entry, so players sit in it
+  -- correctly.
+  --
+  -- Only acts on `prop_vehicle_prisoner_pod` entities without a vehicle table. Some stock chair
+  -- models are first replaced by their `models/nova` equivalents.
+  -- @param entity [Entity The chair vehicle]
+  -- @return [Boolean `true` when a vehicle entry was applied, `nil` otherwise]
   function cw.entity:SetChairAnimations(entity)
     if !entity.VehicleTable then
       local targetFaction = 'prop_vehicle_prisoner_pod'
@@ -1272,67 +1144,45 @@ if SERVER then
     end
   end
 
-  --[[
-    @codebase Server
-    @details A function to set an entity's start angles.
-    @param Entity The entity having its start angles being set.
-    @param Angle What the start angles are set to.
-  --]]
-
+  --- Stores the angles an entity started with.
+  -- @param entity [Entity The entity]
+  -- @param angles [Angle The start angles]
   function cw.entity:SetStartAngles(entity, angles)
     entity.cwStartAng = angles
   end
 
-  --[[
-    @codebase Server
-    @details A function to get an entity's start angles.
-    @param Entity The entity to get the angles from
-    @returns Angle Start angle for the entity.
-  --]]
-
+  --- Returns the angles stored with `cw.entity:SetStartAngles`.
+  -- @param entity [Entity The entity]
+  -- @return [Angle The start angles, or `nil`]
   function cw.entity:GetStartAngles(entity)
     return entity.cwStartAng
   end
 
-  --[[
-    @codebase Server
-    @details A function to set an entity's start position.
-    @param Entity The entity having its start position set.
-    @param Vector Start position the entity is set to.
-  --]]
-
+  --- Stores the position an entity started at.
+  -- @param entity [Entity The entity]
+  -- @param position [Vector The start position]
   function cw.entity:SetStartPosition(entity, position)
     entity.cwStartPos = position
   end
 
-  --[[
-    @codebase Server
-    @details A function to get an entity's start position.
-    @param Entity The entity getting the start position from.
-    @returns Vector The start position of the entity.
-  --]]
-
+  --- Returns the position stored with `cw.entity:SetStartPosition`.
+  -- @param entity [Entity The entity]
+  -- @return [Vector The start position, or `nil`]
   function cw.entity:GetStartPosition(entity)
     return entity.cwStartPos
   end
 
-  --[[
-    @codebase Server
-    @details A function to stop an entity's collision group restore.
-    @param Entity Which entity to stop the collision group restore on.
-  --]]
-
+  --- Cancels a pending collision group restore started by `cw.entity:ReturnCollisionGroup`.
+  -- @param entity [Entity The entity]
   function cw.entity:StopCollisionGroupRestore(entity)
     timer.Remove('CollisionGroup'..entity:EntIndex())
   end
 
-  --[[
-    @codebase Server
-    @details A function to return an entity's collision group.
-    @param Entity Which entity to restore the collision group on.
-    @param String What the collision group is set to on the entity.
-  --]]
-
+  --- Restores an entity's collision group once it no longer overlaps anything.
+  --
+  -- Retries every second while the entity's physics object is penetrating something.
+  -- @param entity [Entity The entity]
+  -- @param collisionGroup [Number A `COLLISION_GROUP_*` enum]
   function cw.entity:ReturnCollisionGroup(entity, collisionGroup)
     if IsValid(entity) then
       local physicsObject = entity:GetPhysicsObject()
@@ -1350,13 +1200,9 @@ if SERVER then
     end
   end
 
-  --[[
-    @codebase Server
-    @details A function to set whether an entity is a map entity.
-    @param Entity The entity being set as a map entity or not.
-    @param Bool Whether or not the entity is a map entity.
-  --]]
-
+  --- Sets whether an entity was created by the map.
+  -- @param entity [Entity The entity]
+  -- @param isMapEntity [Boolean Whether it is a map entity]
   function cw.entity:SetMapEntity(entity, isMapEntity)
     local entIndex = entity:EntIndex()
 
@@ -1367,38 +1213,29 @@ if SERVER then
     end
   end
 
-  --[[
-    @codebase Server
-    @details A function to get whether an entity is a map entity.
-    @param Entity The entity being checked as a map entity.
-    @returns Bool Whether or not the entity is a map entity.
-  --]]
-
+  --- Returns whether an entity was created by the map.
+  -- @param entity [Entity The entity]
+  -- @return [Boolean Whether it is a map entity]
   function cw.entity:IsMapEntity(entity)
     return cw.Entities[entity] or false
   end
 
-  --[[
-    @codebase Server
-    @details A function to make an entity flush with the ground.
-    @param Entity The entity being flushed the the ground.
-    @param Vector Initial position of the entity being flushed.
-    @param Int Normalization for refining flushing.
-  --]]
-
+  --- Moves an entity so its nearest point rests on a surface.
+  -- @param entity [Entity The entity]
+  -- @param position [Vector Point on the surface]
+  -- @param normal [Vector Normal of the surface]
   function cw.entity:MakeFlushToGround(entity, position, normal)
     entity:SetPos(position + (entity:GetPos() - entity:NearestPoint(position - (normal * 512))))
   end
 
-  --[[
-    @codebase Server
-    @details A function to make an entity disintegrate.
-    @param Entity The entity being disintegrated.
-    @param Int How long to wait until disintegrating the entity.
-    @param Int Optional: Adds speed to the entity once it gets disintegrated.
-    @param Function What to run after the entity disintegrates.
-  --]]
-
+  --- Disintegrates an entity: makes it non-solid, freezes it, plays a removal effect and decays it.
+  --
+  -- When a velocity is given, the entity is pushed first and frozen up to a second later.
+  -- @param entity [Entity The entity]
+  -- @param delay [Number Seconds the decay takes]
+  -- @param velocity=nil [Vector Velocity added to the entity or each ragdoll bone]
+  -- @param Callback=nil [Function Called just before the entity is removed]
+  -- @see cw.entity:Decay
   function cw.entity:Disintegrate(entity, delay, velocity, Callback)
     if velocity then
       if entity:GetClass() == 'prop_ragdoll' then
@@ -1455,25 +1292,28 @@ if SERVER then
     util.Effect('entity_remove', effectData, true, true)
   end
 
-  --[[
-    @codebase Server
-    @details A function to set an entity's player.
-    @param Entity The entity being set to a player.
-    @param Entity What to set the entity's player to.
-  --]]
-
+  --- Sets the player an entity belongs to, through its `Player` networked entity.
+  -- @param entity [Entity The entity]
+  -- @param player [Player The player, or `NULL` to clear it]
+  -- @see cw.entity:GetPlayer
   function cw.entity:SetPlayer(entity, player)
     entity:SetNWEntity('Player', player)
   end
 
-  --[[
-    @codebase Server
-    @details A function to make an entity decay.
-    @param Entity The entity being decayed.
-    @param Int How fast the entity should decay.
-    @param Function What to run just before the entity is removed.
-  --]]
-
+  --- Fades an entity out over time and removes it.
+  --
+  -- The entity is also detached from its player. Calling it again on a decaying entity restarts the
+  -- fade from the current alpha.
+  --
+  -- ```
+  -- cw.entity:Decay(ragdoll, 300, function()
+  --   print('The ragdoll has decayed.')
+  -- end)
+  -- ```
+  --
+  -- @param entity [Entity The entity]
+  -- @param seconds [Number Roughly how many seconds the fade takes]
+  -- @param Callback=nil [Function Called just before the entity is removed]
   function cw.entity:Decay(entity, seconds, Callback)
     local color = entity:GetColor()
     local subtract = math.ceil(color.a / seconds)
@@ -1508,16 +1348,17 @@ if SERVER then
     end)
   end
 
-  --[[
-    @codebase Server
-    @details A function to create cash.
-    @param Entity:Table The owner(s) of the cash being created.
-    @param Int How much cash to create.
-    @param Vector Where to create the cash.
-    @param Angle Optional: Angles to set the created cash to.
-    @returns Entity Reference to the cash just created.
-  --]]
-
+  --- Spawns a `cw_cash` entity.
+  --
+  -- Does nothing when cash is disabled in the config.
+  --
+  -- The owner is either a player or, for offline owners, a table with a character `key` and the
+  -- player's `uniqueID`.
+  -- @param ownerObj [Player The owner, or a `Map` with `key` and `uniqueID`; no owner when `nil`]
+  -- @param cash [Number Amount of cash, rounded]
+  -- @param position [Vector Where to spawn it]
+  -- @param angles=nil [Angle Angles of the entity]
+  -- @return [Entity The cash entity, or `nil` when cash is disabled or it failed to spawn]
   function cw.entity:CreateCash(ownerObj, cash, position, angles)
     if config.Get('cash_enabled'):Get() then
       local entity = ents.Create('cw_cash')
@@ -1546,17 +1387,13 @@ if SERVER then
     end
   end
 
-  --[[
-    @codebase Server
-    @details A function to create a shipment.
-    @param Entity:Table The owner(s) of the shipment being created.
-    @param String Unique ID of the item being stored in the shipment.
-    @param Int How many items stored in the shipment.
-    @param Vector Position the shipment is created at.
-    @param Angle Optional: Angles the shipment is set to.
-    @returns Entity Reference to the shipment that was created.
-  --]]
-
+  --- Spawns a `cw_shipment` entity holding a batch of items.
+  -- @param ownerObj [Player The owner, or a `Map` with `key` and `uniqueID`; no owner when `nil`]
+  -- @param uniqueID [String Unique ID of the item]
+  -- @param batch [Number How many items the shipment holds]
+  -- @param position [Vector Where to spawn it]
+  -- @param angles=nil [Angle Angles of the entity]
+  -- @return [Entity The shipment entity]
   function cw.entity:CreateShipment(ownerObj, uniqueID, batch, position, angles)
     local entity = ents.Create('cw_shipment')
 
@@ -1580,16 +1417,20 @@ if SERVER then
     return entity
   end
 
-  --[[
-    @codebase Server
-    @details A function to create an item.
-    @param Entity:Table The owner(s) of the item being created.
-    @param String ID for the item that is to be created.
-    @param Vector Position the item is set to when created.
-    @param Angle Optional: Angles the item is set to.
-    @returns Entity Reference to the item created.
-  --]]
-
+  --- Spawns an item as a `cw_item` entity.
+  --
+  -- Item definitions and unique IDs get a new instance. Calls the item's `OnEntitySpawned` and
+  -- enables its `bodyGroup` on the entity.
+  --
+  -- ```
+  -- cw.entity:CreateItem(player, 'ration', player:GetEyeTraceNoCursor().HitPos)
+  -- ```
+  --
+  -- @param ownerObj [Player The owner, or a `Map` with `key` and `uniqueID`; no owner when `nil`]
+  -- @param itemTable [Item The item instance or definition, or a unique ID string]
+  -- @param position [Vector Where to spawn it]
+  -- @param angles=nil [Angle Angles of the entity]
+  -- @return [Entity The item entity, or `nil` when `itemTable` is `nil`]
   function cw.entity:CreateItem(ownerObj, itemTable, position, angles)
     if itemTable == nil then return end
 
@@ -1635,13 +1476,9 @@ if SERVER then
     return entity
   end
 
-  --[[
-    @codebase Server
-    @details A function to copy an entity's owner.
-    @param Entity The entity getting the properties copied from.
-    @param Entity The entity getting the properties pasted to.
-  --]]
-
+  --- Gives an entity the same owner as another entity.
+  -- @param entity [Entity The entity to copy the owner from]
+  -- @param target [Entity The entity to give the owner to]
   function cw.entity:CopyOwner(entity, target)
     local removeDelay = self:QueryProperty(entity, 'removeDelay')
     local networked = self:QueryProperty(entity, 'networked')
@@ -1651,14 +1488,10 @@ if SERVER then
     cw.player:GivePropertyOffline(key, uniqueID, target, networked, removeDelay)
   end
 
-  --[[
-    @codebase Server
-    @details A function to get whether an entity belongs to a player's other character.
-    @param Entity The player being checked if the item belongs to it.
-    @param Entity The entity being checked for ownership.
-    @returns Bool Whether or not the entity belongs to the player.
-  --]]
-
+  --- Returns whether an entity belongs to another character of the same player.
+  -- @param player [Player The player]
+  -- @param entity [Entity The entity]
+  -- @return [Boolean Whether the player owns it with a character other than the current one]
   function cw.entity:BelongsToAnotherCharacter(player, entity)
     local uniqueID = self:QueryProperty(entity, 'uniqueID')
     local key = self:QueryProperty(entity, 'key')
@@ -1672,27 +1505,25 @@ if SERVER then
     return false
   end
 
-  --[[
-    @codebase Server
-    @details A function to set a property variable for an entity.
-    @param Entity The entity having its property var set.
-    @param String ID for the property being set.
-    @param String Value the property is being set to.
-  --]]
-
+  --- Sets a field of an owned entity's property table.
+  --
+  -- Does nothing for entities without an owner.
+  --
+  -- @param entity [Entity The entity]
+  -- @param key [String Name of the field]
+  -- @param value [Any The new value]
   function cw.entity:SetPropertyVar(entity, key, value)
     if entity.cwPropertyTab then entity.cwPropertyTab[key] = value end
   end
 
-  --[[
-    @codebase Server
-    @details A function to query an entity's property table.
-    @param Entity The entity getting the properties from.
-    @param String Which property is being queried.
-    @param String Fallback value to return if no property is found.
-    @returns String Value of the property that was queried.
-  --]]
-
+  --- Returns a field of an entity's property table.
+  --
+  -- The table is set by `cw.player:GiveProperty` and holds `key`, `owner`, `owned`, `uniqueID`,
+  -- `networked` and `removeDelay`.
+  -- @param entity [Entity The entity]
+  -- @param key [String Name of the field]
+  -- @param default=nil [Any Value returned when the field or the table is not set]
+  -- @return [Any The field's value, or `default`]
   function cw.entity:QueryProperty(entity, key, default)
     if entity.cwPropertyTab then
       return entity.cwPropertyTab[key] or default
@@ -1701,12 +1532,8 @@ if SERVER then
     end
   end
 
-  --[[
-    @codebase Server
-    @details A function to clear an entity as property.
-    @param Entity The entity being cleared from the properties
-  --]]
-
+  --- Takes an entity away from its owner, whether the owner is online or not.
+  -- @param entity [Entity The entity]
   function cw.entity:ClearProperty(entity)
     local owner = self:GetOwner(entity)
 
@@ -1720,25 +1547,17 @@ if SERVER then
     end
   end
 
-  --[[
-    @codebase Server
-    @details A function to get whether an entity has an owner.
-    @param Entity The entity being checked if it has an owner.
-    @returns Bool Whether or not the entity has an owner.
-  --]]
-
+  --- Returns whether an entity is owned by a character.
+  -- @param entity [Entity The entity]
+  -- @return [Boolean Whether the entity has an owner]
   function cw.entity:HasOwner(entity)
     return self:QueryProperty(entity, 'owned')
   end
 
-  --[[
-    @codebase Server
-    @details A function to get an entity's owner.
-    @param Entity The entity getting the owner from.
-    @param Bool Whether or not to get the owner even if the entity has no entity key.
-    @returns Entity The owner of the entity.
-  --]]
-
+  --- Returns the player that owns an entity.
+  -- @param entity [Entity The entity]
+  -- @param bAnyCharacter=nil [Boolean Return the owner even when the entity belongs to another of their characters]
+  -- @return [Player The owner, or `nil` when it is not online or on the owning character]
   function cw.entity:GetOwner(entity, bAnyCharacter)
     local owner = self:QueryProperty(entity, 'owner')
     local key = self:QueryProperty(entity, 'key')
@@ -1748,13 +1567,12 @@ if SERVER then
     end
   end
 else
-  --[[
-    @codebase Client
-    @details A function to make an entity decay.
-    @param Entity The entity being decayed.
-    @param Int How fast the entity should decay.
-    @param Function What to run just before the entity is removed.
-  --]]
+  --- Fades a clientside entity out over time and removes it.
+  --
+  -- Calling it again on a decaying entity restarts the fade from the current alpha.
+  -- @param entity [Entity The entity]
+  -- @param seconds [Number Roughly how many seconds the fade takes]
+  -- @param Callback=nil [Function Called just before the entity is removed]
   function cw.entity:Decay(entity, seconds, Callback)
     local color = entity:GetColor()
     local subtract = math.ceil(color.a / seconds)
@@ -1793,14 +1611,15 @@ else
     Author: Nori (thanks a lot mate, if you're reading this, check out
     CakeScript G3 - it's epic!).
   ]] --
-  --[[
-    @codebase Client
-    @details A function to calculate a door's text position.
-    @param Entity The door getting its text position calculated.
-    @param Bool Optional: Whether or not the other side of the door text position is being calculated.
-    @returns Function Recall to this function.
-  --]]
 
+  --- Calculates where to draw the text on both faces of a door.
+  --
+  -- Traces onto the door's thinnest side, and retries from the other side when the trace hits the
+  -- world. The body checks an undefined `reverse` variable instead of `reversed`, so the retry
+  -- traces from the same side.
+  -- @param door [Entity The door]
+  -- @param reversed=nil [Boolean Whether this is the retry from the other side]
+  -- @return [Map The `position`, `angles`, `positionBack`, `anglesBack`, `width` and `hitWorld` of the text]
   function cw.entity:CalculateDoorTextPosition(door, reversed)
     local traceData = {}
     local obbCenter = door:OBBCenter()
@@ -1880,37 +1699,25 @@ else
     }
   end
 
-  --[[
-    @codebase Client
-    @details A function to force a menu option.
-    @param Entity The entity having the menu option created on.
-    @param String The name of the option to be displayed (not implemented?).
-    @param String Interaction action to be done (e.g. cw.itemTake).
-  --]]
-
+  --- Runs an entity menu option on the server over the `EntityMenuOption` netstream message.
+  -- @param entity [Entity The entity]
+  -- @param option [String Name of the option]
+  -- @param arguments [Any Arguments of the option, such as the action to run]
   function cw.entity:ForceMenuOption(entity, option, arguments)
     netstream.Start('EntityMenuOption', { entity, option, arguments })
   end
 
-  --[[
-    @codebase Client
-    @details A function to get whether an entity has an owner.
-    @param Entity The entity being checked if it has an owner.
-    @returns Bool Whether or not the entity has an owner.
-  --]]
-
+  --- Returns whether an entity is owned by a character, through its `Owned` networked boolean.
+  -- @param entity [Entity The entity]
+  -- @return [Boolean Whether the entity has an owner]
   function cw.entity:HasOwner(entity)
     return entity:GetNWBool('Owned')
   end
 
-  --[[
-    @codebase Client
-    @details A function to get an entity's owner.
-    @param Entity The entity getting the owner from.
-    @param Bool Whether or not to get the owner even if the entity has no entity key.
-    @returns Entity The owner of the entity.
-  --]]
-
+  --- Returns the player that owns an entity, if its ownership is networked.
+  -- @param entity [Entity The entity]
+  -- @param bAnyCharacter=nil [Boolean Return the owner even when the entity belongs to another of their characters]
+  -- @return [Player The owner, or `nil` when unknown or not on the owning character]
   function cw.entity:GetOwner(entity, bAnyCharacter)
     local owner = entity:GetNWEntity('Owner')
     local key = entity:GetNWInt('Key')

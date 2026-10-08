@@ -14,7 +14,7 @@ COMMAND.access = 'z'
 COMMAND.arguments = 1
 COMMAND.alias = { 'E' }
 
--- Called when the command has been run.
+--- Prints an event message in every player's chat; the arguments are the event text.
 function COMMAND:OnRun(player, arguments)
   local text = table.concat(arguments, ' ')
 

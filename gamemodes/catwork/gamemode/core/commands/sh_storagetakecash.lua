@@ -15,7 +15,9 @@ COMMAND.flags = CMD_DEFAULT
 COMMAND.arguments = 1
 COMMAND.cooldown = 5
 
--- Called when the command has been run.
+--- Takes cash out of the open storage; the argument is the amount.
+--
+-- Respects the storage's `CanTakeCash`/`OnTakeCash` callbacks.
 function COMMAND:OnRun(player, arguments)
   local storageTable = player:GetStorageTable()
 

@@ -14,10 +14,17 @@ faction.stored = stored
 local buffer = faction.buffer or {}
 faction.buffer = buffer
 
+--- Returns the registered factions keyed by name.
+--
+-- @return [Map<Faction> Factions keyed by name]
+-- @see faction.GetAll
 function faction.GetStored()
   return stored
 end
 
+--- Returns the registered factions keyed by numeric index.
+--
+-- @return [Map<Faction> Factions keyed by the CRC-based index from `cw.core:GetShortCRC`]
 function faction.GetBuffer()
   return buffer
 end
@@ -46,19 +53,44 @@ FACTION_CITIZENS_MALE = {
 --[[ Set the __index meta function of the class. --]]
 local CLASS_TABLE = { __index = CLASS_TABLE }
 
--- A function to register a new faction.
+--- Registers the faction with `faction.Register` under its `name`.
+--
+-- @return [String The faction's name]
 function CLASS_TABLE:Register()
   return faction.Register(self, self.name)
 end
 
--- A function to get a new faction.
+--- Creates a new, unregistered faction object.
+--
+-- Set its fields (`models`, `whitelist`, `material`, `limit`, `maximum`, `singleGender`,
+-- `ranks`...) and callbacks, then call `CLASS_TABLE:Register` on it.
+--
+-- ```
+-- local FACTION = faction.New('#Faction_MPF')
+--
+-- FACTION.whitelist = true
+-- FACTION.material = 'halfliferp/factions/mpf'
+--
+-- FACTION_MPF = FACTION:Register()
+-- ```
+--
+-- @param name='Unknown' [String Name of the faction, can be a language phrase]
+-- @return [Faction The new faction object]
 function faction.New(name)
   local object = cw.core:NewMetaTable(CLASS_TABLE)
     object.name = name or 'Unknown'
   return object
 end
 
--- A function to register a new faction.
+--- Registers a faction.
+--
+-- Missing `models.male` and `models.female` lists default to the Half-Life 2 citizen models,
+-- `limit` defaults to 128 and the index is a short CRC of `name`. On the server, during the first
+-- boot, the faction's models and its `material` PNG are added to the client download list.
+--
+-- @param data [Faction The faction object or table]
+-- @param name [String Name of the faction, used when `data.name` is not set]
+-- @return [String The faction's name]
 function faction.Register(data, name)
   if data.models then
     data.models.female = data.models.female or FACTION_CITIZENS_FEMALE
@@ -96,7 +128,13 @@ function faction.Register(data, name)
   return data.name
 end
 
--- A function to get the faction limit.
+--- Returns how many players may be in a faction right now.
+--
+-- A faction's `limit` is relative to a full 128-player server, so the real limit scales with the
+-- current player count. Factions with the default limit of 128 return `game.MaxPlayers()`.
+--
+-- @param name [Any Faction name, index or part of the name]
+-- @return [Number The current limit, or 0 if the faction is not found]
 function faction.GetLimit(name)
   local faction = faction.FindByID(name)
 
@@ -111,7 +149,13 @@ function faction.GetLimit(name)
   end
 end
 
--- A function to get whether a gender is valid.
+--- Returns whether a gender may be chosen for a faction.
+--
+-- Factions with a `singleGender` only accept that gender.
+--
+-- @param faction [Any Faction name, index or part of the name]
+-- @param gender [String `GENDER_MALE` or `GENDER_FEMALE`]
+-- @return [Boolean `true` if the gender is valid, otherwise `nil`]
 function faction.IsGenderValid(faction, gender)
   local factionTable = _faction.FindByID(faction)
 
@@ -122,7 +166,12 @@ function faction.IsGenderValid(faction, gender)
   end
 end
 
--- A function to get whether a model is valid.
+--- Returns whether a model is one of a faction's models for a gender.
+--
+-- @param faction [Any Faction name, index or part of the name]
+-- @param gender [String `GENDER_MALE` or `GENDER_FEMALE`]
+-- @param model [String Model path]
+-- @return [Boolean `true` if the model is valid, otherwise `nil`]
 function faction.IsModelValid(faction, gender, model)
   if gender and model then
     local factionTable = _faction.FindByID(faction)
@@ -134,7 +183,13 @@ function faction.IsModelValid(faction, gender, model)
   end
 end
 
--- A function to find a faction by an identifier.
+--- Finds a faction by index, exact name or part of its name.
+--
+-- Partial matches are case-insensitive Lua patterns; the faction with the shortest matching name
+-- wins.
+--
+-- @param identifier [Any Faction index (Number or numeric String), name or part of the name]
+-- @return [Faction The faction, or `nil` if none matches]
 function faction.FindByID(identifier)
   if !identifier then return end
 
@@ -159,12 +214,17 @@ function faction.FindByID(identifier)
   end
 end
 
--- A function to get all factions.
+--- Returns every registered faction keyed by name.
+--
+-- @return [Map<Faction> Factions keyed by name]
 function faction.GetAll()
   return stored
 end
 
--- A function to get each player in a faction.
+--- Returns every initialized player in a faction.
+--
+-- @param faction [String Faction name, as returned by `Player:GetFaction`]
+-- @return [List<Player> The players in the faction]
 function faction.GetPlayers(faction)
   local players = {}
 
@@ -179,7 +239,13 @@ function faction.GetPlayers(faction)
   return players
 end
 
--- A function to get the rank with the lowest 'position' (highest rank) in this faction.
+--- Returns the faction's highest rank, the one with the lowest `position`.
+--
+-- Errors if the faction cannot be found.
+--
+-- @param factionID [Any Faction name, index or part of the name]
+-- @return [String The rank's name, or `nil` if the faction has no ranks, Map The rank table]
+-- @see faction.GetLowestRank
 function faction.GetHighestRank(factionID)
   local faction = _faction.FindByID(factionID)
 
@@ -208,7 +274,13 @@ function faction.GetHighestRank(factionID)
   end
 end
 
--- A function to get the rank with the highest 'position' (lowest rank) in this faction.
+--- Returns the faction's lowest rank, the one with the highest `position`.
+--
+-- Errors if the faction cannot be found.
+--
+-- @param factionID [Any Faction name, index or part of the name]
+-- @return [String The rank's name, or `nil` if the faction has no ranks, Map The rank table]
+-- @see faction.GetHighestRank
 function faction.GetLowestRank(factionID)
   local faction = _faction.FindByID(factionID)
 
@@ -237,7 +309,15 @@ function faction.GetLowestRank(factionID)
   end
 end
 
--- A function to get the rank with the next lowest 'position' (next highest rank).
+--- Returns the rank one step above a rank, the one whose `position` is one lower.
+--
+-- Reads `ranks` from the `faction` library table instead of the faction found by `factionID`, so
+-- it currently always returns nothing.
+--
+-- @param factionID [Any Faction name, index or part of the name]
+-- @param rank [Map The current rank table]
+-- @return [String The higher rank's name, Map The higher rank table]
+-- @see faction.GetLowerRank
 function faction.GetHigherRank(factionID, rank)
   local highestRank, rankTable = faction.GetHighestRank(factionID)
 
@@ -252,7 +332,13 @@ function faction.GetHigherRank(factionID, rank)
   end
 end
 
--- A function to get the rank with the next highest 'position' (next lowest rank).
+--- Returns the rank one step below a rank, the one whose `position` is one higher.
+--
+-- @param factionID [Any Faction name, index or part of the name]
+-- @param rank [Map The current rank table]
+-- @return [String The lower rank's name, or `nil` if `rank` is already the lowest, Map The lower
+-- rank table]
+-- @see faction.GetHigherRank
 function faction.GetLowerRank(factionID, rank)
   local lowestRank, rankTable = faction.GetLowestRank(factionID)
 
@@ -267,7 +353,12 @@ function faction.GetLowerRank(factionID, rank)
   end
 end
 
--- A function to get the default rank of a faction.
+--- Returns the faction's default rank, the first rank with `default` set.
+--
+-- Errors if the faction cannot be found.
+--
+-- @param factionID [Any Faction name, index or part of the name]
+-- @return [String The rank's name, or `nil` if there is no default rank, Map The rank table]
 function faction.GetDefaultRank(factionID)
   local faction = faction.FindByID(factionID)
 
@@ -284,6 +375,13 @@ function faction.GetDefaultRank(factionID)
 end
 
 if SERVER then
+  --- Returns whether a player already has the maximum number of characters in a faction.
+  --
+  -- Only factions with a `maximum` field limit characters.
+  --
+  -- @param player [Player The player whose characters are counted]
+  -- @param factionID [Any Faction name, index or part of the name]
+  -- @return [Boolean `true` if the maximum is reached, otherwise `nil`]
   function faction.HasReachedMaximum(player, factionID)
     local factionTable = faction.FindByID(factionID)
     local characters = player:GetCharacters()
@@ -303,6 +401,13 @@ if SERVER then
     end
   end
 else
+  --- Returns whether the local player already has the maximum number of characters in a faction.
+  --
+  -- Client version of the server's `faction.HasReachedMaximum`, counting the characters in
+  -- `cw.character:GetAll`.
+  --
+  -- @param factionID [Any Faction name, index or part of the name]
+  -- @return [Boolean `true` if the maximum is reached, otherwise `nil`]
   function faction.HasReachedMaximum(factionID)
     local factionTable = faction.FindByID(factionID)
     local characters = cw.character:GetAll()

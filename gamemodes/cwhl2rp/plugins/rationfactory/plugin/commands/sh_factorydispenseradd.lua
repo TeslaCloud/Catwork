@@ -10,7 +10,9 @@ COMMAND.access = 's'
 COMMAND.arguments = 1
 COMMAND.text = '#Command_Factorydispenseradd_Syntax'
 
--- Called when the command has been run.
+--- Spawns a factory dispenser where the player looks, facing them.
+--
+-- Argument 1 picks the item it dispenses: `1` for `breens_water`, `2` for `citizen_supplements`.
 function COMMAND:OnRun(player, arguments)
   local trace = player:GetEyeTraceNoCursor()
   local entity = ents.Create('cw_factorydispenser')

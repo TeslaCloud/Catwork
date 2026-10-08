@@ -3,7 +3,16 @@
   without permission of its author (kurozael@gmail.com).
 --]]
 
--- Called when an entity's menu option should be handled.
+--- Called when an entity's menu option is chosen; opens a notepad for reading or editing.
+--
+-- The notepad text is only sent the first time a player opens that text (tracked by its
+-- CRC in `player.notepadIDs`); later the client uses its cached copy. Only the notepad's
+-- owner may edit written text; anyone may write on a blank notepad.
+--
+-- @param player [Player The player who chose the option]
+-- @param entity [Entity The entity the option was chosen on]
+-- @param option [String The option's display text]
+-- @param arguments [String The option value, such as `cw_notepadReadOption`]
 function cwNotepad:EntityHandleMenuOption(player, entity, option, arguments)
   local class = entity:GetClass()
 
@@ -42,12 +51,12 @@ function cwNotepad:EntityHandleMenuOption(player, entity, option, arguments)
   end
 end
 
--- Called when CW has loaded all of the entities.
+--- Called after Catwork has loaded the map entities; restores the saved notepads.
 function cwNotepad:ClockworkInitPostEntity()
   self:LoadNotepad()
 end
 
--- Called just after data should be saved.
+--- Called after data is saved; saves the notepads.
 function cwNotepad:PostSaveData()
   self:SaveNotepad()
 end

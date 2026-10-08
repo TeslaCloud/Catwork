@@ -11,7 +11,7 @@ include('shared.lua')
 AddCSLuaFile('cl_init.lua')
 AddCSLuaFile('shared.lua')
 
--- Called when the entity initializes.
+--- Sets up physics, simple use and 25 health for the item entity.
 function ENT:Initialize()
   self:SetMoveType(MOVETYPE_VPHYSICS)
   self:PhysicsInit(SOLID_VPHYSICS)
@@ -27,17 +27,22 @@ function ENT:Initialize()
   end
 end
 
--- Called when the entity's transmit state should be updated.
+--- Always transmits the item entity to every client.
 function ENT:UpdateTransmitState()
   return TRANSMIT_ALWAYS
 end
 
--- A function to get the entity's item table.
+--- Returns the item instance the entity represents.
+-- @return [Item The item instance, or `nil` before `ENT:SetItemTable` is called]
 function ENT:GetItemTable()
   return self.cwItemTable
 end
 
--- A function to set the item of the entity.
+--- Makes the entity represent an item instance.
+--
+-- Sets the item's model and skin, networks its index, calls the item's `OnCreated(entity)` and registers the
+-- entity with `item.AddItemEntity`. Does nothing when `itemTable` is `nil`.
+-- @param itemTable [Item The item instance]
 function ENT:SetItemTable(itemTable)
   if itemTable then
     self:SetSkin(itemTable.skin or 1)
@@ -55,7 +60,7 @@ function ENT:SetItemTable(itemTable)
   end
 end
 
--- Called when the entity is removed.
+--- Calls the item's `OnEntityRemoved(entity)` when the entity is removed.
 function ENT:OnRemove()
   local itemTable = self.cwItemTable
 
@@ -64,7 +69,7 @@ function ENT:OnRemove()
   end
 end
 
--- A function to explode the entity.
+--- Plays a glass impact effect and a soft impact sound at the entity's position.
 function ENT:Explode()
   local effectData = EffectData()
     effectData:SetStart(self:GetPos())
@@ -75,7 +80,10 @@ function ENT:Explode()
   self:EmitSound('physics/body/body_medium_impact_soft'..math.random(1, 7)..'.wav')
 end
 
--- Called when the entity takes damage.
+--- Applies damage above 5 to the entity's health and destroys it at zero health.
+--
+-- The item's `OnEntityTakeDamage` can return `false` to ignore the damage. Fires `ItemEntityTakeDamage` and,
+-- when destroyed, the item's `OnEntityDestroyed` and the `ItemEntityDestroyed` hook.
 function ENT:OnTakeDamage(damageInfo)
   local itemTable = self.cwItemTable
 
@@ -101,7 +109,9 @@ function ENT:OnTakeDamage(damageInfo)
   end
 end
 
--- Called each frame.
+--- Removes entities stuck in the world or without an item, and runs the item's `OnEntityThink`.
+--
+-- `OnEntityThink` may return the number of seconds until the next think; the default is one second.
 function ENT:Think()
   local itemTable = self.cwItemTable
 

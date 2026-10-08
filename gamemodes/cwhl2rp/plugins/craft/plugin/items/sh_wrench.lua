@@ -6,5 +6,5 @@ ITEM.weight = 1
 ITEM.category = 'Tools'
 ITEM.description = '#Item_Wrench_Description'
 
--- Called when a player drops the item.
+--- Lets the item be dropped, with no extra effect.
 function ITEM:OnDrop(player, position) end

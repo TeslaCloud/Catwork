@@ -6,6 +6,9 @@
   with contributions from Cloud Sixteen community.
 --]]
 
+--- Called when a player first spawns; exchanges custom scoreboard icons with them two seconds later.
+-- @param player [Player The player]
+-- @param bOneWay [Boolean Unused]
 function Schema:PlayerInitialSpawn(player, bOneWay)
   timer.Simple(2, function()
     if IsValid(player) then
@@ -14,7 +17,9 @@ function Schema:PlayerInitialSpawn(player, bOneWay)
   end)
 end
 
--- Called when Clockwork has loaded all of the entities.
+--- Called when Catwork has loaded all of the entities.
+--
+-- Loads the saved ration dispensers, vending machines, Combine objectives, radios and named NPCs.
 function Schema:ClockworkInitPostEntity()
   self:LoadRationDispensers()
   self:LoadVendingMachines()
@@ -23,10 +28,12 @@ function Schema:ClockworkInitPostEntity()
   self:LoadNPCs()
 end
 
--- Called when data should be saved.
+--- Called when data should be saved; the schema saves its entities in `Schema:PostSaveData` instead.
 function Schema:SaveData() end
 
--- Called just after data should be saved.
+--- Called just after data has been saved.
+--
+-- Saves the ration dispensers, vending machines, radios and named NPCs of the current map.
 function Schema:PostSaveData()
   self:SaveRationDispensers()
   self:SaveVendingMachines()
@@ -34,11 +41,20 @@ function Schema:PostSaveData()
   self:SaveNPCs()
 end
 
--- Called when a player's default model is needed.
+--- Called when a player's default model is needed; overridden to do nothing so the faction model is used.
+-- @param player [Player The player]
 function Schema:GetPlayerDefaultModel(player)
 end
 
--- Called when an entity's menu option should be handled.
+--- Called when a player chooses an option from an entity's menu.
+--
+-- Opens corpse loot and belongings storage, charges breaches and handles the stationary radio options:
+-- setting a frequency in the `1X1.X` format, toggling it and picking it up as an item. Empty
+-- belongings are removed when closed.
+-- @param player [Player The player who chose the option]
+-- @param entity [Entity The entity]
+-- @param option [String The option's name]
+-- @param arguments [Any The option's menu string, such as `'cw_radioToggle'`, or the typed frequency]
 function Schema:EntityHandleMenuOption(player, entity, option, arguments)
   if entity:GetClass() == 'prop_ragdoll' and arguments == 'cw_corpseLoot' then
     if !entity.cwInventory then entity.cwInventory = {} end
@@ -128,7 +144,12 @@ function Schema:EntityHandleMenuOption(player, entity, option, arguments)
   end
 end
 
--- Called when an NPC has been killed.
+--- Called when an NPC is killed.
+--
+-- When the NPC is a player's scanner, the player dies with it and the scanner is reset.
+-- @param npc [NPC The NPC]
+-- @param attacker [Entity The attacker]
+-- @param inflictor [Entity The inflictor]
 function Schema:OnNPCKilled(npc, attacker, inflictor)
   for k, v in pairs(self.scanners) do
     local scanner = v[1]
@@ -145,7 +166,8 @@ function Schema:OnNPCKilled(npc, attacker, inflictor)
   end
 end
 
--- Called when a player's visibility should be set up.
+--- Called when a player's visibility is set up; adds a scanner player's scanner to their PVS.
+-- @param player [Player The player]
 function Schema:SetupPlayerVisibility(player)
   if self.scanners[player] then
     local scanner = self.scanners[player][1]
@@ -156,7 +178,11 @@ function Schema:SetupPlayerVisibility(player)
   end
 end
 
--- Called when a player's drop weapon info should be adjusted.
+--- Called when the info of a weapon a player drops should be adjusted.
+--
+-- Drops the active weapon from the player's eyes and holstered weapons from where their gear model is.
+-- @param player [Player The player]
+-- @param info [Map The drop info: `itemTable`, and `position` and `angles`, which are set in place]
 function Schema:PlayerAdjustDropWeaponInfo(player, info)
   if cw.player:GetWeaponClass(player) == info.itemTable:GetWeaponClass() then
     info.position = player:GetShootPos()
@@ -188,7 +214,11 @@ function Schema:PlayerAdjustDropWeaponInfo(player, info)
   end
 end
 
--- Called when a player uses a door.
+--- Called when a player uses a door.
+--
+-- On `rp_c18_v1`, closes certain doors automatically ten seconds after they are used.
+-- @param player [Player The player]
+-- @param door [Entity The door]
 function Schema:PlayerUseDoor(player, door)
   if string.lower(game.GetMap()) == 'rp_c18_v1' then
     local name = string.lower(door:GetName())
@@ -205,14 +235,26 @@ function Schema:PlayerUseDoor(player, door)
   end
 end
 
--- Called when a player has an unknown inventory item.
+--- Called when a player's inventory contains an item that no longer exists.
+--
+-- Replaces the old `radio` item with `handheld_radio`.
+-- @param player [Player The player]
+-- @param inventory [Inventory The inventory being restored]
+-- @param item [String The unique ID of the unknown item]
+-- @param amount [Number How many of the item there are]
 function Schema:PlayerHasUnknownInventoryItem(player, inventory, item, amount)
   if item == 'radio' then
     inventory['handheld_radio'] = amount
   end
 end
 
--- Called when a player's default inventory is needed.
+--- Called when a new character's default inventory is needed.
+--
+-- Gives administrators a radio, Civil Protection a radio and stunstick, Overwatch a radio, pistol, MP7 and
+-- ammunition, and everyone else a suitcase.
+-- @param player [Player The player]
+-- @param character [Character The new character]
+-- @param inventory [Inventory The inventory, filled in place]
 function Schema:GetPlayerDefaultInventory(player, character, inventory)
   if character.faction == FACTION_ADMIN then
     cw.inventory:AddInstance(
@@ -256,7 +298,9 @@ function Schema:GetPlayerDefaultInventory(player, character, inventory)
   end
 end
 
--- Called when a player's typing display has started.
+--- Called when a player starts typing; plays the radio-on sound for Combine players typing a message.
+-- @param player [Player The player]
+-- @param code [String The typing display code, such as `'n'` for normal speech or `'r'` for the radio]
 function Schema:PlayerStartTypingDisplay(player, code)
   if player:IsCombine() and !player:IsNoClipping() then
     if code == 'n' or code == 'y' or code == 'w' or code == 'r' then
@@ -269,7 +313,9 @@ function Schema:PlayerStartTypingDisplay(player, code)
   end
 end
 
--- Called when a player's typing display has finished.
+--- Called when a player stops typing; plays the radio-off sound for Combine players who sent a message.
+-- @param player [Player The player]
+-- @param textTyped [Boolean Whether the player sent a message]
 function Schema:PlayerFinishTypingDisplay(player, textTyped)
   if player:IsCombine() and textTyped then
     if player.typingBeep then
@@ -280,7 +326,12 @@ function Schema:PlayerFinishTypingDisplay(player, textTyped)
   player.typingBeep = nil
 end
 
--- Called when a player stuns an entity.
+--- Called when a player hits an entity with a stunstick.
+--
+-- Progresses the player's Strength and punches the view of a hit player. Four hits less than two seconds
+-- apart knock the target out for the `knockout_time` config value.
+-- @param player [Player The player with the stunstick]
+-- @param entity [Entity The entity that was hit]
 function Schema:PlayerStunEntity(player, entity)
   local target = cw.entity:GetPlayer(entity)
   local strength = cw.attributes:Fraction(player, ATB_STRENGTH, 12, 6)
@@ -307,7 +358,10 @@ function Schema:PlayerStunEntity(player, entity)
   end
 end
 
--- Called when a player's weapons should be given.
+--- Called when a player's spawn weapons should be given.
+--
+-- Gives GHOST units a sniper rifle, vortigaunts their vortigaunt weapon and enslaved vortigaunts a broom.
+-- @param player [Player The player]
 function Schema:PlayerGiveWeapons(player)
   if player:GetFaction() == FACTION_MPF then
     if self:IsPlayerCombineRank(player, 'GHOST') then
@@ -320,7 +374,13 @@ function Schema:PlayerGiveWeapons(player)
   end
 end
 
--- Called when a player's inventory item has been updated.
+--- Called when an item in a player's inventory is updated.
+--
+-- Takes off the player's clothes when they no longer have the clothes item.
+-- @param player [Player The player]
+-- @param itemTable [Item The item]
+-- @param amount [Number The change in amount]
+-- @param force [Boolean Whether the update was forced]
 function Schema:PlayerInventoryItemUpdated(player, itemTable, amount, force)
   local clothes = player:GetCharacterData('clothes')
 
@@ -333,14 +393,22 @@ function Schema:PlayerInventoryItemUpdated(player, itemTable, amount, force)
   end
 end
 
--- Called when a player switches their flashlight on or off.
+--- Called when a player switches their flashlight; scanner players and tied players cannot turn it on.
+-- @param player [Player The player]
+-- @param on [Boolean Whether the flashlight is being turned on]
+-- @return [Boolean `false` to block the switch]
 function Schema:PlayerSwitchFlashlight(player, on)
   if on and (self.scanners[player] or player:GetNetVar('tied') != 0) then
     return false
   end
 end
 
--- Called when a player's storage should close.
+--- Called to check whether a player's storage should close.
+--
+-- Closes a search of another player once the searched player is no longer tied.
+-- @param player [Player The player]
+-- @param storage [Map The open storage]
+-- @return [Boolean `true` to close the storage]
 function Schema:PlayerStorageShouldClose(player, storage)
   local entity = player:GetStorageEntity()
 
@@ -349,14 +417,17 @@ function Schema:PlayerStorageShouldClose(player, storage)
   end
 end
 
--- Called when a player attempts to spray their tag.
+--- Called when a player attempts to spray; only untied players with a spray can may spray.
+-- @param player [Player The player]
+-- @return [Boolean `true` to block the spray]
 function Schema:PlayerSpray(player)
   if !player:HasItemByID('spray_can') or player:GetNetVar('tied') != 0 then
     return true
   end
 end
 
--- Called when a player presses F3.
+--- Called when a player presses F3; uses the player's zip tie, or tells them they have none.
+-- @param player [Player The player]
 function Schema:ShowSpare1(player)
   local itemTable = player:FindItemByID('zip_tie')
 
@@ -369,12 +440,19 @@ function Schema:ShowSpare1(player)
   cw.player:RunClockworkCommand(player, 'InvAction', 'use', itemTable.uniqueID, tostring(itemTable.itemID))
 end
 
--- Called when a player presses F4.
+--- Called when a player presses F4; runs the `CharSearch` command.
+-- @param player [Player The player]
 function Schema:ShowSpare2(player)
   cw.player:RunClockworkCommand(player, 'CharSearch')
 end
 
--- Called when a player attempts to spawn a prop.
+--- Called when a player attempts to spawn a prop.
+--
+-- While the `cwu_props` config is enabled, citizens outside the Civil Worker's Union cannot spawn beds or
+-- the furniture in `Schema.cwuProps`. Admins are exempt.
+-- @param player [Player The player]
+-- @param model [String The prop's model]
+-- @return [Boolean `false` to block the spawn]
 function Schema:PlayerSpawnProp(player, model)
   if !player:IsAdmin() and config.Get('cwu_props'):Get() then
     if player:GetFaction() == FACTION_CITIZEN then
@@ -401,7 +479,9 @@ function Schema:PlayerSpawnProp(player, model)
   end
 end
 
--- Called when a player spawns an object.
+--- Called when a player attempts to spawn an object; tied players and scanners cannot.
+-- @param player [Player The player]
+-- @return [Boolean `false` to block the spawn]
 function Schema:PlayerSpawnObject(player)
   if player:GetNetVar('tied') != 0 or self.scanners[player] then
     cw.player:Notify(player, L('Err_NoPermissionRightNow'))
@@ -410,7 +490,12 @@ function Schema:PlayerSpawnObject(player)
   end
 end
 
--- Called when a player's character data should be restored.
+--- Called when a player's character data is restored.
+--
+-- Gives non-Combine characters a random five-digit citizen ID when they have none, or an old four-digit
+-- one.
+-- @param player [Player The player]
+-- @param data [Map The character data, changed in place]
 function Schema:PlayerRestoreCharacterData(player, data)
   if !self:PlayerIsCombine(player) then
     if !data['citizenid'] or string.len(tostring(data['citizenid'])) == 4 then
@@ -419,7 +504,10 @@ function Schema:PlayerRestoreCharacterData(player, data)
   end
 end
 
--- Called when a player attempts to breach an entity.
+--- Called when a player attempts to breach an entity; any real door except rotating ones may be breached.
+-- @param player [Player The player]
+-- @param entity [Entity The entity]
+-- @return [Boolean Whether the entity can be breached, or `nil` for the default]
 function Schema:PlayerCanBreachEntity(player, entity)
   if string.lower(entity:GetClass()) == 'func_door_rotating' then
     return false
@@ -432,21 +520,34 @@ function Schema:PlayerCanBreachEntity(player, entity)
   end
 end
 
--- Called when a player attempts to restore a recognised name.
+--- Called when a player attempts to restore a recognised name; Combine names are never restored.
+-- @param player [Player The player]
+-- @param target [Player The recognised player]
+-- @return [Boolean `false` to forget the name]
 function Schema:PlayerCanRestoreRecognisedName(player, target)
   if self:PlayerIsCombine(target) then
     return false
   end
 end
 
--- Called when a player attempts to save a recognised name.
+--- Called when a player attempts to save a recognised name; Combine names are never saved.
+-- @param player [Player The player]
+-- @param target [Player The recognised player]
+-- @return [Boolean `false` to not save the name]
 function Schema:PlayerCanSaveRecognisedName(player, target)
   if self:PlayerIsCombine(target) then
     return false
   end
 end
 
--- Called when a player attempts to use the radio.
+--- Called when a player attempts to use the radio.
+--
+-- Combine players and scanners can always use it; everyone else needs a handheld radio and a frequency.
+-- @param player [Player The player]
+-- @param text [String The message]
+-- @param listeners [Map The players who will hear the message]
+-- @param eavesdroppers [Map The players who will overhear it]
+-- @return [Boolean `false` to block the message]
 function Schema:PlayerCanRadio(player, text, listeners, eavesdroppers)
   local isCombine = player:IsCombine()
 
@@ -463,7 +564,11 @@ function Schema:PlayerCanRadio(player, text, listeners, eavesdroppers)
   end
 end
 
--- Called when a player's character has initialized.
+--- Called when a player's character has initialized.
+--
+-- Puts Combine players in the class matching their rank when it has room, and adds a database line to
+-- the Combine display for citizens.
+-- @param player [Player The player]
 function Schema:PlayerCharacterInitialized(player)
   local faction = player:GetFaction()
 
@@ -488,7 +593,13 @@ function Schema:PlayerCharacterInitialized(player)
   end
 end
 
--- Called when a player's name has changed.
+--- Called when a player's name changes.
+--
+-- Moves Combine players to the class of a newly gained rank. Civil Protection units who become scanners
+-- are turned into one with `Schema:MakePlayerScanner`.
+-- @param player [Player The player]
+-- @param previousName [String The old name]
+-- @param newName [String The new name]
 function Schema:PlayerNameChanged(player, previousName, newName)
   if self:PlayerIsCombine(player) then
     local faction = player:GetFaction()
@@ -519,14 +630,24 @@ function Schema:PlayerNameChanged(player, previousName, newName)
   end
 end
 
--- Called when a player attempts to use an entity in a vehicle.
+--- Called when a player attempts to use an entity from a vehicle; allows players and their ragdolls.
+-- @param player [Player The player]
+-- @param entity [Entity The entity]
+-- @param vehicle [Vehicle The vehicle]
+-- @return [Boolean `true` to allow it]
 function Schema:PlayerCanUseEntityInVehicle(player, entity, vehicle)
   if entity:IsPlayer() or cw.entity:IsPlayerRagdoll(entity) then
     return true
   end
 end
 
--- Called when a player presses a key.
+--- Called when a player presses a key.
+--
+-- Use starts untying the tied player being looked at. Scanner players play a scanner sound with the
+-- attack keys, take a photo with reload that stuns facing non-Combine players nearby, and follow the
+-- player they look at with walk (see the `CharFollow` command).
+-- @param player [Player The player]
+-- @param key [Number The `IN_*` key]
 function Schema:KeyPress(player, key)
   if key == IN_USE then
     if !self.scanners[player] then
@@ -613,7 +734,10 @@ function Schema:KeyPress(player, key)
   end
 end
 
--- Called each tick.
+--- Called every tick.
+--
+-- Moves each scanner's follow marker while its player holds forward (slower with sprint) and removes the
+-- scanners of players who left.
 function Schema:Tick()
   for k, v in pairs(self.scanners) do
     local scanner = v[1]
@@ -661,7 +785,10 @@ function Schema:Tick()
   end
 end
 
--- Called when a player's health is set.
+--- Called when a player's health is set; copies it to their scanner.
+-- @param player [Player The player]
+-- @param newHealth [Number The new health]
+-- @param oldHealth [Number The old health]
 function Schema:PlayerHealthSet(player, newHealth, oldHealth)
   if self.scanners[player] then
     if IsValid(self.scanners[player][1]) then
@@ -670,21 +797,33 @@ function Schema:PlayerHealthSet(player, newHealth, oldHealth)
   end
 end
 
--- Called when a player attempts to be given a weapon.
+--- Called when a player attempts to be given a weapon; scanner players cannot.
+-- @param player [Player The player]
+-- @param class [String The weapon class]
+-- @param uniqueID [String The item's unique ID]
+-- @param forceReturn [Boolean Whether the weapon is being returned forcibly]
+-- @return [Boolean `false` to block the weapon]
 function Schema:PlayerCanBeGivenWeapon(player, class, uniqueID, forceReturn)
   if self.scanners[player] then
     return false
   end
 end
 
--- Called each frame that a player is dead.
+--- Called each frame a player is dead; permakilled characters cannot respawn.
+-- @param player [Player The player]
+-- @return [Boolean `true` to stop the player respawning]
 function Schema:PlayerDeathThink(player)
   if player:GetCharacterData('permakilled') then
     return true
   end
 end
 
--- Called when a player attempts to switch to a character.
+--- Called when a player attempts to switch characters.
+--
+-- Permakilled characters can always be switched from; tied characters cannot.
+-- @param player [Player The player]
+-- @param character [Character The character to switch to]
+-- @return [Boolean Whether the switch is allowed, String The reason when it is not]
 function Schema:PlayerCanSwitchCharacter(player, character)
   if player:GetCharacterData('permakilled') then
     return true
@@ -695,14 +834,22 @@ function Schema:PlayerCanSwitchCharacter(player, character)
   end
 end
 
--- Called when a player's death info should be adjusted.
+--- Called when a player's death info should be adjusted; permakilled characters get no respawn time.
+-- @param player [Player The player]
+-- @param info [Map The death info; `spawnTime` may be replaced]
 function Schema:PlayerAdjustDeathInfo(player, info)
   if player:GetCharacterData('permakilled') then
     info.spawnTime = 0
   end
 end
 
--- Called when a player's character screen info should be adjusted.
+--- Called when a character's entry on the character screen should be adjusted.
+--
+-- Marks permakilled characters, shows Overwatch availability, shows the elite Overwatch and scanner
+-- models and passes on the character's custom class.
+-- @param player [Player The player whose characters are listed]
+-- @param character [Character The character]
+-- @param info [Map The entry: `name`, `faction`, and `details`, `model` and `customClass`, which may be set]
 function Schema:PlayerAdjustCharacterScreenInfo(player, character, info)
   if character.data['permakilled'] then
     info.details = L('CharScreen_PermaKilled')
@@ -750,7 +897,14 @@ function Schema:PlayerAdjustCharacterScreenInfo(player, character, info)
   end
 end
 
--- Called when a player has used their radio.
+--- Called after a player has used the radio.
+--
+-- Sends the message to players near switched-on stationary radios tuned to the player's frequency, within
+-- twice the talk radius.
+-- @param player [Player The player]
+-- @param text [String The message]
+-- @param listeners [Map<Player> The players who heard the message]
+-- @param eavesdroppers [Map<Player> The players who overheard it]
 function Schema:PlayerRadioUsed(player, text, listeners, eavesdroppers)
   local newEavesdroppers = {}
   local talkRadius = config.Get('talk_radius'):Get() * 2
@@ -785,7 +939,12 @@ function Schema:PlayerRadioUsed(player, text, listeners, eavesdroppers)
   end
 end
 
--- Called when a player's radio info should be adjusted.
+--- Called when a player's radio message info should be adjusted.
+--
+-- Combine players reach every Combine player; everyone else reaches untied players with a handheld radio
+-- on the same frequency.
+-- @param player [Player The player sending the message]
+-- @param info [Map The radio info; players are added to its `listeners`]
 function Schema:PlayerAdjustRadioInfo(player, info)
   local isCombine = player:IsCombine()
 
@@ -803,7 +962,11 @@ function Schema:PlayerAdjustRadioInfo(player, info)
   end
 end
 
--- Called when a player attempts to use a tool.
+--- Called when a player attempts to use a tool; Wire tools need the `w` flag.
+-- @param player [Player The player]
+-- @param trace [Map The player's eye trace]
+-- @param tool [String The tool mode]
+-- @return [Boolean `false` to block the tool]
 function Schema:CanTool(player, trace, tool)
   if !cw.player:HasFlags(player, 'w') then
     if string.sub(tool, 1, 5) == 'wire_' or string.sub(tool, 1, 6) == 'wire2_' then
@@ -814,7 +977,13 @@ function Schema:CanTool(player, trace, tool)
   end
 end
 
--- Called when a player has been healed.
+--- Called when a player has been healed.
+--
+-- Boosts the healer's Agility and progresses their Medical attribute, more for a health kit than a
+-- health vial and least for a bandage.
+-- @param player [Player The player who was healed]
+-- @param healer [Player The player who healed them]
+-- @param itemTable [Item The item used]
 function Schema:PlayerHealed(player, healer, itemTable)
   if itemTable.uniqueID == 'health_vial' then
     healer:BoostAttribute(itemTable.PrintName, ATB_AGILITY, 2, 120)
@@ -828,7 +997,12 @@ function Schema:PlayerHealed(player, healer, itemTable)
   end
 end
 
--- Called when a player's shared variables should be set.
+--- Called every second for each player.
+--
+-- Networks the custom class, citizen ID, clothes and icon character data, and progresses Strength while
+-- the player moves carrying at least a quarter of their maximum weight.
+-- @param player [Player The player]
+-- @param curTime [Number The current `CurTime()`]
 function Schema:OnePlayerSecond(player, curTime)
   player:SetNetVar('customClass', player:GetCharacterData('customclass', ''))
   player:SetNetVar('citizenID', player:GetCharacterData('citizenid', ''))
@@ -844,7 +1018,14 @@ function Schema:OnePlayerSecond(player, curTime)
   end
 end
 
--- Called at an interval while a player is connected.
+--- Called at an interval while a player is connected.
+--
+-- Progresses Agility while jumping or running, runs `Schema:CalculateScannerThink` for scanners, and
+-- raises carry weight, jump power and run speed from the Strength and Agility attributes. Combine
+-- players carry 8 more.
+-- @param player [Player The player]
+-- @param curTime [Number The current `CurTime()`]
+-- @param infoTable [Map The player's movement info, adjusted in place]
 function Schema:PlayerThink(player, curTime, infoTable)
   if player:Alive() and !player:IsRagdolled() then
     if !player:InVehicle() and player:GetMoveType() == MOVETYPE_WALK then
@@ -869,7 +1050,11 @@ function Schema:PlayerThink(player, curTime, infoTable)
   infoTable.runSpeed = infoTable.runSpeed + cw.attributes:Fraction(player, ATB_AGILITY, 50, 25)
 end
 
--- Called when an entity is removed.
+--- Called when an entity is removed.
+--
+-- When a ragdoll holding belongings (see `Schema:PermaKillPlayer`) is removed, they are left behind as a
+-- `cw_belongings` entity.
+-- @param entity [Entity The entity]
 function Schema:EntityRemoved(entity)
   if cw.core:IsShuttingDown() then return end
 
@@ -890,28 +1075,42 @@ function Schema:EntityRemoved(entity)
   end
 end
 
--- Called when the player attempts to be ragdolled.
+--- Called when a player attempts to be ragdolled; scanners cannot.
+-- @param player [Player The player]
+-- @param state [Number The `RAGDOLL_*` state]
+-- @param delay [Number How long the ragdoll lasts]
+-- @param decay [Number How long the ragdoll takes to decay]
+-- @param ragdoll [Entity The existing ragdoll, if any]
+-- @return [Boolean `false` to block it]
 function Schema:PlayerCanRagdoll(player, state, delay, decay, ragdoll)
   if self.scanners[player] then
     return false
   end
 end
 
--- Called when a player attempts to NoClip.
+--- Called when a player attempts to noclip; scanners cannot.
+-- @param player [Player The player]
+-- @return [Boolean `false` to block it]
 function Schema:PlayerNoClip(player)
   if self.scanners[player] then
     return false
   end
 end
 
--- Called when a player's data should be saved.
+--- Called when a player's data should be saved; drops an empty server whitelist.
+-- @param player [Player The player]
+-- @param data [Map The player data, changed in place]
 function Schema:PlayerSaveData(player, data)
   if data['serverwhitelist'] and table.Count(data['serverwhitelist']) == 0 then
     data['serverwhitelist'] = nil
   end
 end
 
--- Called when a player's data should be restored.
+--- Called when a player's data is restored.
+--
+-- Kicks players missing from the whitelist named by the `server_whitelist_identity` config, when set.
+-- @param player [Player The player]
+-- @param data [Map The player data; `serverwhitelist` is created when missing]
 function Schema:PlayerRestoreData(player, data)
   if !data['serverwhitelist'] then
     data['serverwhitelist'] = {}
@@ -926,7 +1125,13 @@ function Schema:PlayerRestoreData(player, data)
   end
 end
 
--- Called to check if a player does have an flag.
+--- Called to check whether a player has a flag.
+--
+-- When permits are disabled, denies the business flag `x`, the general goods flag `1` and every custom
+-- permit flag.
+-- @param player [Player The player to check]
+-- @param flag [String The flag]
+-- @return [Boolean `false` to deny the flag, or `nil` to leave it to the flag system]
 function Schema:PlayerDoesHaveFlag(player, flag)
   if !config.Get('permits'):Get() then
     if flag == 'x' or flag == '1' then
@@ -941,28 +1146,48 @@ function Schema:PlayerDoesHaveFlag(player, flag)
   end
 end
 
--- Called when a player's attribute has been updated.
+--- Called when a player's attribute is updated; shows an attribute line on a Combine player's display.
+-- @param player [Player The player]
+-- @param attributeTable [Attribute The attribute]
+-- @param amount [Number The change in the attribute]
 function Schema:PlayerAttributeUpdated(player, attributeTable, amount)
   if self:PlayerIsCombine(player) and amount and amount > 0 then
     self:AddCombineDisplayLine(L('CombineDisplay_AttributesUpdated'), Color(255, 125, 0, 255), player)
   end
 end
 
--- Called to check if a player does recognise another player.
+--- Called to check whether a player recognises another player.
+--
+-- Combine players and administrators are always recognised.
+-- @param player [Player The player who may recognise the target]
+-- @param target [Player The player to be recognised]
+-- @param status [Number The `RECOGNISE_*` level being checked]
+-- @param isAccurate [Boolean Whether the level must match exactly]
+-- @param realValue [Boolean The result of the recognition system]
+-- @return [Boolean `true` to recognise the target, or `nil` to keep `realValue`]
 function Schema:PlayerDoesRecognisePlayer(player, target, status, isAccurate, realValue)
   if self:PlayerIsCombine(target) or target:GetFaction() == FACTION_ADMIN then
     return true
   end
 end
 
--- Called when a player attempts to delete a character.
+--- Called when a player attempts to delete a character; permakilled characters can always be deleted.
+-- @param player [Player The player]
+-- @param character [Character The character]
+-- @return [Boolean `true` to allow the deletion, or `nil` for the default]
 function Schema:PlayerCanDeleteCharacter(player, character)
   if character.data['permakilled'] then
     return true
   end
 end
 
--- Called when a player attempts to use a character.
+--- Called when a player attempts to use a character.
+--
+-- Refuses permakilled characters, Civil Protection characters while `Schema:CanUseCP` is `false` (below
+-- rank 6) and scanner characters while three scanners are online.
+-- @param player [Player The player]
+-- @param character [Character The character]
+-- @return [String The reason the character cannot be used, or `nil` to allow it]
 function Schema:PlayerCanUseCharacter(player, character)
   if character.data['permakilled'] then
     return L('CharIsPermaKilled', character.name)
@@ -992,7 +1217,13 @@ function Schema:PlayerCanUseCharacter(player, character)
   end
 end
 
--- Called when attempts to use a command.
+--- Called when a player attempts to use a command.
+--
+-- Tied players cannot order shipments, broadcast, dispatch, request or use the radio.
+-- @param player [Player The player]
+-- @param commandTable [Command The command]
+-- @param arguments [List<String> The command's arguments]
+-- @return [Boolean `false` to block the command]
 function Schema:PlayerCanUseCommand(player, commandTable, arguments)
   if player:GetNetVar('tied') != 0 then
     local blacklisted = {
@@ -1011,7 +1242,12 @@ function Schema:PlayerCanUseCommand(player, commandTable, arguments)
   end
 end
 
--- Called when a player attempts to use a door.
+--- Called when a player attempts to open a door with the use key.
+--
+-- Only untied Combine players, administrators and holders of a `combine_lock_access_x` card may.
+-- @param player [Player The player]
+-- @param door [Entity The door]
+-- @return [Boolean `false` to block it]
 function Schema:PlayerCanUseDoor(player, door)
   if player:GetNetVar('tied') != 0
   or (!self:PlayerIsCombine(player) and player:GetFaction() != FACTION_ADMIN
@@ -1020,7 +1256,13 @@ function Schema:PlayerCanUseDoor(player, door)
   end
 end
 
--- Called when a player attempts to lock an entity.
+--- Called when a player attempts to lock an entity.
+--
+-- Doors with a Combine lock cannot be locked with keys while the lock is locked or the
+-- `combine_lock_overrides` config is enabled.
+-- @param player [Player The player]
+-- @param entity [Entity The entity]
+-- @return [Boolean `false` to block it]
 function Schema:PlayerCanLockEntity(player, entity)
   if cw.entity:IsDoor(entity) and IsValid(entity.combineLock) then
     if config.Get('combine_lock_overrides'):Get() or entity.combineLock:IsLocked() then
@@ -1029,7 +1271,13 @@ function Schema:PlayerCanLockEntity(player, entity)
   end
 end
 
--- Called when a player attempts to unlock an entity.
+--- Called when a player attempts to unlock an entity.
+--
+-- Doors with a Combine lock cannot be unlocked with keys while the lock is locked or the
+-- `combine_lock_overrides` config is enabled.
+-- @param player [Player The player]
+-- @param entity [Entity The entity]
+-- @return [Boolean `false` to block it]
 function Schema:PlayerCanUnlockEntity(player, entity)
   if cw.entity:IsDoor(entity) and IsValid(entity.combineLock) then
     if config.Get('combine_lock_overrides'):Get() or entity.combineLock:IsLocked() then
@@ -1038,12 +1286,19 @@ function Schema:PlayerCanUnlockEntity(player, entity)
   end
 end
 
--- Called when a player's character has unloaded.
+--- Called when a player's character has unloaded; removes their scanner.
+-- @param player [Player The player]
 function Schema:PlayerCharacterUnloaded(player)
   self:ResetPlayerScanner(player)
 end
 
--- Called when a player attempts to change class.
+--- Called when a player attempts to change class.
+--
+-- Tied players cannot, and Combine players can only join the classes their rank allows; the player is
+-- told why.
+-- @param player [Player The player]
+-- @param class [Number The class index]
+-- @return [Boolean `false` to block the change]
 function Schema:PlayerCanChangeClass(player, class)
   if player:GetNetVar('tied') != 0 then
     cw.player:Notify(player, L('CantChangeClassWhenTied'))
@@ -1084,7 +1339,14 @@ function Schema:PlayerCanChangeClass(player, class)
   end
 end
 
--- Called when a player attempts to use an entity.
+--- Called when a player attempts to use an entity.
+--
+-- Restricts entities whose overlay text contains `CA`, `OTA`, `MPF` or `CWU` to those factions (and
+-- those above them), and blocks scanners, busted-down doors and tied players (who may still use seats).
+-- Sprint and use toggles a door's Combine lock for players with access, every three seconds at most.
+-- @param player [Player The player]
+-- @param entity [Entity The entity]
+-- @return [Boolean `false` to block the use]
 function Schema:PlayerUse(player, entity)
   local overlayText = entity:GetNWString('GModOverlayText')
   local curTime = CurTime()
@@ -1150,7 +1412,11 @@ function Schema:PlayerUse(player, entity)
   end
 end
 
--- Called when a player attempts to destroy an item.
+--- Called when a player attempts to destroy an item; scanners and tied players cannot.
+-- @param player [Player The player]
+-- @param itemTable [Item The item]
+-- @param noMessage [Boolean Whether to skip telling the player why]
+-- @return [Boolean `false` to block it]
 function Schema:PlayerCanDestroyItem(player, itemTable, noMessage)
   if self.scanners[player] then
     if !noMessage then
@@ -1167,7 +1433,11 @@ function Schema:PlayerCanDestroyItem(player, itemTable, noMessage)
   end
 end
 
--- Called when a player attempts to drop an item.
+--- Called when a player attempts to drop an item; scanners and tied players cannot.
+-- @param player [Player The player]
+-- @param itemTable [Item The item]
+-- @param noMessage [Boolean Whether to skip telling the player why]
+-- @return [Boolean `false` to block it]
 function Schema:PlayerCanDropItem(player, itemTable, noMessage)
   if self.scanners[player] then
     if !noMessage then
@@ -1184,7 +1454,14 @@ function Schema:PlayerCanDropItem(player, itemTable, noMessage)
   end
 end
 
--- Called when a player attempts to use an item.
+--- Called when a player attempts to use an item.
+--
+-- Scanners and tied players cannot use items. Players can equip one secondary weapon (weight 1 to 2), one
+-- primary weapon (heavier) and one melee or light weapon (lighter than 1) at a time.
+-- @param player [Player The player]
+-- @param itemTable [Item The item]
+-- @param noMessage [Boolean Whether to skip telling the player why]
+-- @return [Boolean `false` to block it]
 function Schema:PlayerCanUseItem(player, itemTable, noMessage)
   if self.scanners[player] then
     if !noMessage then
@@ -1244,14 +1521,24 @@ function Schema:PlayerCanUseItem(player, itemTable, noMessage)
   end
 end
 
--- Called when a player attempts to earn generator cash.
+--- Called when a player attempts to earn cash from a generator; Combine players cannot.
+-- @param player [Player The player]
+-- @param info [Map The generator info]
+-- @param cash [Number The amount]
+-- @return [Boolean `false` to block it]
 function Schema:PlayerCanEarnGeneratorCash(player, info, cash)
   if self:PlayerIsCombine(player) then
     return false
   end
 end
 
--- Called when a player's death sound should be played.
+--- Called when a player's death sound should be played.
+--
+-- For Combine players whose biosignal is still active, every such Combine player hears the lost
+-- biosignal announcement with the last three digits of the dead unit's name.
+-- @param player [Player The player]
+-- @param gender [String The player's gender]
+-- @return [String A Civil Protection death sound, or `nil` for the default]
 function Schema:PlayerPlayDeathSound(player, gender)
   if self:PlayerIsCombine(player) and !player:GetSharedVar('IsBiosignalGone') then
     local Digits = string.Right(player:Name(), 3)
@@ -1301,7 +1588,12 @@ function Schema:PlayerPlayDeathSound(player, gender)
   end
 end
 
--- Called when a player's pain sound should be played.
+--- Called when a player's pain sound should be played; Combine players use Civil Protection sounds.
+-- @param player [Player The player]
+-- @param gender [String The player's gender]
+-- @param damageInfo [CTakeDamageInfo The damage]
+-- @param hitGroup [Number The `HITGROUP_*` hit]
+-- @return [String The sound, or `nil` for the default]
 function Schema:PlayerPlayPainSound(player, gender, damageInfo, hitGroup)
   if self:PlayerIsCombine(player) then
     return 'npc/metropolice/pain'..math.random(1, 4)..'.wav'
@@ -1336,7 +1628,11 @@ local function SplitVoiceCodes(str)
   return exploded
 end
 
--- Called when chat box info should be adjusted.
+--- Called when a chat message's info should be adjusted.
+--
+-- In-character messages starting with `?` are sent anonymously, without the `?`.
+-- @param info [Map The message: `filter`, `sender`, `text` and `data`, changed in place]
+-- @param listeners [List<Player> The players who will receive it]
 function Schema:ChatboxAdjustMessageInfo(info, listeners)
   if info.filter != 'ooc' and info.filter != 'looc' then
     if IsValid(info.sender) and info.sender:HasInitialized() then
@@ -1348,7 +1644,13 @@ function Schema:ChatboxAdjustMessageInfo(info, listeners)
   end
 end
 
--- Called when a player destroys generator.
+--- Called when a player destroys a generator.
+--
+-- Pays a quarter of the generator's cash to the player, or to every Combine player when a Combine
+-- player destroyed it.
+-- @param player [Player The player]
+-- @param entity [Entity The generator entity]
+-- @param generator [Map The generator info, with `cash` and `name`]
 function Schema:PlayerDestroyGenerator(player, entity, generator)
   local cash = math.Round(generator.cash / 4)
 
@@ -1371,7 +1673,12 @@ function Schema:PlayerDestroyGenerator(player, entity, generator)
   end
 end
 
--- Called just before a player dies.
+--- Called just before a player dies.
+--
+-- Returns worn clothes to the inventory, ends any search and unties the player without a respawn.
+-- @param player [Player The player]
+-- @param attacker [Entity The attacker]
+-- @param damageInfo [CTakeDamageInfo The damage]
 function Schema:DoPlayerDeath(player, attacker, damageInfo)
   local clothes = player:GetCharacterData('clothes')
 
@@ -1386,7 +1693,16 @@ function Schema:DoPlayerDeath(player, attacker, damageInfo)
   self:TiePlayer(player, false, true)
 end
 
--- Called when a player dies.
+--- Called when a player dies.
+--
+-- Combine deaths trigger the `cwCTO` biosignal loss and a radio announcement, and destroy the unit's
+-- scanner. Deaths at the hands of a player or NPC permakill the character when `enable_permakill` is
+-- on and the player lacks the `d` flag. Other deaths lose each item with a one in four chance and 40 to
+-- 60 percent of the cash.
+-- @param player [Player The player]
+-- @param inflictor [Entity The inflictor]
+-- @param attacker [Entity The attacker]
+-- @param damageInfo [CTakeDamageInfo The damage, or `true` when the player's scanner was destroyed]
 function Schema:PlayerDeath(player, inflictor, attacker, damageInfo)
   if self:PlayerIsCombine(player) then
     local location = self:PlayerGetLocation(player)
@@ -1445,7 +1761,11 @@ function Schema:PlayerDeath(player, inflictor, attacker, damageInfo)
   end
 end
 
--- Called when a player's character has loaded.
+--- Called when a player's character has loaded.
+--
+-- Resets the permakill and tied state and networks the loyalty, criminal and work points, citizen
+-- status, residence, jail state and job from the character data.
+-- @param player [Player The player]
 function Schema:PlayerCharacterLoaded(player)
   player:SetNetVar('permaKilled', false)
   player:SetNetVar('tied', 0)
@@ -1458,7 +1778,15 @@ function Schema:PlayerCharacterLoaded(player)
   player:SetNetVar('WorkPoints', player:GetCharacterData('WorkPoints') or 0)
 end
 
--- Called just after a player spawns.
+--- Called just after a player spawns.
+--
+-- On a full spawn, clears effects and searches and gives Combine and administrators their armour (and
+-- Overwatch 150 health). Turns scanner ranks into scanners, re-ties tied players and puts worn clothes
+-- back on.
+-- @param player [Player The player]
+-- @param lightSpawn [Boolean Whether this is a light spawn]
+-- @param changeClass [Boolean Whether the player changed class]
+-- @param firstSpawn [Boolean Whether this is the character's first spawn]
 function Schema:PostPlayerSpawn(player, lightSpawn, changeClass, firstSpawn)
   local clothes = player:GetCharacterData('clothes')
 
@@ -1512,7 +1840,11 @@ function Schema:PostPlayerSpawn(player, lightSpawn, changeClass, firstSpawn)
   end
 end
 
--- Called when a player spawns lightly.
+--- Called after a player light-spawns; reapplies the clothes they wear.
+-- @param player [Player The player]
+-- @param weapons [Boolean Whether weapons were restored]
+-- @param ammo [Boolean Whether ammunition was restored]
+-- @param special [Boolean Whether this was a special light spawn]
 function Schema:PostPlayerLightSpawn(player, weapons, ammo, special)
   local clothes = player:GetCharacterData('clothes')
 
@@ -1525,12 +1857,15 @@ function Schema:PostPlayerLightSpawn(player, weapons, ammo, special)
   end
 end
 
--- Called when a player throws a punch.
+--- Called when a player throws a punch; progresses their Strength.
+-- @param player [Player The player]
 function Schema:PlayerPunchThrown(player)
   player:ProgressAttribute(ATB_STRENGTH, 0.25, true)
 end
 
--- Called when a player punches an entity.
+--- Called when a player punches an entity; progresses Strength, twice as much for players and NPCs.
+-- @param player [Player The player]
+-- @param entity [Entity The entity]
 function Schema:PlayerPunchEntity(player, entity)
   if entity:IsPlayer() or entity:IsNPC() then
     player:ProgressAttribute(ATB_STRENGTH, 1, true)
@@ -1539,7 +1874,12 @@ function Schema:PlayerPunchEntity(player, entity)
   end
 end
 
--- Called when an entity has been breached.
+--- Called when an entity has been breached.
+--
+-- Opens doors without a Combine lock, busting down rotating doors breached by a player. A Combine lock
+-- breached by a Combine player is blown off a rotating door with a smoke charge; otherwise it flashes.
+-- @param entity [Entity The breached entity]
+-- @param activator [Entity Who breached it, if anyone]
 function Schema:EntityBreached(entity, activator)
   if cw.entity:IsDoor(entity) then
     if !IsValid(entity.combineLock) then
@@ -1560,7 +1900,12 @@ function Schema:EntityBreached(entity, activator)
   end
 end
 
--- Called when a player takes damage.
+--- Called when a player takes damage; stuns their view, longer when they have armour.
+-- @param player [Player The player]
+-- @param inflictor [Entity The inflictor]
+-- @param attacker [Entity The attacker]
+-- @param hitGroup [Number The `HITGROUP_*` hit]
+-- @param damageInfo [CTakeDamageInfo The damage]
 function Schema:PlayerTakeDamage(player, inflictor, attacker, hitGroup, damageInfo)
   local curTime = CurTime()
 
@@ -1571,7 +1916,10 @@ function Schema:PlayerTakeDamage(player, inflictor, attacker, hitGroup, damageIn
   end
 end
 
--- Called when a player's limb damage is healed.
+--- Called when a player's limb damage is healed; removes the limb's attribute penalties.
+-- @param player [Player The player]
+-- @param hitGroup [Number The `HITGROUP_*` limb]
+-- @param amount [Number The amount healed]
 function Schema:PlayerLimbDamageHealed(player, hitGroup, amount)
   if hitGroup == HITGROUP_HEAD then
     player:BoostAttribute('Limb Damage', ATB_MEDICAL, false)
@@ -1585,12 +1933,19 @@ function Schema:PlayerLimbDamageHealed(player, hitGroup, amount)
   end
 end
 
--- Called when a player's limb damage is reset.
+--- Called when a player's limb damage is reset; removes every limb damage attribute penalty.
+-- @param player [Player The player]
 function Schema:PlayerLimbDamageReset(player)
   player:BoostAttribute('Limb Damage', nil, false)
 end
 
--- Called when a player's limb takes damage.
+--- Called when a player's limb takes damage.
+--
+-- Lowers the attributes the limb affects by its damage: Medical for the head, Endurance for the body,
+-- Agility for the legs and Agility and Strength for the arms.
+-- @param player [Player The player]
+-- @param hitGroup [Number The `HITGROUP_*` limb]
+-- @param damage [Number The damage taken]
 function Schema:PlayerLimbTakeDamage(player, hitGroup, damage)
   local limbDamage = cw.limb:GetDamage(player, hitGroup)
 
@@ -1606,7 +1961,15 @@ function Schema:PlayerLimbTakeDamage(player, hitGroup, damage)
   end
 end
 
--- A function to scale damage by hit group.
+--- Called when a player's damage should be scaled by hit group.
+--
+-- Scales damage by 1.5 minus up to 0.75 for Endurance, and reduces bullet damage by the `protection` of
+-- the clothes the player wears.
+-- @param player [Player The player]
+-- @param attacker [Entity The attacker]
+-- @param hitGroup [Number The `HITGROUP_*` hit]
+-- @param damageInfo [CTakeDamageInfo The damage, scaled in place]
+-- @param baseDamage [Number The damage before scaling]
 function Schema:PlayerScaleDamageByHitGroup(player, attacker, hitGroup, damageInfo, baseDamage)
   local endurance = cw.attributes:Fraction(player, ATB_ENDURANCE, 0.75, 0.75)
   local clothes = player:GetCharacterData('clothes')
@@ -1624,7 +1987,13 @@ function Schema:PlayerScaleDamageByHitGroup(player, attacker, hitGroup, damageIn
   end
 end
 
--- Called when an entity takes damage.
+--- Called when an entity takes damage.
+--
+-- Progresses the victim's Endurance, plays scanner pain sounds and warns the Combine when a unit is
+-- attacked. Scales damage by the attacker's weapon, melee Strength and explosions (NPC damage is
+-- halved), and lets shots at the handle, shotguns and explosions open or bust down rotating doors.
+-- @param entity [Entity The damaged entity]
+-- @param damageInfo [CTakeDamageInfo The damage, scaled in place]
 function Schema:EntityTakeDamage(entity, damageInfo)
   local player = cw.entity:GetPlayer(entity)
   local attacker = damageInfo:GetAttacker()
@@ -1791,7 +2160,16 @@ do
     }
   }
 
-  -- Called when a player's footstep sound should be played.
+  --- Called when a player's footstep sound should be played.
+  --
+  -- Running Civil Protection and Overwatch players play gear sounds; everyone else plays the normal sound.
+  -- @param player [Player The player]
+  -- @param position [Vector The footstep position]
+  -- @param foot [Number `0` for the left foot, `1` for the right]
+  -- @param sound [String The default sound]
+  -- @param volume [Number The default volume]
+  -- @param recipientFilter [CRecipientFilter Who would hear the sound]
+  -- @return [Boolean Always `true`, replacing the engine's sound]
   function Schema:PlayerFootstep(player, position, foot, sound, volume, recipientFilter)
     if player:IsRunning() then
       local faction = player:GetFaction()

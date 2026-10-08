@@ -25,15 +25,19 @@ ITEM.attachmentOffsetAngles = Angle(0, 90, -10)
 ITEM.attachmentOffsetVector = Vector(0, 0, 4)
 ITEM.customFunctions = { 'Unpack' }
 
--- A function to get whether the attachment is visible.
+--- Shows the suitcase attachment only while the player has the suitcase weapon out.
+-- @param player [Player The player wearing the attachment]
+-- @param entity [Entity The `cw_gear` attachment entity]
+-- @return [Boolean Whether the attachment is drawn]
 function ITEM:GetAttachmentVisible(player, entity)
   return (cw.player:GetWeaponClass(player) == self:GetWeaponClass())
 end
 
--- Called when a player drops the item.
+--- Lets the item be dropped; nothing else happens.
 function ITEM:OnDrop(player, position) end
 
 if SERVER then
+  --- Unpacks the suitcase into a random set of clothes, food and drink when Unpack is chosen, then removes it.
   function ITEM:OnCustomFunction(player, name)
     if name == 'Unpack' then
       local clothes = {

@@ -7,9 +7,10 @@ ITEM.category = 'Materials'
 ITEM.business = false
 ITEM.description = '#Item_Charcoal_Description'
 
+--- Lets the item be dropped, with no extra effect.
 function ITEM:OnDrop(player, position) end
 
-  -- Called when the item entity has spawned.
+--- Gives the dropped charcoal entity a wood bark material.
 function ITEM:OnEntitySpawned(entity)
   entity:SetMaterial('models/props_foliage/tree_deciduous_01a_trunk')
 end

@@ -1,3 +1,6 @@
+--- Called to check whether the local player can get up; blocks it within 50 units of a forcefield.
+--
+-- @return [Boolean `false` near a forcefield, otherwise `nil`]
 function cwForceField:PlayerCanGetUp()
   local entities = ents.FindInSphere(cw.client:GetPos(), 50)
 

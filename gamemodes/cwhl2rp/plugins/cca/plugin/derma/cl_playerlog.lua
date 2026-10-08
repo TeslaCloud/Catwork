@@ -3,12 +3,15 @@ local color_black = Color(0, 0, 0)
 local PANEL = {}
 PANEL.player = nil
 
+--- Creates the scroll panel that holds the civil record entries.
 function PANEL:Init()
   self.scrollPanel = vgui.Create('DScrollPanel', self)
   self.scrollPanel:SetSize(self:GetWide(), self:GetTall())
   self.scrollPanel:SetPos(0, 0)
 end
 
+--- Sets the player whose civil record is listed and rebuilds the list.
+-- @param player [Player The player]
 function PANEL:SetPlayer(player)
   self.player = player
 
@@ -17,6 +20,9 @@ function PANEL:SetPlayer(player)
   self:Rebuild()
 end
 
+--- Lists the player's civil record entries from the `CCA_Logs` net var, newest first.
+--
+-- Shows a "no logs" notice when the record is empty.
 function PANEL:Rebuild()
   local player = self.player
   local width = self:GetWide()
@@ -57,16 +63,20 @@ function PANEL:Rebuild()
   end
 end
 
+--- Paints nothing; the scroll panel draws the background.
 function PANEL:Paint(w, h) end
 
 vgui.Register('cwCombinePlayerLog', PANEL, 'EditablePanel')
 
 local PANEL = {}
 
+--- Sets the civil record entry the row shows.
+-- @param data [Map The entry, as stored by `cca.AppendLog`: `entry`, `type`, `time` and `appender`]
 function PANEL:SetData(data)
   self.data = data
 end
 
+--- Draws the entry's text, author and time on the colour of its log type.
 function PANEL:Paint(w, h)
   draw.RoundedBox(0, 0, 0, w, h, Color(255, 0, 255))
 

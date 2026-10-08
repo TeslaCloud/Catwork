@@ -17,5 +17,5 @@ ITEM.factions = { FACTION_MPF }
 ITEM.business = true
 ITEM.description = '#ITEM_Request_Device_Desc'
 
--- Called when a player drops the item.
+--- Lets the item be dropped; nothing else happens.
 function ITEM:OnDrop(player, position) end

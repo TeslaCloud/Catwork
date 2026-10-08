@@ -14,17 +14,19 @@ ENT.PrintName = 'Radio'
 ENT.Spawnable = false
 ENT.AdminSpawnable = false
 
--- Called when the data tables are setup.
+--- Declares the off state data table variable.
 function ENT:SetupDataTables()
   self:DTVar('Bool', 0, 'off')
 end
 
--- A function to get the frequency.
+--- Returns the frequency the radio is tuned to.
+-- @return [String The frequency, or an empty string when none is set]
 function ENT:GetFrequency()
   return self:GetNWString('frequency')
 end
 
--- A function to get whether the entity is off.
+--- Returns whether the radio is off.
+-- @return [Boolean Whether the radio is off]
 function ENT:IsOff()
   return self:GetDTBool(0)
 end

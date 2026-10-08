@@ -11,7 +11,7 @@ ITEM.business = true
 ITEM.description = '#Item_Ingall_Description'
 ITEM.customFunctions = { 'Use on...' }
 
--- Called when a player uses the item.
+--- Cures the player's pneumonia after one to two minutes and fires `PlayerHealed`.
 function ITEM:OnUse(player, itemEntity)
   if player:GetCharacterData('diseases') == 'pneumonia' then
     timer.Simple(math.random(60, 120), function()
@@ -23,6 +23,9 @@ function ITEM:OnUse(player, itemEntity)
 end
 
 if SERVER then
+  --- Uses the inhaler on the player being looked at with "Give", curing their pneumonia after a delay.
+  --
+  -- Fires `PlayerHealed` with the user as the healer. Returns `false` when no player is looked at.
   function ITEM:OnCustomFunction(player, name)
     if name == 'Give' then
       local lookingPly = player:GetEyeTrace().Entity
@@ -48,5 +51,5 @@ if SERVER then
   end
 end
 
--- Called when a player drops the item.
+--- Lets the item be dropped, with no extra effect.
 function ITEM:OnDrop(player, position) end

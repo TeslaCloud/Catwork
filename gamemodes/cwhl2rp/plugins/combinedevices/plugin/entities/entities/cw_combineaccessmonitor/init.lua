@@ -8,7 +8,7 @@ include('shared.lua')
 AddCSLuaFile('cl_init.lua')
 AddCSLuaFile('shared.lua')
 
--- Called when the entity initializes.
+--- Sets the small Combine monitor model and physics, with 1 health and the normal status.
 function ENT:Initialize()
   self:SetModel('models/props_combine/combine_smallmonitor001.mdl')
 
@@ -40,11 +40,16 @@ function ENT:Initialize()
   self:SetStatus(0)
 end
 
--- Called when the entity's transmit state should be updated.
+--- Returns `TRANSMIT_ALWAYS`, so the monitor is networked to every client.
+--
+-- @return [Number `TRANSMIT_ALWAYS`]
 function ENT:UpdateTransmitState()
   return TRANSMIT_ALWAYS
 end
 
+--- Sets the monitor's status in the networked int 5.
+--
+-- @param int [Number 0 for normal, 1 for destroyed (screen off) or 2 for the flashing error screen]
 function ENT:SetStatus(int)
   // if int == 0 then
   //	self.glow:SetKeyValue("rendercolor","96 190 255")
@@ -58,16 +63,19 @@ function ENT:SetStatus(int)
   self:SetDTInt(5, int)
 end
 
--- Called each frame.
+--- Thinks every 0.1 seconds without doing anything else.
 function ENT:Think()
   self:NextThink(CurTime() + 0.1)
 end
 
--- Called when a player attempts to use a tool.
+--- Allows every tool on the monitor.
+--
+-- @return [Boolean Always `true`]
 function ENT:CanTool(player, trace, tool)
   return true
 end
 
+--- Destroys the monitor's screen with sparks and broken glass once its health runs out.
 function ENT:OnTakeDamage(damageInfo)
   if self:GetDTInt(5) == 1 then return end
 
@@ -93,6 +101,7 @@ function ENT:OnTakeDamage(damageInfo)
   end
 end
 
+--- Does nothing; the glow sprite it would remove is disabled.
 function ENT:OnRemove()
   // self.glow:Remove()
 end

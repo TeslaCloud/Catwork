@@ -19,7 +19,7 @@ ITEM.description = '#ITEM_Melon_Desc'
 ITEM.thirst = 30
 ITEM.hunger = 45
 
--- Called when a player uses the item.
+--- Heals 10 health (up to 100) and boosts acrobatics and agility by 2 for two minutes.
 function ITEM:OnUse(player, itemEntity)
   player:SetHealth(math.Clamp(player:Health() + 10, 0, 100))
 
@@ -27,5 +27,5 @@ function ITEM:OnUse(player, itemEntity)
   player:BoostAttribute(self.name, ATB_AGILITY, 2, 120)
 end
 
--- Called when a player drops the item.
+--- Lets the item be dropped; nothing else happens.
 function ITEM:OnDrop(player, position) end

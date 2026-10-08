@@ -13,7 +13,7 @@ COMMAND.flags = CMD_DEFAULT
 COMMAND.access = 'a'
 COMMAND.optionalArguments = 1
 
--- Called when the command has been run.
+--- Saves the player's eye position and angles as a map scene, optionally spinning.
 function COMMAND:OnRun(player, arguments)
   local data = {
     shouldSpin = cw.core:ToBool(arguments[1]),

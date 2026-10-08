@@ -13,7 +13,7 @@ COMMAND.flags = CMD_DEFAULT
 COMMAND.access = 'a'
 COMMAND.arguments = 1
 
--- Called when the command has been run.
+--- Removes the spawn points of a faction, class or `default` within 256 units of where the player is looking.
 function COMMAND:OnRun(player, arguments)
   local faction = faction.FindByID(arguments[1])
   local class = cw.class:FindByID(arguments[1])

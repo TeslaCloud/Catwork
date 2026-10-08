@@ -2,6 +2,7 @@ include('shared.lua')
 
 local material = Material('effects/com_shield003a')
 
+--- Builds the field's collision mesh between this post and the wall up to 600 units to its side.
 function ENT:Initialize()
   local data = {}
   data.start = self:GetPos() + Vector(0, 0, 50) + self:GetRight() * -16
@@ -22,6 +23,7 @@ function ENT:Initialize()
   self:EnableCustomCollisions(true)
 end
 
+--- Draws the post and the shield on both sides of the field, sized to reach the far post.
 function ENT:Draw()
   local post = self:GetDTEntity(0)
   local angles = self:GetAngles()
@@ -50,7 +52,11 @@ function ENT:Draw()
   end
 end
 
--- I took a peek at how Chessnut drew his forcefields.
+--- Draws one side of the shield as a textured quad up to the far post, unless the field is off.
+--
+-- Based on how Chessnut draws his forcefields.
+--
+-- @param vertex [Vector The far post's position, local to this post]
 function ENT:DrawShield(vertex)
   if self:GetDTInt(0) != 4 then
     local dist = self:GetDTEntity(0):GetPos():Distance(self:GetPos())

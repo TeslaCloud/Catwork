@@ -8,7 +8,8 @@
 
 local PANEL = {}
 
--- Called when the panel is initialized.
+--- Creates the inventory menu tab with Inventory and Equipment sheets, registers itself as
+-- `cw.inventory.panel` and builds it.
 function PANEL:Init()
   self:SetSize(cw.menu:GetWidth(), cw.menu:GetHeight())
 
@@ -29,12 +30,18 @@ function PANEL:Init()
   cw.inventory.panel:Rebuild()
 end
 
--- Called to by the menu to get the width of the panel.
+--- Returns the width the menu should give the inventory tab.
+-- @return [Number Half of the screen width]
 function PANEL:GetMenuWidth()
   return ScrW() * 0.5
 end
 
--- A function to handle unequipping for the panel.
+--- Asks the server to unequip an item, letting the item pick extra arguments first.
+--
+-- When the item has an `OnHandleUnequip` method, it is called with a function that sends the request,
+-- optionally with arguments; otherwise the request is sent at once with the `UnequipItem` netstream.
+--
+-- @param itemTable [Item The equipped item to unequip]
 function PANEL:HandleUnequip(itemTable)
   if itemTable.OnHandleUnequip then
     itemTable:OnHandleUnequip(
@@ -56,7 +63,12 @@ function PANEL:HandleUnequip(itemTable)
   end
 end
 
--- A function to rebuild the panel.
+--- Rebuilds both sheets from the local player's inventory and equipped weapons.
+--
+-- The Inventory sheet starts with the weight bar, and the space bar when the space system is used.
+-- Equipped items go to the Equipment sheet, under their `equippedCategory` when they have one, and
+-- unequip when clicked. Categories are sorted by name and items by ID. Runs the `PlayerInventoryRebuilt`
+-- hook with the panel and the `inventory` and `equipment` category lists before adding them.
 function PANEL:Rebuild()
   self.equipmentList:Clear()
   self.inventoryList:Clear()
@@ -231,17 +243,17 @@ function PANEL:Rebuild()
   self:InvalidateLayout(true)
 end
 
--- Called when the menu is opened.
+--- Rebuilds the sheets when the menu is opened while this tab is active.
 function PANEL:OnMenuOpened()
   if cw.menu:IsPanelActive(self) then
     self:Rebuild()
   end
 end
 
--- Called when the panel is selected.
+--- Rebuilds the sheets when the tab is selected in the menu.
 function PANEL:OnSelected() self:Rebuild() end
 
--- Called when the layout should be performed.
+--- Sizes the tab to 75% of the screen height and stretches the sheets to fill it.
 function PANEL:PerformLayout(w, h)
   self:SetSize(w, ScrH() * 0.75)
   self.columnSheet:StretchToParent(4, 4, 4, 4)
@@ -249,12 +261,12 @@ function PANEL:PerformLayout(w, h)
   self.equipmentList:StretchToParent(4, 4, 4, 4)
 end
 
--- Called when the panel is painted.
+--- Draws nothing.
 function PANEL:Paint(w, h)
   return true
 end
 
--- Called each frame.
+--- Rebuilds the inventory when the player gets a weapon that belongs to an item.
 function PANEL:Think()
   for k, v in pairs(cw.client:GetWeapons()) do
     local weaponItem = item.GetByWeapon(v)
@@ -270,7 +282,11 @@ vgui.Register('cwInventory', PANEL, 'EditablePanel')
 
 local PANEL = {}
 
--- Called when the panel is initialized.
+--- Builds a custom inventory entry (`cwInventoryCustom`) from the parent's `customData` table.
+--
+-- `customData` may hold `PrintName` or `name`, `information` (a number is shown in kilograms),
+-- `description` (the tooltip), `model`, `skin`, `spawnIconColor` and `Callback`, which runs when the
+-- icon is clicked.
 function PANEL:Init()
   self:SetSize(self:GetParent():GetWide(), 32)
 
@@ -316,7 +332,7 @@ function PANEL:Init()
   self.spawnIcon:SetSize(32, 32)
 end
 
--- Called each frame.
+--- Keeps the custom entry's information label at the bottom of the entry.
 function PANEL:Think()
   self.infoLabel:SetPos(self.infoLabel.x, 30 - self.infoLabel:GetTall())
 end
@@ -325,7 +341,10 @@ vgui.Register('cwInventoryCustom', PANEL, 'DPanel')
 
 local PANEL = {}
 
--- Called when the panel is initialized.
+--- Builds an item icon (`cwInventoryItem`) for the parent's `itemData`.
+--
+-- `itemData.itemTable` is the item shown. When `itemData.OnPress` is set it runs on click instead of the
+-- usual item menu, and the right click menu is disabled.
 function PANEL:Init()
   local itemData = self:GetParent().itemData
   self:SetSize(48, 48)
@@ -354,7 +373,7 @@ function PANEL:Init()
   self.cachedInfo = { model = model, skin = skin }
 end
 
--- Called each frame.
+--- Refreshes the item icon's tooltip and color, and its model when the item's icon changes.
 function PANEL:Think()
   self.spawnIcon:SetMarkupToolTip(item.GetMarkupToolTip(self.itemTable))
   self.spawnIcon:SetColor(self.itemTable.color)
@@ -369,6 +388,7 @@ function PANEL:Think()
   end
 end
 
+--- Draws the item icon's background.
 function PANEL:Paint(w, h)
   draw.RoundedBox(0, 0, 0, w, h, cw.option:GetColor('panel_background'))
 end
@@ -379,7 +399,7 @@ local PANEL = {}
 
 PANEL.invWeight = 0
 
--- Called when the panel is initialized.
+--- Creates the inventory weight bar (`cwInventoryWeight`) and its label.
 function PANEL:Init()
   local maximumWeight = cw.player:GetMaxWeight()
   local colorWhite = cw.option:GetColor('white')
@@ -405,7 +425,7 @@ function PANEL:Init()
   end
 end
 
--- Called each frame.
+--- Updates the weight bar's carried and maximum weight.
 function PANEL:Think()
   self.invWeight = cw.inventory:CalculateWeight(
     cw.inventory:GetClient()
@@ -421,7 +441,7 @@ vgui.Register('cwInventoryWeight', PANEL, 'DPanel')
 
 local PANEL = {}
 
--- Called when the panel is initialized.
+--- Creates the inventory space bar (`cwInventorySpace`) and its label.
 function PANEL:Init()
   local maximumSpace = cw.player:GetMaxSpace()
   local colorWhite = cw.option:GetColor('white')
@@ -457,7 +477,7 @@ function PANEL:Init()
   end
 end
 
--- Called each frame.
+--- Updates the space bar's used and maximum space every 0.1 seconds.
 function PANEL:Think()
   if !self.nextUpdateContents then
     self.nextUpdateContents = CurTime() + 0.1

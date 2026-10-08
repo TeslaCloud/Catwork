@@ -14,7 +14,7 @@ ITEM.useSound = { 'npc/barnacle/barnacle_gulp1.wav', 'npc/barnacle/barnacle_gulp
 ITEM.expireTime = 1800
 ITEM.attributes = {}
 
--- Called when a player uses the item.
+--- Boosts the item's `attributes` and makes the player drunk for `expireTime` seconds, then calls `OnDrink`.
 function ITEM:OnUse(player, itemEntity)
   for k, v in pairs(self.attributes) do
     player:BoostAttribute(self.PrintName, k, v, self.expireTime)
@@ -27,5 +27,5 @@ function ITEM:OnUse(player, itemEntity)
   end
 end
 
--- Called when a player drops the item.
+--- Called when a player drops the drink; does nothing, so dropping is allowed.
 function ITEM:OnDrop(player, position) end

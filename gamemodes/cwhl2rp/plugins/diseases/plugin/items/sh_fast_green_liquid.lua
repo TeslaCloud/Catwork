@@ -11,13 +11,16 @@ ITEM.business = true
 ITEM.description = '#Item_FastGreenLiquid_Description'
 ITEM.customFunctions = { 'Inject' }
 
--- Called when a player uses the item.
+--- Injects the player with the fast-acting lethal poison (`fast_deathinjection`).
 function ITEM:OnUse(player, itemEntity)
   player:SetCharacterData('diseases', 'fast_deathinjection')
   cw.player:Notify(player, L('Diseases_Injected_Self'))
 end
 
 if SERVER then
+  --- Injects the player being looked at with the fast-acting lethal poison using "Inject".
+  --
+  -- Returns `false` when no player is looked at.
   function ITEM:OnCustomFunction(player, name)
     if name == 'Inject' then
       local lookingPly = player:GetEyeTrace().Entity
@@ -35,5 +38,5 @@ if SERVER then
   end
 end
 
--- Called when a player drops the item.
+--- Lets the item be dropped, with no extra effect.
 function ITEM:OnDrop(player, position) end

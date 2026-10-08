@@ -56,6 +56,8 @@ local GARBAGE_ITEMS = {
   ['empty_can'] = 0.5
 }
 
+--- Sets up the recycler model, physics and empty garbage state on the server, and the indicator
+-- screen render target on the client.
 function ENT:Initialize()
   if SERVER then
     self:SetModel('models/props/cs_militia/microwave01.mdl')
@@ -107,6 +109,8 @@ function ENT:Initialize()
   end
 end
 
+--- Declares the product position, garbage count, working state, work timing, eject storage and
+-- stop time network vars.
 function ENT:SetupDataTables()
   self:NetworkVar('Vector', 0, 'ProductPos')
   self:NetworkVar('Float', 2, 'GarbageCount')
@@ -118,6 +122,8 @@ function ENT:SetupDataTables()
 end
 
 if SERVER then
+  --- Spawns a metal recycler 25 units off the aimed surface.
+  -- @return [Entity The spawned recycler]
   function ENT:SpawnFunction(ply, trace)
     local ent = ents.Create('cw_factory_garbage_metal')
     ent:SetPos(trace.HitPos + trace.HitNormal * 25)
@@ -126,6 +132,9 @@ if SERVER then
     return ent
   end
 
+  --- Returns whether the recycler accepts an item as garbage.
+  -- @param item [Item The item to check]
+  -- @return [Boolean Whether the item's unique ID is in `GARBAGE_ITEMS`]
   function ENT:CanGarbageUsed(item)
     if GARBAGE_ITEMS[item('uniqueID')] then
       return true
@@ -134,6 +143,8 @@ if SERVER then
     return false
   end
 
+  --- Returns the corners of the box above the recycler that garbage is collected from.
+  -- @return [List<Vector> The two opposite corners, as passed to `ents.FindInBox`]
   function ENT:GetSearchPos()
     local up, right, forward = self:GetUp(), self:GetRight(), self:GetForward()
     local pos1 = self:GetPos() + (up * 23) + (right * 18) + (forward * 22)
@@ -141,6 +152,10 @@ if SERVER then
     return { pos1, pos2 }
   end
 
+  --- Starts a recycling cycle, or resumes a stopped one where it left off.
+  --
+  -- A new cycle only starts once the garbage count is exactly `METAL_GARBAGE_COUNT_START`
+  -- and lasts `WORK_TIME` seconds.
   function ENT:StartWork()
     if self:GetStopWorkTime() <= 0 then
       if self:GetGarbageCount() != METAL_GARBAGE_COUNT_START then
@@ -160,6 +175,11 @@ if SERVER then
     self.NextWorkSound = CurTime() + 1.4
   end
 
+  --- Moves the collected garbage into the eject storage entity and empties the recycler.
+  --
+  -- The storage is found by the creation ID set with `SetEjectStorage`. Does nothing while working or
+  -- paused, or when the storage does not exist. Items that would push a known container over its weight
+  -- limit are dropped on top of it instead.
   function ENT:Eject()
     if self:GetIsWorking() then return end
     if self:GetStopWorkTime() > 0 then return end
@@ -206,6 +226,7 @@ if SERVER then
     self.Garbages = {}
   end
 
+  --- Pauses the current cycle, remembering the time left, and stops the work sounds.
   function ENT:StopWork()
     self:SetStopWorkTime(self:GetNextWorkTime() - CurTime())
     self:SetIsWorking(false)
@@ -215,6 +236,7 @@ if SERVER then
     self.NextGarbageDecrease = nil
   end
 
+  --- Finishes the cycle, stops the work sounds and spawns a `scrap_metal` item at the product position.
   function ENT:EndWork()
     self:SetIsWorking(false)
     self.WorkSound:Stop()
@@ -226,10 +248,12 @@ if SERVER then
     cw.entity:CreateItem(nil, WORK_ITEM, self:GetProductPos())
   end
 
+  --- Does nothing; the recycler is operated through its entity menu options.
   function ENT:Use(activator)
     return
   end
 
+  --- Stops the recycler's work sound.
   function ENT:OnRemove()
     if self.WorkSound then
       self.WorkSound:Stop()
@@ -237,6 +261,11 @@ if SERVER then
   end
 end
 
+--- Collects garbage, plays the work sounds and advances the recycling cycle every tick on the server.
+--
+-- Garbage `cw_item` entities inside `ENT:GetSearchPos` are taken while the recycler is idle and not full.
+-- During a cycle the garbage count drains step by step and `ENT:EndWork` runs when the time is up.
+-- While paused, the cycle times are pushed forward so the time left stays the same.
 function ENT:Think()
   if SERVER then
     if !self:GetIsWorking() then
@@ -303,6 +332,9 @@ function ENT:Think()
 end
 
 if CLIENT then
+  --- Draws the recycler and its indicator screen with the status, garbage count and progress bars.
+  --
+  -- While the local player holds the toolgun, a marker also shows the product position.
   function ENT:Draw()
     self:DrawModel()
 

@@ -8,7 +8,7 @@
 
 local PANEL = {}
 
--- Called when the panel is initialized.
+--- Sizes the attributes menu tab to the menu, creates its list and registers itself as `cw.attributes.panel`.
 function PANEL:Init()
   self:SetSize(cw.menu:GetWidth(), cw.menu:GetHeight())
 
@@ -26,7 +26,11 @@ function PANEL:Init()
   self:Rebuild()
 end
 
--- A function to rebuild the panel.
+--- Rebuilds the list of attributes the local player has access to.
+--
+-- Attributes with a `category` are grouped under a form per category and sorted by translated name; the
+-- rest are listed on their own. Each entry is a `cwAttributesItem` row. Shows a notice instead when the
+-- player cannot access any attribute.
 function PANEL:Rebuild()
   self.panelList:Clear()
 
@@ -147,23 +151,23 @@ function PANEL:Rebuild()
   self.panelList:InvalidateLayout(true)
 end
 
--- Called when the menu is opened.
+--- Rebuilds the list when the menu is opened while this tab is active.
 function PANEL:OnMenuOpened()
   if cw.menu:IsPanelActive(self) then
     self:Rebuild()
   end
 end
 
--- Called when the panel is selected.
+--- Rebuilds the list when the tab is selected in the menu.
 function PANEL:OnSelected() self:Rebuild() end
 
--- Called when the layout should be performed.
+--- Does nothing; the list lays itself out.
 function PANEL:PerformLayout(w, h)
   -- self.panelList:StretchToParent(4, 4, 4, 4)
   -- self:SetSize(w, math.min(self.panelList.pnlCanvas:GetTall() + 32, ScrH() * 0.75))
 end
 
--- Called when the panel is painted.
+--- Draws the outlined panel background.
 function PANEL:Paint(w, h)
   draw.RoundedBox(0, 0, 0, w, h, cw.option:GetColor('panel_outline'))
   draw.RoundedBox(0, 1, 1, w - 2, h - 2, cw.option:GetColor('panel_background'))
@@ -175,7 +179,8 @@ vgui.Register('cwAttributes', PANEL, 'EditablePanel')
 
 local PANEL = {}
 
--- Called when the panel is initialized.
+--- Builds an attribute row (`cwAttributesItem`) for the parent's `currentAttribute`, with an animated points bar,
+-- a progress bar, a value label and the attribute's icon when it has one.
 function PANEL:Init()
   self.attribute = cw.attribute:FindByID(
     self:GetParent().currentAttribute
@@ -357,7 +362,10 @@ function PANEL:Init()
   end
 end
 
--- A function to set the panel's percentage text.
+--- Updates the row's value label to show the boosted value out of the maximum and keeps it right-aligned.
+-- @param maximum [Number Maximum value of the attribute]
+-- @param default [Number Current base value of the attribute]
+-- @param boost [Number Total boost applied to the attribute; negative when hindered]
 function PANEL:SetPercentageText(maximum, default, boost)
   -- local percentage = math.Clamp(math.Round((100 / maximum) * (default + boost)), -100, 100)
 
@@ -369,7 +377,7 @@ function PANEL:SetPercentageText(maximum, default, boost)
   )
 end
 
--- Called when the panel is painted.
+--- Draws the attribute row's gradient background.
 function PANEL:Paint(w, h)
   local x, y = 0, 0
 
@@ -378,7 +386,7 @@ function PANEL:Paint(w, h)
   return true
 end
 
--- Called each frame.
+--- Resizes the attribute row's bars to leave room for the icon when there is one.
 function PANEL:Think()
   if self.spawnIcon then
     self.progressBar:SetSize(self:GetWide() - 34, 8)
@@ -391,7 +399,7 @@ function PANEL:Think()
   end
 end
 
--- Called when the layout should be performed.
+--- Keeps the attribute row's icon in the top left corner.
 function PANEL:PerformLayout(w, h)
   if self.spawnIcon then
     self.spawnIcon:SetPos(1, 1)

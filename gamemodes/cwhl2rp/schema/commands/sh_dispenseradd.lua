@@ -11,7 +11,7 @@ COMMAND.tip = '#Command_Dispenseradd_Description'
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = 's'
 
--- Called when the command has been run.
+--- Spawns a ration dispenser where the player is looking, facing them; takes no arguments.
 function COMMAND:OnRun(player, arguments)
   local trace = player:GetEyeTraceNoCursor()
   local entity = ents.Create('cw_rationdispenser')

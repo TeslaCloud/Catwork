@@ -10,7 +10,9 @@ local COMMAND = cw.command:New('ObjectPhysDesc')
 COMMAND.tip = '#Command_Objectphysdesc_Description'
 COMMAND.flags = CMD_DEFAULT
 
--- Called when the command has been run.
+--- Asks the owner of the prop being looked at for its physical description; takes no arguments.
+--
+-- The client answers with the `ObjectPhysDesc` netstream message.
 function COMMAND:OnRun(player, arguments)
   local target = player:GetEyeTraceNoCursor().Entity
 

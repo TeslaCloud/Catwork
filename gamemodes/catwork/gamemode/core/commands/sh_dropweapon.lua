@@ -12,7 +12,9 @@ COMMAND.flags = bit.bor(CMD_DEFAULT, CMD_FALLENOVER)
 COMMAND.alias = { 'Drop' }
 COMMAND.cooldown = 5
 
--- Called when the command has been run.
+--- Drops the caller's active weapon as an item where they are looking; takes no arguments.
+--
+-- Runs the `PlayerCanDropWeapon` hook first and `PlayerDropWeapon` after.
 function COMMAND:OnRun(player, arguments)
   local weapon = player:GetActiveWeapon()
 

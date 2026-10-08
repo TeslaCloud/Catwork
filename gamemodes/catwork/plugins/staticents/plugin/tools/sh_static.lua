@@ -14,6 +14,7 @@ TOOL.Name = '#tool.static.name'
 TOOL.Command = nil
 TOOL.ConfigName = ''
 
+--- Makes the entity the owner is looking at static through the `PlayerMakeStatic` hook.
 function TOOL:LeftClick(trace)
   if CLIENT then return true end
 
@@ -24,6 +25,7 @@ function TOOL:LeftClick(trace)
   return true
 end
 
+--- Makes the entity the owner is looking at non-static through the `PlayerMakeStatic` hook.
 function TOOL:RightClick(trace)
   if CLIENT then return true end
 

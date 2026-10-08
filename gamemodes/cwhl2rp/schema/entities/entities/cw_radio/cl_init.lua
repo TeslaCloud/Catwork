@@ -10,7 +10,7 @@ include('shared.lua')
 
 local glowMaterial = Material('sprites/glow04_noz')
 
--- Called when the target ID HUD should be painted.
+--- Draws the radio name and its frequency (or a no frequency note) as the target ID.
 function ENT:HUDPaintTargetID(x, y, alpha)
   local colorTargetID = cw.option:GetColor('target_id')
   local colorWhite = cw.option:GetColor('white')
@@ -25,7 +25,7 @@ function ENT:HUDPaintTargetID(x, y, alpha)
   end
 end
 
--- Called when the entity should draw.
+--- Draws the radio with a green status light, or a red one while it is off.
 function ENT:Draw()
   self:DrawModel()
 

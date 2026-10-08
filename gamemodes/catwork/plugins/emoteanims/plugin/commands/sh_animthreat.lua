@@ -12,7 +12,7 @@ COMMAND.text = '#Command_Animthreat_Syntax'
 COMMAND.flags = CMD_DEFAULT
 COMMAND.optionalArguments = 1
 
--- Called when the command has been run.
+--- Toggles the Civil Protection threatening stance; a true argument picks the second variant.
 function COMMAND:OnRun(player, arguments)
   local curTime = CurTime()
 

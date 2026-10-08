@@ -17,7 +17,7 @@ ITEM.category = 'Storage'
 ITEM.business = true
 ITEM.description = '#ITEM_Boxed_Bag_Desc'
 
--- Called when a player uses the item.
+--- Unpacks into a small bag, or keeps the box with a notification when the player already has two.
 function ITEM:OnUse(player, itemEntity)
   if player:HasItemByID('small_bag') and table.Count(player:GetItemsByID('small_bag')) >= 2 then
     cw.player:Notify(player, L('Item_BoxedBag_Limit'))
@@ -28,5 +28,5 @@ function ITEM:OnUse(player, itemEntity)
   player:GiveItem(item.CreateInstance('small_bag'))
 end
 
--- Called when a player drops the item.
+--- Lets the item be dropped; nothing else happens.
 function ITEM:OnDrop(player, position) end

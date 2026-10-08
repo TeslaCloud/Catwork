@@ -8,7 +8,7 @@ COMMAND.access = 'a'
 COMMAND.arguments = 1
 COMMAND.alias = { 'ResetNeeds' }
 
--- Called when the command has been run.
+--- Resets a non-Combine character's hunger, thirst and stamina to 100 and fatigue to 0.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
 

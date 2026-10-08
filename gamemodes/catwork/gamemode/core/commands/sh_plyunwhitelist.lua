@@ -13,7 +13,7 @@ COMMAND.access = 'sW'
 COMMAND.arguments = 2
 COMMAND.alias = { 'UnWhitelist', 'DeWhitelist' }
 
--- Called when the command has been run.
+--- Removes the target player from a faction whitelist; arguments are the player name and the faction.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
 

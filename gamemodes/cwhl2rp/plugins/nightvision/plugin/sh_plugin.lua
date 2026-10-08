@@ -91,6 +91,10 @@ if CLIENT then
 
   hook.Add('RenderScreenspaceEffects', 'NightVisionFX', NightVisionFX)
 else
+  --- Called at an interval while a player is connected; turns night vision off for players no longer allowed to use it.
+  -- @param player [Player The player being updated]
+  -- @param infoTable [Number Second hook argument, which is the current `CurTime()` despite the name]
+  -- @see Schema:PlayerCanUseNightvision
   function PLUGIN:PlayerThink(player, infoTable)
     if player:GetNWBool('nightvisionfx') then
       if !Schema:PlayerCanUseNightvision(player) then
@@ -100,6 +104,11 @@ else
   end
 end
 
+--- Returns whether a player may use night vision.
+--
+-- MPF units of the SpF, CmD, CpT, MaJ or SeC rank may, as may anyone with the `9` flag.
+-- @param player [Player The player to check]
+-- @return [Boolean Whether the player can use night vision]
 function Schema:PlayerCanUseNightvision(player)
   if player:GetFaction() == FACTION_MPF then
     if self:IsPlayerCombineRank(player, 'SpF') then

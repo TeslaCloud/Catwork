@@ -17,7 +17,12 @@ local playerGetAll = _player.GetAll
 local string = string
 local pairs = pairs
 
--- Called to draw the text over each player's head if needed.
+--- Called after translucent renderables are drawn; draws the typing indicator above typing players' heads.
+--
+-- Shows the text for the player's `Typing` net var (talking, whispering, yelling, radioing, performing or
+-- typing OOC) above the head bone, or at the position returned by the `GetPlayerTypingDisplayPosition`
+-- hook. The indicator fades with distance; the range depends on the `talk_radius` config and the typing
+-- mode.
 function cwDisplayTyping:PostDrawTranslucentRenderables()
   if !cw.client or !cw.client:HasInitialized() then return end
 
@@ -138,7 +143,9 @@ function cwDisplayTyping:PostDrawTranslucentRenderables()
   end
 end
 
--- Called when the chat box is closed.
+--- Called when the chat box is closed; tells the server the player stopped typing.
+--
+-- @param textTyped [Boolean Whether the player sent a message, which plays the faction's end chat noise]
 function cwDisplayTyping:ChatBoxClosed(textTyped)
   if textTyped then
     RunConsoleCommand('cwTypingFinish', '1')
@@ -147,7 +154,13 @@ function cwDisplayTyping:ChatBoxClosed(textTyped)
   end
 end
 
--- Called when the chat box text has changed.
+--- Called when the chat box text changes; tells the server which kind of message the player is typing.
+--
+-- Runs `cwTypingStart` with a mode code picked from the command prefix (radio, me, pm, w, y), an OOC
+-- prefix, or plain text once the message reaches four characters.
+--
+-- @param previousText [String The chat box text before the change]
+-- @param newText [String The chat box text after the change]
 function cwDisplayTyping:ChatBoxTextChanged(previousText, newText)
   local prefix = config.Get('command_prefix'):Get()
 

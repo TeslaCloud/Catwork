@@ -19,6 +19,7 @@ TOOL.ClientConVar['fade'] = '0'
 TOOL.ClientConVar['color'] = 'white'
 TOOL.ClientConVar['extraColor'] = 'red'
 
+--- Places a surface text with the tool's text, style, scale, colors and fade settings; admins only.
 function TOOL:LeftClick(trace)
   if CLIENT then return true end
 
@@ -58,6 +59,7 @@ function TOOL:LeftClick(trace)
   return true
 end
 
+--- Removes the surface text the owner is looking at with `cwSurfaceTexts:Remove`.
 function TOOL:RightClick(trace)
   if CLIENT then return true end
 
@@ -75,6 +77,9 @@ local textStyles = {
   ['#tool.texts.opt6'] = 6
 }
 
+--- Builds the tool's control panel: style presets, text and color boxes, and scale and fade sliders.
+--
+-- @param CPanel [Panel The tool's control panel]
 function TOOL.BuildCPanel(CPanel)
   local options = {}
 

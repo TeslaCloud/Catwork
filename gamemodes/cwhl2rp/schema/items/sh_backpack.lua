@@ -15,12 +15,14 @@ ITEM.isRareItem = true
 ITEM.description = '#ITEM_Backpack_Desc'
 ITEM.addInvSpace = 8
 
--- Called when the item's drop entity should be created.
+--- Drops the backpack as a `boxed_backpack` item entity.
+-- @return [Entity The spawned item entity]
 function ITEM:OnCreateDropEntity(player, position)
   return cw.entity:CreateItem(player, item.CreateInstance('boxed_backpack'), position)
 end
 
--- Called when a player attempts to take the item from storage.
+--- Blocks taking the backpack from storage when its owner would be left over their weight limit
+-- or the player already carries a backpack.
 function ITEM:CanTakeStorage(player, storageTable)
   local target = cw.entity:GetPlayer(storageTable.entity)
 
@@ -39,12 +41,12 @@ function ITEM:CanTakeStorage(player, storageTable)
   end
 end
 
--- Called when a player attempts to pick up the item.
+--- Always allows the backpack to be picked up.
 function ITEM:CanPickup(player, quickUse, itemEntity)
   return 'boxed_backpack'
 end
 
--- Called when a player drops the item.
+--- Blocks dropping the backpack, with a notification, when the player would be left over their weight limit.
 function ITEM:OnDrop(player, position)
   if player:GetInventoryWeight() > (player:GetMaxWeight() - self.addInvSpace) then
     cw.player:Notify(player, L('Item_Bag_CantDropWithItems'))

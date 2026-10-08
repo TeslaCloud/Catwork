@@ -12,12 +12,13 @@ netstream.Hook('EnteredArea', function(player, data)
   end
 end)
 
--- A function to load the area names.
+--- Loads the current map's areas from the schema data file `plugins/areas/<map>` into
+-- `cwAreaDisplays.storedList`.
 function cwAreaDisplays:LoadAreaDisplays()
   self.storedList = cw.core:RestoreSchemaData('plugins/areas/'..game.GetMap())
 end
 
--- A function to save the area names.
+--- Saves `cwAreaDisplays.storedList` to the schema data file `plugins/areas/<map>`.
 function cwAreaDisplays:SaveAreaDisplays()
   cw.core:SaveSchemaData('plugins/areas/'..game.GetMap(), self.storedList)
 end

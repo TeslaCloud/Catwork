@@ -8,7 +8,7 @@
 
 local PANEL = {}
 
--- Called when the panel is initialized.
+--- Sets up the blurred frame, a close button that also hides the cursor, and the list holding the editor.
 function PANEL:Init()
   self:SetBackgroundBlur(true)
   self:SetDeleteOnClose(false)
@@ -27,7 +27,7 @@ function PANEL:Init()
   self.panelList:EnableVerticalScrollbar()
 end
 
--- Called each frame.
+--- Keeps the frame at 256 by 318 pixels in the middle of the screen.
 function PANEL:Think()
   local scrW = ScrW()
   local scrH = ScrH()
@@ -36,7 +36,11 @@ function PANEL:Think()
   self:SetPos((scrW / 2) - (self:GetWide() / 2), (scrH / 2) - (self:GetTall() / 2))
 end
 
--- A function to populate the panel.
+--- Fills the panel with an editor for the Combine objectives.
+--
+-- The text is limited to 500 characters. Pressing Okay sends it to the server with the `EditObjectives`
+-- netstream message, which saves it and updates the Combine HUD.
+-- @param objectives [String The current objectives]
 function PANEL:Populate(objectives)
   self:SetTitle('#Objectives_Title')
 
@@ -81,7 +85,7 @@ function PANEL:Populate(objectives)
   self.panelList:AddItem(button)
 end
 
--- Called when the layout should be performed.
+--- Stretches the editor list to fill the frame below the title bar.
 function PANEL:PerformLayout()
   self.panelList:StretchToParent(4, 28, 4, 4)
 

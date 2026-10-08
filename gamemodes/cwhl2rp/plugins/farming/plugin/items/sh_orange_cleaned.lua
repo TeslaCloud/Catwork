@@ -18,7 +18,7 @@ ITEM.category = 'Consumables'
 ITEM.business = true
 ITEM.description = '#Item_OrangeCleaned_Description'
 
--- Called when a player uses the item.
+--- Heals the player by 15 and boosts endurance and strength by 10 for two minutes.
 function ITEM:OnUse(player, itemEntity)
   player:SetHealth(math.Clamp(player:Health() + 15, 0, 100))
 
@@ -27,5 +27,5 @@ function ITEM:OnUse(player, itemEntity)
   player:EmitSound('vo/npc/male01/finally.wav')
 end
 
--- Called when a player drops the item.
+--- Lets the item be dropped, with no extra effect.
 function ITEM:OnDrop(player, position) end

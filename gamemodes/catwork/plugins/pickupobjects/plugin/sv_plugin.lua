@@ -8,7 +8,8 @@
 
 config.Add('take_physcannon', true)
 
--- A function to force a player to throw the entity that they are holding.
+--- Drops the entity a player is holding and throws it in the direction they aim.
+-- @param player [Player The player throwing]
 function cwPickupObjects:ForceThrowEntity(player)
   local entity = self:ForceDropEntity(player)
   local force = player:GetAimVector() * 768
@@ -24,7 +25,13 @@ function cwPickupObjects:ForceThrowEntity(player)
   end)
 end
 
--- A function to force a player to drop the entity that they are holding.
+--- Makes a player drop the entity they are holding.
+--
+-- Removes the grab entity and restores the entity's collision group when `prop_kill_protection` is on.
+-- With that config on, the dropped entity deals no damage for a minute; a dropped ragdoll also takes no
+-- damage for a second. The player cannot punch for a second afterwards.
+-- @param player [Player The player dropping]
+-- @return [Entity The entity that was held, or `nil` when the player held nothing]
 function cwPickupObjects:ForceDropEntity(player)
   local holdingGrab = player.cwHoldingGrab
   local curTime = CurTime()
@@ -62,7 +69,14 @@ function cwPickupObjects:ForceDropEntity(player)
   return entity
 end
 
--- A function to force a player to pickup an entity.
+--- Makes a player pick up an entity with the hands, dropping anything they already held.
+--
+-- Spawns an invisible `cw_grab` entity at the trace hit position and welds the entity to it; the grab
+-- then follows the player's aim. With `prop_kill_protection` on, the entity is switched to
+-- `COLLISION_GROUP_WEAPON` while held.
+-- @param player [Player The player picking up]
+-- @param entity [Entity The entity to pick up]
+-- @param trace [Map The trace that hit the entity; `HitPos` and `PhysicsBone` are used]
 function cwPickupObjects:ForcePickup(player, entity, trace)
   self:ForceDropEntity(player)
 
@@ -102,7 +116,11 @@ function cwPickupObjects:ForcePickup(player, entity, trace)
   end
 end
 
--- A function to calculate a player's entity position.
+--- Moves a player's grab entity to where the held entity should be, in front of their aim.
+--
+-- The distance grows while the player walks forward, and sprinting backwards pulls the entity close.
+-- @param player [Player The player holding the entity]
+-- @return [Boolean `true` when the position was updated, `nil` when the player can no longer hold it]
 function cwPickupObjects:CalculatePosition(player)
   local holdingGrab = player.cwHoldingGrab
   local curTime = CurTime()

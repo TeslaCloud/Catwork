@@ -1,11 +1,15 @@
 local PLUGIN = PLUGIN
 
--- Called when CW has loaded all of the entities.
+--- Called after Catwork has loaded the map entities; spawns the saved emplacement guns.
+--
+-- Overridden by the identical hook in `sv_plugin.lua`, which is included after this file.
 function PLUGIN:ClockworkInitPostEntity()
   PLUGIN:LoadEmplacementGuns()
 end
 
--- Called just after data should be saved.
+--- Called after data is saved; saves the emplacement guns.
+--
+-- Overridden by the identical hook in `sv_plugin.lua`, which is included after this file.
 function PLUGIN:PostSaveData()
   PLUGIN:SaveEmplacementGuns()
 end

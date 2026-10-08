@@ -6,19 +6,25 @@
   with contributions from Cloud Sixteen community.
 --]]
 
--- Called when a player's character has unloaded.
+--- Called when a player's character has unloaded; drops whatever the player was holding.
+-- @param player [Player The player whose character unloaded]
 function cwPickupObjects:PlayerCharacterUnloaded(player)
   self:ForceDropEntity(player)
 end
 
--- Called to get the entity that a player is holding.
+--- Called to get the entity a player is holding; returns the entity picked up with the hands.
+-- @param player [Player The player to check]
+-- @return [Entity The held entity, or `nil` when the player holds nothing]
 function cwPickupObjects:PlayerGetHoldingEntity(player)
   if IsValid(player.cwHoldingEnt) then
     return player.cwHoldingEnt
   end
 end
 
--- Called when a player attempts to throw a punch.
+--- Called when a player attempts to punch; returns `false` while the player holds an entity or for a
+-- second after they dropped one.
+-- @param player [Player The punching player]
+-- @return [Boolean `false` to block the punch]
 function cwPickupObjects:PlayerCanThrowPunch(player)
   if IsValid(player.cwHoldingEnt) or (player.nextPunchTime
   and player.nextPunchTime >= CurTime()) then
@@ -26,21 +32,31 @@ function cwPickupObjects:PlayerCanThrowPunch(player)
   end
 end
 
--- Called when a player's weapons should be given.
+--- Called when a player's weapons are given; removes the gravity gun from the spawn weapons when the
+-- `take_physcannon` config is on.
+-- @param player [Player The player receiving weapons]
 function cwPickupObjects:PlayerGiveWeapons(player)
   if config.Get('take_physcannon'):Get() then
     cw.player:TakeSpawnWeapon(player, 'weapon_physcannon')
   end
 end
 
--- Called to get whether an entity is being held.
+--- Called to get whether an entity is being held; returns `true` for a non-player entity held with the
+-- hands.
+-- @param entity [Entity The entity to check]
+-- @return [Boolean `true` when the entity is held, otherwise `nil`]
 function cwPickupObjects:GetEntityBeingHeld(entity)
   if IsValid(entity.cwHoldingGrab) and !entity:IsPlayer() then
     return true
   end
 end
 
--- Called when Clockwork config has changed.
+--- Called when a config value changes; takes the gravity gun from, or gives it back to, every player
+-- when `take_physcannon` changes.
+-- @param key [String The config key]
+-- @param data [Map The config's data table]
+-- @param previousValue [Any The old value]
+-- @param newValue [Any The new value]
 function cwPickupObjects:ClockworkConfigChanged(key, data, previousValue, newValue)
   if key == 'take_physcannon' then
     for k, v in ipairs(_player.GetAll()) do
@@ -53,7 +69,17 @@ function cwPickupObjects:ClockworkConfigChanged(key, data, previousValue, newVal
   end
 end
 
--- Called when a player's ragdoll attempts to take damage.
+--- Called when a player's ragdoll is about to take damage; protects dragged ragdolls.
+--
+-- A ragdoll takes no damage for a second after it is dropped, and while held it only takes explosion,
+-- bullet, club and slash damage.
+-- @param player [Player The ragdolled player]
+-- @param ragdoll [Entity The player's ragdoll]
+-- @param inflictor [Entity The entity that dealt the damage]
+-- @param attacker [Entity The entity responsible for the damage]
+-- @param hitGroup [Number The hit group, one of the `HITGROUP_*` enums]
+-- @param damageInfo [CTakeDamageInfo The damage]
+-- @return [Boolean `false` to block the damage]
 function cwPickupObjects:PlayerRagdollCanTakeDamage(player, ragdoll, inflictor, attacker, hitGroup, damageInfo)
   if ragdoll.cwNextTakeDmg and CurTime() < ragdoll.cwNextTakeDmg then
     return false
@@ -66,21 +92,29 @@ function cwPickupObjects:PlayerRagdollCanTakeDamage(player, ragdoll, inflictor, 
   end
 end
 
--- Called when a player enters a vehicle.
+--- Called when a player enters a vehicle; drops the vehicle if the player was holding it.
+-- @param player [Player The player entering]
+-- @param vehicle [Vehicle The vehicle]
+-- @param class [Number The seat role]
 function cwPickupObjects:PlayerEnteredVehicle(player, vehicle, class)
   if IsValid(player.cwHoldingEnt) and player.cwHoldingEnt == vehicle then
     self:ForceDropEntity(player)
   end
 end
 
--- Called when a player attempts to get up.
+--- Called when a player attempts to get up; returns `false` while their ragdoll is dragged.
+-- @param player [Player The ragdolled player]
+-- @return [Boolean `false` to stop the player getting up]
 function cwPickupObjects:PlayerCanGetUp(player)
   if player:GetNetVar('IsDragged') then
     return false
   end
 end
 
--- Called when a player's shared variables should be set.
+--- Called every second for each player; pauses the unragdoll timer of a ragdoll that is being held and
+-- keeps the `IsDragged` net var up to date.
+-- @param player [Player The player being processed]
+-- @param curTime [Number The current time]
 function cwPickupObjects:OnePlayerSecond(player, curTime)
   if player:IsRagdolled() and cw.player:GetUnragdollTime(player) then
     local entity = player:GetRagdollEntity()
@@ -103,7 +137,13 @@ function cwPickupObjects:OnePlayerSecond(player, curTime)
   end
 end
 
--- Called when a player presses a key.
+--- Called when a player presses a key; handles picking up, throwing and dropping with the hands.
+--
+-- With nothing held, secondary attack picks up the entity looked at within 96 units if the
+-- `CanHandsPickupEntity` hook allows it, or knocks on a door. While holding, primary attack throws and
+-- reload drops the entity.
+-- @param player [Player The player pressing the key]
+-- @param key [Number The key, one of the `IN_*` enums]
 function cwPickupObjects:KeyPress(player, key)
   if player:IsUsingHands() then
     if !IsValid(player.cwHoldingEnt) then
@@ -137,7 +177,15 @@ function cwPickupObjects:KeyPress(player, key)
   end
 end
 
--- Called when a player attempts to pickup an object.
+--- Called when a player attempts to pick up an entity with the hands.
+--
+-- Allows movable physics props that nobody else holds and that do not set `noHandsPickup`, up to a
+-- mass of 100 plus a strength bonus of up to 100; ragdolls are allowed at any mass. Plants and garbage
+-- are never allowed.
+-- @param player [Player The player picking up]
+-- @param entity [Entity The entity to pick up]
+-- @param trace [Map The player's eye trace]
+-- @return [Boolean `true` to allow the pickup, `false` to forbid it]
 function cwPickupObjects:CanHandsPickupEntity(player, entity, trace)
   if entity:GetClass() == 'cw_plant' or entity:GetClass() == 'cw_garbage' then
     return false

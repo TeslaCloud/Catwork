@@ -12,7 +12,7 @@ COMMAND.text = '#Command_Dispatch_Syntax'
 COMMAND.flags = bit.bor(CMD_DEFAULT, CMD_FALLENOVER)
 COMMAND.arguments = 1
 
--- Called when the command has been run.
+--- Lets scanners, Overwatch and senior Civil Protection ranks speak the joined arguments as Dispatch.
 function COMMAND:OnRun(player, arguments)
   if player:IsCombine() then
     if Schema:IsPlayerCombineRank(player, { 'SCN', 'OfC', 'EpU', 'DvL', 'CmD', 'SeC' })

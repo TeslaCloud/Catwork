@@ -15,12 +15,12 @@ ITEM.category = 'Consumables'
 ITEM.description = '#ITEM_Citizen_Supplements_Desc'
 ITEM.hunger = 35
 
--- Called when a player uses the item.
+--- Heals 5 health and gives back an empty tin can.
 function ITEM:OnUse(player, itemEntity)
   player:SetHealth(math.Clamp(player:Health() + 5, 0, player:GetMaxHealth()))
 
   player:GiveItem('empty_tin_can', true)
 end
 
--- Called when a player drops the item.
+--- Lets the item be dropped; nothing else happens.
 function ITEM:OnDrop(player, position) end

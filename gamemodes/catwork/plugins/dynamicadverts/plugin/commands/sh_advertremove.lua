@@ -11,7 +11,7 @@ COMMAND.tip = '#Command_Advertremove_Description'
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = 'a'
 
--- Called when the command has been run.
+--- Removes the adverts within 256 units of where the player is looking and saves the list.
 function COMMAND:OnRun(player, arguments)
   local position = player:GetEyeTraceNoCursor().HitPos
   local removed = 0

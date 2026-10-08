@@ -28,6 +28,14 @@ netstream.Hook('DynamicAdvertRemove', function(data)
   end
 end)
 
+--- Downloads an advert's image and stores it as a material on the advert.
+--
+-- The image is cached under `data/catwork/schemas/<schema>/plugins/adverts/<map>/` by the CRC of its URL
+-- and reused from there when present. Only `png` and `jpg`/`jpeg` URLs are supported; other extensions,
+-- and adverts that already have a material, are left alone. The download is asynchronous, so
+-- `data.material` is set some time after the call.
+--
+-- @param data [Map The advert: `url` is read, `material` (an `IMaterial`) is set once loaded]
 function cwDynamicAdverts:CacheMaterial(data)
   if data.material then return end
 

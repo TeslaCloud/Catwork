@@ -14,7 +14,9 @@ COMMAND.arguments = 1
 COMMAND.optionalArguments = 1
 COMMAND.alias = { 'Changelevel' }
 
--- Called when the command has been run.
+--- Saves data and changes the map after a delay; arguments are the map name and optional delay in seconds.
+--
+-- The delay defaults to five seconds.
 function COMMAND:OnRun(player, arguments)
   local sNewMap = string.lower(arguments[1])
 

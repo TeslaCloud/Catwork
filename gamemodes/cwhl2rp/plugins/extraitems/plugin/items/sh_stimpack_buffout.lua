@@ -18,7 +18,7 @@ ITEM.category = '#ITEM_Category_Stimpacks'
 ITEM.uniqueID = 'stimpack_buffout'
 ITEM.description = '#ITEM_Buff_Desc'
 
--- Called when a player uses the item.
+--- Clears fatigue and boosts strength by 100 for 600 seconds.
 function ITEM:OnUse(player, itemEntity)
   player:SetCharacterData('Fatigue', 0)
   player:BoostAttribute(self.name, ATB_STRENGTH, 100, 600)
@@ -26,7 +26,7 @@ function ITEM:OnUse(player, itemEntity)
   cw.player:Notify(player, '#ITEM_Buff_Effect')
 end
 
--- Called when a player drops the item.
+--- Lets the item be dropped without any extra effect.
 function ITEM:OnDrop(player, position) end
 
 local eng = cw.lang:GetTable('en')

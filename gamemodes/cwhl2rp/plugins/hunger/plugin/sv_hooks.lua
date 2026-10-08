@@ -3,6 +3,10 @@
   Please do not use anywhere else.
 --]]
 
+--- Called when character data is saved; rounds the hunger, thirst and fatigue values.
+--
+-- @param player [Player The player being saved]
+-- @param data [Character The character data to save, modified in place]
 function PLUGIN:PlayerSaveCharacterData(player, data)
   if data['Hunger'] then
     data['Hunger'] = math.Round(tonumber(data['Hunger']))
@@ -17,12 +21,22 @@ function PLUGIN:PlayerSaveCharacterData(player, data)
   end
 end
 
+--- Called when character data is restored; defaults hunger and thirst to 100 and fatigue to 0.
+--
+-- @param player [Player The player whose character is loading]
+-- @param data [Character The character data, modified in place]
 function PLUGIN:PlayerRestoreCharacterData(player, data)
   data['Hunger'] = tonumber(data['Hunger']) or 100
   data['Thirst'] = tonumber(data['Thirst']) or 100
   data['Fatigue'] = tonumber(data['Fatigue']) or 0
 end
 
+--- Called after a player spawns; resets their needs on a respawn that is neither the first nor a light spawn.
+--
+-- @param player [Player The player that spawned]
+-- @param lightSpawn [Boolean Whether this was a light spawn]
+-- @param changeClass [Boolean Whether the player changed class]
+-- @param firstSpawn [Boolean Whether this is the character's first spawn]
 function PLUGIN:PostPlayerSpawn(player, lightSpawn, changeClass, firstSpawn)
   if !firstSpawn and !lightSpawn then
     player:SetCharacterData('Hunger', 100)
@@ -31,6 +45,16 @@ function PLUGIN:PostPlayerSpawn(player, lightSpawn, changeClass, firstSpawn)
   end
 end
 
+--- Called after a player uses an item; feeds them when it is food or drink.
+--
+-- Applies to items with a `hunger`, `thirst` or `fatigue` field and to items in a
+-- consumables, alcohol, UU-branded or food category. Missing values default to the
+-- `hunger_default_refill` config. Drinks (a `thirst` field or "water" in the name) refill
+-- thirst and only 40% of the hunger value; a `fatigue` field reduces fatigue. Saves the
+-- character afterwards.
+--
+-- @param player [Player The player who used the item]
+-- @param itemTable [Item The item used]
 function PLUGIN:PlayerUseItem(player, itemTable)
   local category = itemTable.category:utf8lower()
 
@@ -57,10 +81,21 @@ function PLUGIN:PlayerUseItem(player, itemTable)
   end
 end
 
+--- Called to check whether a player gets hungry; everyone but the Combine does.
+--
+-- @param player [Player The player to check]
+-- @return [Boolean Whether the player gets hungry]
 function PLUGIN:PlayerHasHunger(player)
   return !player:IsCombine()
 end
 
+--- Called every player think; jumping and running in the air tire a player with needs and drain thirst.
+--
+-- Thirst drains by the `thirst_drain_scale` config, in hundredths, per think.
+--
+-- @param player [Player The player thinking]
+-- @param curTime [Number The current time]
+-- @param infoTable [Map The player's info table for this think, with `isJumping` and `isRunning`]
 function PLUGIN:PlayerThink(player, curTime, infoTable)
   if plugin.Call('PlayerHasNeeds', player) then
     local scale = config.GetVal('thirst_drain_scale') or 50
@@ -105,10 +140,25 @@ function PLUGIN:PlayerThink(player, curTime, infoTable)
   end
 end
 
+--- Called to check whether a player's thirst drains; it does for non-Combine players and Civil Protection.
+--
+-- @param player [Player The player to check]
+-- @return [Boolean Whether thirst drains]
 function PLUGIN:PlayerShouldThirstDrain(player)
   return !(player:IsCombine()) or player:GetFaction() == FACTION_MPF
 end
 
+--- Called every second for each player; drains the needs of players with needs and applies their effects.
+--
+-- Hunger and thirst fall so that they empty over the `hunger_tick` and `thirst_tick` configs
+-- in seconds, and hunger is never above thirst. Fatigue rises over 20000 seconds. Starving
+-- players slowly lose health down to 50 (below 15 hunger) or 20 (below 5), and players above
+-- 85 fatigue fall asleep for 30 seconds. The values are networked as the `Hunger`, `Thirst`
+-- and `Fatigue` net vars.
+--
+-- @param player [Player The player]
+-- @param curTime [Number The current time]
+-- @param infoTable [Map The player's info table]
 function PLUGIN:OnePlayerSecond(player, curTime, infoTable)
   if player:HasInitialized() and hook.Run('PlayerHasNeeds', player) then
     local thirst = tonumber(player:GetCharacterData('Thirst')) or 0
@@ -150,6 +200,10 @@ function PLUGIN:OnePlayerSecond(player, curTime, infoTable)
   end
 end
 
+--- Called to check whether a player's health regenerates; blocks it below 65 hunger.
+--
+-- @param player [Player The player to check]
+-- @return [Boolean `false` to block regeneration, otherwise `nil`]
 function PLUGIN:PlayerShouldHealthRegenerate(player)
   local thirst = tonumber(player:GetCharacterData('Thirst')) or 100
   local hunger = math.Clamp(tonumber(player:GetCharacterData('Hunger')) or 100, 0, thirst)
@@ -159,6 +213,10 @@ function PLUGIN:PlayerShouldHealthRegenerate(player)
   end
 end
 
+--- Called to check whether a player's stamina regenerates; blocks it below 30 thirst.
+--
+-- @param player [Player The player to check]
+-- @return [Boolean `false` to block regeneration, otherwise `nil`]
 function PLUGIN:PlayerShouldStaminaRegenerate(player)
   local thirst = tonumber(player:GetCharacterData('Thirst')) or 100
 

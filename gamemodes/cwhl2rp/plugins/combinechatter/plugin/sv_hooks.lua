@@ -26,12 +26,15 @@ local randomSounds = {
   'npc/overwatch/radiovoice/youarejudgedguilty.wav'
 }
 
--- A function to load the item spawns.
+--- Plays a random Overwatch radio line from the player.
+-- @param player [Player The player the sound is emitted from]
 function PLUGIN:EmitRandomChatter(player)
   player:EmitSound(randomSounds[math.random(1, #randomSounds)], 60)
 end
 
--- Called each second.
+--- Called every second; plays random radio chatter from a Combine player every 30 to 50 seconds.
+--
+-- A single timer is shared by all Combine players, so only one of them chatters per interval.
 function PLUGIN:OneSecond()
   for k, v in ipairs(_player.GetAll()) do
     if Schema:PlayerIsCombine(v) then

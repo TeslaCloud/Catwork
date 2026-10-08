@@ -10,6 +10,10 @@ ITEM.weight = 2.5
 ITEM.business = true
 ITEM.description = '#Item_RadChecker_Description'
 
+--- Tells the player the radiation dose of the player or NPC they are looking at.
+--
+-- Requires at least half of the Medical attribute and a target closer than 55 units. The
+-- device is kept.
 function ITEM:OnUse(player, itemEntity)
   local medical = cw.attributes:Fraction(player, ATB_MEDICAL, 100)
 
@@ -36,4 +40,5 @@ function ITEM:OnUse(player, itemEntity)
   return false
 end
 
+--- Called when the PDB-6 is dropped; does nothing, so it can be dropped freely.
 function ITEM:OnDrop(player, position) end

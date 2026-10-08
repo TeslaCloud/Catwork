@@ -13,7 +13,9 @@ COMMAND.flags = CMD_DEFAULT
 COMMAND.arguments = 2
 COMMAND.cooldown = 5
 
--- Called when the command has been run.
+--- Sends a private message to the target player; arguments are the player name and the message.
+--
+-- If the target has a voicemail set, the voicemail is sent to both players instead.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
 

@@ -11,7 +11,7 @@ COMMAND.tip = '#Command_Vendoradd_Description'
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = 'a'
 
--- Called when the command has been run.
+--- Spawns a vending machine with random stock where the player is looking; takes no arguments.
 function COMMAND:OnRun(player, arguments)
   local trace = player:GetEyeTraceNoCursor()
   local entity = ents.Create('cw_vendingmachine')

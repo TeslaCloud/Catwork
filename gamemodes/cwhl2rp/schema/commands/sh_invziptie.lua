@@ -10,7 +10,7 @@ local COMMAND = cw.command:New('InvZipTie')
 COMMAND.tip = '#Command_Invziptie_Description'
 COMMAND.flags = CMD_DEFAULT
 
--- Called when the command has been run.
+--- Uses a zip tie from the player's inventory; takes no arguments.
 function COMMAND:OnRun(player, arguments)
   local itemTable = player:FindItemByID('zip_tie')
 

@@ -10,7 +10,10 @@ include('shared.lua')
 
 local glowMaterial = Material('sprites/glow04_noz')
 
--- Called when the entity should draw.
+--- Draws the machine with its status light.
+--
+-- The light is green when stocked, orange when empty, and while flashing blue after a sale or restock
+-- or red after a refused purchase.
 function ENT:Draw()
   self:DrawModel()
 

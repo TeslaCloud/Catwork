@@ -58,7 +58,10 @@ cw.directory.formatDefault = {
   htmlCode = DEFAULT_FORMATTING
 }
 
--- A function to get a category.
+--- Returns a directory category.
+-- @param category [String Name of the category]
+-- @return [Map The category table (`category`, `pageData`, `parent`...), Number Its index in
+-- `cw.directory.stored`; both `nil` if the category does not exist]
 function cw.directory:GetCategory(category)
   for k, v in pairs(self.stored) do
     if v.category == category then
@@ -67,7 +70,16 @@ function cw.directory:GetCategory(category)
   end
 end
 
--- A function to add a category match.
+--- Adds a text replacement applied to a category's HTML when it is shown.
+--
+-- ```
+-- cw.directory:AddCategoryMatch('Flags', '[icon]', 'materials/icon16/flag_blue.png')
+-- ```
+--
+-- @param category [String Name of the category]
+-- @param sFind [String Text to look for, such as `'[icon]'`]
+-- @param sReplace [String Text to put in its place]
+-- @see cw.directory:ReplaceMatches
 function cw.directory:AddCategoryMatch(category, sFind, sReplace)
   if !self.matches[category] then
     self.matches[category] = {}
@@ -76,7 +88,11 @@ function cw.directory:AddCategoryMatch(category, sFind, sReplace)
   self.matches[category][sFind] = sReplace
 end
 
--- A function to replace a category's matches.
+--- Applies a category's text replacements to some HTML.
+-- @param category [String Name of the category]
+-- @param htmlCode [String HTML to change]
+-- @return [String The HTML with every match replaced]
+-- @see cw.directory:AddCategoryMatch
 function cw.directory:ReplaceMatches(category, htmlCode)
   if !self.matches[category] then return htmlCode end
 
@@ -87,43 +103,70 @@ function cw.directory:ReplaceMatches(category, htmlCode)
   return htmlCode
 end
 
--- A function to set a category tip.
+--- Sets the tooltip shown on a category in the directory tree.
+-- @param category [String Name of the category]
+-- @param tip [String Tooltip text]
 function cw.directory:SetCategoryTip(category, tip)
   self.tips[category] = tip
 end
 
--- A function to get a category tip.
+--- Returns the tooltip of a category.
+-- @param category [String Name of the category]
+-- @return [String The tooltip, or `nil` if none is set]
 function cw.directory:GetCategoryTip(category)
   return self.tips[category]
 end
 
--- A function to add a category page.
+--- Adds a category made of a single HTML page or website.
+--
+-- Combines `cw.directory:AddCategory` and `cw.directory:AddPage`.
+-- @param category [String Name of the category]
+-- @param parent [String Name of the parent category, or `nil` for a top level category]
+-- @param htmlCode [String HTML of the page, or its URL when `isWebsite` is set]
+-- @param isWebsite=nil [Boolean Whether `htmlCode` is a URL to open]
 function cw.directory:AddCategoryPage(category, parent, htmlCode, isWebsite)
   self:AddCategory(category, parent)
   self:AddPage(category, htmlCode, isWebsite)
 end
 
--- A function to set a friendly name.
+--- Sets the name a category is displayed with in the directory tree.
+--
+-- Category names are identifiers, so this is where language phrases go.
+-- @param category [String Name of the category]
+-- @param name [String Displayed name, or a language phrase]
 function cw.directory:SetFriendlyName(category, name)
   self.friendlyNames[category] = name
 end
 
--- A function to get a friendly name.
+--- Returns the name a category is displayed with.
+-- @param category [String Name of the category]
+-- @return [String The friendly name, or `category` if none is set]
 function cw.directory:GetFriendlyName(category)
   return self.friendlyNames[category] or category
 end
 
--- A function to set the master formatting.
+--- Sets the HTML every directory page is wrapped in.
+--
+-- `[information]` in it is replaced with the page's content.
+-- @param htmlCode [String The master HTML, usually with the page's `<head>` and styles]
 function cw.directory:SetMasterFormatting(htmlCode)
   self.formatMaster = htmlCode
 end
 
--- A function to get the master formatting.
+--- Returns the HTML every directory page is wrapped in.
+-- @return [String The master HTML]
 function cw.directory:GetMasterFormatting()
   return self.formatMaster
 end
 
--- A function to set category formatting.
+--- Sets the HTML a category's content is wrapped in.
+--
+-- `[information]` in it is replaced with the joined pages, `[category]` with the
+-- category name.
+-- @param category [String Name of the category]
+-- @param htmlCode [String The category HTML]
+-- @param noLineBreaks=false [Boolean Whether pages are joined without `<br>` between them]
+-- @param noMasterFormatting=false [Boolean Stored with the formatting as `noMasterFormatting`]
 function cw.directory:SetCategoryFormatting(category, htmlCode, noLineBreaks, noMasterFormatting)
   self.formatting[category] = {
     noMasterFormatting = (noMasterFormatting == true),
@@ -132,22 +175,32 @@ function cw.directory:SetCategoryFormatting(category, htmlCode, noLineBreaks, no
   }
 end
 
--- A function to get category formatting.
+--- Returns the formatting of a category.
+-- @param category [String Name of the category]
+-- @return [Map The formatting (`htmlCode`, `noLineBreaks`, `noMasterFormatting`), or
+-- `cw.directory.formatDefault` if none is set]
 function cw.directory:GetCategoryFormatting(category)
   return self.formatting[category] or self.formatDefault
 end
 
--- A function to set category sorting.
+--- Sets how the pages of a category are sorted.
+-- @param category [String Name of the category]
+-- @param Callback [Function `table.sort` comparator called with two page data tables
+-- (`htmlCode`, `sortData`...)]
 function cw.directory:SetCategorySorting(category, Callback)
   self.sorting[category] = Callback
 end
 
--- A function to get category sorting.
+--- Returns the page comparator of a category.
+-- @param category [String Name of the category]
+-- @return [Function The comparator, or `nil` if the pages are not sorted]
 function cw.directory:GetCategorySorting(category)
   return self.sorting[category]
 end
 
--- A function to get whether a category exists.
+--- Returns whether a directory category exists.
+-- @param category [String Name of the category]
+-- @return [Boolean `true` if it exists, `nil` otherwise]
 function cw.directory:CategoryExists(category)
   for k, v in pairs(self.stored) do
     if v.category == category then
@@ -156,7 +209,14 @@ function cw.directory:CategoryExists(category)
   end
 end
 
--- A function to add a category.
+--- Adds a directory category, or moves an existing one under a new parent.
+--
+-- The parent category is created if it does not exist. Does nothing once the
+-- client has finished booting.
+-- @param category [String Name of the category]
+-- @param parent=nil [String Name of the parent category; `false` adds the category without
+-- changing the parent of an existing one]
+-- @return [String The category name, String The parent name]
 function cw.directory:AddCategory(category, parent)
   if _G['ClockworkClientsideBooted'] then return end
 
@@ -183,7 +243,24 @@ function cw.directory:AddCategory(category, parent)
   return category, parent
 end
 
--- A function to add some code.
+--- Adds a page of HTML to a category, creating the category if needed.
+--
+-- Rebuilds the directory panel if it is open. Does nothing once the client has
+-- finished booting.
+--
+-- ```
+-- cw.directory:AddCode('Flags', '<tr><td>[details]</td></tr>', nil, flag, function(htmlCode, sortData)
+--   return string.Replace(htmlCode, '[details]', L(details))
+-- end)
+-- ```
+--
+-- @param category [String Name of the category]
+-- @param htmlCode [String HTML of the page]
+-- @param noLineBreak=nil [Boolean Whether no `<br>` is put before this page]
+-- @param sortData=nil [Any Value used by the category's sorting function and passed to `Callback`]
+-- @param Callback=nil [Function Called with the HTML and `sortData` when the page is shown;
+-- returns the HTML to show]
+-- @return [Number ID of the page within the category, for `cw.directory:RemoveCode`]
 function cw.directory:AddCode(category, htmlCode, noLineBreak, sortData, Callback)
   if _G['ClockworkClientsideBooted'] then return end
 
@@ -211,7 +288,14 @@ function cw.directory:AddCode(category, htmlCode, noLineBreak, sortData, Callbac
   return uniqueID
 end
 
--- A function to remove some code.
+--- Removes a page from a category, or the whole category.
+--
+-- Removing the last page also removes the category. Rebuilds the directory
+-- panel if it is open. Does nothing once the client has finished booting.
+-- @param category [String Name of the category]
+-- @param uniqueID=nil [Number ID returned by `cw.directory:AddCode`; when `nil` the category is removed]
+-- @param forceRemove=nil [Boolean Whether to skip the check for child categories; the check does not
+-- currently keep a category with children, so it is removed either way]
 function cw.directory:RemoveCode(category, uniqueID, forceRemove)
   if _G['ClockworkClientsideBooted'] then return end
 
@@ -254,7 +338,13 @@ function cw.directory:RemoveCode(category, uniqueID, forceRemove)
   end
 end
 
--- A function to add a page.
+--- Sets a category's content to a single HTML page or website, creating the category if needed.
+--
+-- Rebuilds the directory panel if it is open. Does nothing once the client has
+-- finished booting.
+-- @param category [String Name of the category]
+-- @param htmlCode [String HTML of the page, or its URL when `isWebsite` is set]
+-- @param isWebsite=nil [Boolean Whether `htmlCode` is a URL to open]
 function cw.directory:AddPage(category, htmlCode, isWebsite)
   if _G['ClockworkClientsideBooted'] then return end
 
@@ -274,7 +364,8 @@ function cw.directory:AddPage(category, htmlCode, isWebsite)
   end
 end
 
--- A function to get the directory panel.
+--- Returns the directory menu panel.
+-- @return [Panel The panel, or `nil` if it has not been created]
 function cw.directory:GetPanel()
   return self.panel
 end

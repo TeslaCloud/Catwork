@@ -10,7 +10,7 @@ local COMMAND = cw.command:New('SalesmanRemove')
 COMMAND.tip = '#Command_Salesmanremove_Description'
 COMMAND.access = 's'
 
--- Called when the command has been run.
+--- Removes the salesman the player is looking at and saves the salesmen.
 function COMMAND:OnRun(player, arguments)
   local target = player:GetEyeTraceNoCursor().Entity
 

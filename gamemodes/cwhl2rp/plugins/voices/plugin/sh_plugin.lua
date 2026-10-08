@@ -6,6 +6,11 @@
   with contributions from Cloud Sixteen community.
 --]]
 
+--- Called when voice commands are registered; adds the Half-Life 2 citizen and Combine voice lines.
+--
+-- Adds the citizen lines (with male and female sounds) to the `Human` group and the Metro Police
+-- lines to the `Combine` group, both registered by `Schema:RegisterVoiceGroups`.
+-- @param voices [Map The `cw.voices` library; lines are added with `voices:Add`]
 function PLUGIN:RegisterVoices(voices)
   -- Citizen = Directory
   voices:Add('Human', 'You all over', "That's you all over.", 'vo/npc/male01/answer01.wav', 'vo/npc/female01/answer01.wav')

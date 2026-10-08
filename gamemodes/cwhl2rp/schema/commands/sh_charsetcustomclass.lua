@@ -12,7 +12,7 @@ COMMAND.text = '#Command_Charsetcustomclass_Syntax'
 COMMAND.access = 'o'
 COMMAND.arguments = 2
 
--- Called when the command has been run.
+--- Sets the custom class of the character named in the first argument to the second argument.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
 

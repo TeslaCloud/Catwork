@@ -6,7 +6,7 @@
   with contributions from Cloud Sixteen community.
 --]]
 
--- A function to load the map scenes.
+--- Loads the current map's scenes from the schema data and appends them to `cwMapScene.storedList`.
 function cwMapScene:LoadMapScenes()
   local mapScenes = cw.core:RestoreSchemaData('plugins/scenes/'..game.GetMap())
   self.storedList = self.storedList or {}
@@ -16,7 +16,7 @@ function cwMapScene:LoadMapScenes()
   end
 end
 
--- A function to save the map scenes.
+--- Saves `cwMapScene.storedList` to the schema data for the current map.
 function cwMapScene:SaveMapScenes()
   local mapScenes = {}
 

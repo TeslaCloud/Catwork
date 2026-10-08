@@ -15,7 +15,7 @@ COMMAND.flags = CMD_DEFAULT
 COMMAND.access = 'o'
 COMMAND.optionalArguments = 1
 
--- Called when the command has been run.
+--- Removes the target character's personal access to the door the player is looking at and saves the change.
 function COMMAND:OnRun(player, arguments)
   local owningGuy = _player.Find(arguments[1])
   local owningPerson = owningGuy:Name()

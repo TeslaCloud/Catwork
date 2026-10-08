@@ -18,6 +18,7 @@ ENT.Spawnable = false
 ENT.AdminSpawnable = false
 ENT.PhysgunDisabled = true
 
+--- Sets up the networked int 0 (`index`).
 function ENT:SetupDataTables()
   self:DTVar('Int', 0, 'index')
 end

@@ -6,7 +6,9 @@
   with contributions from Cloud Sixteen community.
 --]]
 
--- Called to get the screen text info.
+--- Called to get the full-screen text; shows a "being dragged" notice while the local player's ragdoll
+-- is carried.
+-- @return [Map Screen text info with `alpha` and `title`, or `nil` when the player is not dragged]
 function cwPickupObjects:GetScreenTextInfo()
   local blackFadeAlpha = cw.core:GetBlackFadeAlpha()
 
@@ -18,7 +20,8 @@ function cwPickupObjects:GetScreenTextInfo()
   end
 end
 
--- Called when the local player attempts to get up.
+--- Called when the local player attempts to get up; returns `false` while their ragdoll is dragged.
+-- @return [Boolean `false` to stop the player getting up]
 function cwPickupObjects:PlayerCanGetUp()
   local beingDragged = cw.client:GetNetVar('IsDragged') or false
 

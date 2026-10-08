@@ -5,7 +5,7 @@
 
 local PANEL = {}
 
--- Called when the panel is initialized.
+--- Sets up the notepad editor window and its scrolling list.
 function PANEL:Init()
   self:SetBackgroundBlur(true)
   self:SetDeleteOnClose(false)
@@ -25,7 +25,7 @@ function PANEL:Init()
   self.panelList:EnableVerticalScrollbar()
 end
 
--- Called each frame.
+--- Keeps the window centred and closes it when the notepad is removed or more than 192 units away.
 function PANEL:Think()
   local scrW = ScrW()
   local scrH = ScrH()
@@ -41,12 +41,19 @@ function PANEL:Think()
   end
 end
 
--- A function to set the panel's entity.
+--- Sets the notepad entity the editor writes to.
+--
+-- @param entity [Entity The `cw_notepad` entity]
 function PANEL:SetEntity(entity)
   self.entity = entity
 end
 
--- A function to populate the panel.
+--- Adds the text box and the button that sends the text to the server.
+--
+-- The text box is capped at 64000 characters. Pressing the button closes the window and
+-- sends the text with the `EditNotepad` netstream.
+--
+-- @param notepad [String The notepad's current text]
 function PANEL:Populate(notepad)
   -- self.panelList:Clear();
 
@@ -92,7 +99,7 @@ function PANEL:Populate(notepad)
   self.panelList:AddItem(button)
 end
 
--- Called when the layout should be performed.
+--- Stretches the list to fill the window below the title bar.
 function PANEL:PerformLayout()
   self.panelList:StretchToParent(4, 28, 4, 4)
 

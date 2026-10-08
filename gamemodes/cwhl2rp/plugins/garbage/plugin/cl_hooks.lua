@@ -6,6 +6,9 @@
   with contributions from Cloud Sixteen community.
 --]]
 
+--- Called to get the progress bar to draw; shows the harvesting bar during the `farming` action.
+--
+-- @return [Map The bar's `text`, `percentage` and `flash` fields, or `nil` to show nothing]
 function cwGarbage:GetProgressBarInfo()
   local action, percentage = cw.player:GetAction(cw.client, true)
 

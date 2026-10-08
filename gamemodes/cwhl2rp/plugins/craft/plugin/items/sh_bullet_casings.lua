@@ -6,5 +6,5 @@ ITEM.weight = 0.5
 ITEM.category = 'Materials'
 ITEM.description = '#Item_BulletCasings_Description'
 
--- Called when a player drops the item.
+--- Lets the item be dropped, with no extra effect.
 function ITEM:OnDrop(player, position) end

@@ -84,6 +84,7 @@ SWEP.LoweredAngles = Angle(0.000, 0.000, -22.000)
 Initialize
 ---------------------------------------------------------*/
 
+--- Sets the fist hold type.
 function SWEP:Initialize()
   self:SetHoldType(self.HoldType)
 end
@@ -92,6 +93,7 @@ end
 Deploy
 ---------------------------------------------------------*/
 
+--- Plays the fists draw animation and delays the first punch by one second.
 function SWEP:Deploy()
   local vm = self:GetOwner():GetViewModel()
 
@@ -105,6 +107,11 @@ end
 PrimaryAttack
 ---------------------------------------------------------*/
 
+--- Throws a punch that damages, pushes or knocks out what the owner looks at within 64 units.
+--
+-- A player left at 30 health or less is knocked out for 15 seconds if `PlayerCanPunchKnockout` allows it.
+-- Runs `PlayerCanThrowPunch`, `PlayerCanPunchEntity`, `PlayerPunchEntity`, `PlayerPunchKnockout`,
+-- `PlayerPunchThrown` and `PlayerAdjustNextPunchInfo`, which can change the attack delays.
 function SWEP:PrimaryAttack()
   if SERVER then
     if hook.Run('PlayerCanThrowPunch', self:GetOwner()) then
@@ -175,6 +182,9 @@ end
 SecondaryAttack
 ---------------------------------------------------------*/
 
+--- Knocks on the door the owner looks at within 64 units if `PlayerCanKnockOnDoor` allows it.
+--
+-- Fires `PlayerKnockOnDoor` afterwards.
 function SWEP:SecondaryAttack()
   if SERVER then
     local trace = self:GetOwner():GetEyeTraceNoCursor()
@@ -198,6 +208,7 @@ end
 KnockSound
 ---------------------------------------------------------*/
 
+--- Plays the door knock sound, and on the server also on the owner's client.
 function SWEP:PlayKnockSound()
   if SERVER then
     self:CallOnClient('PlayKnockSound', '')
@@ -210,6 +221,7 @@ end
 Reload
 ---------------------------------------------------------*/
 
+--- Does nothing; the hands cannot reload.
 function SWEP:Reload()
   return false
 end
@@ -218,6 +230,7 @@ end
 OnRemove
 ---------------------------------------------------------*/
 
+--- Allows the hands to be removed.
 function SWEP:OnRemove()
   return true
 end
@@ -226,6 +239,7 @@ end
 Holster
 ---------------------------------------------------------*/
 
+--- Allows the hands to be holstered at any time.
 function SWEP:Holster()
   return true
 end
@@ -233,12 +247,14 @@ end
 /*---------------------------------------------------------
 ShootEffects
 ---------------------------------------------------------*/
+--- Overridden to show no shooting effects.
 function SWEP:ShootEffects() end
 
 /*---------------------------------------------------------
 OnDrop
 ---------------------------------------------------------*/
 
+--- Removes the hands instead of dropping them.
 function SWEP:OnDrop()
   self:Remove()
 end
@@ -247,6 +263,7 @@ end
 SetupDataTables
 ---------------------------------------------------------*/
 
+--- Sets up the networked `NextMeleeAttack` and `NextIdle` floats.
 function SWEP:SetupDataTables()
   self:NetworkVar('Float', 0, 'NextMeleeAttack')
   self:NetworkVar('Float', 1, 'NextIdle')
@@ -256,6 +273,7 @@ end
 UpdateNextIdle
 ---------------------------------------------------------*/
 
+--- Sets the next idle time to when the current view model sequence ends.
 function SWEP:UpdateNextIdle()
   local vm = self:GetOwner():GetViewModel()
 
@@ -266,6 +284,9 @@ end
 PunchEntity
 ---------------------------------------------------------*/
 
+--- Damages the entity in front of the owner within 64 units with a club hit of `Primary.Damage`.
+--
+-- Plays the hit sound after a short delay. The server also runs it on the owner's client for the sound.
 function SWEP:PunchEntity()
   local bounds = Vector(0, 0, 0)
   local startPosition = self:GetOwner():GetShootPos()
@@ -293,11 +314,13 @@ function SWEP:PunchEntity()
   end
 end
 
--- A function to play the punch animation.
 /*---------------------------------------------------------
 PunchingAnimation
 ---------------------------------------------------------*/
 
+--- Plays the next punch animation, alternating left and right fists.
+--
+-- On the server it also runs the animation on the owner's client.
 function SWEP:PlayPunchAnimation()
   if SERVER then
     self:CallOnClient('PlayPunchAnimation', '')

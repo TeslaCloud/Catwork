@@ -19,7 +19,11 @@ ITEM.business = true
 ITEM.category = 'Reusables'
 ITEM.description = '#Item_VortPoncho_Description'
 
--- Called when a replacement is needed for a player.
+--- Swaps the player model to `models/vortigaunt_ozaxi.mdl`
+-- for players using `models/vortigaunt.mdl`.
+--
+-- Other models fall back to the item's `replacement` or `group` model.
+-- @return [String The replacement model path, or `nil`]
 function ITEM:GetReplacement(player)
   if string.lower(player:GetModel()) == 'models/vortigaunt.mdl' then
     return 'models/vortigaunt_ozaxi.mdl'

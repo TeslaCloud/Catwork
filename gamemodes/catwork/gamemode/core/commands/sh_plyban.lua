@@ -15,7 +15,9 @@ COMMAND.arguments = 2
 COMMAND.optionalArguments = 1
 COMMAND.alias = { 'Ban' }
 
--- Called when the command has been run.
+--- Bans a player; arguments are the name, Steam ID or IP, the duration in minutes and an optional reason.
+--
+-- A duration of 0 bans permanently. Protected players cannot be banned.
 function COMMAND:OnRun(player, arguments)
   local schemaFolder = cw.core:GetSchemaFolder()
   local duration = tonumber(arguments[2])

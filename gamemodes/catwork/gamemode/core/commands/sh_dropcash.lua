@@ -16,7 +16,7 @@ COMMAND.arguments = 1
 COMMAND.alias = { 'DropCash', 'DropTokens' }
 COMMAND.cooldown = 8
 
--- Called when the command has been run.
+--- Drops the given amount of the caller's cash where they are looking; the argument is the amount.
 function COMMAND:OnRun(player, arguments)
   local trace = player:GetEyeTraceNoCursor()
   local cash = tonumber(arguments[1])

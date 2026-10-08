@@ -9,6 +9,13 @@ ENT.AdminOnly = true
 ENT.PhysgunDisable = true
 ENT.PhysgunAllowAdmin = true
 
+--- Spawns a vending machine at the trace hit position, facing the spawning player.
+--
+-- The yaw is snapped to 45 degrees. If a soda machine prop already sits in the new machine's
+-- bounds, the machine takes over that prop's position and angles and the prop is removed.
+-- @param client [Player The player spawning the machine]
+-- @param trace [Map Trace result whose `HitPos` is the spawn position]
+-- @return [Entity The new vending machine]
 function ENT:SpawnFunction(client, trace)
   local entity = ents.Create('nut_vend')
   entity:SetPos(trace.HitPos + Vector(0, 0, 48))
@@ -35,6 +42,12 @@ function ENT:SpawnFunction(client, trace)
   return entity
 end
 
+--- Returns the index of the button the player is aiming at.
+--
+-- Traces 96 units from the player's eyes and picks the button within 2 units of the hit position.
+-- On the server the button positions are recomputed from the entity's current position first.
+-- @param client=nil [Player The player whose aim is checked; defaults to the local player on the client]
+-- @return [Number Button index from 1 to 4, or `nil` when no button is aimed at]
 function ENT:GetNearestButton(client)
   client = client or (CLIENT and LocalPlayer())
 
@@ -67,6 +80,9 @@ function ENT:GetNearestButton(client)
 end
 
 if SERVER then
+  --- Sets up the machine's model, frozen physics, button positions, full stock and active state.
+  --
+  -- Like `ENT:SpawnFunction`, it replaces a soda machine prop found inside its bounds.
   function ENT:Initialize()
     self.buttons = {}
 
@@ -108,6 +124,11 @@ if SERVER then
     end
   end
 
+  --- Handles a player pressing a button on the machine.
+  --
+  -- Combine toggle the machine on or off, or refill an empty button for 25 tokens while holding
+  -- sprint. Other players buy the button's item (water, sparkling water, lemonade or supplements)
+  -- if the machine is active, the button has stock and they can afford the price.
   function ENT:Use(activator)
     activator:EmitSound('buttons/lightswitch2.wav', 55, 125)
 
@@ -206,6 +227,7 @@ else
   local color_red = Color(255, 0, 0, 255)
   local color_orange = Color(255, 125, 0, 255)
 
+  --- Computes the button positions used for drawing the button sprites.
   function ENT:Initialize()
     self.buttons = {}
 
@@ -218,6 +240,10 @@ else
     self.buttons[4] = position + f * 18 + r * -24.4 + u * (-0.7)
   end
 
+  --- Draws the machine with its product labels and a glowing sprite per button.
+  --
+  -- Sprites are green with stock, red when empty, orange when the machine is off, and the
+  -- aimed-at button pulses.
   function ENT:Draw()
     self:DrawModel()
 

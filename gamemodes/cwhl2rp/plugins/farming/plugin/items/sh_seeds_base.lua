@@ -23,7 +23,11 @@ ITEM.PlantName = '#Farming_Plant_Default'
 ITEM.GrowTime = { 1200, 1800 }
 ITEM.Harvest = {}
 
--- Called when a player uses the item.
+--- Plants the seeds on the dirt or grass the player looks at, within 192 units.
+--
+-- Spawns a `cw_plant` that ripens after a random time from `GrowTime`, shortened by up to a quarter by
+-- the farming attribute, and progresses that attribute. Returns `false`, keeping the seeds, when
+-- the spot is too far, not soil, or already has a plant.
 function ITEM:OnUse(player, itemEntity)
   local trace = player:GetEyeTraceNoCursor()
 
@@ -69,5 +73,5 @@ function ITEM:OnUse(player, itemEntity)
   end
 end
 
--- Called when a player drops the item.
+--- Lets the item be dropped, with no extra effect.
 function ITEM:OnDrop(player, position) end

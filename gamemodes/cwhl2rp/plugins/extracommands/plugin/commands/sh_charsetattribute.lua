@@ -11,7 +11,10 @@ COMMAND.access = 's'
 COMMAND.arguments = 3
 COMMAND.alias = { 'SetAttribute' }
 
--- Called when the command has been run.
+--- Adds the given amount to an attribute of the target character.
+--
+-- Uses `cw.attributes:Update`, which adds the points (clamped to the attribute maximum) rather than
+-- setting the value.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
   local rawAttribute = string.utf8lower(arguments[2])

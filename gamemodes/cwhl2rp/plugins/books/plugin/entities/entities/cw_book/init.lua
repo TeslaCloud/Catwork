@@ -11,7 +11,7 @@ include('shared.lua')
 AddCSLuaFile('cl_init.lua')
 AddCSLuaFile('shared.lua')
 
--- Called when the entity initializes.
+--- Sets up the book's physics and gives it 25 health.
 function ENT:Initialize()
   self:SetMoveType(MOVETYPE_VPHYSICS)
   self:PhysicsInit(SOLID_VPHYSICS)
@@ -27,12 +27,14 @@ function ENT:Initialize()
   end
 end
 
--- Called when the entity's transmit state should be updated.
+--- Returns `TRANSMIT_ALWAYS`, so the book is networked to every client.
+--
+-- @return [Number `TRANSMIT_ALWAYS`]
 function ENT:UpdateTransmitState()
   return TRANSMIT_ALWAYS
 end
 
--- A function to explode the entity.
+--- Plays the effect and sound of the book being destroyed.
 function ENT:Explode()
   local effectData = EffectData()
 
@@ -45,7 +47,7 @@ function ENT:Explode()
   self:EmitSound('physics/body/body_medium_impact_soft'..math.random(1, 7)..'.wav')
 end
 
--- Called when the entity takes damage.
+--- Subtracts the damage from the book's health and destroys it at 0.
 function ENT:OnTakeDamage(damageInfo)
   self:SetHealth(math.max(self:Health() - damageInfo:GetDamage(), 0))
 
@@ -54,7 +56,12 @@ function ENT:OnTakeDamage(damageInfo)
   end
 end
 
--- A function to set the book.
+--- Sets which book item the entity is, taking the item's model and skin.
+--
+-- Networks the item's index in the int 0 data table variable. Does nothing when no item
+-- matches.
+--
+-- @param book [String The book item's unique ID]
 function ENT:SetBook(book)
   local itemTable = item.FindByID(book)
 

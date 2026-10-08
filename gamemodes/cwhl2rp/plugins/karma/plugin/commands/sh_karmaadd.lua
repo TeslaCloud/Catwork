@@ -6,7 +6,7 @@ COMMAND.access = 'o'
 COMMAND.arguments = 2
 COMMAND.alias = { 'CharAddKarma', 'AddKarma' }
 
--- Called when the command has been run.
+--- Adds between 1 and 100 karma to the target character.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
   local karma = tonumber(arguments[2])

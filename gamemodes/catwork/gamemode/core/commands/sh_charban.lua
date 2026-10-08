@@ -13,7 +13,9 @@ COMMAND.flags = CMD_DEFAULT
 COMMAND.access = 'o8'
 COMMAND.arguments = 1
 
--- Called when the command has been run.
+--- Bans the target player's current character and kills them; the arguments are the character name.
+--
+-- Protected players cannot be banned.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(table.concat(arguments, ' '))
 

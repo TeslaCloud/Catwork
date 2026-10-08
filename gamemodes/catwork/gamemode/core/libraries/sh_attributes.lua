@@ -9,6 +9,20 @@
 library.New('attributes', cw)
 
 if SERVER then
+  --- Adds progress towards the next point of a player's attribute.
+  --
+  -- Progress runs from 0 to 100. Reaching 100 raises the attribute by one point with
+  -- `Player:UpdateAttribute` and carries the remainder over; dropping below 0 lowers it by
+  -- one point. With `gradual`, positive progress shrinks as the attribute nears its maximum.
+  -- Runs the `OnAttributeProgress` hook (via `hook.Run`) before applying the progress.
+  --
+  -- @param player [Player The player whose attribute progresses]
+  -- @param attribute [Any Attribute index, unique ID or name, as accepted by `cw.attribute:FindByID`]
+  -- @param amount [Number Progress to add; negative values remove progress]
+  -- @param gradual=nil [Boolean Whether to scale positive progress down as the attribute grows]
+  -- @return [Boolean `false` when the attribute is invalid or already at its maximum, String The
+  -- reason, as a language phrase]
+  -- @see Player:ProgressAttribute
   function cw.attributes:Progress(player, attribute, amount, gradual)
     local attributeTable = cw.attribute:FindByID(attribute)
     local attributes = player:GetAttributes()
@@ -79,7 +93,18 @@ if SERVER then
     end
   end
 
-  -- A function to update a player's attribute.
+  --- Changes a player's attribute by a number of points.
+  --
+  -- The result is clamped between 0 and the attribute's maximum. Raising the attribute resets its
+  -- progress. The new value is sent to the player and the `PlayerAttributeUpdated` hook is run
+  -- (via `hook.Run`) with the player, the attribute table and `amount`.
+  --
+  -- @param player [Player The player whose attribute changes]
+  -- @param attribute [Any Attribute index, unique ID or name, as accepted by `cw.attribute:FindByID`]
+  -- @param amount=nil [Number Points to add; negative values remove points, `nil` adds none]
+  -- @return [Boolean Whether the attribute was updated, String The reason it was not, as a language
+  -- phrase]
+  -- @see Player:UpdateAttribute
   function cw.attributes:Update(player, attribute, amount)
     local attributeTable = cw.attribute:FindByID(attribute)
     local attributes = player:GetAttributes()
@@ -123,14 +148,26 @@ if SERVER then
     end
   end
 
-  -- A function to clear a player's attribute boosts.
+  --- Removes every attribute boost from a player and tells the client.
+  --
+  -- @param player [Player The player to clear]
   function cw.attributes:ClearBoosts(player)
     netstream.Start(player, 'AttrBoostClear', true)
 
     player.cwAttrBoosts = {}
   end
 
-  --- A function to get whether a boost is active for a player.
+  --- Returns whether a player has a specific attribute boost.
+  --
+  -- When `amount` or `duration` is given, the boost must also match it.
+  --
+  -- @param player [Player The player to check]
+  -- @param identifier [String Boost identifier, as returned by `cw.attributes:Boost`]
+  -- @param attribute [Any Attribute index, unique ID or name]
+  -- @param amount=nil [Number Amount the boost must have]
+  -- @param duration=nil [Number Duration the boost must have, in seconds]
+  -- @return [Boolean Whether the boost is active, or `nil` if the player or attribute has no such
+  -- boost]
   function cw.attributes:IsBoostActive(player, identifier, attribute, amount, duration)
     if player.cwAttrBoosts then
       local attributeTable = cw.attribute:FindByID(attribute)
@@ -157,7 +194,26 @@ if SERVER then
     end
   end
 
-  -- A function to boost a player's attribute.
+  --- Adds or removes a temporary or permanent boost to a player's attribute.
+  --
+  -- With an `amount`, the boost is added (replacing a boost with the same identifier) and sent to
+  -- the client. Without one, the boost named by `identifier` is removed, or every boost of the
+  -- attribute when `identifier` is also `nil`. If the attribute cannot be found, all of the
+  -- player's boosts are cleared. Does nothing for invalid or uninitialized players.
+  --
+  -- ```
+  -- local id = cw.attributes:Boost(player, 'drunk', ATB_STRENGTH, -10, 120)
+  -- cw.attributes:Boost(player, id, ATB_STRENGTH)
+  -- ```
+  --
+  -- @param player [Player The player to boost]
+  -- @param identifier [String Boost identifier; a unique one is generated when `nil` and `amount` is
+  -- given]
+  -- @param attribute [Any Attribute index, unique ID or name]
+  -- @param amount=nil [Number Points to add while the boost lasts, or `nil` to remove boosts]
+  -- @param duration=nil [Number How long the boost lasts in seconds, or `nil` for no time limit]
+  -- @return [String The boost identifier when a boost was added, or `true` when boosts were removed]
+  -- @see cw.attributes:ClearBoosts
   function cw.attributes:Boost(player, identifier, attribute, amount, duration)
     if !IsValid(player) or !player:HasInitialized() then return end
 
@@ -227,7 +283,17 @@ if SERVER then
     end
   end
 
-  -- A function to get a player's attribute as a fraction.
+  --- Returns a player's attribute scaled to a range, so that the maximum value maps to `fraction`.
+  --
+  -- Boosts are included. Results are cached per attribute value.
+  --
+  -- @param player [Player The player to check]
+  -- @param attribute [Any Attribute index, unique ID or name]
+  -- @param fraction [Number Value the attribute's maximum maps to]
+  -- @param negative=nil [Any When truthy, negative attribute values are allowed; when a Number, it is
+  -- used instead of `fraction` for negative values]
+  -- @return [Number The scaled value; 0 for invalid or uninitialized players, `nil` if the attribute
+  -- cannot be found]
   function cw.attributes:Fraction(player, attribute, fraction, negative)
     if !IsValid(player) or !player:HasInitialized() then return 0 end
 
@@ -249,7 +315,18 @@ if SERVER then
     end
   end
 
-  -- A function to get whether a player has an attribute.
+  --- Returns the value and progress of a player's attribute.
+  --
+  -- Boosts are added unless `boostless` is set, and the total is clamped to the attribute's range
+  -- and rounded up. Returns nothing for invalid or uninitialized players, unknown attributes,
+  -- attributes the player has no access to (see `cw.core:HasObjectAccess`), and with `boostless`
+  -- when the player has never had the attribute.
+  --
+  -- @param player [Player The player to check]
+  -- @param attribute [Any Attribute index, unique ID or name]
+  -- @param boostless=nil [Boolean Return the raw value without boosts]
+  -- @param negative=nil [Boolean Allow the total to drop below 0, down to minus the maximum]
+  -- @return [Number The attribute value, Number The progress towards the next point (0 to 100)]
   function cw.attributes:Get(player, attribute, boostless, negative)
     if !IsValid(player) or !player:HasInitialized() then return end
 
@@ -297,12 +374,24 @@ else
   cw.attributes.stored = cw.attributes.stored or {}
   cw.attributes.boosts = cw.attributes.boosts or {}
 
-  -- A function to get the attributes panel.
+  --- Returns the attributes menu panel, if one has been created.
+  --
+  -- @return [Panel The attributes panel, or `nil`]
   function cw.attributes:GetPanel()
     return self.panel
   end
 
-  -- A function to get the local player's attribute as a fraction.
+  --- Returns the local player's attribute scaled to a range, so that the maximum value maps to
+  -- `fraction`.
+  --
+  -- This is the client version of the server's `cw.attributes:Fraction`, without the player
+  -- argument. Boosts are included and results are cached per attribute value.
+  --
+  -- @param attribute [Any Attribute index, unique ID or name]
+  -- @param fraction [Number Value the attribute's maximum maps to]
+  -- @param negative=nil [Any When truthy, negative attribute values are allowed; when a Number, it is
+  -- used instead of `fraction` for negative values]
+  -- @return [Number The scaled value, or `nil` if the attribute cannot be found]
   function cw.attributes:Fraction(attribute, fraction, negative)
     local attributeTable = cw.attribute:FindByID(attribute)
 
@@ -322,7 +411,18 @@ else
     end
   end
 
-  -- A function to get whether the local player has an attribute.
+  --- Returns the value and progress of the local player's attribute.
+  --
+  -- This is the client version of the server's `cw.attributes:Get`, without the player argument,
+  -- reading the values the server has networked. Boosts are added unless `boostless` is set, and
+  -- the total is clamped to the attribute's range and rounded up. Returns nothing for unknown
+  -- attributes, attributes the player has no access to, and with `boostless` when the player does
+  -- not have the attribute.
+  --
+  -- @param attribute [Any Attribute index, unique ID or name]
+  -- @param boostless=nil [Boolean Return the raw value without boosts]
+  -- @param negative=nil [Boolean Allow the total to drop below 0, down to minus the maximum]
+  -- @return [Number The attribute value, Number The progress towards the next point (0 to 100)]
   function cw.attributes:Get(attribute, boostless, negative)
     local attributeTable = cw.attribute:FindByID(attribute)
 

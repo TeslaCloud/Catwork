@@ -12,7 +12,7 @@ COMMAND.text = '#Command_Broadcast_Syntax'
 COMMAND.flags = bit.bor(CMD_DEFAULT, CMD_FALLENOVER)
 COMMAND.arguments = 1
 
--- Called when the command has been run.
+--- Lets an administrator broadcast the joined arguments to everyone with `Schema:SayBroadcast`.
 function COMMAND:OnRun(player, arguments)
   if player:GetFaction() == FACTION_ADMIN then
     local text = table.concat(arguments, ' ')

@@ -13,7 +13,9 @@ COMMAND.access = 's'
 COMMAND.arguments = 2
 COMMAND.alias = { 'SetFlags' }
 
--- Called when the command has been run.
+--- Replaces the target player's player-wide flags; arguments are the player name and the new flags.
+--
+-- Admin flags (`a`, `s` and `o`) cannot be set this way.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
 

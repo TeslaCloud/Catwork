@@ -95,7 +95,13 @@ cwAnimatedLegs.ClipVector = vector_up * -1
 cwAnimatedLegs.RenderPos = nil
 cwAnimatedLegs.RadAngle = nil
 
--- A function to get whether the legs should be drawn.
+--- Returns whether the local player's legs should be drawn this frame.
+--
+-- False when the legs model does not exist, the player is dead, in third person, observing another
+-- entity, viewing through another entity, in a vehicle without third-person mode, or in the
+-- `FACTION_VORT` or `FACTION_VORT_SLAVE` faction.
+--
+-- @return [Boolean Whether to draw the legs]
 function cwAnimatedLegs:ShouldDrawLegs()
   return IsValid(self.LegsEntity) and cw.client:Alive()
   and self:CheckDrawVehicle() and GetViewEntity() == cw.client
@@ -104,14 +110,19 @@ function cwAnimatedLegs:ShouldDrawLegs()
   and cw.client:GetFaction() != FACTION_VORT_SLAVE
 end
 
--- A function to check if a vehicle should be drawn.
+--- Returns whether the local player's vehicle state allows drawing the legs.
+--
+-- @return [Boolean True when the player is not in a vehicle, or the vehicle is in third-person mode]
 function cwAnimatedLegs:CheckDrawVehicle()
   return cw.client:InVehicle()
   and (cw.client:GetVehicle() and cw.client:GetVehicle():GetThirdPersonMode())
   or !cw.client:InVehicle()
 end
 
--- A function to create the legs.
+--- Creates the clientside legs model from the local player's model, skin and material.
+--
+-- The model is stored in `cwAnimatedLegs.LegsEntity` and set not to draw on its own; it is drawn
+-- manually in the `RenderScreenspaceEffects` hook.
 function cwAnimatedLegs:CreateLegs()
   self.LegsEntity = ClientsideModel(cw.client:GetModel(), RENDER_GROUP_OPAQUE_ENTITY)
   self.LegsEntity:SetNoDraw(true)
@@ -120,7 +131,13 @@ function cwAnimatedLegs:CreateLegs()
   self.LegsEntity.LastTick = 0
 end
 
--- A function to get when a weapon is changed.
+--- Updates the legs model's hold type and hides the bones that should not be visible.
+--
+-- Resets every bone, then shrinks and moves away the bones listed in `cwAnimatedLegs.BoneHoldTypes` for
+-- the weapon's hold type, or the vehicle or chair set when the player is seated. Does nothing when the
+-- legs model does not exist.
+--
+-- @param weapon [Weapon The newly active weapon; an invalid weapon uses the `none` hold type]
 function cwAnimatedLegs:WeaponChanged(weapon)
   if IsValid(self.LegsEntity) then
     if IsValid(weapon) then
@@ -160,7 +177,14 @@ function cwAnimatedLegs:WeaponChanged(weapon)
   end
 end
 
--- Called every frame for the legs.
+--- Syncs the legs model with the local player for the current frame.
+--
+-- Calls `cwAnimatedLegs:WeaponChanged` when the active weapon changed, and copies the model, material,
+-- skin, sequence, playback rate and pose parameters from the player. Does nothing when the legs model
+-- does not exist.
+--
+-- @param maxSeqGroundSpeed [Number Ground speed of the current sequence; the playback rate is the
+-- player's 2D speed divided by it, clamped to 0.01-10]
 function cwAnimatedLegs:LegsThink(maxSeqGroundSpeed)
   local curTime = CurTime()
 

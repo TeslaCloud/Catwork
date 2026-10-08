@@ -11,7 +11,9 @@ COMMAND.tip = '#Commands_RollDesc'
 COMMAND.text = '#Command_Roll_Syntax'
 COMMAND.cooldown = 2
 
--- Called when the command has been run.
+--- Rolls a random number and shows it to nearby players; the optional argument is the maximum, 100 by default.
+--
+-- When the caller looks at a player, both roll against each other. The `AdjustRollNumber` hook can add to either roll.
 function COMMAND:OnRun(player, arguments)
   local number = math.Clamp(math.floor(tonumber(arguments[1]) or 100), 0, 1000000000)
   local roll = math.random(0, number)

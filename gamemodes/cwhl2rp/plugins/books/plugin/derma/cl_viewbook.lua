@@ -8,7 +8,7 @@
 
 local PANEL = {}
 
--- Called when the panel is initialized.
+--- Sets up the book window with a blurred background and a close button.
 function PANEL:Init()
   self:SetBackgroundBlur(true)
   self:SetDeleteOnClose(false)
@@ -21,7 +21,7 @@ function PANEL:Init()
   end
 end
 
--- Called each frame.
+--- Keeps the window centred and closes it when the book is removed or more than 192 units away.
 function PANEL:Think()
   local scrW = ScrW()
   local scrH = ScrH()
@@ -36,12 +36,18 @@ function PANEL:Think()
   end
 end
 
--- A function to set the panel's entity.
+--- Sets the book entity the window shows.
+--
+-- @param entity [Entity The `cw_book` entity]
 function PANEL:SetEntity(entity)
   self.entity = entity
 end
 
--- A function to populate the panel.
+--- Shows the book's HTML text and a Take button that picks the book up.
+--
+-- The button closes the window and sends the `TakeBook` netstream.
+--
+-- @param itemTable [Item The book's item, with its `bookInformation` HTML]
 function PANEL:Populate(itemTable)
   self:SetTitle(cw.lang:TranslateText(itemTable.PrintName))
 
@@ -68,7 +74,7 @@ function PANEL:Populate(itemTable)
   gui.EnableScreenClicker(true)
 end
 
--- Called when the layout should be performed.
+--- Stretches the HTML text to fill the window above the Take button.
 function PANEL:PerformLayout()
   self.htmlPanel:StretchToParent(4, 28, 4, 30)
 

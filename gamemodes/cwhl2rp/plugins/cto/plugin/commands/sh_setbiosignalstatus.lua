@@ -6,7 +6,7 @@ COMMAND.text = '#Command_Setbiosignalstatus_Syntax'
 COMMAND.flags = CMD_DEFAULT
 COMMAND.arguments = 1
 
--- Called when the command has been run.
+--- Turns the player's own biosignal on or off with `cwCTO:SetPlayerBiosignal`.
 function COMMAND:OnRun(player, arguments)
   local bEnable = cw.core:ToBool(arguments[1])
   local result = cwCTO:SetPlayerBiosignal(player, bEnable)

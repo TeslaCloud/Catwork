@@ -15,14 +15,43 @@ local typeTranslations = {
   }
 }
 
+--- Registers how a type of civil record entry is displayed.
+--
+-- ```
+-- cca.AddLogType('jail', {
+--   color = Color(240, 130, 130),
+--   important = true
+-- })
+-- ```
+--
+-- @param type [String Name of the entry type, as passed to `cca.AppendLog`]
+-- @param data [Map Display options: `color` (Color of the entry) and `important` (Boolean, highlights the entry)]
+-- @see cca.GetLogType
 function cca.AddLogType(type, data)
   typeTranslations[type] = data
 end
 
+--- Returns the display options of a civil record entry type.
+-- @param type [String Name of the entry type]
+-- @return [Map The type's options, or those of the `default` type when it is not registered]
 function cca.GetLogType(type)
   return typeTranslations[type] or typeTranslations['default'] or {}
 end
 
+--- Adds an entry to a player's civil record.
+--
+-- The record is stored in the `CCA_Logs` character data and networked to clients as the
+-- `CCA_Logs` net var. On the server the appender is told to refresh their PDA. Does nothing when
+-- `player` is not valid.
+--
+-- ```
+-- cca.AppendLog(officer, citizen, L('PDA_Log_Jail'), 'jail')
+-- ```
+--
+-- @param appender [Player The player who writes the entry; entries without a valid player are signed by Overwatch]
+-- @param player [Player The player whose record gets the entry]
+-- @param entry [String Text of the entry]
+-- @param type [String Entry type, registered with `cca.AddLogType`]
 function cca.AppendLog(appender, player, entry, type)
   if IsValid(player) then
     local logs = player:GetCharacterData('CCA_Logs') or {}

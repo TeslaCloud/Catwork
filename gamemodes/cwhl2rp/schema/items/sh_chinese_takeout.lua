@@ -19,7 +19,8 @@ ITEM.uniqueID = 'chinese_takeout'
 ITEM.description = '#ITEM_Chinese_Takeout_Desc'
 ITEM.hunger = 40
 
--- Called when a player uses the item.
+--- Heals 10 health, boosts endurance by 2 and accuracy by 1 for two minutes and gives back an empty
+-- takeout carton.
 function ITEM:OnUse(player, itemEntity)
   player:SetHealth(math.Clamp(player:Health() + 10, 0, player:GetMaxHealth()))
 
@@ -29,5 +30,5 @@ function ITEM:OnUse(player, itemEntity)
   player:GiveItem('empty_takeout_carton', true)
 end
 
--- Called when a player drops the item.
+--- Lets the item be dropped; nothing else happens.
 function ITEM:OnDrop(player, position) end

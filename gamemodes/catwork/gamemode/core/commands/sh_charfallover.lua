@@ -14,7 +14,9 @@ COMMAND.optionalArguments = 1
 COMMAND.alias = { 'Fallover' }
 COMMAND.cooldown = 5
 
--- Called when the command has been run.
+--- Makes the caller fall over; the optional argument is how many seconds to stay down (2 to 30).
+--
+-- Can be used at most once every five seconds, and not in a vehicle or while noclipping.
 function COMMAND:OnRun(player, arguments)
   local curTime = CurTime()
 

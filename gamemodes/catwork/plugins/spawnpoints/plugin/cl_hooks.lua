@@ -10,7 +10,7 @@ local cwSpawnPoints = cwSpawnPoints
 local spawnPointData
 local cwClass = cw.class
 
--- Called when the plugin is initialized.
+--- Called when the plugin is initialized; creates the `cwSpawnPointESP` convar and its admin ESP setting.
 function cwSpawnPoints:Initialize()
   CW_CONVAR_SPAWNPOINTESP = cw.core:CreateClientConVar('cwSpawnPointESP', 0, true, true)
 
@@ -23,7 +23,11 @@ local colorWhite = Color(255, 255, 255, 255)
 local colorViolet = Color(180, 100, 255, 255)
 local spawnColor
 
--- Called when the ESP info is needed.
+--- Called to collect admin ESP entries; adds every spawn point when the `cwSpawnPointESP` convar is on.
+--
+-- Each entry is labelled with its faction, class or `default` name, colored after the matching class.
+--
+-- @param info [List<Map> ESP entries to add to, each with `position` and a `text` list]
 function cwSpawnPoints:GetAdminESPInfo(info)
   if CW_CONVAR_SPAWNPOINTESP:GetInt() == 1 and spawnPointData then
     for typeName, spawnPoints in pairs(spawnPointData) do

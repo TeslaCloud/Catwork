@@ -10,7 +10,10 @@ include('shared.lua')
 
 local glowMaterial = Material('sprites/glow04_noz')
 
--- Called when the entity should draw.
+--- Draws the dispenser's status light.
+--
+-- While a ration is being prepared the light flashes blue with a beep, faster as it nears completion.
+-- Otherwise it is green when unlocked, orange when locked and red during a refusal flash.
 function ENT:Draw()
   local a = self:GetColor().a
   local rationTime = self:GetDTFloat(0)

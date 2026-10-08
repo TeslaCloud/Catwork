@@ -7,7 +7,7 @@ include('shared.lua')
 
 local glowMaterial = Material('sprites/glow04_noz')
 
--- Called when the entity should draw.
+--- Draws the lock model.
 function ENT:Draw()
   self:DrawModel()
 end

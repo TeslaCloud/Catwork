@@ -6,6 +6,14 @@
   with contributions from Cloud Sixteen community.
 --]]
 
+--- Makes a door permanently owned by a player's character and saves it.
+--
+-- The character gets a `PermaDoorSecret` key the first time it is given a door; the door stores
+-- that key, becomes unownable and shows the title with the owner's name as its text.
+-- @param player [Player The new owner]
+-- @param door [Entity The door to assign]
+-- @param title [String Name shown on the door]
+-- @see cwPermaDoors:ResetPermaDoor
 function cwPermaDoors:SetPermaDoor(player, door, title)
   local secretKey = player:GetCharacterData('PermaDoorSecret')
 
@@ -27,6 +35,13 @@ function cwPermaDoors:SetPermaDoor(player, door, title)
   self:SavePermaDoors()
 end
 
+--- Removes the owner of a permanent door and saves it as vacant.
+--
+-- The door keeps being unownable, gets a new random secret that no character holds and shows
+-- `#Door_Vacant` as its text.
+-- @param door [Entity The door to reset]
+-- @param title [String Name shown on the door]
+-- @see cwPermaDoors:SetPermaDoor
 function cwPermaDoors:ResetPermaDoor(door, title)
   self.stored[door] = self.stored[door] or {}
   self.stored[door].secret = 'door_no_owner_'..math.random(0, 999999)

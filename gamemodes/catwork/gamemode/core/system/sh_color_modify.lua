@@ -15,12 +15,16 @@ if CLIENT then
   SYSTEM.doesCreateForm = false
   cw.OverrideColorMod = cw.core:RestoreSchemaData('color', false)
 
-  -- A function to get the modification values.
+  --- Returns the current color modification values.
+  -- @return [Map The `cw.OverrideColorMod` table: `enabled` plus the brightness, contrast, color and add/mul channels]
   function SYSTEM:GetModifyTable()
     return cw.OverrideColorMod
   end
 
-  -- A function to get the key info.
+  --- Returns the slider settings for a color modification key.
+  -- @param key [String One of `brightness`, `contrast`, `color`, `addr`, `addg`, `addb`, `mulr`, `mulg` or `mulb`]
+  -- @return [Map `name` (language key), `minimum`, `maximum` and `decimals` for the slider, or `nil`
+  -- for an unknown key]
   function SYSTEM:GetKeyInfo(key)
     if key == 'brightness' then
       return { name = '#System_ColorModify_Brightness', minimum = -2, maximum = 2, decimals = 2 }
@@ -43,7 +47,11 @@ if CLIENT then
     end
   end
 
-  -- Called when the system should be displayed.
+  --- Builds the enable checkbox and one slider per color modification value.
+  --
+  -- Changes are sent to the server with the `SystemColSet` netstream once the mouse button is released.
+  -- @param systemPanel [Panel The system panel to add the form to]
+  -- @param systemForm [Panel The system's form (unused, the system does not create one)]
   function SYSTEM:OnDisplay(systemPanel, systemForm)
     local infoText = vgui.Create('cwInfoText', systemPanel)
       infoText:SetText('#System_ColorModify_Info')

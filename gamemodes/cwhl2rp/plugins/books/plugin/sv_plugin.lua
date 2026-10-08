@@ -24,7 +24,10 @@ netstream.Hook('TakeBook', function(player, data)
   end
 end)
 
--- A function to load the books.
+--- Spawns the books saved for the current map.
+--
+-- Restores each book's owner, position and angles, skips books whose item no longer exists
+-- and freezes the ones that were frozen when saved.
 function PLUGIN:LoadBooks()
   local books = cw.core:RestoreSchemaData('plugins/books/'..game.GetMap())
 
@@ -50,7 +53,10 @@ function PLUGIN:LoadBooks()
   end
 end
 
--- A function to save the books.
+--- Saves every `cw_book` on the map to the schema data.
+--
+-- Writes `plugins/books/<map>` with each book's item, owner, position, angles and whether it
+-- can move.
 function PLUGIN:SaveBooks()
   local books = {}
 

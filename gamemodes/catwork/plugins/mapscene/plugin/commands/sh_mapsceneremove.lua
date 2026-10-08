@@ -11,7 +11,7 @@ COMMAND.tip = '#Command_Mapsceneremove_Description'
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = 'a'
 
--- Called when the command has been run.
+--- Removes the map scenes within 256 units of the player's eyes.
 function COMMAND:OnRun(player, arguments)
   if #cwMapScene.storedList > 0 then
     local position = player:EyePos()

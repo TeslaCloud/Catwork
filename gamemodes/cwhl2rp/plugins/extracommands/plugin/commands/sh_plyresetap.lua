@@ -11,7 +11,7 @@ COMMAND.access = 'a'
 COMMAND.arguments = 1
 COMMAND.alias = { 'ResetAP', 'ResetArmor', 'PlyResetAP' }
 
--- Called when the command has been run.
+--- Sets the target player's armor to 100.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
 

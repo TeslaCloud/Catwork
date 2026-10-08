@@ -11,7 +11,7 @@ COMMAND.tip = '#Command_Animmotion_Description'
 COMMAND.text = '#Command_Animmotion_Syntax'
 COMMAND.flags = CMD_DEFAULT
 
--- Called when the command has been run.
+--- Plays a Civil Protection motioning gesture: `Left`, `Right`, or behind when no argument is given.
 function COMMAND:OnRun(player, arguments)
   local curTime = CurTime()
 

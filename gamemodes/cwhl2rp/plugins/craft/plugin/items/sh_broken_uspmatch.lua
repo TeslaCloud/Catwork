@@ -6,5 +6,5 @@ ITEM.weight = 1
 ITEM.category = 'Materials'
 ITEM.description = '#Item_BrokenUspmatch_Description'
 
--- Called when a player drops the item.
+--- Lets the item be dropped, with no extra effect.
 function ITEM:OnDrop(player, position) end

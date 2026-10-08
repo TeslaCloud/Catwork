@@ -14,7 +14,7 @@ ENT.PrintName = 'Book'
 ENT.Spawnable = false
 ENT.AdminSpawnable = false
 
--- Called when the datatables are setup.
+--- Sets up the networked int 0 (`index`), the index of the book's item.
 function ENT:SetupDataTables()
   self:DTVar('Int', 0, 'index')
 end

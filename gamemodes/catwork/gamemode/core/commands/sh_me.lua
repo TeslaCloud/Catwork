@@ -13,7 +13,7 @@ COMMAND.arguments = 1
 COMMAND.alias = { 'Perform', 'me' }
 COMMAND.cooldown = 2
 
--- Called when the command has been run.
+--- Prints a roleplay action in the chat of nearby players; the arguments are the action text.
 function COMMAND:OnRun(player, arguments)
   local text = ''
 

@@ -21,17 +21,35 @@ config.map = map
 --[[ Set the __index meta function of the class. --]]
 local CLASS_TABLE = { __index = CLASS_TABLE }
 
--- Called when the config is invoked as a function.
+--- Queries a field of the config entry when the config object is called like a function.
+--
+-- ```
+-- local default = config.Get('cash_enabled')('default')
+-- ```
+--
+-- @param parameter [String Field of the config entry to read, e.g. `'default'` or `'isShared'`]
+-- @param failSafe=nil [Any Value returned when the field is not set]
+-- @return [Any The field's value, or `failSafe`]
+-- @see CLASS_TABLE:Query
 function CLASS_TABLE:__call(parameter, failSafe)
   return self:Query(parameter, failSafe)
 end
 
--- Called when the config is converted to a string.
+--- Converts the config object to a string of the form `CONFIG[key]`.
+--
+-- The function is declared without a `self` parameter, so it indexes the global `self` and errors
+-- when called.
+-- @return [String The string representation]
 function CLASS_TABLE.__tostring()
   return 'CONFIG['..self('key')..']'
 end
 
--- A function to create a new config object.
+--- Creates a new config object wrapping the stored entry for a key.
+--
+-- The object is created even when no entry exists for the key; check it with `CLASS_TABLE:IsValid`.
+-- Use `config.Get` instead, which caches the objects.
+-- @param key [String The config key]
+-- @return [Config The new config object]
 function CLASS_TABLE:Create(key)
   local cfg = cw.core:NewMetaTable(CLASS_TABLE)
     cfg.data = stored[key]
@@ -39,12 +57,16 @@ function CLASS_TABLE:Create(key)
   return cfg
 end
 
--- A function to check if the config is valid.
+--- Returns whether the config object wraps an existing config entry.
+-- @return [Boolean Whether the key has been added with `config.Add`]
 function CLASS_TABLE:IsValid()
   return self.data != nil
 end
 
--- A function to query the config.
+--- Returns a field of the config entry, such as `'value'`, `'default'` or `'isShared'`.
+-- @param key [String Name of the field to read]
+-- @param failSafe=nil [Any Value returned when the entry or the field does not exist]
+-- @return [Any The field's value, or `failSafe`]
 function CLASS_TABLE:Query(key, failSafe)
   if self.data and self.data[key] != nil then
     return self.data[key]
@@ -53,7 +75,11 @@ function CLASS_TABLE:Query(key, failSafe)
   end
 end
 
--- A function to get the config's value as a boolean.
+--- Returns the config's value as a boolean.
+--
+-- `true`, `'true'`, `'yes'`, `'1'` and `1` count as true; every other value is false.
+-- @param failSafe=nil [Boolean Value returned when the entry does not exist; `false` when not given]
+-- @return [Boolean The value as a boolean]
 function CLASS_TABLE:GetBoolean(failSafe)
   if self.data then
     return (self.data.value == true or self.data.value == 'true'
@@ -65,7 +91,10 @@ function CLASS_TABLE:GetBoolean(failSafe)
   end
 end
 
--- A function to get a config's value as a number.
+--- Returns the config's value as a number.
+-- @param failSafe=nil [Number Value returned when the entry does not exist or its value is not numeric; `0` when not
+-- given]
+-- @return [Number The value as a number]
 function CLASS_TABLE:GetNumber(failSafe)
   if self.data then
     return tonumber(self.data.value) or failSafe or 0
@@ -74,7 +103,9 @@ function CLASS_TABLE:GetNumber(failSafe)
   end
 end
 
--- A function to get a config's value as a string.
+--- Returns the config's value converted to a string.
+-- @param failSafe=nil [String Value returned when the entry does not exist; `''` when not given]
+-- @return [String The value as a string]
 function CLASS_TABLE:GetString(failSafe)
   if self.data then
     return tostring(self.data.value)
@@ -83,7 +114,9 @@ function CLASS_TABLE:GetString(failSafe)
   end
 end
 
--- A function to get a config's default value.
+--- Returns the config's default value, the value it was added with.
+-- @param failSafe=nil [Any Value returned when the entry does not exist]
+-- @return [Any The default value, or `failSafe`]
 function CLASS_TABLE:GetDefault(failSafe)
   if self.data then
     return self.data.default
@@ -92,7 +125,11 @@ function CLASS_TABLE:GetDefault(failSafe)
   end
 end
 
--- A function to get the config's next value.
+--- Returns the value the config will take after the next restart.
+--
+-- Only set for keys added with `needsRestart` whose value was changed while the server was running.
+-- @param failSafe=nil [Any Value returned when no next value is pending]
+-- @return [Any The pending value, or `failSafe`]
 function CLASS_TABLE:GetNext(failSafe)
   if self.data and self.data.nextValue != nil then
     return self.data.nextValue
@@ -101,7 +138,17 @@ function CLASS_TABLE:GetNext(failSafe)
   end
 end
 
--- A function to get the config's value.
+--- Returns the config's current value.
+--
+-- ```
+-- if config.Get('cash_enabled'):Get(false) then
+--   print('Cash is enabled.')
+-- end
+-- ```
+--
+-- @param failSafe=nil [Any Value returned when the entry does not exist or has no value]
+-- @return [Any The current value, or `failSafe`]
+-- @see config.GetVal
 function CLASS_TABLE:Get(failSafe)
   if self.data and self.data.value != nil then
     return self.data.value
@@ -110,22 +157,33 @@ function CLASS_TABLE:Get(failSafe)
   end
 end
 
--- A function to set whether the config has initialized.
+--- Sets whether the config has been initialized.
+--
+-- On the server, config changes are only saved and `ClockworkConfigChanged` is only fired once this is
+-- set; on the client it is set when the first `Config` message arrives from the server.
+-- @param bInitalized [Boolean Whether the config has initialized]
 function config.SetInitialized(bInitalized)
   config.cwInitialized = bInitalized
 end
 
--- A function to get whether the config has initialized.
+--- Returns whether the config has been initialized.
+-- @return [Boolean Whether `config.SetInitialized` has been called with `true`]
 function config.HasInitialized()
   return config.cwInitialized
 end
 
--- A function to get whether a config value is valid.
+--- Returns whether a value can be stored in a config key.
+-- @param value [Any The value to check]
+-- @return [Boolean Whether the value is a string, number or boolean]
 function config.IsValidValue(value)
   return isstring(value) or isnumber(value) or isbool(value)
 end
 
--- A function to share a config key.
+--- Registers a short CRC index for a config key so it is networked under the index instead of its name.
+--
+-- Call it in both realms with the same key; the server maps the key to the index and the client
+-- maps the index back to the key.
+-- @param key [String The config key]
 function config.ShareKey(key)
   local shortCRC = cw.core:GetShortCRC(key)
 
@@ -136,12 +194,24 @@ function config.ShareKey(key)
   end
 end
 
--- A function to get the stored config.
+--- Returns the table of every config entry, indexed by key.
+-- @return [Map Config entries indexed by key, each with `value`, `default` and flag fields]
 function config.GetStored()
   return stored
 end
 
--- A function to import a config file.
+--- Imports config keys from a text file and adds or updates them.
+--
+-- Each line has the form `<class> <key> = <value>;`, where the class contains any of `boolean`,
+-- `number`, `force`, `global`, `shared`, `static`, `private` and `restart` to set the type and
+-- flags. Lines starting with `//` and `[section]` lines are skipped. Existing keys are set, with
+-- `force` bypassing the static flag; new keys are added with `config.Add`.
+--
+-- ```
+-- shared number default_attribute_points = 30;
+-- ```
+--
+-- @param fileName [String Path of the file, relative to the `GAME` mount]
 function config.Import(fileName)
   local data = _file.Read(fileName, 'GAME') or ''
 
@@ -179,7 +249,14 @@ function config.Import(fileName)
   end
 end
 
--- A function to load an INI file.
+--- Reads an INI file into a table of sections.
+--
+-- Comments starting with `;` or `#` are stripped. Numeric and `true`/`false` values are converted.
+-- @param fileName [String Path of the file]
+-- @param bFromGame=nil [Boolean Read from the `GAME` mount instead of `DATA`]
+-- @param bStripQuotes=nil [Boolean Remove double quotes from every line]
+-- @return [Map Sections indexed by name, each a `Map` of keys to values; `false` when a line appears before the
+-- first section or a section header is not closed, `nil` when the file cannot be read]
 function config.LoadINI(fileName, bFromGame, bStripQuotes)
   local bSuccess, value = pcall(file.Read, fileName, (bFromGame and 'GAME' or 'DATA'))
 
@@ -247,7 +324,16 @@ function config.LoadINI(fileName, bFromGame, bStripQuotes)
   end
 end
 
--- A function to parse config keys.
+--- Replaces every `$key$` in a text with the value of that config key.
+--
+-- Unknown keys are left in the text as they are.
+--
+-- ```
+-- config.Parse('Players start with $default_cash$ tokens.')
+-- ```
+--
+-- @param text [String The text to parse]
+-- @return [String The text with the config values filled in]
 function config.Parse(text)
   for key in string.gmatch(text, '%$(.-)%$') do
     local value = config.Get(key):Get()
@@ -260,7 +346,17 @@ function config.Parse(text)
   return text
 end
 
--- A function to get a config object.
+--- Returns the config object for a key.
+--
+-- Objects for existing keys are cached. An object is returned even for keys that do not exist, so
+-- check it with `CLASS_TABLE:IsValid` when the key might be missing.
+--
+-- ```
+-- local walkSpeed = config.Get('walk_speed'):GetNumber(100)
+-- ```
+--
+-- @param key [String The config key]
+-- @return [Config The config object]
 function config.Get(key)
   if !cache[key] then
     local configObject = CLASS_TABLE:Create(key)
@@ -275,6 +371,11 @@ function config.Get(key)
   end
 end
 
+--- Returns the current value of a config key without creating a config object.
+-- @param key [String The config key]
+-- @param failSafe=nil [Any Value returned when the key does not exist]
+-- @return [Any The current value, or `failSafe`]
+-- @see CLASS_TABLE:Get
 function config.GetVal(key, failSafe)
   local configEntry = stored[key]
 
@@ -286,6 +387,14 @@ function config.GetVal(key, failSafe)
 end
 
 if SERVER then
+  --- Saves the config entries that differ from their defaults.
+  --
+  -- Global keys are saved with `cw.core:SaveClockworkData` and schema keys with
+  -- `cw.core:SaveSchemaData`. Map-specific, temporary and `mysql_` keys are skipped, and a pending
+  -- `nextValue` is saved in place of the current value. When `configTable` is `nil`, both saved files
+  -- are deleted instead.
+  -- @param fileName [String Name of the data file, e.g. `'config'` or `'config/gm_construct'`]
+  -- @param configTable=nil [Map Config entries indexed by key, as returned by `config.GetStored`]
   function config.Save(fileName, configTable)
     if configTable then
       local cfg = { global = {}, schema = {} }
@@ -322,7 +431,12 @@ if SERVER then
     end
   end
 
-  -- A function to send the config to a player.
+  --- Sends shared config values to players over the `Config` netstream message.
+  --
+  -- Only keys added as shared are sent. Bots are marked as config initialized straight away and fire
+  -- `PlayerConfigInitialized` instead of being sent anything.
+  -- @param player=nil [Player The player to send to; every player when `nil`]
+  -- @param key=nil [String The key to send; every shared key when `nil`]
   function config.Send(player, key)
     if player and player:IsBot() then
       hook.Run('PlayerConfigInitialized', player)
@@ -367,7 +481,14 @@ if SERVER then
     end
   end
 
-  -- A function to load config from a file.
+  --- Loads saved config values from a data file, or applies every saved config file when no file is given.
+  --
+  -- Without a file name, the default and current map config files are read into `config.global` or
+  -- `config.schema` and applied to existing keys whose saved default matches their current default,
+  -- map values only applying on that map.
+  -- @param fileName=nil [String Name of the data file to read and return]
+  -- @param loadGlobal=nil [Boolean Use the framework's data folder instead of the schema's]
+  -- @return [Map The saved entries when `fileName` is given; nothing otherwise]
   function config.Load(fileName, loadGlobal)
     if !fileName then
       local configClasses = { 'default', 'map' }
@@ -412,7 +533,25 @@ if SERVER then
     end
   end
 
-  -- A function to add a new config key.
+  --- Adds a new config key with a default value.
+  --
+  -- Values saved in the global or schema config files are applied to the new key, and shared keys are
+  -- sent to every player. The key's category is the name of the plugin being loaded, if any. Does
+  -- nothing when the key already exists or the value is not a string, number or boolean.
+  --
+  -- ```
+  -- config.Add('default_attribute_points', 30, true)
+  -- config.Add('mysql_host', '', nil, nil, true, true, true)
+  -- ```
+  --
+  -- @param key [String Unique name of the key]
+  -- @param value [Any Default value; a string, number or boolean]
+  -- @param isShared=nil [Boolean Network the value to clients]
+  -- @param isGlobal=nil [Boolean Save the value for every schema instead of the current one]
+  -- @param isStatic=nil [Boolean Prevent the value from changing unless forced]
+  -- @param isPrivate=nil [Boolean Mark the key as private]
+  -- @param needsRestart=nil [Boolean Apply changes only after a restart]
+  -- @return [Config The new config object, or `nil` when the key was not added]
   function config.Add(key, value, isShared, isGlobal, isStatic, isPrivate, needsRestart)
     if config.IsValidValue(value) then
       if !stored[key] then
@@ -458,7 +597,20 @@ if SERVER then
     end
   end
 
-  -- A function to set the config's value.
+  --- Sets the config's value, saving and networking it.
+  --
+  -- The value is converted to the type of the current value; `'!default'` resets it to the default.
+  -- Static keys only change when `forceSet` is true. For keys that need a restart, the value is
+  -- stored as the next value instead once the config has initialized. Shared keys are sent to every
+  -- player and `ClockworkConfigChanged` is fired when the value changes.
+  --
+  -- The `map` parameter shadows the file's `config.map` table, so setting a map-specific value after
+  -- initialization indexes the map name string instead of that table.
+  -- @param value [Any The new value, or `'!default'`]
+  -- @param map=nil [String Only apply the value on this map]
+  -- @param forceSet=nil [Boolean Ignore the static and restart flags]
+  -- @param temporary=nil [Boolean Do not save the value]
+  -- @return [Any The converted value, or `nil` when the entry does not exist or the value is invalid]
   function CLASS_TABLE:Set(value, map, forceSet, temporary)
     if map then
       map = string.lower(map)
@@ -582,17 +734,29 @@ else
     end
   end)
 
-  -- A function to get whether the config has sent initialized.
+  --- Sets whether the client has told the server that its config has initialized.
+  -- @param sentInitialized [Boolean Whether the `ConfigInitialized` message was sent]
   function config.SetSentInitialized(sentInitialized)
     config.sentInitialized = sentInitialized
   end
 
-  -- A function to get whether the config has sent initialized.
+  --- Returns whether the client has told the server that its config has initialized.
+  -- @return [Boolean Whether the `ConfigInitialized` message was sent]
   function config.HasSentInitialized()
     return config.sentInitialized
   end
 
-  -- A function to add a config key entry to the system.
+  --- Adds a config key to the client's config system menu.
+  --
+  -- The `category` argument is ignored: it is always replaced by the name of the plugin being loaded,
+  -- falling back to `'Clockwork'`.
+  -- @param name [String Display name; the key when `nil`]
+  -- @param key [String The config key]
+  -- @param help [String Help text; `'#ConfigNoHelp'` when `nil`]
+  -- @param minimum=0 [Number Minimum value for numeric keys]
+  -- @param maximum=100 [Number Maximum value for numeric keys]
+  -- @param decimals=0 [Number Number of decimals for numeric keys]
+  -- @param category=nil [String Unused]
   function config.AddToSystem(name, key, help, minimum, maximum, decimals, category)
     category = PLUGIN and PLUGIN:GetName()
 
@@ -606,12 +770,19 @@ else
     }
   end
 
-  -- A function to get a config key's system entry.
+  --- Returns a config key's entry in the config system menu.
+  -- @param key [String The config key]
+  -- @return [Map The entry with `name`, `help`, `minimum`, `maximum`, `decimals` and `category`, or `nil`]
   function config.GetFromSystem(key)
     return config.system[key]
   end
 
-  -- A function to add a new config key.
+  --- Adds a config key on the client, usually when the server sends its value.
+  --
+  -- Does nothing when the key already exists or the value is not a string, number or boolean.
+  -- @param key [String Name of the key]
+  -- @param value [Any Value of the key, also used as its default]
+  -- @return [Config The new config object, or `nil` when the key was not added]
   function config.Add(key, value)
     if config.IsValidValue(value) then
       if !stored[key] then
@@ -625,7 +796,13 @@ else
     end
   end
 
-  -- A function to set the config's value.
+  --- Sets the config's value on the client.
+  --
+  -- The value is converted to the type of the current value, and values of another type are
+  -- rejected; `'!default'` resets it to the default. Fires `ClockworkConfigChanged` when the value
+  -- changes after initialization.
+  -- @param value [Any The new value, or `'!default'`]
+  -- @return [Any The new value, or `nil` when the entry does not exist or the value is invalid]
   function CLASS_TABLE:Set(value)
     if tostring(value) == '-1.#IND' then
       value = 0

@@ -12,14 +12,25 @@ cw.character.stored = cw.character.stored or {}
 cw.character.whitelisted = cw.character.whitelisted or {}
 cw.character.creationPanels = cw.character.creationPanels or {}
 
---[[
-  @codebase Client
-  @details Register a new creation panel.
-  @param String The friendly name of the creation process.
-  @param String The name of the VGUI panel to use.
-  @param Function A callback to get the visibility of the process. Return false to hide.
---]]
-
+--- Registers a step of the character creation process.
+--
+-- A step whose friendly name is already registered is ignored, so the call is
+-- safe on auto-refresh. When `index` is given, the steps at or after it move down one place.
+--
+-- ```
+-- cw.character:RegisterCreationPanel('#CharCreation_DefaultClass', 'cw.characterStageThree', nil,
+--   function(info)
+--     return info.faction == 'Citizen'
+--   end
+-- )
+-- ```
+--
+-- @param friendlyName [String Name of the step, usually a language phrase]
+-- @param vguiName [String Name of the VGUI panel class opened for the step]
+-- @param index=nil [Number Position of the step; appended to the end when `nil`]
+-- @param Condition=nil [Function Called with the creation info `Map` when moving between steps;
+-- return `false` to skip the step]
+-- @see cw.character:RemoveCreationPanel
 function cw.character:RegisterCreationPanel(friendlyName, vguiName, index, Condition)
   -- Prevent duplicates from being created on AutoRefresh.
   for k, v in ipairs(cw.character.creationPanels) do
@@ -44,11 +55,11 @@ function cw.character:RegisterCreationPanel(friendlyName, vguiName, index, Condi
   })
 end
 
---[[
-  @codebase Client
-  @details Used to remove a character creation panel from use.
---]]
-
+--- Removes a step from the character creation process.
+--
+-- The steps after it move up one place.
+-- @param name [String VGUI panel class or friendly name of the step]
+-- @see cw.character:RegisterCreationPanel
 function cw.character:RemoveCreationPanel(name)
   local removed = false
   local index
@@ -71,12 +82,9 @@ function cw.character:RemoveCreationPanel(name)
   end
 end
 
---[[
-  @codebase Client
-  @details Get the previous creation panel.
-  @returns Table The previous creation panel info.
---]]
-
+--- Returns the closest earlier creation step whose condition passes.
+-- @return [Map The step's info table (`index`, `vguiName`, `friendlyName`, `Condition`), or `nil`
+-- if there is none]
 function cw.character:GetPreviousCreationPanel()
   local info = self:GetCreationInfo()
   local index = info.index - 1
@@ -93,12 +101,9 @@ function cw.character:GetPreviousCreationPanel()
   end
 end
 
---[[
-  @codebase Client
-  @details Get the next creation panel.
-  @returns Table The next creation panel info.
---]]
-
+--- Returns the closest later creation step whose condition passes.
+-- @return [Map The step's info table (`index`, `vguiName`, `friendlyName`, `Condition`), or `nil`
+-- if the current step is the last]
 function cw.character:GetNextCreationPanel()
   local info = self:GetCreationInfo()
   local index = info.index + 1
@@ -115,36 +120,28 @@ function cw.character:GetNextCreationPanel()
   end
 end
 
---[[
-  @codebase Client
-  @details Reset the active character creation info.
---]]
-
+--- Clears the creation info on the character panel, starting a new creation at step 0.
 function cw.character:ResetCreationInfo()
   self:GetPanel().info = { index = 0 }
 end
 
---[[
-  @codebase Client
-  @details Get the active character creation info.
-  @returns Table The active character creation info.
---]]
-
+--- Returns the creation info of the character being created.
+--
+-- The `index` key holds the current step; the steps fill in the other keys
+-- (`faction`, `name`, `model`...), which are sent to the server when creation finishes.
+-- @return [Map The creation info stored on the character panel]
 function cw.character:GetCreationInfo()
   return self:GetPanel().info
 end
 
---[[
-  @codebase Client
-  @details Get the creation progress as a percentage.
-  @returns Float A percentage of the creation progress.
---]]
-
+--- Returns how far the character creation process is.
+-- @return [Number Percentage of the registered steps reached, from 0 to 100]
 function cw.character:GetCreationProgress()
   return (100 / #self.creationPanels) * self:GetCreationInfo().index
 end
 
--- A function to get whether the creation process is active.
+--- Returns whether the active character menu panel is a creation step.
+-- @return [Boolean Whether character creation is in progress]
 function cw.character:IsCreationProcessActive()
   local activePanel = self:GetActivePanel()
 
@@ -155,7 +152,11 @@ function cw.character:IsCreationProcessActive()
   end
 end
 
--- A function to open the previous character creation panel.
+--- Goes back to the previous creation step.
+--
+-- The active step's `OnPrevious` method can return `false` to stay on it.
+-- Does nothing on the first step.
+-- @see cw.character:OpenNextCreationPanel
 function cw.character:OpenPreviousCreationPanel()
   local previousPanel = self:GetPreviousCreationPanel()
   local activePanel = self:GetActivePanel()
@@ -173,7 +174,12 @@ function cw.character:OpenPreviousCreationPanel()
   end
 end
 
--- A function to open the next character creation panel.
+--- Moves on to the next creation step, or finishes character creation.
+--
+-- The active step's `OnNext` method can return `false` to stay on it. After the
+-- last step it runs the `PlayerAdjustCharacterCreationInfo` hook and sends the
+-- creation info to the server to create the character.
+-- @see cw.character:OpenPreviousCreationPanel
 function cw.character:OpenNextCreationPanel()
   local activePanel = self:GetActivePanel()
   local nextPanel = self:GetNextCreationPanel()
@@ -197,29 +203,34 @@ function cw.character:OpenNextCreationPanel()
   end
 end
 
--- A function to get the creation panels.
+--- Returns the registered character creation steps.
+-- @return [List<Map> The step info tables, in order]
 function cw.character:GetCreationPanels()
   return self.creationPanels
 end
 
--- A function to get the active panel.
+--- Returns the panel currently shown inside the character menu.
+-- @return [Panel The active panel, or `nil` if there is none or it was removed]
 function cw.character:GetActivePanel()
   if IsValid(self.activePanel) then
     return self.activePanel
   end
 end
 
--- A function to set whether the character panel is loading.
+--- Sets whether the character menu is waiting for the character list.
+-- @param loading [Boolean Whether the menu is loading]
 function cw.character:SetPanelLoading(loading)
   self.loading = loading
 end
 
--- A function to get whether the character panel is loading.
+--- Returns whether the character menu is waiting for the character list.
+-- @return [Boolean Whether the menu is loading]
 function cw.character:IsPanelLoading()
   return self.isLoading
 end
 
--- A function to get the character panel list.
+--- Returns the active panel if it is the character list.
+-- @return [Panel The character list panel, or `nil` if another panel is shown]
 function cw.character:GetPanelList()
   local panel = self:GetActivePanel()
 
@@ -228,27 +239,33 @@ function cw.character:GetPanelList()
   end
 end
 
--- A function to get the whitelisted factions.
+--- Returns the factions the local player is whitelisted for.
+-- @return [List<String> Faction names, kept up to date by the server]
 function cw.character:GetWhitelisted()
   return self.whitelisted
 end
 
--- A function to get whether the local player is whitelisted for a faction.
+--- Returns whether the local player is whitelisted for a faction.
+-- @param faction [String Name of the faction]
+-- @return [Boolean Whether the player is whitelisted]
 function cw.character:IsWhitelisted(faction)
   return table.HasValue(self:GetWhitelisted(), faction)
 end
 
--- A function to get the local player's characters.
+--- Returns the local player's characters as sent by the server.
+-- @return [Map<Character> Character data tables keyed by character ID]
 function cw.character:GetAll()
   return self.stored
 end
 
--- A function to get the character fault.
+--- Returns the last character creation or loading error.
+-- @return [String The error message, or `nil` if there is none]
 function cw.character:GetFault()
   return self.fault
 end
 
--- A function to set the character fault.
+--- Sets the character error and shows it as cinematic text if it is a string.
+-- @param fault [String The error message, or a language phrase; `nil` clears it]
 function cw.character:SetFault(fault)
   if type(fault) == 'string' then
     cw.core:AddCinematicText(
@@ -259,19 +276,24 @@ function cw.character:SetFault(fault)
   self.fault = fault
 end
 
--- A function to get the character panel.
+--- Returns the character menu panel.
+-- @return [Panel The character menu, or `nil` if it has not been created]
 function cw.character:GetPanel()
   return self.panel
 end
 
--- A function to fade in the navigation.
+--- Fades in the navigation buttons of the character menu, if it exists.
 function cw.character:FadeInNavigation()
   if IsValid(self.panel) then
     self.panel:FadeInNavigation()
   end
 end
 
--- A function to refresh the character panel list.
+--- Rebuilds the character list with the local player's characters.
+--
+-- Characters are grouped with the `GetPlayerCharacterScreenFaction` hook,
+-- sorted within a group with `CharacterScreenSortFactionCharacters` and the
+-- groups are sorted by name. Does nothing when the character list is not shown.
 function cw.character:RefreshPanelList()
   local factionScreens = {}
   local factionList = {}
@@ -321,12 +343,13 @@ function cw.character:RefreshPanelList()
   end
 end
 
--- A function to get whether the character panel is open.
+--- Returns whether the character menu is open.
+-- @return [Boolean Whether the menu is open]
 function cw.character:IsPanelOpen()
   return self.isOpen
 end
 
--- A function to set the character panel to the main menu.
+--- Returns the character menu to its main screen.
 function cw.character:SetPanelMainMenu()
   local panel = self:GetPanel()
 
@@ -335,22 +358,30 @@ function cw.character:SetPanelMainMenu()
   end
 end
 
--- A function to set whether the character panel is polling.
+--- Sets whether the character menu should be opened once it has been created.
+-- @param polling [Boolean Whether the menu is waiting to open]
 function cw.character:SetPanelPolling(polling)
   self.isPolling = polling
 end
 
--- A function to get whether the character panel is polling.
+--- Returns whether the character menu is waiting to open once it has been created.
+-- @return [Boolean Whether the menu is waiting to open]
 function cw.character:IsPanelPolling()
   return self.isPolling
 end
 
--- A function to get whether the character menu is reset.
+--- Returns whether the server reopened the character menu to reset it.
+-- @return [Boolean Whether the menu was reset, or `nil` if it never was]
 function cw.character:IsMenuReset()
   return self.isMenuReset
 end
 
--- A function to set whether the character panel is open.
+--- Opens or closes the character menu and toggles the mouse cursor to match.
+--
+-- When the menu does not exist yet, opening it marks it as polling so it opens
+-- once it has been created.
+-- @param open [Boolean Whether to open the menu]
+-- @param bReset=nil [Boolean When closing, keep the menu marked open and visible]
 function cw.character:SetPanelOpen(open, bReset)
   local panel = self:GetPanel()
 
@@ -375,7 +406,9 @@ function cw.character:SetPanelOpen(open, bReset)
   gui.EnableScreenClicker(self:IsPanelOpen())
 end
 
--- A function to add a character.
+--- Stores a character of the local player.
+-- @param characterID [Number ID of the character]
+-- @param data [Character The character data sent by the server]
 function cw.character:Add(characterID, data)
   self.stored[characterID] = data
 end

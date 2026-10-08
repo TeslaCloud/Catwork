@@ -19,9 +19,9 @@ ITEM.business = true
 ITEM.description = '#Item_Potato_Description'
 ITEM.hunger = 5
 
--- Called when a player uses the item.
+--- Lets the item be eaten; its hunger and other effects come from the item fields.
 function ITEM:OnUse(player, itemEntity)
 end
 
--- Called when a player drops the item.
+--- Lets the item be dropped, with no extra effect.
 function ITEM:OnDrop(player, position) end

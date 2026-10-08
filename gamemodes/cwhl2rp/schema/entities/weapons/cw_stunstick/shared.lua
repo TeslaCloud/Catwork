@@ -65,26 +65,28 @@ if CLIENT then
   SWEP.ThirdPersonGlowSprite = Material('sprites/light_glow02_add')
 end
 
--- Called when the SWEP is deployed.
+--- Plays the draw animation.
+-- @return [Boolean Always `true` to allow the deploy]
 function SWEP:Deploy()
   self:SendWeaponAnim(ACT_VM_DRAW)
 
   return true
 end
 
--- Called when the SWEP is holstered.
+--- Plays the holster animation.
+-- @return [Boolean Always `true` to allow the holster]
 function SWEP:Holster(switchingTo)
   self:SendWeaponAnim(ACT_VM_HOLSTER)
 
   return true
 end
 
--- Called when the SWEP is initialized.
+--- Sets the melee hold type.
 function SWEP:Initialize()
   self:SetHoldType(self.HoldType)
 end
 
--- A function to play the knock sound.
+--- Plays the door knock sound, mirrored to the owner's client when called on the server.
 function SWEP:PlayKnockSound()
   if SERVER then
     self:CallOnClient('PlayKnockSound', '')
@@ -93,7 +95,7 @@ function SWEP:PlayKnockSound()
   self:EmitSound('physics/wood/wood_crate_impact_hard2.wav')
 end
 
--- A function to play the push sound.
+--- Plays the push sound, mirrored to the owner's client when called on the server.
 function SWEP:PlayPushSound()
   if SERVER then
     self:CallOnClient('PlayPushSound', '')
@@ -102,7 +104,10 @@ function SWEP:PlayPushSound()
   self:EmitSound('weapons/crossbow/hitbod2.wav')
 end
 
--- A function to do the SWEP's hit effects.
+--- Plays the swing animation with a spark, flesh hit or impact sound and the stunstick impact effect.
+--
+-- The effect and hit sounds only play when the owner's eye trace hits something within 96 units;
+-- otherwise a swing sound plays.
 function SWEP:DoHitEffects()
   local trace = self.Owner:GetEyeTraceNoCursor()
 
@@ -137,7 +142,7 @@ function SWEP:DoHitEffects()
   end
 end
 
--- Called when the weapon is lowered.
+--- Plays a spark sound and, for Civil Protection models, the baton deactivation animation.
 function SWEP:OnLowered()
   self:EmitSound('weapons/stunstick/spark'..math.random(1, 3)..'.wav')
 
@@ -150,7 +155,7 @@ function SWEP:OnLowered()
   end
 end
 
--- Called when the weapon is raised.
+--- Plays a spark sound and, for Civil Protection models, the baton activation animation.
 function SWEP:OnRaised()
   self:EmitSound('weapons/stunstick/spark'..math.random(1, 3)..'.wav')
 
@@ -163,7 +168,7 @@ function SWEP:OnRaised()
   end
 end
 
--- Called when the world model is drawn.
+--- Draws the stunstick with a pulsing glow at its tip while raised.
 function SWEP:DrawWorldModel()
   self:DrawModel()
 
@@ -184,7 +189,7 @@ function SWEP:DrawWorldModel()
   end
 end
 
--- Called when the view model is drawn.
+--- Draws the pulsing glow and spark sprites on the view model while raised.
 function SWEP:ViewModelDrawn()
   if self.Owner:IsWeaponRaised() then
     if self:IsCarriedByLocalPlayer() then
@@ -242,14 +247,19 @@ function SWEP:ViewModelDrawn()
   end
 end
 
--- A function to do the SWEP's animations.
+--- Plays the owner's attack animation unless `idle` is set.
+-- @param idle=nil [Boolean Whether to skip the attack animation]
 function SWEP:DoAnimations(idle)
   if !idle then
     self.Owner:SetAnimation(PLAYER_ATTACK1)
   end
 end
 
--- Called when the player attempts to primary fire.
+--- Strikes whatever the owner aims at within 96 units.
+--
+-- Players are pushed back and, while above 10 health, take club damage that scales with the owner's
+-- strength. Physics props are pushed and take more damage; ragdolled players take the player damage.
+-- Fires the `PlayerStunEntity` hook for every hit.
 function SWEP:PrimaryAttack()
   self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
   self:SetNextSecondaryFire(CurTime() + self.Primary.Delay)
@@ -310,7 +320,10 @@ function SWEP:PrimaryAttack()
   end
 end
 
--- Called when the player attempts to secondary fire.
+--- Knocks on a door within 64 units or pushes the player, NPC or prop being aimed at within 96 units.
+--
+-- Knocking needs the `PlayerCanKnockOnDoor` hook to allow it and fires `PlayerKnockOnDoor`. Pushing plays
+-- the Civil Protection push animation for those models.
 function SWEP:SecondaryAttack()
   if SERVER then
     if self.Owner.LagCompensation then

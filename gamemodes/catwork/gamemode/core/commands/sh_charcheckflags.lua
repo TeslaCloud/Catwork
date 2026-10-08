@@ -13,7 +13,7 @@ COMMAND.access = 's'
 COMMAND.arguments = 1
 COMMAND.alias = { 'CheckFlags' }
 
--- Called when the command has been run.
+--- Shows the caller the target character's flags; the argument is the character name.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
 

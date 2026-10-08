@@ -6,6 +6,10 @@
   with contributions from Cloud Sixteen community.
 --]]
 
+--- Called when the gamemode initializes on the client.
+--
+-- Creates the `catwork` data folder and downloads the developer scoreboard icons into it with
+-- `Schema:DownloadMaterial`.
 function Schema:Initialize()
   if !file.Exists('catwork', 'DATA') then
     file.CreateDir('catwork')
@@ -15,7 +19,13 @@ function Schema:Initialize()
   self:DownloadMaterial('http://teslacdn.net/files/meow/icon_luna.png', 'catwork/icon_luna.png')
 end
 
--- Called when the local player's business is rebuilt.
+--- Called when the local player's business menu is rebuilt.
+--
+-- Remembers the panel in `Schema.businessPanel` and, when permits are enabled and the local player is a
+-- citizen, adds a permits form listing the total cost of each permit they lack (general goods and
+-- `Schema.customPermits`). Players without the `x` flag see a single entry for creating a business.
+-- @param panel [Panel The business menu panel]
+-- @param categories [List<Map> The orderable item categories, each with `category` and `itemsList`]
 function Schema:PlayerBusinessRebuilt(panel, categories)
   local businessName = cw.option:GetKey('name_business', true)
 
@@ -103,14 +113,23 @@ function Schema:PlayerBusinessRebuilt(panel, categories)
   end
 end
 
--- Called when the target player's fade distance is needed.
+--- Called when the fade distance of a player's target ID is needed.
+--
+-- Returns `512` while the local player controls a scanner, so targets stay visible from further away.
+-- @param player [Player The player being looked at]
+-- @return [Number The fade distance, or `nil` for the default]
 function Schema:GetTargetPlayerFadeDistance(player)
   if IsValid(self:GetScannerEntity(cw.client)) then
     return 512
   end
 end
 
--- Called when an entity's menu options are needed.
+--- Called when an entity's menu options are needed.
+--
+-- Adds the Loot option to corpses, Open to belongings, Charge to breaches and turn on/off, set
+-- frequency and take options to stationary radios.
+-- @param entity [Entity The entity the menu is for]
+-- @param options [Map Option names mapped to a menu option string or a callback, filled in place]
 function Schema:GetEntityMenuOptions(entity, options)
   if entity:GetClass() == 'prop_ragdoll' then
     local player = cw.entity:GetPlayer(entity)
@@ -141,7 +160,11 @@ function Schema:GetEntityMenuOptions(entity, options)
   end
 end
 
--- Called when a player's typing display position is needed.
+--- Called when the position of a player's typing display is needed.
+--
+-- Places the display above the body bone of the player's scanner when they control one.
+-- @param player [Player The player who is typing]
+-- @return [Vector The display position, or `nil` for the default]
 function Schema:GetPlayerTypingDisplayPosition(player)
   local scannerEntity = self:GetScannerEntity(player)
 
@@ -162,7 +185,11 @@ function Schema:GetPlayerTypingDisplayPosition(player)
   end
 end
 
--- Called when an entity's target ID HUD should be painted.
+--- Called when an entity's target ID should be painted.
+--
+-- Draws the physical description of props and the name and title of named NPCs.
+-- @param entity [Entity The entity being looked at]
+-- @param info [Map Drawing state with `x`, `y` and `alpha`; `y` is advanced past each drawn line]
 function Schema:HUDPaintEntityTargetID(entity, info)
   local colorTargetID = cw.option:GetColor('target_id')
   local colorWhite = cw.option:GetColor('white')
@@ -184,17 +211,22 @@ function Schema:HUDPaintEntityTargetID(entity, info)
   end
 end
 
--- Called when a text entry has gotten focus.
+--- Called when a text entry gains focus; remembers it for `Schema:IsTextEntryBeingUsed`.
+-- @param panel [Panel The focused text entry]
 function Schema:OnTextEntryGetFocus(panel)
   self.textEntryFocused = panel
 end
 
--- Called when a text entry has lost focus.
+--- Called when a text entry loses focus; clears the entry remembered by `Schema:OnTextEntryGetFocus`.
+-- @param panel [Panel The text entry that lost focus]
 function Schema:OnTextEntryLoseFocus(panel)
   self.textEntryFocused = nil
 end
 
--- Called when screen space effects should be rendered.
+--- Called when screen space effects should be rendered.
+--
+-- Draws the colour shift and motion blur of an active flash effect and the Combine visor overlay
+-- for Combine players, unless the screen is faded to black.
 function Schema:RenderScreenspaceEffects()
   if !cw.core:IsScreenFadedBlack() then
     local curTime = CurTime()
@@ -239,7 +271,10 @@ function Schema:RenderScreenspaceEffects()
   end
 end
 
--- Called when the local player's motion blurs should be adjusted.
+--- Called when the local player's motion blurs should be adjusted.
+--
+-- Adds the `flash` blur while a stun-style flash effect (see `Schema:AddStunEffect`) is active.
+-- @param motionBlurs [Map Motion blur state; its `blurTable` maps blur names to amounts]
 function Schema:PlayerAdjustMotionBlurs(motionBlurs)
   if !cw.core:IsScreenFadedBlack() then
     local curTime = CurTime()
@@ -255,7 +290,9 @@ function Schema:PlayerAdjustMotionBlurs(motionBlurs)
   end
 end
 
--- Called when the cinematic intro info is needed.
+--- Called when the cinematic intro info is needed.
+-- @return [Map The intro's `credits`, `title` and `text`, taken from the `intro_text_big` and
+-- `intro_text_small` config values]
 function Schema:GetCinematicIntroInfo()
   return {
     credits = '#HL2RP_Credits:'..self:GetAuthor()..';',
@@ -264,7 +301,13 @@ function Schema:GetCinematicIntroInfo()
   }
 end
 
--- Called when the scoreboard's class players should be sorted.
+--- Called when the players of a scoreboard class should be sorted.
+--
+-- Sorts Civil Protection and Overwatch players by Combine rank, then by name.
+-- @param class [String The scoreboard class name]
+-- @param a [Player The first player to compare]
+-- @param b [Player The second player to compare]
+-- @return [Boolean Whether `a` comes before `b`, or `nil` for other classes]
 function Schema:ScoreboardSortClassPlayers(class, a, b)
   if class == '#Faction_MPF' or class == '#Faction_OTA' then
     local rankA = self:GetPlayerCombineRank(a)
@@ -278,7 +321,11 @@ function Schema:ScoreboardSortClassPlayers(class, a, b)
   end
 end
 
--- Called when a player's scoreboard class is needed.
+--- Called when a player's scoreboard class is needed.
+--
+-- Uses the player's custom class when set, and groups Civil Protection and Overwatch under their faction.
+-- @param player [Player The player on the scoreboard]
+-- @return [String The scoreboard class name, or `nil` for the default]
 function Schema:GetPlayerScoreboardClass(player)
   local customClass = player:GetNetVar('customClass')
   local faction = player:GetFaction()
@@ -294,21 +341,30 @@ function Schema:GetPlayerScoreboardClass(player)
   end
 end
 
--- Called when the local player's character screen faction is needed.
+--- Called when the faction shown for a character on the character screen is needed.
+-- @param character [Character The character's data]
+-- @return [String The character's custom class, or `nil` when it has none]
 function Schema:GetPlayerCharacterScreenFaction(character)
   if character.customClass and character.customClass != '' then
     return character.customClass
   end
 end
 
--- Called when the local player attempts to zoom.
+--- Called when the local player attempts to zoom; only Combine players may zoom.
+-- @return [Boolean `false` to block the zoom]
 function Schema:PlayerCanZoom()
   if !self:PlayerIsCombine(cw.client) then
     return false
   end
 end
 
--- Called when a player's scoreboard options are needed.
+--- Called when a player's scoreboard options are needed.
+--
+-- Adds server whitelist, custom class and permakill options, each only when the command exists and the
+-- local player has its access flags. The options run the matching commands.
+-- @param player [Player The player the options are for]
+-- @param options [Map Option names mapped to callbacks or sub-option maps, filled in place]
+-- @param menu [Panel The scoreboard menu]
 function Schema:GetPlayerScoreboardOptions(player, options, menu)
   if cw.command:FindByID('PlyAddServerWhitelist')
   or cw.command:FindByID('PlyRemoveServerWhitelist') then
@@ -369,7 +425,10 @@ function Schema:GetPlayerScoreboardOptions(player, options, menu)
   end
 end
 
--- Called when the scoreboard's player info should be adjusted.
+--- Called when a player's scoreboard info should be adjusted.
+--
+-- Shows scanner units with the scanner or shield scanner model.
+-- @param info [Map The scoreboard entry; `player` is the player and `model` may be replaced]
 function Schema:ScoreboardAdjustPlayerInfo(info)
   if self:IsPlayerCombineRank(info.player, 'SCN') then
     if self:IsPlayerCombineRank(info.player, 'SYNTH') then
@@ -380,7 +439,11 @@ function Schema:ScoreboardAdjustPlayerInfo(info)
   end
 end
 
--- Called when the local player's class model info should be adjusted.
+--- Called when the model shown for a class in the class menu should be adjusted.
+--
+-- Shows the scanner class with the scanner or shield scanner model.
+-- @param class [Number The class index, compared against `CLASS_MPS`]
+-- @param info [Map The model info; `model` may be replaced]
 function Schema:PlayerAdjustClassModelInfo(class, info)
   if class == CLASS_MPS then
     if self:IsPlayerCombineRank(cw.client, 'SCN')
@@ -392,14 +455,20 @@ function Schema:PlayerAdjustClassModelInfo(class, info)
   end
 end
 
--- Called when the local player's default colorify should be set.
+--- Called when the local player's default colour modification should be set.
+--
+-- Darkens and desaturates the screen for the schema's look.
+-- @param colorModify [Map `$pp_colour_*` values, set in place]
 function Schema:PlayerSetDefaultColorModify(colorModify)
   colorModify['$pp_colour_brightness'] = -0.02
   colorModify['$pp_colour_contrast'] = 1.2
   colorModify['$pp_colour_colour'] = 0.5
 end
 
--- Called when the local player's colorify should be adjusted.
+--- Called when the local player's colour modification should be adjusted.
+--
+-- While antidepressants are active the colours fade towards normal, and back to the default afterwards.
+-- @param colorModify [Map `$pp_colour_*` values, adjusted in place]
 function Schema:PlayerAdjustColorModify(colorModify)
   local antiDepressants = cw.client:GetNetVar('antidepressants')
   local frameTime = FrameTime()
@@ -432,7 +501,11 @@ function Schema:PlayerAdjustColorModify(colorModify)
   colorModify['$pp_colour_colour'] = self.colorModify.color
 end
 
--- Called when the local player attempts to see a class.
+--- Called when the local player attempts to see a class in the class menu.
+--
+-- Hides the Combine classes whose rank the local player does not hold.
+-- @param class [Class The class]
+-- @return [Boolean `false` to hide the class]
 function Schema:PlayerCanSeeClass(class)
   if class.index == CLASS_MPS and !self:IsPlayerCombineRank(cw.client, 'SCN') then
     return false
@@ -454,7 +527,15 @@ function Schema:PlayerCanSeeClass(class)
   end
 end
 
--- Called when the target's status should be drawn.
+--- Called when the status of a player under the crosshair should be drawn.
+--
+-- Draws whether the target is in critical condition, unconscious, tied or being tied or untied, with an
+-- untie prompt when the local player is close enough.
+-- @param target [Player The player being looked at]
+-- @param alpha [Number The alpha to draw with]
+-- @param x [Number The X position to draw at]
+-- @param y [Number The Y position to draw at]
+-- @return [Number The Y position after the drawn text, or `nil` when the target is dead]
 function Schema:DrawTargetPlayerStatus(target, alpha, x, y)
   local informationColor = cw.option:GetColor('information')
   local thirdPerson = L('#TargetStatus_Him')
@@ -507,7 +588,8 @@ function Schema:DrawTargetPlayerStatus(target, alpha, x, y)
   end
 end
 
--- Called when the player info text is needed.
+--- Called when the player info text is needed; adds the citizen ID line for citizens.
+-- @param playerInfoText [Map The info text object, with an `Add(id, text)` method]
 function Schema:GetPlayerInfoText(playerInfoText)
   local citizenID = cw.client:GetNetVar('citizenID') or 'ERROR'
 
@@ -518,7 +600,13 @@ function Schema:GetPlayerInfoText(playerInfoText)
   end
 end
 
--- Called to check if a player does have an flag.
+--- Called to check whether a player has a flag.
+--
+-- When permits are disabled, denies the business flag `x`, the general goods flag `1` and every custom
+-- permit flag.
+-- @param player [Player The player to check]
+-- @param flag [String The flag]
+-- @return [Boolean `false` to deny the flag, or `nil` to leave it to the flag system]
 function Schema:PlayerDoesHaveFlag(player, flag)
   if !config.GetVal('permits') then
     if flag == 'x' or flag == '1' then
@@ -533,14 +621,24 @@ function Schema:PlayerDoesHaveFlag(player, flag)
   end
 end
 
--- Called to check if a player does recognise another player.
+--- Called to check whether the local player recognises another player.
+--
+-- Combine players and administrators are always recognised.
+-- @param player [Player The player to be recognised]
+-- @param status [Number The `RECOGNISE_*` level being checked]
+-- @param isAccurate [Boolean Whether the level must match exactly]
+-- @param realValue [Boolean The result of the recognition system]
+-- @return [Boolean `true` to recognise the player, or `nil` to keep `realValue`]
 function Schema:PlayerDoesRecognisePlayer(player, status, isAccurate, realValue)
   if self:PlayerIsCombine(player) or player:GetFaction() == FACTION_ADMIN then
     return true
   end
 end
 
--- Called each tick.
+--- Called every tick.
+--
+-- For Combine players, adds Combine display lines when health or armour changes and a random display
+-- line every three seconds.
 function Schema:Tick()
   if IsValid(cw.client) then
     if self:PlayerIsCombine(cw.client) then
@@ -608,7 +706,7 @@ function Schema:Tick()
   end
 end
 
--- Called when the foreground HUD should be painted.
+--- Called when the foreground HUD should be painted; draws the white flash of active stun effects.
 function Schema:HUDPaintForeground()
   local curTime = CurTime()
 
@@ -627,7 +725,11 @@ function Schema:HUDPaintForeground()
   end
 end
 
--- Called when the top screen HUD should be painted.
+--- Called when the top of the screen HUD should be painted.
+--
+-- Draws the Combine display lines for Combine players, typing each line out a character per frame and
+-- removing it when it expires.
+-- @param info [Map Drawing state with `x` and `y`; `y` is advanced past each line]
 function Schema:HUDPaintTopScreen(info)
   local blackFadeAlpha = cw.core:GetBlackFadeAlpha()
   local colorWhite = cw.option:GetColor('white')
@@ -655,7 +757,10 @@ function Schema:HUDPaintTopScreen(info)
   end
 end
 
--- Called to get the screen text info.
+--- Called when the full screen text info is needed.
+--
+-- Shows a message while the local player's character is permakilled, being tied or tied.
+-- @return [Map The text's `alpha`, `title` and optional `text`, or `nil` for none]
 function Schema:GetScreenTextInfo()
   local blackFadeAlpha = cw.core:GetBlackFadeAlpha()
 
@@ -678,7 +783,10 @@ function Schema:GetScreenTextInfo()
   end
 end
 
--- Called when the chat box info should be adjusted.
+--- Called when the info of a chat box message should be adjusted.
+--
+-- Hides the speaker's name for anonymous messages and shows scanner units as Dispatch on the radio.
+-- @param info [Map The message info: `speaker`, `class`, `data` and `name`, which may be replaced]
 function Schema:ChatBoxAdjustInfo(info)
   if IsValid(info.speaker) then
     if info.data.anon then

@@ -14,7 +14,7 @@ COMMAND.arguments = 1
 COMMAND.alias = { 'R', 'Rs' }
 COMMAND.cooldown = 2
 
--- Called when the command has been run.
+--- Sends a radio message through `cw.player:SayRadio`; the arguments are the message.
 function COMMAND:OnRun(player, arguments)
   cw.player:SayRadio(player, table.concat(arguments, ' '), true)
 end

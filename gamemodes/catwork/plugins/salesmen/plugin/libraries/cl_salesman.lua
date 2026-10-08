@@ -8,7 +8,8 @@
 
 library.New('salesman', cw)
 
--- A function to get whether the salesman is open.
+--- Returns whether the salesman editor panel exists and is visible.
+-- @return [Boolean `true` when the editor is open, otherwise `nil`]
 function cw.salesman:IsSalesmanOpen()
   local panel = self:GetPanel()
 
@@ -17,82 +18,101 @@ function cw.salesman:IsSalesmanOpen()
   end
 end
 
--- A function to get whether the items are bought shipments.
+--- Returns whether the salesman being edited sells items in whole shipments (the item's `batch` size).
+-- @return [Boolean Whether items are sold in shipments]
 function cw.salesman:BuyInShipments()
   return self.buyInShipments
 end
 
--- A function to get the salesman price scale.
+--- Returns the multiplier applied to item costs when the salesman being edited sells.
+-- @return [Number The price scale, `1` when unset]
 function cw.salesman:GetPriceScale()
   return self.priceScale or 1
 end
 
--- A function to get whether the salesman's chat bubble is shown.
+--- Returns whether the salesman being edited shows a chat bubble above its head.
+-- @return [Boolean Whether the chat bubble is shown]
 function cw.salesman:GetShowChatBubble()
   return self.showChatBubble
 end
 
--- A function to get the salesman stock.
+--- Returns the starting stock of each item the salesman being edited sells.
+-- @return [Number Stock per item, `-1` for unlimited]
 function cw.salesman:GetStock()
   return self.stock
 end
 
--- A function to get the salesman cash.
+--- Returns the cash the salesman being edited has to buy items with.
+-- @return [Number The salesman's cash, `-1` for unlimited]
 function cw.salesman:GetCash()
   return self.cash
 end
 
--- A function to get the salesman buy rate.
+--- Returns the percentage of an item's cost the salesman being edited pays when buying it.
+-- @return [Number The buy rate, from 1 to 100]
 function cw.salesman:GetBuyRate()
   return self.buyRate
 end
 
--- A function to get the salesman classes.
+--- Returns the classes allowed to trade with the salesman being edited.
+-- @return [Map Class names mapped to `true`; empty for no restriction]
 function cw.salesman:GetClasses()
   return self.classes
 end
 
--- A function to get the salesman factions.
+--- Returns the factions allowed to trade with the salesman being edited.
+-- @return [Map Faction names mapped to `true`; empty for no restriction]
 function cw.salesman:GetFactions()
   return self.factions
 end
 
--- A function to get the salesman text.
+--- Returns the responses of the salesman being edited.
+--
+-- The keys are `start`, `noSale`, `noStock`, `needMore`, `cannotAfford` and `doneBusiness`; each value
+-- is a `Map` with `text`, `sound` and `bHideName`.
+-- @return [Map The salesman's responses]
 function cw.salesman:GetText()
   return self.text
 end
 
--- A function to get what the salesman sells.
+--- Returns the items the salesman being edited sells.
+-- @return [Map Item unique IDs mapped to a price override, or `true` to use the item's cost]
 function cw.salesman:GetSells()
   return self.sells
 end
 
--- A function to get what the salesman buys.
+--- Returns the items the salesman being edited buys.
+-- @return [Map Item unique IDs mapped to a price override, or `true` to use the item's cost]
 function cw.salesman:GetBuys()
   return self.buys
 end
 
--- A function to get the salesman items.
+--- Returns every non-base item that can be added to the salesman being edited.
+-- @return [Map<Item> Item tables keyed by unique ID]
 function cw.salesman:GetItems()
   return self.items
 end
 
--- A function to get the salesman panel.
+--- Returns the salesman editor panel.
+-- @return [Panel The `cwSalesman` panel, or `nil` if it was never created]
 function cw.salesman:GetPanel()
   return self.panel
 end
 
--- A function to get the salesman model.
+--- Returns the model of the salesman being edited.
+-- @return [String The model path]
 function cw.salesman:GetModel()
   return self.model
 end
 
--- A function to get the salesman name.
+--- Returns the name of the salesman being edited.
+-- @return [String The salesman's name]
 function cw.salesman:GetName()
   return self.name
 end
 
--- A function to get the salesman flags.
+--- Returns the flags required to trade with the salesman being edited.
+-- @return [String The flags; a `-` in the string refuses players without them]
 function cw.salesman:GetFlags()
   return self.flags
 end

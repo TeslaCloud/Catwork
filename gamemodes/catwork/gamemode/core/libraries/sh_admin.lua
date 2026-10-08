@@ -5,6 +5,15 @@
 
 local playerMeta = FindMetaTable('Player')
 
+--- Returns the value of one of the player's permissions.
+--
+-- Permissions live in the player's data under `permissions`. The ID is lowercased before the
+-- lookup.
+--
+-- @param id [String Permission ID]
+-- @return [Any The stored value (normally a Boolean), or `nil` when the permission was never set
+-- or `id` is not a non-empty string]
+-- @see Player:SetPermission
 function playerMeta:HasPermission(id)
   id = (isstring(id) and string.lower(id)) or false
 
@@ -16,6 +25,14 @@ function playerMeta:HasPermission(id)
 end
 
 if SERVER then
+  --- Sets one of the player's permissions and stores it in the player's data.
+  --
+  -- The ID is stored as given, without lowercasing. Does nothing when `id` is not a string.
+  --
+  -- @param id [String Permission ID]
+  -- @param value [Any New value, normally `true` or `false`]
+  -- @return [Boolean Whether the value differs from the previous one]
+  -- @see Player:HasPermission
   function playerMeta:SetPermission(id, value)
     if !isstring(id) then return end
 
@@ -29,10 +46,18 @@ if SERVER then
     return bHasChanged
   end
 
+  --- Grants a permission to the player by setting it to `true`.
+  --
+  -- @param id [String Permission ID]
+  -- @see Player:SetPermission
   function playerMeta:GivePermission(id)
     self:SetPermission(id, true)
   end
 
+  --- Revokes a permission from the player by setting it to `false`.
+  --
+  -- @param id [String Permission ID]
+  -- @see Player:SetPermission
   function playerMeta:TakePermission(id)
     self:SetPermission(id, false)
   end

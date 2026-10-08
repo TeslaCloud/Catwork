@@ -11,7 +11,11 @@ Shouts = {
   Sound('vo/outland_01/intro/ol01_vortresp04.wav')
 }
 
--- Called when the command has been run.
+--- Lets a vortigaunt howl a message that every living vortigaunt can read.
+--
+-- Plays a random vortigaunt call to everyone and shows other players within 500 units only that
+-- the vortigaunt shouts something. The admin faction broadcasts the message instead; everyone else is
+-- told they cannot howl.
 function COMMAND:OnRun(player, arguments)
   local faction = player:GetFaction()
 

@@ -10,7 +10,9 @@ COMMAND.access = 's'
 COMMAND.arguments = 1
 COMMAND.text = '#Command_Factorybigdispenseradd_Syntax'
 
--- Called when the command has been run.
+--- Spawns a big factory dispenser where the player looks, facing them.
+--
+-- Argument 1 picks what it produces: `1` for empty ration packets, `2` for empty supply crates.
 function COMMAND:OnRun(player, arguments)
   local trace = player:GetEyeTraceNoCursor()
   local entity = ents.Create('cw_bigfactorydispenser')

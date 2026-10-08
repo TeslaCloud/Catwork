@@ -17,7 +17,7 @@ ITEM.description = '#ITEM_Premium_Supplements_Desc'
 ITEM.hunger = 75
 ITEM.thirst = 5
 
--- Called when a player uses the item.
+--- Heals 5 health, boosts endurance by 2 for two minutes and gives back an empty cardboard box.
 function ITEM:OnUse(player, itemEntity)
   player:SetHealth(math.Clamp(player:Health() + 5, 0, player:GetMaxHealth()))
   player:BoostAttribute(self.name, ATB_ENDURANCE, 2, 120)
@@ -25,5 +25,5 @@ function ITEM:OnUse(player, itemEntity)
   player:GiveItem('empty_cardboard', true)
 end
 
--- Called when a player drops the item.
+--- Lets the item be dropped; nothing else happens.
 function ITEM:OnDrop(player, position) end

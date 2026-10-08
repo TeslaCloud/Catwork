@@ -9,7 +9,9 @@ ITEM.category = 'Medical'
 ITEM.business = true
 ITEM.description = '#Item_Eyelight_Description'
 
--- Called when a player uses the item.
+--- Examines the eyes of the player being looked at and reports any blindness.
+--
+-- Always returns `false`, so the penlight is never used up.
 function ITEM:OnUse(player, itemEntity)
   local lookingPly = player:GetEyeTrace().Entity
 
@@ -30,5 +32,5 @@ function ITEM:OnUse(player, itemEntity)
   end
 end
 
--- Called when a player drops the item.
+--- Lets the item be dropped, with no extra effect.
 function ITEM:OnDrop(player, position) end

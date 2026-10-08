@@ -48,10 +48,13 @@ SWEP.Secondary.ClipSize = -1
 SWEP.Secondary.Delay = 1
 SWEP.Secondary.Ammo = ''
 
+--- Sets the melee hold type.
 function SWEP:Initialize()
   self:SetHoldType(self.HoldType)
 end
 
+--- Hides the view model and attaches a push broom prop to the owner's hand on the server.
+-- @return [Boolean Always `true` to allow the deploy]
 function SWEP:Deploy()
   -- ents.Create only exists serverside.
   if SERVER then
@@ -74,6 +77,8 @@ function SWEP:Deploy()
   return true
 end
 
+--- Shows the view model again and removes the broom prop and the forced animation.
+-- @return [Boolean Always `true` to allow the holster]
 function SWEP:Holster()
   if SERVER then
     self.Owner:DrawViewModel(true) -- Workaround for viewmodel error spam
@@ -89,6 +94,10 @@ function SWEP:Holster()
   return true
 end
 
+--- Forces the owner's sweeping, idle or walking broom animation while the broom is raised.
+--
+-- Runs on the server. Standing still or in the air plays the two second sweep after a primary attack and
+-- the idle sweep otherwise; moving on the ground plays the walking animation.
 function SWEP:Think()
   if SERVER then
     local currentAnim = self.Owner:GetForcedAnimation() -- Get the player's current animation for checks
@@ -135,6 +144,8 @@ function SWEP:Think()
   end
 end
 
+--- Shows the view model again and removes the broom prop and the forced animation.
+-- @return [Boolean Always `true`]
 function SWEP:OnRemove()
   -- The owner is already gone when the weapon is removed along with a disconnecting player.
   if !IsValid(self.Owner) then return end
@@ -153,12 +164,14 @@ function SWEP:OnRemove()
   return true
 end
 
+--- Clears the owner's forced broom animation on the server.
 function SWEP:OnLowered()
   if SERVER then
     self.Owner:SetForcedAnimation(false)
   end
 end
 
+--- Starts a sweep, which `SWEP:Think` plays, unless one is already running.
 function SWEP:PrimaryAttack()
   if !self.nextSweep then
     if !self.isSweep then
@@ -169,6 +182,8 @@ end
 
 local counter = 0
 
+--- Does nothing.
+-- @return [Boolean Always `false`]
 function SWEP:SecondaryAttack()
   return false
 end

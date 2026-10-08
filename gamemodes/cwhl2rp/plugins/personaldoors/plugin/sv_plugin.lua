@@ -6,7 +6,12 @@
         Heavily based off the works of Cervidae Kosmonaut in Faction Doors.
 --]]
 
--- A function to load the door data.
+--- Restores the personal doors saved for the current map.
+--
+-- Saved doors are matched to map entities by position. Each door's owner names are stored
+-- lowercased in `entity._OwningPersons`, the record goes into `self.personalDoors`, and the
+-- door is locked or unlocked according to its `startLocked` setting.
+-- @see PLUGIN:SaveDoorData
 function PLUGIN:LoadDoorData()
   self.personalDoors = {}
 
@@ -56,7 +61,8 @@ function PLUGIN:LoadDoorData()
   end
 end
 
--- A function to save the door data.
+--- Saves the owners, position and `startLocked` setting of every personal door to `plugins/personaldoors/<map>`.
+-- @see PLUGIN:LoadDoorData
 function PLUGIN:SaveDoorData()
   local personalDoors = {}
 

@@ -6,10 +6,15 @@
   with contributions from Cloud Sixteen community.
 --]]
 
+--- Called after Catwork has loaded the map entities; loads the resource node spawn points.
 function cwGather:ClockworkInitPostEntity()
   self:LoadNodesSpawnPoints()
 end
 
+--- Called every second; respawns resource nodes whose respawn delay has passed.
+--
+-- A point only spawns when `CanSpawnNode` allows it, then waits for the
+-- `nodes_respawn_delay` config before the next node.
 function cwGather:OneSecond()
   local curTime = CurTime()
 
@@ -23,6 +28,11 @@ function cwGather:OneSecond()
   end
 end
 
+--- Called to check whether a node can spawn at a point; blocks it within 50 units of a node of the same class.
+--
+-- @param position [Vector The spawn point's position]
+-- @param class [String The node's entity class]
+-- @return [Boolean Whether the node can spawn]
 function cwGather:CanSpawnNode(position, class)
   local entities = ents.FindInSphere(position, 50)
 

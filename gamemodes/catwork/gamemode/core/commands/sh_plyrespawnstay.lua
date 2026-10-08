@@ -13,7 +13,7 @@ COMMAND.arguments = 1
 COMMAND.access = 'o'
 COMMAND.alias = { 'PlyRStay', 'RespawnStay' }
 
--- Called when the command has been run.
+--- Respawns the target player where they currently stand; the argument is the player name.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
 

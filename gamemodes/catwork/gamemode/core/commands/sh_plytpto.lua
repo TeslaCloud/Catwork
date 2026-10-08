@@ -14,7 +14,7 @@ COMMAND.arguments = 2
 COMMAND.optionalArguments = 1
 COMMAND.alias = { 'PlyTPTo', 'TPTo' }
 
--- Called when the command has been run.
+--- Teleports one player to another; arguments are the player to move, the destination player and a silent flag.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
   local ply = _player.Find(arguments[2])

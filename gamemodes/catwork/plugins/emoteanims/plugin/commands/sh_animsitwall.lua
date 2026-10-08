@@ -10,7 +10,7 @@ local COMMAND = cw.command:New('AnimSitWall')
 COMMAND.tip = '#Command_Animsitwall_Description'
 COMMAND.flags = CMD_DEFAULT
 
--- Called when the command has been run.
+--- Toggles sitting against the wall behind a human player, moving them slightly forward.
 function COMMAND:OnRun(player, arguments)
   local curTime = CurTime()
 

@@ -25,6 +25,8 @@ ENT.GARBAGE_ITEMS = {
   'empty_cardboard'
 }
 
+--- Declares the product position, garbage count, working state, work timing, eject storage and
+-- stop time network vars.
 function ENT:SetupDataTables()
   self:NetworkVar('Vector', 0, 'ProductPos')
   self:NetworkVar('Float', 2, 'GarbageCount')
@@ -35,6 +37,11 @@ function ENT:SetupDataTables()
   self:NetworkVar('Float', 3, 'StopWorkTime')
 end
 
+--- Collects garbage, plays the work sounds and advances the recycling cycle every tick on the server.
+--
+-- Garbage `cw_item` entities inside `ENT:GetSearchPos` are taken while the recycler is idle and not full.
+-- During a cycle the garbage count drains step by step and `ENT:EndWork` runs when the time is up.
+-- While paused, the cycle times are pushed forward so the time left stays the same.
 function ENT:Think()
   if SERVER then
     if !self:GetIsWorking() then

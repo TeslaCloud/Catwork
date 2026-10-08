@@ -6,7 +6,7 @@ COMMAND.access = 'o'
 COMMAND.arguments = 2
 COMMAND.alias = { 'CharSetKarma', 'SetKarma' }
 
--- Called when the command has been run.
+--- Sets the target character's karma to a value from -100 to 100.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
   local karma = tonumber(arguments[2])

@@ -11,42 +11,65 @@ library.New('quiz', cw)
 local stored = cw.quiz.stored or {}
 cw.quiz.stored = stored
 
--- A function to set the quiz name.
+--- Sets the title shown on the quiz panel.
+--
+-- @param name [String The quiz title, can be a language phrase]
 function cw.quiz:SetName(name)
   self.name = name
 end
 
--- A function to get the quiz name.
+--- Returns the title shown on the quiz panel.
+--
+-- @return [String The quiz title; `#QuizPanel_Questions` when none is set]
 function cw.quiz:GetName()
   return self.name or '#QuizPanel_Questions'
 end
 
--- A function to set whether the quiz is enabled.
+--- Sets whether new players have to pass the quiz.
+--
+-- @param enabled [Boolean Whether the quiz is enabled]
 function cw.quiz:SetEnabled(enabled)
   self.enabled = enabled
 end
 
--- A function to get whether the quiz is enabled.
+--- Returns whether new players have to pass the quiz.
+--
+-- @return [Boolean Whether the quiz is enabled, or `nil` if it was never set]
 function cw.quiz:GetEnabled()
   return self.enabled
 end
 
--- A function to get the amount of quiz questions.
+--- Returns how many questions the quiz has.
+--
+-- @return [Number The number of questions]
 function cw.quiz:GetQuestionsAmount()
   return table.Count(stored)
 end
 
--- A function to get the quiz questions.
+--- Returns every quiz question.
+--
+-- @return [Map<Map> Question tables with `question`, `answer` and `possibleAnswers` keys, keyed by
+-- the short CRC of the question text]
 function cw.quiz:GetQuestions()
   return stored
 end
 
--- A function to get a question.
+--- Returns a quiz question.
+--
+-- @param index [Number The question's index, the short CRC of its text]
+-- @return [Map The question table with `question`, `answer` and `possibleAnswers` keys, or `nil`]
 function cw.quiz:GetQuestion(index)
   return stored[index]
 end
 
--- A function to get if an answer is correct.
+--- Returns whether an answer to a quiz question is correct.
+--
+-- The answer is correct when it is one of the question's correct answers (if `answer` is a list),
+-- the text of the correct possible answer, or equal to the stored answer itself.
+--
+-- @param index [Number The question's index]
+-- @param answer [Any The player's answer: the answer text or its position]
+-- @return [Boolean `true` if the answer is correct, otherwise `nil`]
 function cw.quiz:IsAnswerCorrect(index, answer)
   question = self:GetQuestion(index)
 
@@ -61,7 +84,22 @@ function cw.quiz:IsAnswerCorrect(index, answer)
   end
 end
 
--- A function to add a new quiz question.
+--- Adds a question to the quiz.
+--
+-- The question's index is the short CRC of its text.
+--
+-- ```
+-- cw.quiz:AddQuestion('#Quiz_RP2_Question', 2,
+--   '#Quiz_RP2_Answer1',
+--   '#Quiz_RP2_Answer2',
+--   '#Quiz_RP2_Answer3',
+--   '#Quiz_RP2_Answer4')
+-- ```
+--
+-- @param question [String The question text, can be a language phrase]
+-- @param answer [Number Position of the correct answer among the possible answers, or a List of
+-- accepted answers]
+-- @param ... [String The possible answers, in the order they are shown]
 function cw.quiz:AddQuestion(question, answer, ...)
   local index = cw.core:GetShortCRC(question)
 
@@ -72,7 +110,9 @@ function cw.quiz:AddQuestion(question, answer, ...)
   }
 end
 
--- A function to remove a quiz question.
+--- Removes a question from the quiz.
+--
+-- @param question [Any The question's index or its text]
 function cw.quiz:RemoveQuestion(question)
   if stored[question] then
     stored[question] = nil
@@ -86,22 +126,36 @@ function cw.quiz:RemoveQuestion(question)
 end
 
 if CLIENT then
+  --- Sets whether the local player has completed the quiz.
+  --
+  -- @param completed [Boolean Whether the quiz is completed]
   function cw.quiz:SetCompleted(completed)
     self.completed = completed
   end
 
-  -- A function to get whether the quiz is completed.
+  --- Returns whether the local player has completed the quiz.
+  --
+  -- @return [Boolean Whether the quiz is completed, or `nil` before the server has said]
   function cw.quiz:GetCompleted()
     return self.completed
   end
 
-  -- A function to get the quiz panel.
+  --- Returns the quiz panel while it is open.
+  --
+  -- @return [Panel The quiz panel, or `nil` if it is not valid]
   function cw.quiz:GetPanel()
     if IsValid(self.panel) then
       return self.panel
     end
   end
 else
+  --- Marks a player as having completed the quiz, or clears it.
+  --
+  -- Stores the current number of questions in the player's `Quiz` data, so adding or removing
+  -- questions makes players take the quiz again. Tells the player's client.
+  --
+  -- @param player [Player The player to mark]
+  -- @param completed [Boolean Whether the player has completed the quiz]
   function cw.quiz:SetCompleted(player, completed)
     if completed then
       player:SetData('Quiz', self:GetQuestionsAmount())
@@ -112,7 +166,12 @@ else
     netstream.Start(player, 'QuizCompleted', completed)
   end
 
-  -- A function to get whether a player has completed the quiz.
+  --- Returns whether a player has completed the current quiz.
+  --
+  -- Bots always count as having completed it.
+  --
+  -- @param player [Player The player to check]
+  -- @return [Boolean Whether the player has completed the quiz]
   function cw.quiz:GetCompleted(player)
     if player:GetData('Quiz') == self:GetQuestionsAmount() then
       return true
@@ -121,17 +180,25 @@ else
     end
   end
 
-  -- A function to set the quiz percentage.
+  --- Sets the share of questions a player must answer correctly to pass.
+  --
+  -- @param percentage [Number Required percentage, from 0 to 100]
   function cw.quiz:SetPercentage(percentage)
     self.percentage = percentage
   end
 
-  -- A function to get the quiz percentage.
+  --- Returns the share of questions a player must answer correctly to pass.
+  --
+  -- @return [Number Required percentage; 100 when none is set]
   function cw.quiz:GetPercentage()
     return self.percentage or 100
   end
 
-  -- A function to call the quiz kick Callback.
+  --- Runs the quiz kick callback for a player who failed the quiz.
+  --
+  -- @param player [Player The player who failed]
+  -- @param correctAnswers [Number How many questions they answered correctly]
+  -- @see cw.quiz:SetKickCallback
   function cw.quiz:CallKickCallback(player, correctAnswers)
     local kickCallback = self:GetKickCallback()
 
@@ -140,7 +207,10 @@ else
     end
   end
 
-  -- A function to get the quiz kick Callback.
+  --- Returns the function that handles players who failed the quiz.
+  --
+  -- @return [Function The callback set with `cw.quiz:SetKickCallback`, or a default that kicks the
+  -- player with the `#QuizPanel_KickReason` phrase in English]
   function cw.quiz:GetKickCallback()
     if self.kickCallback then
       return self.kickCallback
@@ -151,7 +221,15 @@ else
     end
   end
 
-  -- A function to set the quiz kick Callback.
+  --- Sets the function that handles players who failed the quiz.
+  --
+  -- ```
+  -- cw.quiz:SetKickCallback(function(player, correctAnswers)
+  --   player:Kick('You failed the quiz.')
+  -- end)
+  -- ```
+  --
+  -- @param Callback [Function Called as `Callback(player, correctAnswers)`]
   function cw.quiz:SetKickCallback(Callback)
     self.kickCallback = Callback
   end

@@ -47,7 +47,8 @@ SWEP.NoIronSightAttack = true
 SWEP.IronSightPos = Vector(0, 0, 0)
 SWEP.IronSightAng = Vector(0, 0, 0)
 
--- Called each frame.
+--- Throws the grenade once the attack key is released and, after the throw, uses up one
+-- grenade, stripping the weapon when none are left.
 function SWEP:Think()
   local curTime = CurTime()
 
@@ -86,7 +87,8 @@ function SWEP:Think()
   end
 end
 
--- Called when the SWEP is deployed.
+--- Plays the draw animation and cancels any throw in progress.
+-- @return [Boolean Always `true` to allow the deploy]
 function SWEP:Deploy()
   if SERVER then
     self:SetHoldType('grenade')
@@ -100,7 +102,8 @@ function SWEP:Deploy()
   return true
 end
 
--- Called when the SWEP is holstered.
+--- Plays the holster animation and cancels any throw in progress.
+-- @return [Boolean Always `true` to allow the holster]
 function SWEP:Holster(switchingTo)
   self:SendWeaponAnim(ACT_VM_HOLSTER)
 
@@ -110,7 +113,8 @@ function SWEP:Holster(switchingTo)
   return true
 end
 
--- Called to get whether the SWEP is raised.
+--- Reports the weapon as raised while throwing and for two seconds after.
+-- @return [Boolean `true` while raised, otherwise `nil`]
 function SWEP:GetRaised()
   local curTime = CurTime()
 
@@ -119,14 +123,20 @@ function SWEP:GetRaised()
   end
 end
 
--- Called when the SWEP is initialized.
+--- Sets the grenade hold type on the server.
 function SWEP:Initialize()
   if SERVER then
     self:SetHoldType('grenade')
   end
 end
 
--- A function to create the SWEP's grenade.
+--- Throws a flash grenade that, after four seconds, explodes and blinds every player within 768 units
+-- who can see it.
+--
+-- Runs only on the server. The grenade spawns 64 units ahead of the owner, or just short of a surface
+-- closer than 80 units, and is thrown with a force of `800 + power`.
+--
+-- @param power [Number Extra throw force, 40 per second the attack key was held, up to 400]
 function SWEP:CreateGrenade(power)
   if SERVER then
     local position = self.Owner:GetShootPos() + (self.Owner:GetAimVector() * 64)
@@ -192,7 +202,8 @@ function SWEP:CreateGrenade(power)
   end
 end
 
--- Called when the player attempts to primary fire.
+--- Pulls the grenade back to start a throw, which `SWEP:Think` releases.
+-- @return [Boolean Always `false`]
 function SWEP:PrimaryAttack()
   local curTime = CurTime()
 
@@ -207,5 +218,5 @@ function SWEP:PrimaryAttack()
   return false
 end
 
--- Called when the player attempts to secondary fire.
+--- Does nothing.
 function SWEP:SecondaryAttack() end

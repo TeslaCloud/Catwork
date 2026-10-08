@@ -27,12 +27,25 @@ netstream.Hook('gVar', function(key, value)
   globals[key] = value
 end)
 
+--- Returns the value of a global networked variable received from the server.
+-- @param key [String Name of the variable]
+-- @param default=nil [Any Value to return if the variable is `nil` or `false`]
+-- @return [Any The value, or `default`]
 function netvars.GetNetVar(key, default)
   local value = globals[key]
 
   return value != nil and value or default
 end
 
+--- Returns the value of a networked variable on the entity, as received from the server.
+--
+-- For the local player this also returns the variables set with
+-- `Player:SetLocalVar`.
+-- @param key [String Name of the variable]
+-- @param default=nil [Any Value to return if the variable is not set]
+-- @return [Any The value, or `default`]
+-- @alias [Player.GetNetVar]
+-- @alias [Player.GetLocalVar]
 function entityMeta:GetNetVar(key, default)
   local index = self:EntIndex()
 

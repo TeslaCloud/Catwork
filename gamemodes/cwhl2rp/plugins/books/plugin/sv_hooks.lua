@@ -8,7 +8,15 @@
 
 local PLUGIN = PLUGIN
 
--- Called when an entity's menu option should be handled.
+--- Called when an entity's menu option is chosen; opens or picks up a book.
+--
+-- View sends the `ViewBook` netstream to open the book on the player's screen. Take gives
+-- the player the book's item and removes the entity, or tells them why it failed.
+--
+-- @param player [Player The player who chose the option]
+-- @param entity [Entity The entity the option was chosen on]
+-- @param option [String The option's display text]
+-- @param arguments [String The option value, `cw_bookView` or `cw_bookTake`]
 function PLUGIN:EntityHandleMenuOption(player, entity, option, arguments)
   local class = entity:GetClass()
 
@@ -27,12 +35,12 @@ function PLUGIN:EntityHandleMenuOption(player, entity, option, arguments)
   end
 end
 
--- Called when CW has loaded all of the entities.
+--- Called after Catwork has loaded the map entities; restores the saved books.
 function PLUGIN:ClockworkInitPostEntity()
   self:LoadBooks()
 end
 
--- Called just after data should be saved.
+--- Called after data is saved; saves the books.
 function PLUGIN:PostSaveData()
   self:SaveBooks()
 end

@@ -12,7 +12,10 @@ COMMAND.text = '#Command_Animlean_Syntax'
 COMMAND.flags = CMD_DEFAULT
 COMMAND.optionalArguments = 1
 
--- Called when the command has been run.
+--- Toggles leaning back against the wall behind the player.
+--
+-- Humans can pass `ArmsBack` or `ArmsDown` to change the pose; Civil Protection always lean with
+-- their baton.
 function COMMAND:OnRun(player, arguments)
   local curTime = CurTime()
 

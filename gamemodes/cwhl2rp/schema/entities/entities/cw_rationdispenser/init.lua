@@ -11,7 +11,7 @@ include('shared.lua')
 AddCSLuaFile('cl_init.lua')
 AddCSLuaFile('shared.lua')
 
--- Called when the entity initializes.
+--- Sets up the invisible collision box and the parented Combine dispenser model.
 function ENT:Initialize()
   self:SetModel('models/props_junk/watermelon01.mdl')
 
@@ -39,12 +39,12 @@ function ENT:Initialize()
   self:DrawShadow(false)
 end
 
--- Called when the entity's transmit state should be updated.
+--- Always transmits the dispenser to every client.
 function ENT:UpdateTransmitState()
   return TRANSMIT_ALWAYS
 end
 
--- A function to toggle whether the entity is locked.
+--- Locks the dispenser when it is unlocked and unlocks it when it is locked.
 function ENT:Toggle()
   if self:IsLocked() then
     self:Unlock()
@@ -53,25 +53,28 @@ function ENT:Toggle()
   end
 end
 
--- A function to lock the entity.
+--- Locks the dispenser and plays a random button sound.
 function ENT:Lock()
   self:SetDTBool(0, true)
   self:EmitRandomSound()
 end
 
--- A function to unlock the entity.
+--- Unlocks the dispenser and plays a random button sound.
 function ENT:Unlock()
   self:SetDTBool(0, false)
   self:EmitRandomSound()
 end
 
--- A function to set the entity's flash duration.
+--- Flashes the status light red and plays the denied sound.
+-- @param duration [Number How long the light flashes, in seconds]
 function ENT:SetFlashDuration(duration)
   self:EmitSound('buttons/combine_button_locked.wav')
   self:SetDTFloat(1, CurTime() + duration)
 end
 
--- A function to create a dummy ration.
+--- Spawns a ration packet prop in front of the dispenser.
+-- @param customModel=nil [String Model for the prop; defaults to the minimal tier packet]
+-- @return [Entity The spawned `prop_physics`]
 function ENT:CreateDummyRation(customModel)
   local forward = self:GetForward() * 15
   local right = self:GetRight() * 0
@@ -87,7 +90,16 @@ function ENT:CreateDummyRation(customModel)
   return entity
 end
 
--- A function to activate the entity's ration.
+--- Prepares a ration for a player and dispenses it after a delay that depends on their tier.
+--
+-- The ration tier and delay come from the player's loyalist tier (CWU get the orange tier): red
+-- `ration_highest` in 4 seconds down to `ration_minimal` in 26 seconds for unranked citizens. When the
+-- delay ends, the dispenser plays its animation and the packet prop becomes a frozen ration item owned by
+-- the player. Does nothing while a previous ration is still being prepared, unless forced.
+--
+-- @param activator [Player The player the ration is for]
+-- @param duration=nil [Number Unused; the delay is always set from the tier]
+-- @param force=nil [Boolean Whether to dispense even while another ration is being prepared]
 function ENT:ActivateRation(activator, duration, force)
   local curTime = CurTime()
   local entModel
@@ -179,7 +191,7 @@ function ENT:ActivateRation(activator, duration, force)
   end
 end
 
--- A function to emit a random sound from the entity.
+--- Plays one random Combine button sound from the dispenser.
 function ENT:EmitRandomSound()
   local randomSounds = {
     'buttons/combine_button1.wav',
@@ -192,7 +204,7 @@ function ENT:EmitRandomSound()
   self:EmitSound(randomSounds[math.random(1, #randomSounds)])
 end
 
--- Called when the entity's physics should be updated.
+--- Keeps the dispenser still while nobody holds it and it is not constrained.
 function ENT:PhysicsUpdate(physicsObject)
   if !self:IsPlayerHolding() and !self:IsConstrained() then
     physicsObject:SetVelocity(Vector(0, 0, 0))
@@ -200,7 +212,10 @@ function ENT:PhysicsUpdate(physicsObject)
   end
 end
 
--- Called when the entity is used.
+--- Dispenses a ration to a citizen or lets Combine lock and unlock the dispenser.
+--
+-- Citizens can collect one ration per hour (stored in the `nextration` character data); a locked
+-- dispenser or one used too early gives a red flash. Uses are ignored within 3 seconds of each other.
 function ENT:Use(activator, caller)
   if activator:IsPlayer() and activator:GetEyeTraceNoCursor().Entity == self then
     local curTime = CurTime()
@@ -226,7 +241,8 @@ function ENT:Use(activator, caller)
   end
 end
 
--- Called when a player attempts to use a tool.
+--- Blocks every toolgun action on the dispenser.
+-- @return [Boolean Always `false`]
 function ENT:CanTool(player, trace, tool)
   return false
 end

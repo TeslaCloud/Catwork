@@ -11,7 +11,8 @@ if CLIENT then
   SYSTEM.toolTip = '#System_ManageConfig_ToolTip'
   SYSTEM.doesCreateForm = false
 
-  -- Called to get whether the local player has access to the system.
+  --- Shows the Manage Config system to players who may use the `CfgSetVar` command.
+  -- @return [Boolean Whether the player has the command's access flags]
   function SYSTEM:HasAccess()
     local commandTable = cw.command:FindByID('CfgSetVar')
 
@@ -22,7 +23,11 @@ if CLIENT then
     end
   end
 
-  -- Called when the system should be displayed.
+  --- Builds the config key list and the (hidden) edit form, requesting the key list from the server if needed.
+  --
+  -- Selecting a row requests that key's value with the `SystemCfgValue` netstream.
+  -- @param systemPanel [Panel The system panel to add the forms to]
+  -- @param systemForm [Panel The system's form (unused, the system does not create one)]
   function SYSTEM:OnDisplay(systemPanel, systemForm)
     self.adminValues = nil
 
@@ -63,6 +68,10 @@ if CLIENT then
     self.configForm:AddItem(self.listView)
   end
 
+  --- Fills the edit form for the selected config key (`self.activeKey`).
+  --
+  -- Shows the key's help text, a map entry and a text entry, slider or checkbox depending on the value's type;
+  -- the okay button sends the new value to the server with the `SystemCfgSet` netstream.
   function SYSTEM:PopulateConfigBox()
     self.editForm:Clear(true)
 
@@ -137,7 +146,9 @@ if CLIENT then
     end
   end
 
-  -- A function to populate the system's combo box.
+  --- Fills the config list with the keys in `self.configKeys` and reselects the active key, if any.
+  --
+  -- Keys without system data in `config.GetFromSystem` are skipped.
   function SYSTEM:PopulateComboBox()
     self.listView:Clear(true)
 

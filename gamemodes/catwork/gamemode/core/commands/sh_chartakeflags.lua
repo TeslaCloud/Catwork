@@ -12,7 +12,9 @@ COMMAND.text = '#Command_Chartakeflags_Syntax'
 COMMAND.access = 's'
 COMMAND.arguments = 2
 
--- Called when the command has been run.
+--- Takes flags from the target character; arguments are the character name and the flags.
+--
+-- Admin flags (`a`, `s` and `o`) cannot be taken this way.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
 

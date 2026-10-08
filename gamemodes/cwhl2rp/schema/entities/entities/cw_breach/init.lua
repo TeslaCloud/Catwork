@@ -11,7 +11,7 @@ include('shared.lua')
 AddCSLuaFile('cl_init.lua')
 AddCSLuaFile('shared.lua')
 
--- Called when the entity initializes.
+--- Sets up the breach padlock model and physics.
 function ENT:Initialize()
   self:SetModel('models/props_wasteland/prison_padlock001a.mdl')
 
@@ -28,12 +28,12 @@ function ENT:Initialize()
   end
 end
 
--- Called when the entity's transmit state should be updated.
+--- Always transmits the breach to every client.
 function ENT:UpdateTransmitState()
   return TRANSMIT_ALWAYS
 end
 
--- A function to create a dummy breach.
+--- Spawns a broken padlock prop at the breach that decays after 30 seconds.
 function ENT:CreateDummyBreach()
   local entity = ents.Create('prop_physics')
 
@@ -49,7 +49,13 @@ function ENT:CreateDummyBreach()
   end
 end
 
--- A function to set the entity's breach entity.
+--- Attaches the breach to an entity at the traced hit position.
+--
+-- The breach is parented to the entity, faces along the hit normal, is removed together with the
+-- entity and gets 5 health. The entity's `breach` field is set to the breach.
+--
+-- @param entity [Entity The door or entity to breach]
+-- @param trace [Map Trace result whose `HitPos` and `HitNormal` place the breach]
 function ENT:SetBreachEntity(entity, trace)
   local position = trace.HitPos
   local angles = trace.HitNormal:Angle()
@@ -64,14 +70,15 @@ function ENT:SetBreachEntity(entity, trace)
   entity.breach = self self:SetHealth(5)
 end
 
--- A function to open the entity.
+--- Detonates the breach, removes it and fires the `EntityBreached` hook for the attached entity.
+-- @param activator [Entity Whoever set off the breach, usually the attacker that destroyed it]
 function ENT:BreachEntity(activator)
   self:Explode() self:Remove()
 
   hook.Run('EntityBreached', self.entity, activator)
 end
 
--- A function to explode the entity.
+--- Plays the breach detonation effect and impact sound at the breach position.
 function ENT:Explode()
   local effectData = EffectData()
 
@@ -84,7 +91,7 @@ function ENT:Explode()
   self:EmitSound('physics/body/body_medium_impact_soft'..math.random(1, 7)..'.wav')
 end
 
--- Called when the entity takes damage.
+--- Subtracts the damage from the breach's health and breaches the entity when it reaches 0.
 function ENT:OnTakeDamage(damageInfo)
   self:SetHealth(math.max(self:Health() - damageInfo:GetDamage(), 0))
 

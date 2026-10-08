@@ -12,7 +12,10 @@ COMMAND.text = '#Command_Charheal_Syntax'
 COMMAND.flags = CMD_DEFAULT
 COMMAND.arguments = 1
 
--- Called when the command has been run.
+--- Heals the character being looked at with the item named in the first argument.
+--
+-- `health_vial`, `health_kit` and `bandage` heal by `Schema:GetHealAmount` and run the `PlayerHealed` hook;
+-- `power_node` fully repairs a scanner.
 function COMMAND:OnRun(player, arguments)
   if player:GetNetVar('tied') == 0 then
     local itemTable = player:FindItemByID(arguments[1])

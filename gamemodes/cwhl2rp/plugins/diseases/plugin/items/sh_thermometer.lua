@@ -9,7 +9,9 @@ ITEM.category = 'Medical'
 ITEM.business = true
 ITEM.description = '#Item_Thermometer_Description'
 
--- Called when a player uses the item.
+--- Measures the temperature of the player being looked at, which is high when they have a fever.
+--
+-- Always returns `false`, so the thermometer is never used up.
 function ITEM:OnUse(player, itemEntity)
   local lookingPly = player:GetEyeTrace().Entity
 
@@ -28,5 +30,5 @@ function ITEM:OnUse(player, itemEntity)
   end
 end
 
--- Called when a player drops the item.
+--- Lets the item be dropped, with no extra effect.
 function ITEM:OnDrop(player, position) end

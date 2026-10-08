@@ -11,7 +11,7 @@ include('shared.lua')
 AddCSLuaFile('cl_init.lua')
 AddCSLuaFile('shared.lua')
 
--- Called when the entity initializes.
+--- Sets up physics, simple use and 50 health for the belongings.
 function ENT:Initialize()
   self:SetCollisionGroup(COLLISION_GROUP_WEAPON)
   self:SetMoveType(MOVETYPE_VPHYSICS)
@@ -28,19 +28,24 @@ function ENT:Initialize()
   end
 end
 
--- Called when the entity's transmit state should be updated.
+--- Always transmits the belongings to every client.
 function ENT:UpdateTransmitState()
   return TRANSMIT_ALWAYS
 end
 
--- A function to set the data of the entity.
+--- Sets the suitcase model and stores the inventory and cash the belongings hold.
+--
+-- The contents are dropped into the world when the entity is removed (see `ENT:OnRemove`).
+-- @param inventory [Inventory The items to keep in the belongings]
+-- @param cash [Number The amount of cash to keep in the belongings]
 function ENT:SetData(inventory, cash)
   self:SetModel('models/weapons/w_suitcase_passenger.mdl')
   self.cwInventory = inventory
   self.cwCash = cash
 end
 
--- A function to explode the entity.
+--- Plays a glass impact effect and a soft impact sound at the entity's position.
+-- @param scale=nil [Number Unused; the effect scale is always 8]
 function ENT:Explode(scale)
   local effectData = EffectData()
     effectData:SetStart(self:GetPos())
@@ -51,7 +56,7 @@ function ENT:Explode(scale)
   self:EmitSound('physics/body/body_medium_impact_soft'..math.random(1, 7)..'.wav')
 end
 
--- Called when the entity takes damage.
+--- Subtracts the damage from the belongings' health and destroys them at zero health.
 function ENT:OnTakeDamage(damageInfo)
   self:SetHealth(math.max(self:Health() - damageInfo:GetDamage(), 0))
 
@@ -60,7 +65,7 @@ function ENT:OnTakeDamage(damageInfo)
   end
 end
 
--- Called when the entity is removed.
+--- Drops the stored items and cash into the world, unless the server is shutting down.
 function ENT:OnRemove()
   if !cw.core:IsShuttingDown() then
     cw.entity:DropItemsAndCash(self.cwInventory, self.cwCash, self:GetPos(), self)

@@ -8,5 +8,5 @@ ITEM.category = 'Materials'
 ITEM.business = false
 ITEM.description = '#Item_WoodenParts_Description'
 
--- Called when a player drops the item.
+--- Lets the item be dropped, with no extra effect.
 function ITEM:OnDrop(player, position) end

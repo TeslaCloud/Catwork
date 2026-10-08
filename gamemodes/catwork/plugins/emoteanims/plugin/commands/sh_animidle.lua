@@ -12,7 +12,9 @@ COMMAND.text = '#Command_Animidle_Syntax'
 COMMAND.flags = CMD_DEFAULT
 COMMAND.optionalArguments = 1
 
--- Called when the command has been run.
+--- Toggles the line idle stance of a human player standing on the ground.
+--
+-- A true argument crosses the arms; otherwise the player puts their hands in their pockets.
 function COMMAND:OnRun(player, arguments)
   local modelClass = cw.animation:GetModelClass(player:GetModel())
   local curTime = CurTime()

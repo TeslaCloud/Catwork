@@ -13,7 +13,7 @@ COMMAND.text = '#Command_Announce_Syntax'
 COMMAND.arguments = 1
 COMMAND.access = 'o'
 
--- Called when the command has been run.
+--- Shows a notification with the given text to every player; the arguments are the announcement text.
 function COMMAND:OnRun(player, arguments)
   local text = table.concat(arguments, ' ')
 

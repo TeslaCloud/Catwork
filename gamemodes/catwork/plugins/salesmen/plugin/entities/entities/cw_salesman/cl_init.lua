@@ -8,7 +8,7 @@
 
 util.Include('shared.lua')
 
--- Called when the target ID HUD should be painted.
+--- Draws the salesman's name and physical description when the `SalesmanTargetID` hook returns a true value.
 function ENT:HUDPaintTargetID(x, y, alpha)
   if hook.Run('SalesmanTargetID', self, x, y, alpha) then
     local colorTargetID = cw.option:GetColor('target_id')
@@ -24,12 +24,12 @@ function ENT:HUDPaintTargetID(x, y, alpha)
   end
 end
 
--- Called when the entity initializes.
+--- Enables automatic frame advance so the salesman's animation plays.
 function ENT:Initialize()
   self.AutomaticFrameAdvance = true
 end
 
--- Called every frame.
+--- Advances the salesman's animation every frame.
 function ENT:Think()
   self:FrameAdvance(FrameTime())
   self:NextThink(CurTime())

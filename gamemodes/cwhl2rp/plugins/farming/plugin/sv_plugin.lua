@@ -6,6 +6,9 @@
   with contributions from Cloud Sixteen community.
 --]]
 
+--- Saves the position, angles, timings and seed item of every plant on the map.
+--
+-- The data goes to `plugins/farming/<map>`.
 function PLUGIN:SavePlants()
   local plants = {}
 
@@ -22,6 +25,7 @@ function PLUGIN:SavePlants()
   cw.core:SaveSchemaData('plugins/farming/'..game.GetMap(), plants)
 end
 
+--- Spawns the plants saved for the current map with their seed item, timings and plant model.
 function PLUGIN:LoadPlants()
   local plants = cw.core:RestoreSchemaData('plugins/combinedevices/monitors/'..game.GetMap())
 

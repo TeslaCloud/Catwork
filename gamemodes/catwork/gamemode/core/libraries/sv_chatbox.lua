@@ -8,6 +8,27 @@ library.New('chatbox', _G)
 chatbox.prefixes = chatbox.prefixes or {}
 chatbox.filters = chatbox.filters or {}
 
+--- Registers a chat prefix that is checked against messages players type.
+--
+-- The callback receives the message table and inspects `msgData.text`. When it
+-- returns a truthy value, the prefix is stripped from the text afterwards (for
+-- `/?` only the first character is stripped). The callback usually sets
+-- `msgData.filter` and `msgData.radius`. Does nothing if the prefix is empty.
+--
+-- ```
+-- chatbox.AddPrefix('!', function(msgData)
+--   if msgData.text:StartsWith('!') then
+--     msgData.filter = 'looc'
+--     msgData.radius = config.GetVal('talk_radius')
+--
+--     return true
+--   end
+-- end)
+-- ```
+--
+-- @param prefix [String The text messages must start with, such as `'//'`]
+-- @param callback [Function Called as `callback(msgData)`; return `true` once the message has been handled]
+-- @see chatbox.GetPrefix
 function chatbox.AddPrefix(prefix, callback)
   if !prefix or prefix == '' then return end
 
@@ -26,24 +47,55 @@ function chatbox.AddPrefix(prefix, callback)
   chatbox.prefixes[prefix].length = prefix:utf8len()
 end
 
+--- Returns the data registered for a chat prefix.
+-- @param prefix [String The prefix as passed to `chatbox.AddPrefix`]
+-- @return [Map The prefix data with `Callback` and `length` keys, or `nil` if it is not registered]
 function chatbox.GetPrefix(prefix)
   if chatbox.prefixes[prefix] then
     return chatbox.prefixes[prefix]
   end
 end
 
+--- Registers a chat filter that decides who receives messages of a type.
+--
+-- Messages pick their filter through `msgData.filter` (`'ic'`, `'ooc'`,
+-- `'looc'`, `'admin'`, `'command'` and so on). Registering an existing ID
+-- replaces it. Does nothing if the ID is empty.
+--
+-- ```
+-- chatbox.AddFilter('radio', function(listener, msgData)
+--   return listener:HasItemByID('handheld_radio')
+-- end)
+-- ```
+--
+-- @param id [String Name of the filter]
+-- @param callback [Function Called as `callback(listener, msgData)`; return `true` to send the message to `listener`]
+-- @see chatbox.GetFilter
 function chatbox.AddFilter(id, callback)
   if !id or id == '' then return end
 
   chatbox.filters[id] = callback
 end
 
+--- Returns the callback of a chat filter.
+-- @param id [String Name of the filter, as passed to `chatbox.AddFilter`]
+-- @return [Function The filter callback, or `nil` if no filter has that name]
 function chatbox.GetFilter(id)
   if chatbox.filters[id] then
     return chatbox.filters[id]
   end
 end
 
+--- Returns whether a player is within hearing range of a position.
+--
+-- The player hears it when the position is within `radius` of them, or within
+-- half the radius of the point they are looking at. Players that have not
+-- initialized never hear anything.
+-- @param listener [Player The player who would hear the message]
+-- @param position [Vector Where the message comes from]
+-- @param radius [Number Hearing radius; `0` means everyone hears it, a negative value or a non-number means
+-- nobody does]
+-- @return [Boolean Whether the listener can hear the message]
 function chatbox.CanHear(listener, position, radius)
   if listener:HasInitialized() then
     if !isnumber(radius) then return false end
@@ -222,6 +274,14 @@ do
   end)
 end
 
+--- Returns whether a listener receives a message, according to the message's filter.
+--
+-- An invalid listener (such as the server console) receives everything except
+-- in-character messages.
+-- @param listener [Player The player to check]
+-- @param messageData [Map The message table; `messageData.filter` names the filter and defaults to `'default'`]
+-- @return [Boolean Whether the listener receives the message]
+-- @see chatbox.AddFilter
 function chatbox.PlayerCanHear(listener, messageData)
   if !IsValid(listener) then
     return messageData.filter != 'ic'
@@ -230,6 +290,30 @@ function chatbox.PlayerCanHear(listener, messageData)
   return chatbox.GetFilter(messageData.filter or 'default')(listener, messageData)
 end
 
+--- Builds a chat message from its arguments and sends it to the listeners that pass its filter.
+--
+-- Strings are appended to the text, `Color`s wrap the following text in
+-- `[color=r,g,b,a]` tags, players append their name and become the message's
+-- position and `players` entry, and tables are merged into the message to set
+-- fields such as `filter`, `icon`, `radius`, `sender` or `textColor`. The
+-- message defaults to the `'default'` filter and the information icon.
+--
+-- Fires `ChatAddText(listeners, message)`, then `ChatboxAdjustMessageInfo(message,
+-- listeners)` (returning `false` there cancels the message), sends the message
+-- to each listener over the `ChatboxAddText` netstream and finally fires
+-- `ChatboxMessageSent(message)`.
+--
+-- ```
+-- chatbox.AddText(nil, Color(255, 100, 100), 'The server restarts in five minutes.', {
+--   filter = 'events',
+--   icon = 'icon16/error.png'
+-- })
+-- ```
+--
+-- @param listeners=nil [Player A player or a list of players to send to; `nil` sends to everyone]
+-- @param ... [Any Strings, colors, players and option tables making up the message]
+-- @return [Map The message table with a `listeners` key added, or `nil` if a hook cancelled it]
+-- @see chatbox.SayAsPlayer
 function chatbox.AddText(listeners, ...)
   local args = { ... }
   local message = {
@@ -325,6 +409,14 @@ function chatbox.AddText(listeners, ...)
   return message
 end
 
+--- Makes a player say something in character, as if they had typed it.
+--
+-- The text is quoted and sent through `chatbox.AddText` with the `'ic'`
+-- filter, so only players within the radius receive it.
+-- @param player [Player The player who speaks]
+-- @param radius=nil [Number Hearing radius; `nil` uses the `talk_radius` config]
+-- @param text [String What the player says]
+-- @see chatbox.AddText
 function chatbox.SayAsPlayer(player, radius, text)
   chatbox.AddText(nil, '"'..text..'"', {
     sender = player,
@@ -335,6 +427,11 @@ function chatbox.SayAsPlayer(player, radius, text)
   })
 end
 
+--- Sets `chatbox.clientMode`, which marks that the message being built was requested by a client.
+--
+-- The `ChatboxAddText` netstream receiver turns it on around its call to
+-- `chatbox.AddText`.
+-- @param isclient [Boolean Whether client mode is on]
 function chatbox.SetClientMode(isclient)
   chatbox.clientMode = isclient
 end

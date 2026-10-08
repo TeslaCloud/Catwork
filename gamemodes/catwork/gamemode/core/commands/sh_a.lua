@@ -13,7 +13,7 @@ COMMAND.access = 'o'
 COMMAND.arguments = 1
 COMMAND.alias = { 'AD', 'OP' }
 
--- Called when the command has been run.
+--- Sends a message to every operator, admin and superadmin in the admin chat; the arguments are the message.
 function COMMAND:OnRun(player, arguments)
   local listeners = {}
 

@@ -3,6 +3,9 @@ include('shared.lua')
 AddCSLuaFile('cl_init.lua')
 AddCSLuaFile('shared.lua')
 
+--- Spawns a forcefield where the player is looking, facing along the hit surface.
+--
+-- @return [Entity The new forcefield, or `nil` when the trace hit nothing]
 function ENT:SpawnFunction(player, trace)
   if !trace.Hit then return end
 
@@ -16,11 +19,17 @@ function ENT:SpawnFunction(player, trace)
   return entity
 end
 
+--- Sets up the networked int 0 (`Mode`) and entity 0 (`Dummy`, the far post).
 function ENT:SetupDataTables()
   self:DTVar('Int', 0, 'Mode')
   self:DTVar('Entity', 0, 'Dummy')
 end
 
+--- Sets up the post, spawns the far post at the nearest wall and builds the field's collision mesh.
+--
+-- Unless `noCorrect` is set, snaps the post to the floor first. Starts in mode 1 and switched
+-- on unless `ENT:RestoreMode` set otherwise; mode 4 starts switched off. Saves the
+-- forcefields afterwards.
 function ENT:Initialize()
   self:SetModel('models/props_combine/combine_fence01b.mdl')
   self:SetSolid(SOLID_VPHYSICS)
@@ -116,6 +125,7 @@ function ENT:Initialize()
   plugin.Call('SaveForceFields')
 end
 
+--- Starts the shield touch sound on a non-Combine player touching the powered field.
 function ENT:StartTouch(ent)
   if !(self.on) then return end
 
@@ -133,6 +143,7 @@ function ENT:StartTouch(ent)
   end
 end
 
+--- Keeps the touch sound's volume up while a non-Combine player touches the powered field.
 function ENT:Touch(ent)
   if !(self.on) then return end
 
@@ -145,6 +156,7 @@ function ENT:Touch(ent)
   end
 end
 
+--- Fades the touch sound out when a non-Combine player stops touching the powered field.
 function ENT:EndTouch(ent)
   if !(self.on) then return end
 
@@ -157,6 +169,7 @@ function ENT:EndTouch(ent)
   end
 end
 
+--- Plays the shield's humming loop while it is powered and keeps the field frozen.
 function ENT:Think()
   if IsValid(self) and self.on then
     self.ShieldLoop:Play()
@@ -172,17 +185,28 @@ function ENT:Think()
   end
 end
 
+--- Stops the humming loop.
+--
+-- Overridden by the second `ENT:OnRemove` in this file.
 function ENT:OnRemove()
   if self.ShieldLoop then
     self.ShieldLoop:Stop()
   end
 end
 
+--- Sets the field's mode and power state before it spawns, when restoring saved fields.
+--
+-- @param mode [Number The mode, 1 to 4, as in `cwForceField.modes`]
+-- @param bIsOn [Boolean Whether the field is powered]
 function ENT:RestoreMode(mode, bIsOn)
   self.on = bIsOn
   self.mode = mode
 end
 
+--- Cycles a Combine player's forcefield to the next mode, at most once a second.
+--
+-- Mode 4 switches the field off and lets everything through. Tells the player the new
+-- mode and saves the forcefields.
 function ENT:Use(act, call, type, val)
   local curTime = CurTime()
 
@@ -222,6 +246,10 @@ function ENT:Use(act, call, type, val)
   end
 end
 
+--- Stops and clears the humming loop and the field's `ShieldTouch` sound.
+--
+-- Touch sounds are stored on the touching players, so the field's own `ShieldTouch` is
+-- normally `nil`.
 function ENT:OnRemove()
   if self.ShieldLoop then
     self.ShieldLoop:Stop()

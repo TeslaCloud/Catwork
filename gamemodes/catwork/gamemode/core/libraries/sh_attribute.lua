@@ -16,29 +16,57 @@ cw.attribute.buffer = buffer
 --[[ Set the __index meta function of the class. --]]
 local CLASS_TABLE = { __index = CLASS_TABLE }
 
--- A function to register a new attribute.
+--- Registers the attribute with `cw.attribute:Register`.
+--
+-- @return [String The attribute's unique ID]
 function CLASS_TABLE:Register()
   return cw.attribute:Register(self)
 end
 
--- A function to get a new attribute.
+--- Creates a new, unregistered attribute object.
+--
+-- Set its fields (`name`, `maximum`, `uniqueID`, `description`, `category`, `image`...) and pass
+-- it to `cw.attribute:Register`.
+--
+-- ```
+-- local ATTRIBUTE = cw.attribute:New()
+--   ATTRIBUTE.name = '#Attribute_Cloth'
+--   ATTRIBUTE.maximum = 100
+--   ATTRIBUTE.uniqueID = 'cloth'
+-- ATB_CLOTH = cw.attribute:Register(ATTRIBUTE)
+-- ```
+--
+-- @param name='Unknown' [String Display name of the attribute]
+-- @return [Attribute The new attribute object]
 function cw.attribute:New(name)
   local object = cw.core:NewMetaTable(CLASS_TABLE)
     object.name = name or 'Unknown'
   return object
 end
 
--- A function to get the attribute buffer.
+--- Returns the registered attributes keyed by their numeric index.
+--
+-- @return [Map<Attribute> Attributes keyed by the CRC-based index from `cw.core:GetShortCRC`]
 function cw.attribute:GetBuffer()
   return buffer
 end
 
--- A function to get all attributes.
+--- Returns the registered attributes keyed by unique ID.
+--
+-- @return [Map<Attribute> Attributes keyed by unique ID]
 function cw.attribute:GetAll()
   return stored
 end
 
--- A function to register a new attribute.
+--- Registers an attribute and returns its unique ID.
+--
+-- The unique ID defaults to the lowercased name with whitespace replaced by underscores, and the
+-- category defaults to `#Attributes`. The index is a short CRC of the name. A progress cache is
+-- created for every value from `-maximum` to `maximum`, so `maximum` must be set. On the server
+-- the attribute's `image` (if any) is added to the client download list as a PNG material.
+--
+-- @param attribute [Attribute The attribute object, usually made by `cw.attribute:New`]
+-- @return [String The attribute's unique ID]
 function cw.attribute:Register(attribute)
   attribute.uniqueID = attribute.uniqueID or string.lower(string.gsub(attribute.name, '%s', '_'))
   attribute.index = cw.core:GetShortCRC(attribute.name)
@@ -62,7 +90,13 @@ function cw.attribute:Register(attribute)
   return attribute.uniqueID
 end
 
--- A function to find an attribute by an identifier.
+--- Finds an attribute by index, unique ID or part of its name.
+--
+-- Exact index and unique ID matches win. Otherwise the attribute with the shortest name that
+-- contains `identifier` (case-insensitive, as a Lua pattern) is returned.
+--
+-- @param identifier [Any Numeric index, unique ID or part of the name]
+-- @return [Attribute The attribute, or `nil` if none matches]
 function cw.attribute:FindByID(identifier)
   if !identifier then return end
 

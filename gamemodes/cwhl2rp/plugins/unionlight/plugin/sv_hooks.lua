@@ -1,11 +1,11 @@
 local PLUGIN = PLUGIN
 
--- Called when CW has loaded all of the entities.
+--- Called after Catwork has loaded the map entities; restores the saved union lights.
 function PLUGIN:ClockworkInitPostEntity()
   self:LoadUnionLights()
 end
 
--- Called just after data should be saved.
+--- Called after data is saved; saves the union lights.
 function PLUGIN:PostSaveData()
   self:SaveUnionLights()
 end

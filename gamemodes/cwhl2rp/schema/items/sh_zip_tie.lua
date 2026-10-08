@@ -39,7 +39,12 @@ ITEM.business = true
 ITEM.uniqueID = 'zip_tie'
 ITEM.description = '#ITEM_Zip_Tie_Desc'
 
--- Called when a player uses the item.
+--- Starts tying up the player being looked at.
+--
+-- The target must be untied, within 192 units and facing away or ragdolled. Tying takes
+-- `Schema:GetDexterityTime` seconds; on success the target is tied, Combine are alerted when the target
+-- is Combine, the zip tie is used up and dexterity progresses. Always returns `false` so the item is
+-- only removed once tying succeeds.
 function ITEM:OnUse(player, itemEntity)
   if player.isTying then
     cw.player:Notify(player, L('Zip_Tie_IsTying'))
@@ -121,7 +126,7 @@ function ITEM:OnUse(player, itemEntity)
   end
 end
 
--- Called when a player drops the item.
+--- Blocks dropping the zip tie, with a notification, while the player is tying someone.
 function ITEM:OnDrop(player, position)
   if player.isTying then
     cw.player:Notify(player, L('Zip_Tie_CantDropWhileTying'))

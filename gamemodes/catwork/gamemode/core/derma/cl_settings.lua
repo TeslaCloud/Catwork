@@ -8,7 +8,7 @@
 
 local PANEL = {}
 
--- Called when the panel is initialized.
+--- Sizes the settings menu tab to the menu, creates its list and builds it.
 function PANEL:Init()
   self:SetSize(cw.menu:GetWidth(), cw.menu:GetHeight())
 
@@ -22,7 +22,12 @@ function PANEL:Init()
   self:Rebuild()
 end
 
--- A function to rebuild the panel.
+--- Rebuilds the settings list from `cw.setting.stored`, one form per category.
+--
+-- Settings whose `Condition` returns false are left out. Inside a category, settings are sorted by
+-- control class, then by text. Each setting gets the control for its `class`: `numberSlider`,
+-- `multiChoice`, `numberWang`, `textEntry`, `checkBox` or `colorMixer`, bound to its console variable
+-- (a color mixer uses the variable name with `R`, `G`, `B` and `A` appended).
 function PANEL:Rebuild()
   self.panelList:Clear()
 
@@ -162,20 +167,20 @@ function PANEL:Rebuild()
   self.panelList:InvalidateLayout(true)
 end
 
--- Called when the menu is opened.
+--- Rebuilds the list when the menu is opened while this tab is active.
 function PANEL:OnMenuOpened()
   if cw.menu:IsPanelActive(self) then
     self:Rebuild()
   end
 end
 
--- Called when the panel is selected.
+--- Rebuilds the list when the tab is selected in the menu.
 function PANEL:OnSelected() self:Rebuild() end
 
--- Called when the layout should be performed.
+--- Does nothing; the list lays itself out.
 function PANEL:PerformLayout(w, h) end
 
--- Called when the panel is painted.
+--- Draws the outlined panel background.
 function PANEL:Paint(w, h)
   draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0))
   draw.RoundedBox(0, 1, 1, w - 2, h - 2, cw.option:GetColor('panel_background'))

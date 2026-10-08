@@ -12,7 +12,9 @@ COMMAND.text = '#Command_Plysearch_Syntax'
 COMMAND.access = 's'
 COMMAND.arguments = 1
 
--- Called when the command has been run.
+--- Opens the target player's inventory as storage for the caller; the argument is the player name.
+--
+-- Taking or giving the worn clothing item clears the `clothes` character data.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
 

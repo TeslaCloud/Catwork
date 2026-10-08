@@ -1,6 +1,14 @@
 PLUGIN:SetGlobalAlias('cwFactories')
 
 if SERVER then
+  --- Called when a player picks an entity menu option; starts, stops or ejects a factory.
+  --
+  -- Only acts on entities with `IsFactory` set. Starting is ignored while the factory works and
+  -- stopping while it is idle.
+  -- @param player [Player The player who picked the option]
+  -- @param entity [Entity The entity the menu was opened on]
+  -- @param option [String The option's display name]
+  -- @param arguments [String `cwFactoriesStart`, `cwFactoriesStop` or `cwFactoriesEject`]
   function cwFactories:EntityHandleMenuOption(player, entity, option, arguments)
     local factory = entity.IsFactory
 
@@ -19,6 +27,11 @@ if SERVER then
     end
   end
 
+  --- Saves every metal, plastic and paper garbage recycler on the map to the schema data.
+  --
+  -- Each factory's angles, position, product position, garbage count, eject storage and stored
+  -- garbage are written to `plugins/factories/<type>/<map>`.
+  -- @see cwFactories:LoadFactories
   function cwFactories:SaveFactories()
     local garbageRecyclerMetal = {}
     local garbageRecyclerPlastic = {}
@@ -62,6 +75,8 @@ if SERVER then
     cw.core:SaveSchemaData('plugins/factories/paper/'..game.GetMap(), garbageRecyclerPaper)
   end
 
+  --- Spawns the garbage recyclers saved for the current map, frozen in place, and restores their contents.
+  -- @see cwFactories:SaveFactories
   function cwFactories:LoadFactories()
     local garbageRecyclerMetal = cw.core:RestoreSchemaData('plugins/factories/metal/'..game.GetMap())
     local garbageRecyclerPaper = cw.core:RestoreSchemaData('plugins/factories/paper/'..game.GetMap())
@@ -125,14 +140,19 @@ if SERVER then
     end
   end
 
+  --- Called after Catwork has loaded all map entities; spawns the saved factories.
   function cwFactories:ClockworkInitPostEntity()
     self:LoadFactories()
   end
 
+  --- Called after data has been saved; saves the factories.
   function cwFactories:PostSaveData()
     self:SaveFactories()
   end
 else
+  --- Called when the client builds an entity's menu; adds start, stop and eject options to factories.
+  -- @param entity [Entity The entity the menu is for]
+  -- @param options [Map Menu options, mapping display names to the arguments sent to the server]
   function cwFactories:GetEntityMenuOptions(entity, options)
     if entity.IsFactory then
       options['#Factories_Start'] = 'cwFactoriesStart'

@@ -8,7 +8,7 @@ COMMAND.access = 'a'
 COMMAND.arguments = 2
 COMMAND.alias = { 'SetFatigue', 'SetSleep', 'CharSetSleep' }
 
--- Called when the command has been run.
+--- Sets a character's thirst to the given amount, 100 by default.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
   local amount = arguments[2]

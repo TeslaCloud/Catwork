@@ -18,6 +18,8 @@ ITEM.attributes = { Strength = 2 }
 ITEM.description = '#ITEM_Beer_Desc'
 ITEM.thirst = 25
 
+--- Heals 10 health (up to 100), boosts acrobatics and agility by 2 for two minutes and gives back an empty
+-- glass bottle.
 function ITEM:OnUse(player, itemEntity)
   player:SetHealth(math.Clamp(player:Health() + 10, 0, 100))
 

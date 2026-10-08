@@ -19,10 +19,10 @@ ITEM.business = true
 ITEM.description = '#Item_PotatoDish_Description'
 ITEM.hunger = 65
 
--- Called when a player uses the item.
+--- Gives the player back an `empty_takeout_carton`.
 function ITEM:OnUse(player, itemEntity)
   player:GiveItem('empty_takeout_carton', true)
 end
 
--- Called when a player drops the item.
+--- Lets the item be dropped, with no extra effect.
 function ITEM:OnDrop(player, position) end

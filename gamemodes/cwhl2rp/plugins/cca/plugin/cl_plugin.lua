@@ -3,52 +3,89 @@
   Do not share, re-distribute or sell.
 --]]
 
+--- Called when the main menu items are added; adds the Combine PDA for Combine and CWU players.
+-- @param menuItems [Map The menu item list, with an `Add` method]
 function PLUGIN:MenuItemsAdd(menuItems)
   if Schema:PlayerIsCombine(cw.client) or cw.client:GetFaction() == FACTION_CWU then
     menuItems:Add('#Combine_PDA', 'cwCombinePDA', '#Combine_PDA_Desc', { path = 'fa-mobile', size = 10 })
   end
 end
 
+--- Called when a citizen status is picked on a PDA player card; asks the server to set it.
+-- @param panel [Panel The `cwCombinePlayerCard` panel; its `player` field is the target]
+-- @param id [String The status: `Unverified`, `Citizen`, `AntiCitizen` or `NoData`]
 function PLUGIN:HandleCitizenStatusButton(panel, id)
   netstream.Start('Application::PDA::Controller::CitizenStatus', panel.player, id)
 end
 
+--- Called when a new residence is entered on a PDA player card; asks the server to set it.
+-- @param panel [Panel The `cwCombinePlayerCard` panel; its `player` field is the target]
+-- @param value [String The new residence address]
 function PLUGIN:HandleResidenceChangeButton(panel, value)
   netstream.Start('Application::PDA::Controller::Residence', panel.player, value)
 end
 
+--- Called when a new job is entered on a PDA player card; asks the server to set it.
+-- @param panel [Panel The `cwCombinePlayerCard` panel; its `player` field is the target]
+-- @param value [String The new job]
 function PLUGIN:HandleJobChangeButton(panel, value)
   netstream.Start('Application::PDA::Controller::Job', panel.player, value)
 end
 
+--- Called when loyalty points are issued on a PDA player card; asks the server to add them.
+-- @param panel [Panel The `cwCombinePlayerCard` panel; its `player` field is the target]
+-- @param value [Number The points to add]
 function PLUGIN:HandleLoyaltyPointsIssue(panel, value)
   netstream.Start('Application::PDA::Controller::LP', panel.player, value)
 end
 
+--- Called when crime points are issued on a PDA player card; asks the server to add them.
+-- @param panel [Panel The `cwCombinePlayerCard` panel; its `player` field is the target]
+-- @param value [Number The points to add]
 function PLUGIN:HandleCrimePointsIssue(panel, value)
   netstream.Start('Application::PDA::Controller::CP', panel.player, value)
 end
 
+--- Called when loyalty points are removed on a PDA player card; asks the server to remove them.
+-- @param panel [Panel The `cwCombinePlayerCard` panel; its `player` field is the target]
+-- @param value [Number The change, as a negative number]
 function PLUGIN:HandleLoyaltyPointsSubstract(panel, value)
   netstream.Start('Application::PDA::Controller::LP', panel.player, value, true)
 end
 
+--- Called when crime points are removed on a PDA player card; asks the server to remove them.
+-- @param panel [Panel The `cwCombinePlayerCard` panel; its `player` field is the target]
+-- @param value [Number The change, as a negative number]
 function PLUGIN:HandleCrimePointsSubstract(panel, value)
   netstream.Start('Application::PDA::Controller::CP', panel.player, value, true)
 end
 
+--- Called when work points are issued on a PDA player card; asks the server to add them.
+-- @param panel [Panel The `cwCombinePlayerCard` panel; its `player` field is the target]
+-- @param value [Number The points to add]
 function PLUGIN:HandleJobPointsIssue(panel, value)
   netstream.Start('Application::PDA::Controller::WP', panel.player, value)
 end
 
+--- Called when jailing is confirmed on a PDA player card; asks the server to jail the target.
+-- @param panel [Panel The `cwCombinePlayerCard` panel; its `player` field is the target]
 function PLUGIN:HandleJailButton(panel)
   netstream.Start('Application::PDA::Controller::Jail', panel.player)
 end
 
+--- Called when unjailing is confirmed on a PDA player card; asks the server to release the target.
+-- @param panel [Panel The `cwCombinePlayerCard` panel; its `player` field is the target]
 function PLUGIN:HandleUnjailButton(panel)
   netstream.Start('Application::PDA::Controller::Unjail', panel.player)
 end
 
+--- Called when a PDA player card is created; adds the status, residence, job, points and jail buttons.
+--
+-- Each button opens a prompt and passes the answer to the matching `Handle...` hook through
+-- `plugin.Call`. Points and jail buttons are flagged Combine only, and CWU players can only pick
+-- the `Unverified` and `Citizen` statuses.
+--
+-- @param pda [Panel The `cwCombinePlayerCard` panel]
 function PLUGIN:AddCombinePDAButons(pda)
   pda:AddButton('status', '#PDA_ChangeCitizenStatus', false, function()
     if Schema:PlayerIsCombine(cw.client) then

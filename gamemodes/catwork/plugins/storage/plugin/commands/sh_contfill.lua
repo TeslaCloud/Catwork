@@ -14,7 +14,10 @@ COMMAND.access = 's'
 COMMAND.arguments = 1
 COMMAND.optionalArguments = 1
 
--- Called when the command has been run.
+--- Fills the container the player is looking at with random items.
+--
+-- The first argument is a scale from 1 to 5 (5 fills it to its full capacity, 1 to a fifth of it); the
+-- optional second argument limits the items to categories containing that text.
 function COMMAND:OnRun(player, arguments)
   local trace = player:GetEyeTraceNoCursor()
   local scale = tonumber(arguments[1])

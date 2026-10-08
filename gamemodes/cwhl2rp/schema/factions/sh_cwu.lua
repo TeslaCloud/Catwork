@@ -35,7 +35,14 @@ FACTION.models = {
   }
 }
 
--- Called when a player is transferred to the faction.
+--- Called when a player is transferred to the faction.
+--
+-- Combine players need a new name (the transfer's third argument) and get a random model of the
+-- faction; other players keep their name and model.
+-- @param player [Player The player]
+-- @param faction [Faction The faction the player comes from]
+-- @param name=nil [String The new name]
+-- @return [Boolean `false` to refuse the transfer, String The reason]
 function FACTION:OnTransferred(player, faction, name)
   if player:IsCombine() then
     if name then

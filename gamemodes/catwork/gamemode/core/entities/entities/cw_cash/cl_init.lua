@@ -8,7 +8,7 @@
 
 include('shared.lua')
 
--- Called when the target ID HUD should be painted.
+--- Draws the cash name and the formatted amount when the cash is looked at.
 function ENT:HUDPaintTargetID(x, y, alpha)
   local colorTargetID = cw.option:GetColor('target_id')
   local colorWhite = cw.option:GetColor('white')
@@ -18,7 +18,7 @@ function ENT:HUDPaintTargetID(x, y, alpha)
   y = cw.core:DrawInfo(cw.core:FormatCash(amount), x, y, colorWhite, alpha)
 end
 
--- Called when the entity should draw.
+--- Draws the cash model unless the `CashEntityDraw` hook returns `false`.
 function ENT:Draw()
   if hook.Run('CashEntityDraw', self) != false then
     self:DrawModel()

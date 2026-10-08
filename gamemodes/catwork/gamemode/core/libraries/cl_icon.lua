@@ -10,7 +10,24 @@ library.New('icon', cw)
 
 cw.icon.stored = cw.icon.stored or {}
 
--- A function to add a chat icon.
+--- Registers a chat icon shown next to the names of the players it applies to.
+--
+-- `cw.player:GetChatIcon` uses the first icon whose callback returns `true`, and
+-- player icons take precedence over the others. Prints an error and does
+-- nothing when an argument is missing.
+--
+-- ```
+-- cw.icon:Add('Donator', 'icon16/heart.png', function(player)
+--   return player:IsUserGroup('donator') or player:IsUserGroup('vip')
+-- end)
+-- ```
+--
+-- @param uniqueID [String Unique ID of the icon]
+-- @param path [String Path of the icon material, such as `'icon16/star.png'`]
+-- @param callback [Function Called with a player; returns `true` if the icon applies to them]
+-- @param bIsPlayer=nil [Boolean Whether this is an icon for a specific player, which wins over group icons]
+-- @see cw.icon:PlayerSet
+-- @see cw.icon:GroupSet
 function cw.icon:Add(uniqueID, path, callback, bIsPlayer)
   if uniqueID then
     if path then
@@ -31,7 +48,10 @@ function cw.icon:Add(uniqueID, path, callback, bIsPlayer)
   end
 end
 
--- A function to remove a chat icon.
+--- Removes a chat icon.
+--
+-- Prints an error when `uniqueID` is missing.
+-- @param uniqueID [String Unique ID of the icon]
 function cw.icon:Remove(uniqueID)
   if uniqueID then
     self.stored[uniqueID] = nil
@@ -40,7 +60,10 @@ function cw.icon:Remove(uniqueID)
   end
 end
 
--- A function to set a player's icon.
+--- Registers a chat icon for a single player.
+-- @param steamID [String Steam ID of the player, as returned by `Player:SteamID`]
+-- @param uniqueID [String Unique ID of the icon]
+-- @param path [String Path of the icon material]
 function cw.icon:PlayerSet(steamID, uniqueID, path)
   cw.icon:Add(uniqueID, path, function(player)
     if steamID == player:SteamID() then
@@ -49,7 +72,10 @@ function cw.icon:PlayerSet(steamID, uniqueID, path)
   end, true)
 end
 
--- A function to set a group's icon.
+--- Registers a chat icon for every member of a user group.
+-- @param group [String Name of the user group, such as `'admin'`]
+-- @param uniqueID [String Unique ID of the icon]
+-- @param path [String Path of the icon material]
 function cw.icon:GroupSet(group, uniqueID, path)
   cw.icon:Add(uniqueID, path, function(player)
     if player:IsUserGroup(group) then
@@ -58,7 +84,8 @@ function cw.icon:GroupSet(group, uniqueID, path)
   end)
 end
 
--- A function to return the stored icons.
+--- Returns every registered chat icon.
+-- @return [Map<Map> Icon tables (`path`, `callback`, `isPlayer`) keyed by unique ID]
 function cw.icon:GetAll()
   return cw.icon.stored
 end

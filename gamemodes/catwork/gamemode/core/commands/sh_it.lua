@@ -12,7 +12,9 @@ COMMAND.text = '#Command_It_Syntax'
 COMMAND.arguments = 1
 COMMAND.cooldown = 3
 
--- Called when the command has been run.
+--- Prints an environment description in the chat of nearby players; the arguments are the text.
+--
+-- The text must be at least eight characters long.
 function COMMAND:OnRun(player, arguments)
   local text = table.concat(arguments, ' ')
 

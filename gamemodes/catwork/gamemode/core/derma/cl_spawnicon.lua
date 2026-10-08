@@ -8,7 +8,7 @@
 
 local PANEL = {}
 
--- Called when the panel is initialized.
+--- Draws the cooldown overlay and the colored border over the icon.
 function PANEL:Init()
   self.Icon.PaintOver = function(icon)
     local curTime = CurTime()
@@ -43,12 +43,15 @@ function PANEL:Init()
   end
 end
 
--- A function to set the border color.
+--- Sets the color of the border drawn over the icon.
+-- @param color [Color Border color, or `nil` to draw no border]
 function PANEL:SetColor(color)
   self.BorderColor = color
 end
 
--- A function to set the cooldown.
+--- Shows a cooldown overlay on the icon that fades out until the given time.
+-- @param expireTime [Number `CurTime` at which the cooldown ends]
+-- @param textureID=nil [Number Texture ID of the overlay; defaults to `vgui/white`]
 function PANEL:SetCooldown(expireTime, textureID)
   self.Cooldown = {
     expireTime = expireTime,

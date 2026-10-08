@@ -8,7 +8,7 @@ COMMAND.tip = '#Command_Factoryrationdispenseradd_Description'
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = 's'
 
--- Called when the command has been run.
+--- Spawns a factory ration dispenser where the player looks, facing them.
 function COMMAND:OnRun(player, arguments)
   local trace = player:GetEyeTraceNoCursor()
   local entity = ents.Create('cw_factoryrationdispenser')

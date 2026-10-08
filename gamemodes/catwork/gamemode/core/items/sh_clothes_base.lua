@@ -14,7 +14,13 @@ ITEM.useText = 'Wear'
 ITEM.category = 'Clothing'
 ITEM.description = '#Item_ClothesBase_Description'
 
--- A function to get the model name.
+--- Returns the citizen model file name matching the player's default model, for building a clothes model path.
+--
+-- Strips the folders from the player's default model. If that model is not a `male`/`female` citizen model, it
+-- falls back to `male_05.mdl` or `female_04.mdl` by gender.
+-- @param player=cw.client [Player The player whose default model is used]
+-- @param group=nil [Boolean Keep the group folder in the result (fallback becomes `group05/...`)]
+-- @return [String The model file name, with its group folder when `group` is set]
 function ITEM:GetModelName(player, group)
   local modelName = nil
 
@@ -51,7 +57,8 @@ function ITEM:GetModelName(player, group)
   end
 end
 
--- Called when the item's client side model is needed.
+--- Returns the model to show for the item in menus: `GetReplacement`, `replacement`, or the `group` citizen model.
+-- @return [String The model path, or `nil` to use the item's own model]
 function ITEM:GetClientSideModel()
   local replacement = nil
 
@@ -68,7 +75,11 @@ function ITEM:GetClientSideModel()
   end
 end
 
--- Called when a player changes clothes.
+--- Sets the player's model to the clothes model when worn and restores the default model and skin when removed.
+--
+-- Calls the item's optional `OnChangedClothes(player, bIsWearing)` afterwards.
+-- @param player [Player The player changing clothes]
+-- @param bIsWearing [Boolean `true` when the clothes are put on, `false` when they are taken off]
 function ITEM:OnChangeClothes(player, bIsWearing)
   if bIsWearing then
     local replacement = nil
@@ -94,7 +105,8 @@ function ITEM:OnChangeClothes(player, bIsWearing)
   end
 end
 
--- Called to get whether a player has the item equipped.
+--- Returns whether the player is wearing these clothes; on the client it checks the local player.
+-- @return [Boolean Whether the clothes are worn]
 function ITEM:HasPlayerEquipped(player, bIsValidWeapon)
   if CLIENT then
     return cw.player:IsWearingItem(self)
@@ -103,12 +115,13 @@ function ITEM:HasPlayerEquipped(player, bIsValidWeapon)
   end
 end
 
--- Called when a player has unequipped the item.
+--- Takes the clothes off the player.
 function ITEM:OnPlayerUnequipped(player, extraData)
   player:RemoveClothes()
 end
 
--- Called when a player drops the item.
+--- Called when a player drops the clothes; blocks the drop while they are worn.
+-- @return [Boolean `false` while the player wears the clothes, otherwise `nil`]
 function ITEM:OnDrop(player, position)
   if player:IsWearingItem(self) then
     cw.player:Notify(player, '#CantDropWhenWearing')
@@ -116,7 +129,8 @@ function ITEM:OnDrop(player, position)
   end
 end
 
--- Called when a player uses the item.
+--- Dresses the player in the clothes if their faction is on the `whitelist` and `CanPlayerWear` allows it.
+-- @return [Boolean `true` when worn (the item stays in the inventory), `false` otherwise]
 function ITEM:OnUse(player, itemEntity)
   if self.whitelist and !table.HasValue(self.whitelist, player:GetFaction()) then
     cw.player:Notify(player, '#FactionCantWear')
@@ -136,6 +150,8 @@ function ITEM:OnUse(player, itemEntity)
 end
 
 if CLIENT then
+  --- Returns the tooltip line saying whether the local player is wearing the clothes.
+  -- @return [String Translated wearing state, or `nil` for a non-instance item]
   function ITEM:GetClientSideInfo()
     if !self:IsInstance() then return end
 

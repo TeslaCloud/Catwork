@@ -16,7 +16,9 @@ COMMAND.access = 'o'
 COMMAND.arguments = 1
 COMMAND.optionalArguments = 1
 
--- Called when the command has been run.
+--- Gives the target character personal access to the door the player is looking at.
+--
+-- The door becomes unownable and is saved; the optional second argument sets whether it starts locked.
 function COMMAND:OnRun(player, arguments)
   local owningGuy = _player.Find(arguments[1])
   local owningPerson = owningGuy:Name()

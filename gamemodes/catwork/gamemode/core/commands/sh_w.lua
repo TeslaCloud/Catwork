@@ -12,7 +12,7 @@ COMMAND.text = '#Command_W_Syntax'
 COMMAND.flags = bit.bor(CMD_DEFAULT, CMD_DEATHCODE)
 COMMAND.arguments = 1
 
--- Called when the command has been run.
+--- Whispers a message to players close to the caller; the arguments are the message.
 function COMMAND:OnRun(player, arguments)
   local talkRadius = math.min(config.GetVal('talk_radius') / 3, 80)
   local text = table.concat(arguments, ' ')

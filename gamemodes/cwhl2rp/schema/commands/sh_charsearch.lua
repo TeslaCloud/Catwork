@@ -10,7 +10,7 @@ local COMMAND = cw.command:New('CharSearch')
 COMMAND.tip = '#Command_Charsearch_Description'
 COMMAND.flags = CMD_DEFAULT
 
--- Called when the command has been run.
+--- Opens the inventory of the tied, motionless character being looked at as storage; takes no arguments.
 function COMMAND:OnRun(player, arguments)
   local target = cw.entity:GetPlayer(player:GetEyeTraceNoCursor().Entity)
 

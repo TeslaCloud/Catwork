@@ -112,6 +112,20 @@ cw.flag:Add('V', 'Heavy Blackmarket', 'Access to heavy blackmarket goods.')
 cw.flag:Add('m', 'Resistance Manager', "Access to the resistance manager's goods.")
 cw.flag:Add('d', 'Perma Death', "Disables permanent kill on the character's death.")
 
+--- Adds a loyalist tier to `Schema.LoyalistTiers`.
+--
+-- Tiers are matched against a character's loyalty points by `Schema:DetermineLoyalistTier`; define them
+-- in ascending order of points.
+--
+-- ```
+-- Schema:DefineLoyalistTier('#Loyalist_Red', '#Loyalist_Red_Desc', Color(210, 100, 100), 150, -1)
+-- ```
+--
+-- @param name [String Name or language key of the tier]
+-- @param description [String Description or language key of the tier]
+-- @param color [Color Colour the tier is shown in]
+-- @param min [Number Lowest number of loyalty points in the tier]
+-- @param max [Number Highest number of loyalty points in the tier, or `-1` for no limit]
 function Schema:DefineLoyalistTier(name, description, color, min, max)
   return table.insert(self.LoyalistTiers, {
     name = name,
@@ -122,6 +136,12 @@ function Schema:DefineLoyalistTier(name, description, color, min, max)
   })
 end
 
+--- Returns the loyalist tier for a number of loyalty points.
+--
+-- When several tiers match, the last defined one wins.
+-- @param num [Number The loyalty points]
+-- @return [Map The tier (`name`, `description`, `color`, `min`, `max`); the first tier when none match,
+-- or a magenta `ERROR` tier when none are defined]
 function Schema:DetermineLoyalistTier(num)
   local tier = nil -- we do this to let it loop through everything and see if we've hit the limit.
 
@@ -140,6 +160,13 @@ function Schema:DetermineLoyalistTier(num)
   }
 end
 
+--- Returns whether the tier of a player's loyalty points has a name containing the given text.
+--
+-- The comparison is case-insensitive and uses the `LoyaltyPoints` character data. Tier names are
+-- language keys such as `#Loyalist_Grey`, so `'grey'` matches the first tier.
+-- @param player [Player The player to check]
+-- @param tier [String Text to look for in the tier name, used as a Lua pattern]
+-- @return [Number The position of the match, or `nil` when the name does not contain it]
 function Schema:PlayerIsLoyalistTier(player, tier)
   local points = player:GetCharacterData('LoyaltyPoints', 0)
   local tierObj = self:DetermineLoyalistTier(points)
@@ -158,11 +185,29 @@ Schema:DefineLoyalistTier('#Loyalist_Blue', '#Loyalist_Blue_Desc', Color(100, 10
 Schema:DefineLoyalistTier('#Loyalist_Orange', '#Loyalist_Orange_Desc', Color(210, 180, 50), 101, 149)
 Schema:DefineLoyalistTier('#Loyalist_Red', '#Loyalist_Red_Desc', Color(210, 100, 100), 150, -1)
 
+--- Returns whether a player may play a Civil Protection character.
+--
+-- Characters below rank 6 are marked as unavailable on the character screen when this is `false`;
+-- the schema always allows it.
+-- @param player [Player The player]
+-- @return [Boolean Always `true`]
 function Schema:CanUseCP(player)
   return true
 end
 
--- A function to add a custom permit.
+--- Registers a custom business permit in `Schema.customPermits`.
+--
+-- Citizens can buy the permit from the business menu while permits are enabled, gaining the flag. The
+-- permit is stored under its lowercased name without spaces or punctuation, which is also the argument
+-- the `PermitBuy` command expects.
+--
+-- ```
+-- Schema:AddCustomPermit('Literature', '3', 'models/props_lab/bindergreenlabel.mdl')
+-- ```
+--
+-- @param name [String Display name of the permit]
+-- @param flag [String The flag the permit grants]
+-- @param model [String Model shown for the permit in the business menu]
 function Schema:AddCustomPermit(name, flag, model)
   local formattedName = string.gsub(name, '[%s%p]', '')
   local lowerName = string.lower(name)
@@ -175,7 +220,14 @@ function Schema:AddCustomPermit(name, flag, model)
   }
 end
 
--- A function to check if a string is a Combine rank.
+--- Returns whether a name contains a Combine rank.
+--
+-- Ranks appear in Combine names between punctuation, as in `C24.MPF-RCT.1234`. The rank `EpU` also
+-- matches the `SeC`, `DvL` and `CmD` ranks.
+-- @param text [String The name to search]
+-- @param rank [String The rank, or a `List` of ranks of which any may match]
+-- @return [Any A truthy value (`true` or the match position) when the rank is found, otherwise `nil`]
+-- @see Schema:IsPlayerCombineRank
 function Schema:IsStringCombineRank(text, rank)
   if type(rank) == 'table' then
     for k, v in ipairs(rank) do
@@ -193,7 +245,14 @@ function Schema:IsStringCombineRank(text, rank)
   end
 end
 
--- A function to check if a player is a Combine rank.
+--- Returns whether a Civil Protection or Overwatch player's name contains a Combine rank.
+--
+-- Works like `Schema:IsStringCombineRank` on the player's name, and is always `nil` for players outside
+-- the Combine factions.
+-- @param player [Player The player to check]
+-- @param rank [String The rank, or a `List` of ranks of which any may match]
+-- @param realRank=nil [Boolean When `true`, `EpU` matches only the literal `EpU` rank]
+-- @return [Any A truthy value (`true` or the match position) when the player has the rank, otherwise `nil`]
 function Schema:IsPlayerCombineRank(player, rank, realRank)
   local name = player:Name()
   local faction = player:GetFaction()
@@ -216,7 +275,13 @@ function Schema:IsPlayerCombineRank(player, rank, realRank)
   end
 end
 
--- A function to get a player's Combine rank.
+--- Returns a number for a player's Combine rank, used to sort and compare ranks.
+--
+-- Overwatch ranks are `0` (OWS) to `3` (other). Civil Protection ranks are `0` (RCT), `1`-`4` (04-01),
+-- `5` (no rank found), `6` (GHOST), `7` (OfC), `8` (EpU), `9` (DvL), `10` (CmD), `11` (SCN) and `12`
+-- (SYNTH scanner).
+-- @param player [Player The player]
+-- @return [Number The rank number; higher is more senior]
 function Schema:GetPlayerCombineRank(player)
   local faction = player:GetFaction()
 
@@ -261,39 +326,65 @@ function Schema:GetPlayerCombineRank(player)
   end
 end
 
--- A function to get if a faction is Combine.
+--- Returns whether a faction is Civil Protection or Overwatch.
+-- @param faction [String The faction name]
+-- @return [Boolean Whether the faction is `FACTION_MPF` or `FACTION_OTA`]
 function Schema:IsCombineFaction(faction)
   return (faction == FACTION_MPF or faction == FACTION_OTA)
 end
 
+--- Returns a player's loyalty points, from their `LoyaltyPoints` net var.
+-- @param player [Player The player]
+-- @return [Number The loyalty points, `0` by default]
 function Schema:GetLP(player)
   return player:GetNetVar('LoyaltyPoints', 0)
 end
 
+--- Returns a player's criminal points, from their `CriminalPoints` net var.
+-- @param player [Player The player]
+-- @return [Number The criminal points, `0` by default]
 function Schema:GetCP(player)
   return player:GetNetVar('CriminalPoints', 0)
 end
 
+--- Returns a player's citizen status, from their `CitizenStatus` net var.
+-- @param player [Player The player]
+-- @return [String A key of `Schema.CitizenStates`, `'Unknown'` by default]
 function Schema:GetCitizenStatus(player)
   return player:GetNetVar('CitizenStatus', 'Unknown')
 end
 
+--- Returns a player's residence, from their `Residence` net var.
+-- @param player [Player The player]
+-- @return [String The residence, `'Unknown'` by default]
 function Schema:GetResidence(player)
   return player:GetNetVar('Residence', 'Unknown')
 end
 
+--- Returns whether a player is jailed, from their `Jailed` net var.
+-- @param player [Player The player]
+-- @return [Boolean Whether the player is jailed, `false` by default]
 function Schema:GetJailed(player)
   return player:GetNetVar('Jailed', false)
 end
 
+--- Returns a player's job, from their `Job` net var.
+-- @param player [Player The player]
+-- @return [String The job, `'None'` by default]
 function Schema:GetJob(player)
   return player:GetNetVar('Job', 'None')
 end
 
+--- Returns a player's work points, from their `WorkPoints` net var.
+-- @param player [Player The player]
+-- @return [Number The work points, `0` by default]
 function Schema:GetWorkPoints(player)
   return player:GetNetVar('WorkPoints', 0)
 end
 
+--- Returns the colour of a player's citizen status from `Schema.CitizenStates`.
+-- @param player [Player The player]
+-- @return [Color The status colour, or white for an unknown status]
 function Schema:GetCitizenStatusColor(player)
   return self.CitizenStates[self:GetCitizenStatus(player)] or Color(255, 255, 255)
 end
@@ -301,6 +392,10 @@ end
 do
   local playerMeta = FindMetaTable('Player')
 
+  --- Returns whether the player belongs to Civil Protection, Overwatch or the administrator faction.
+  --
+  -- On the server the player must also have a character loaded.
+  -- @return [Boolean `true` when the player is Combine, otherwise `nil`]
   function playerMeta:IsCombine()
     if SERVER then
       if self:GetCharacter() then
@@ -319,6 +414,10 @@ do
     end
   end
 
+  --- Returns whether the player's faction is one of `Schema.CitizenFactions`.
+  --
+  -- The administrator faction counts as a citizen faction as well.
+  -- @return [Boolean Whether the player is a citizen]
   function playerMeta:IsCitizen()
     return table.HasValue(Schema.CitizenFactions, self:GetFaction())
   end

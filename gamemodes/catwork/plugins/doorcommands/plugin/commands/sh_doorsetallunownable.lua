@@ -13,7 +13,7 @@ COMMAND.flags = CMD_DEFAULT
 COMMAND.access = 'a'
 COMMAND.arguments = 1
 
--- Called when the command has been run.
+--- Makes every door on the map unownable with the given name and text, and saves the door data.
 function COMMAND:OnRun(player, arguments)
   good_doors = 0
 

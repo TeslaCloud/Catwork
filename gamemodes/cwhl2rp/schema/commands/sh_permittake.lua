@@ -10,7 +10,7 @@ local COMMAND = cw.command:New('PermitTake')
 COMMAND.tip = '#Command_Permittake_Description'
 COMMAND.flags = CMD_DEFAULT
 
--- Called when the command has been run.
+--- Lets a Combine unit above recruit take the custom permits of the citizen being looked at; takes no arguments.
 function COMMAND:OnRun(player, arguments)
   if player:IsCombine() then
     if !Schema:IsPlayerCombineRank(player, 'RCT') then

@@ -8,6 +8,7 @@
 
 local THEME = cw.theme:Begin()
 
+--- Registers the theme's `hl2_*` fonts (Exo 2, Kelly Slab and Roboto Condensed) with `cw.fonts:Add`.
 function THEME:CreateFonts()
   cw.fonts:Add('hl2_PlayerInfoText', {
     font		= 'Exo 2',
@@ -112,7 +113,9 @@ function THEME:CreateFonts()
   })
 end
 
--- Called when to initialize the theme.
+--- Sets the theme's colours, logo and font options and downloads its gradient and logo images.
+--
+-- The images are saved to `data/catwork/` with `Schema:DownloadMaterial`.
 function THEME:Initialize()
   cw.option:SetColor('information', Color('#8C16E6'))
   cw.option:SetColor('background', Color(0, 0, 0, 255))
@@ -153,7 +156,12 @@ local function DrawHL2Bar(x, y, w, h, amt, spacing, percentage, color)
   end
 end
 
--- Called just before a bar is drawn.
+--- Called just before a bar is drawn.
+--
+-- Draws a light frame for unnamed bars and a dark gradient for bars with a `uniqueID`, disables the
+-- default background and progress drawing and uppercases the bar text.
+-- @param barInfo [Map The bar: `x`, `y`, `width`, `height`, `uniqueID`, `text`, `drawBackground` and
+-- `drawProgress`, changed in place]
 function THEME.module:PreDrawBar(barInfo)
   if !barInfo.uniqueID then
     cdraw.DrawBox(barInfo.x - 2, barInfo.y - 2, barInfo.width + 4, barInfo.height + 4, Color(220, 220, 220), 0)
@@ -171,7 +179,11 @@ function THEME.module:PreDrawBar(barInfo)
   end
 end
 
--- Called just after a bar is drawn.
+--- Called just after a bar is drawn.
+--
+-- Draws the progress of unnamed bars as segmented blocks and of named bars as a coloured gradient
+-- labelled with the bar's `uniqueID`.
+-- @param barInfo [Map The bar: position, size, `color`, `progressWidth` and `uniqueID`]
 function THEME.module:PostDrawBar(barInfo)
   if !barInfo.uniqueID then
     DrawHL2Bar(barInfo.x, barInfo.y, barInfo.width, barInfo.height, 42, 4, barInfo.progressWidth, barInfo.color)
@@ -200,6 +212,12 @@ function THEME.module:PostDrawBar(barInfo)
   end
 end
 
+--- Called when the limit of a bar should be drawn.
+--
+-- Fills the part of the bar above `maxValue` in yellow with the translated `limitText`, when the bar has
+-- one.
+-- @param barInfo [Map The bar: position, size, `maximum`, `maxValue` and `limitText`]
+-- @return [Boolean Always `true`, replacing the default limit drawing]
 function THEME.module:DrawBarLimit(barInfo)
   local x, y, w, h = barInfo.x, barInfo.y, barInfo.width, barInfo.height
   local length = w * ((barInfo.maximum - barInfo.maxValue) / barInfo.maximum)
@@ -221,43 +239,57 @@ function THEME.module:DrawBarLimit(barInfo)
   return true
 end
 
--- Called just before the weapon selection info is drawn.
+--- Called just before the weapon selection info is drawn; draws a grey box instead of the default background.
+-- @param info [Map The box: `x`, `y`, `width`, `height` and `drawBackground`]
 function THEME.module:PreDrawWeaponSelectionInfo(info)
   draw.RoundedBox(2, info.x, info.y, info.width, info.height, Color(120, 120, 120, 120))
 
   info.drawBackground = false
 end
 
--- Called just before the local player's information is drawn.
+--- Called just before the local player's info box is drawn; hides the box's background.
+-- @param boxInfo [Map The box; `drawBackground` is set to `false`]
+-- @param information [List The info lines]
+-- @param subInformation [List The sub-info lines]
 function THEME.module:PreDrawPlayerInfo(boxInfo, information, subInformation)
   boxInfo.drawBackground = false
 end
 
--- Called after the character menu has initialized.
+--- Called after the character menu has initialized; the theme does nothing here.
+-- @param panel [Panel The character menu]
 function THEME.hooks:PostCharacterMenuInit(panel) end
 
--- Called every frame that the character menu is open.
+--- Called every frame the character menu is open; the theme does nothing here.
+-- @param panel [Panel The character menu]
 function THEME.hooks:PostCharacterMenuThink(panel) end
 
--- Called after the character menu is painted.
+--- Called after the character menu is painted; the theme does nothing here.
+-- @param panel [Panel The character menu]
 function THEME.hooks:PostCharacterMenuPaint(panel) end
 
--- Called after a character menu panel is opened.
+--- Called after a character menu panel is opened; the theme does nothing here.
+-- @param panel [Panel The opened panel]
 function THEME.hooks:PostCharacterMenuOpenPanel(panel) end
 
--- Called after the main menu has initialized.
+--- Called after the main menu has initialized; the theme does nothing here.
+-- @param panel [Panel The main menu]
 function THEME.hooks:PostMainMenuInit(panel) end
 
--- Called after the main menu is rebuilt.
+--- Called after the main menu is rebuilt; the theme does nothing here.
+-- @param panel [Panel The main menu]
 function THEME.hooks:PostMainMenuRebuild(panel) end
 
--- Called after a main menu panel is opened.
+--- Called after a main menu panel is opened; the theme does nothing here.
+-- @param panel [Panel The main menu]
+-- @param panelToOpen [Panel The opened panel]
 function THEME.hooks:PostMainMenuOpenPanel(panel, panelToOpen) end
 
--- Called after the main menu is painted.
+--- Called after the main menu is painted; the theme does nothing here.
+-- @param panel [Panel The main menu]
 function THEME.hooks:PostMainMenuPaint(panel) end
 
--- Called every frame that the main menu is open.
+--- Called every frame the main menu is open; the theme does nothing here.
+-- @param panel [Panel The main menu]
 function THEME.hooks:PostMainMenuThink(panel) end
 
 THEME.skin.frameBorder = Color(255, 255, 255, 255)
@@ -288,13 +320,19 @@ THEME.skin.fontButton = 'Exo8'
 THEME.skin.fontFrame = 'Exo8'
 THEME.skin.fontTab = 'Exo8'
 
--- A function to draw a generic background.
+--- Fills a rectangle with a colour; the skin's painters use it for backgrounds and borders.
+-- @param x [Number The X position]
+-- @param y [Number The Y position]
+-- @param w [Number The width]
+-- @param h [Number The height]
+-- @param color [Color The fill colour]
 function THEME.skin:DrawGenericBackground(x, y, w, h, color)
   surface.SetDrawColor(color)
   surface.DrawRect(x, y, w, h)
 end
 
--- Called when a frame is layed out.
+--- Lays out a frame's title in black uppercase text and its close button in the top-right corner.
+-- @param panel [Panel The `DFrame`]
 function THEME.skin:LayoutFrame(panel)
   panel.lblTitle:SetFont(self.fontFrame)
   panel.lblTitle:SetText(panel.lblTitle:GetText():upper())
@@ -309,7 +347,8 @@ function THEME.skin:LayoutFrame(panel)
   panel.lblTitle:SetSize(panel:GetWide() - 25, 20)
 end
 
--- Called when a form is schemed.
+--- Styles a form's label as white uppercase text with a shadow.
+-- @param panel [Panel The `DForm`]
 function THEME.skin:SchemeForm(panel)
   panel.Label:SetFont(self.fontFormLabel)
   panel.Label:SetText(panel.Label:GetText():upper())
@@ -317,7 +356,10 @@ function THEME.skin:SchemeForm(panel)
   panel.Label:SetExpensiveShadow(1, Color(0, 0, 0, 200))
 end
 
--- Called when a tab is painted.
+--- Paints a property sheet tab, darker when it is not the active one.
+-- @param panel [Panel The tab]
+-- @param w [Number The width]
+-- @param h [Number The height]
 function THEME.skin:PaintTab(panel, w, h)
   if panel:GetPropertySheet():GetActiveTab() == panel then
     self:DrawGenericBackground(0, 0, w - 2, h - 8, self.colTab)
@@ -326,7 +368,10 @@ function THEME.skin:PaintTab(panel, w, h)
   end
 end
 
--- Called when a list view is painted.
+--- Paints a list view's white background, when it has one.
+-- @param panel [Panel The `DListView`]
+-- @param w [Number The width]
+-- @param h [Number The height]
 function THEME.skin:PaintListView(panel, w, h)
   if panel.m_bBackground then
     surface.SetDrawColor(255, 255, 255, 255)
@@ -334,7 +379,8 @@ function THEME.skin:PaintListView(panel, w, h)
   end
 end
 
--- Called when a list view line is painted.
+--- Paints a list view line in grey, white when selected, and sets its columns' text colour to match.
+-- @param panel [Panel The list view line]
 function THEME.skin:PaintListViewLine(panel)
   local color = Color(50, 50, 50, 255)
   local textColor = Color(255, 255, 255, 255)
@@ -356,27 +402,36 @@ function THEME.skin:PaintListViewLine(panel)
   surface.DrawRect(0, 0, panel:GetWide(), panel:GetTall())
 end
 
--- Called when a list view label is schemed.
+--- Styles a list view label with white text and a small inset.
+-- @param panel [Panel The label]
 function THEME.skin:SchemeListViewLabel(panel)
   panel:SetTextInset(3)
   panel:SetTextColor(Color(255, 255, 255, 255))
 end
 
--- Called when a menu is painted.
+--- Paints a menu's near-black background.
+-- @param panel [Panel The `DMenu`]
+-- @param w [Number The width]
+-- @param h [Number The height]
 function THEME.skin:PaintMenu(panel, w, h)
   surface.SetDrawColor(Color(15, 15, 15, 255))
   panel:DrawFilledRect(0, 0, w, h)
 end
 
--- Called when a menu is painted over.
+--- Paints over a menu; overridden to draw nothing.
+-- @param panel [Panel The `DMenu`]
 function THEME.skin:PaintOverMenu(panel) end
 
--- Called when a menu option is schemed.
+--- Styles a menu option with white text.
+-- @param panel [Panel The menu option]
 function THEME.skin:SchemeMenuOption(panel)
   panel:SetFGColor(255, 255, 255, 255)
 end
 
--- Called when a menu option is painted.
+--- Paints a hovered menu option white with black text.
+-- @param panel [Panel The menu option]
+-- @param w [Number The width]
+-- @param h [Number The height]
 function THEME.skin:PaintMenuOption(panel, w, h)
   local textColor = Color(255, 255, 255, 255)
 
@@ -398,7 +453,10 @@ function THEME.skin:PaintMenuOption(panel, w, h)
   panel:SetFGColor(textColor)
 end
 
--- Called when a menu option is layed out.
+--- Sizes a menu option to its text plus padding, at least as wide as the menu, and places its sub-menu arrow.
+-- @param panel [Panel The menu option]
+-- @param w [Number The width]
+-- @param h [Number The height]
 function THEME.skin:LayoutMenuOption(panel, w, h)
   panel:SetFont(self.fontMenuOption)
   panel:SizeToContents()
@@ -412,7 +470,10 @@ function THEME.skin:LayoutMenuOption(panel, w, h)
   end
 end
 
--- Called when a button is painted.
+--- Paints a button with a black border, lighter when hovered and white with black text when pressed.
+-- @param panel [Panel The `DButton`]
+-- @param w [Number The width]
+-- @param h [Number The height]
 function THEME.skin:PaintButton(panel, w, h)
   local textColor = Color(255, 255, 255, 255)
 
@@ -436,7 +497,8 @@ function THEME.skin:PaintButton(panel, w, h)
   panel:SetFGColor(textColor)
 end
 
--- Called when a scroll bar grip is painted.
+--- Paints a scroll bar grip as a black box with a white border.
+-- @param panel [Panel The grip]
 function THEME.skin:PaintScrollBarGrip(panel)
   local w, h = panel:GetSize()
   local color = Color(255, 255, 255, 255)
@@ -445,6 +507,10 @@ function THEME.skin:PaintScrollBarGrip(panel)
   self:DrawGenericBackground(1, 1, w - 2, h - 2, Color(0, 0, 0, 255))
 end
 
+--- Paints a frame's dark body and a title bar in a darkened `information` colour.
+-- @param panel [Panel The `DFrame`]
+-- @param w [Number The width]
+-- @param h [Number The height]
 function THEME.skin:PaintFrame(panel, w, h)
   local color = cw.option:GetColor('information')
 
@@ -458,6 +524,10 @@ function THEME.skin:PaintFrame(panel, w, h)
   surface.DrawRect(0, 0, w, 24)
 end
 
+--- Paints a collapsible category's dark header and sets the header font.
+-- @param panel [Panel The `DCollapsibleCategory`]
+-- @param w [Number The width]
+-- @param h [Number The height]
 function THEME.skin:PaintCollapsibleCategory(panel, w, h)
   panel.Header:SetFont(cw.fonts:GetSize('hl2_dermafont', 16))
 

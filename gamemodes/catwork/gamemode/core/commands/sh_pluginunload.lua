@@ -13,7 +13,9 @@ COMMAND.flags = CMD_DEFAULT
 COMMAND.access = 's'
 COMMAND.arguments = 1
 
--- Called when the command has been run.
+--- Unloads a plugin; the argument is the plugin name or ID.
+--
+-- Players who may use this command are sent the new plugin state.
 function COMMAND:OnRun(player, arguments)
   local plugin = plugin.FindByID(arguments[1])
 

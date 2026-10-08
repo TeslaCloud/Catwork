@@ -14,7 +14,10 @@ COMMAND.arguments = 2
 COMMAND.optionalArguments = 1
 COMMAND.alias = { 'Transfer', 'PlyTransfer' }
 
--- Called when the command has been run.
+--- Moves the target character to another faction; arguments are the name, the faction and optional data.
+--
+-- The faction must define `OnTransferred`, which receives the optional third argument; the character is then
+-- reloaded in the new faction.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
 

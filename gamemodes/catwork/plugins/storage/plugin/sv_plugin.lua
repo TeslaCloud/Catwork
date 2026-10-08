@@ -27,7 +27,12 @@ netstream.Hook('ContainerPassword', function(player, data)
   end
 end)
 
--- A function to get a random item.
+--- Picks a random entry from `cwStorage.randomItems`, optionally limited to one item category.
+--
+-- Entries are `{ uniqueID, weight }` lists. The function keeps drawing until an entry matches, so check
+-- the category with `cwStorage:CategoryExists` first.
+-- @param uniqueID=nil [String Text the item's category must contain, ignoring case]
+-- @return [List The `{ uniqueID, weight }` entry, or `nil` when the list is empty]
 function cwStorage:GetRandomItem(uniqueID)
   if uniqueID then
     uniqueID = string.lower(uniqueID)
@@ -52,6 +57,9 @@ function cwStorage:GetRandomItem(uniqueID)
   return self:GetRandomItem(uniqueID, runs)
 end
 
+--- Returns whether any entry of `cwStorage.randomItems` has an item category containing the text.
+-- @param uniqueID [String Text to look for in item categories, ignoring case]
+-- @return [Boolean Whether a matching item exists; `false` when `uniqueID` is `nil`]
 function cwStorage:CategoryExists(uniqueID)
   if uniqueID then
     local uniqueID = string.lower(uniqueID)
@@ -70,11 +78,21 @@ function cwStorage:CategoryExists(uniqueID)
   end
 end
 
--- Saving and loading are now handled by Static Entities plugin.
+--- Does nothing; containers are saved by the Static Entities plugin.
+-- @deprecation [Saving and loading are handled by the Static Entities plugin.]
 function cwStorage:SaveStorage() end
+--- Does nothing; containers are loaded by the Static Entities plugin.
+-- @deprecation [Saving and loading are handled by the Static Entities plugin.]
 function cwStorage:LoadStorage() end
 
--- A function to open a container for a player.
+--- Opens a container's storage for a player.
+--
+-- Creates the container's inventory and cash the first time, names the storage after the entity's
+-- custom name or its type, sends the container's message to the player and opens it with
+-- `cw.storage:Open` within a range of 192 units. Cash moved in or out is stored on the entity.
+-- @param player [Player The player opening the container]
+-- @param entity [Entity The container]
+-- @param weight=8 [Number The container's weight capacity]
 function cwStorage:OpenContainer(player, entity, weight)
   local inventory
   local cash = 0

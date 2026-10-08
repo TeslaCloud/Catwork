@@ -15,7 +15,7 @@ COMMAND.optionalArguments = 1
 COMMAND.access = 'o'
 COMMAND.alias = { 'ForceCharFallover' }
 
--- Called when the command has been run.
+--- Makes the target player fall over; arguments are the player name and optional seconds (2 to 30).
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
 

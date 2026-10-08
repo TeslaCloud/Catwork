@@ -10,7 +10,7 @@ local COMMAND = cw.command:New('AnimWindow')
 COMMAND.tip = '#Command_Animwindow_Description'
 COMMAND.flags = CMD_DEFAULT
 
--- Called when the command has been run.
+--- Toggles the human player looking out of the window or wall they are facing.
 function COMMAND:OnRun(player, arguments)
   local curTime = CurTime()
 

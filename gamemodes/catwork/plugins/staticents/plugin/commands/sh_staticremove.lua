@@ -11,7 +11,7 @@ COMMAND.tip = '#Command_Unstatic_Description'
 COMMAND.access = 'a'
 COMMAND.alias = { 'StaticRemove', 'StaticPropRemove' }
 
--- Called when the command has been run.
+--- Makes the entity the player is looking at non-static through the `PlayerMakeStatic` hook.
 function COMMAND:OnRun(player, arguments)
   plugin.Call('PlayerMakeStatic', player, false)
 end

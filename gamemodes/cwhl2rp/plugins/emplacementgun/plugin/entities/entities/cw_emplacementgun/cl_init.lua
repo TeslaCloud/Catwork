@@ -82,6 +82,7 @@ end
 
 net.Receive('ZAR3_S', ZAR3_S)
 
+--- Draws the gun's model.
 function ENT:Draw()
   self:DrawModel()
 end

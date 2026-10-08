@@ -11,7 +11,7 @@ COMMAND.access = 'D'
 COMMAND.arguments = 1
 COMMAND.alias = { 'DoorRemovePlayer' }
 
--- Called when the command has been run.
+--- Makes the door the player is looking at vacant, with the given name, using `cwPermaDoors:ResetPermaDoor`.
 function COMMAND:OnRun(player, arguments)
   local door = player:GetEyeTraceNoCursor().Entity
   local doorName = arguments[1]

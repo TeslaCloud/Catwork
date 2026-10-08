@@ -6,12 +6,14 @@
   with contributions from Cloud Sixteen community.
 --]]
 
--- Called when the local player should be drawn.
+--- Called to decide whether the local player is drawn; draws them while they are in a stance.
+-- @return [Boolean Whether the local player is in a stance]
 function cwEmoteAnims:ShouldDrawLocalPlayer()
   return self:IsPlayerInStance(cw.client)
 end
 
--- Called when a player's animation is updated.
+--- Called when a player's animation is updated; renders an emoting player at their stance angles.
+-- @param player [Player The player being animated]
 function cwEmoteAnims:UpdateAnimation(player)
   local stanceAng = player:GetNetVar('StanceAng')
 
@@ -20,7 +22,11 @@ function cwEmoteAnims:UpdateAnimation(player)
   end
 end
 
--- Called when the calc view table should be adjusted.
+--- Called when the view table is adjusted; moves the camera out of the local player's head while they
+-- emote.
+--
+-- Idle stances place the camera just in front of the head, other emotes up to 128 units behind it.
+-- @param view [Map The view table; `origin` is changed in place]
 function cwEmoteAnims:CalcViewAdjustTable(view)
   if self:IsPlayerInStance(cw.client) and cw.client:GetNetVar('StanceAng') then
     local defaultOrigin = view.origin

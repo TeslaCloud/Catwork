@@ -11,7 +11,7 @@ ENT.PrintName = '#Notepad_Title'
 ENT.Spawnable = false
 ENT.AdminSpawnable = false
 
--- Called when the datatables are setup.
+--- Sets up the networked bool 0 (`note`), which is true once the notepad has text.
 function ENT:SetupDataTables()
   self:DTVar('Bool', 0, 'note')
 end

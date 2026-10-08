@@ -61,6 +61,10 @@ end
   But we'd recommend simply renaming the schema though.
 --]]
 
+--- Called by the engine to get the gamemode name shown in the server browser.
+--
+-- Catwork returns `NS - ` followed by the schema's gamemode name from `cw.core:GetSchemaGamemodeName`.
+-- @return [String The game description]
 function GM:GetGameDescription()
   local schemaName = cw.core:GetSchemaGamemodeName()
   return 'NS - '..schemaName
@@ -97,10 +101,20 @@ else
 end
 
 if !game.GetWorld then
+  --- Returns the world entity; defined only when the engine does not provide `game.GetWorld`.
+  -- @return [Entity The world entity, `Entity(0)`]
   game.GetWorld = function() return Entity(0) end
 end
 
 if SERVER then
+  --- Adds a ban to the in-memory ban list without saving it to the database.
+  --
+  -- Used at boot to apply hard-coded bans. The entry is written to `cw.bans.stored`, so it is lost on restart.
+  -- @param name [String Steam name to show for the ban]
+  -- @param steamId [String Steam ID of the banned player]
+  -- @param duration [Number Ban length in seconds, or the unban time when `fullTime` is set]
+  -- @param reason [String Reason for the ban]
+  -- @param fullTime=nil [Boolean Whether `duration` is already an absolute `os.time` timestamp]
   function SimpleBan(name, steamId, duration, reason, fullTime)
     if !fullTime then
       duration = os.time() + duration

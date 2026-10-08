@@ -8,7 +8,9 @@
 
 local PANEL = {}
 
--- A function to add a text entry.
+--- Adds a dark label followed by a text entry below it.
+-- @param strLabel [String Label text]
+-- @return [Panel The `DTextEntry`, Panel The label]
 function PANEL:TextEntry(strLabel)
   local labelPanel = vgui.Create('DLabel', self)
 

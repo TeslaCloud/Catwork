@@ -8,7 +8,10 @@
 
 local PANEL = {}
 
--- Called when the panel is initialized.
+--- Builds the storage window with a container list and, unless the storage is one-sided, the player's
+-- inventory list next to it.
+--
+-- Closing the window runs the `StorageClose` command.
 function PANEL:Init()
   self:SetTitle(cw.storage:GetName())
   self:SetDeleteOnClose(false)
@@ -38,7 +41,25 @@ function PANEL:Init()
   cw.core:SetNoticePanel(self)
 end
 
--- A function to rebuild a panel.
+--- Rebuilds one side of the storage window: a model preview, the weight and space bars, a cash transfer
+-- form and the items that can be moved, grouped by category.
+--
+-- Only items the storage lets the player take (container side) or give (inventory side) are listed,
+-- each as a `cwStorageItem`. The cash form appears when cash is enabled and the side holds cash; it runs
+-- the `StorageTakeCash` or `StorageGiveCash` command. Runs the `PlayerPreRebuildStorage` hook with the
+-- panel before building it and `PlayerStorageRebuilt` with the panel and the category list after
+-- sorting the items.
+--
+-- @param storagePanel [Panel The `cwPanelList` to fill]
+-- @param storageType [String `'Container'` or `'Inventory'`]
+-- @param usedWeight [Number Weight already used, stored on the panel; when `nil`, the weight of the cash and
+-- listed items is stored instead]
+-- @param weight [Number Maximum weight of the side]
+-- @param usedSpace [Number Space already used, stored on the panel; when `nil`, the space of the cash and
+-- listed items is stored instead]
+-- @param space [Number Maximum space of the side]
+-- @param cash [Number Cash held by the side]
+-- @param inventory [Inventory Items held by the side]
 function PANEL:RebuildPanel(storagePanel, storageType, usedWeight, weight, usedSpace, space, cash, inventory)
   storagePanel:Clear(true)
     storagePanel.cash = cash
@@ -229,7 +250,8 @@ function PANEL:RebuildPanel(storagePanel, storageType, usedWeight, weight, usedS
   end
 end
 
--- A function to rebuild the panel.
+--- Rebuilds the container side from `cw.storage` and, unless the storage is one-sided, the player's
+-- inventory side.
 function PANEL:Rebuild()
   self:RebuildPanel(self.containerPanel, 'Container', nil,
     cw.storage:GetWeight(),
@@ -252,7 +274,7 @@ function PANEL:Rebuild()
   end
 end
 
--- Called each frame.
+--- Keeps the window centred and rebuilds it when the player's cash changes.
 function PANEL:Think()
   self:SetSize(ScrW() * 0.5, ScrH() * 0.75)
   self:SetPos((ScrW() / 2) - (self:GetWide() / 2), (ScrH() / 2) - (self:GetTall() / 2))
@@ -263,7 +285,7 @@ function PANEL:Think()
   end
 end
 
--- Called when the layout should be performed.
+--- Lays out the frame with the container list on the left half and the inventory list on the right.
 function PANEL:PerformLayout(w, h)
   DFrame.PerformLayout(self)
 
@@ -282,7 +304,11 @@ vgui.Register('cwStorage', PANEL, 'DFrame')
 
 local PANEL = {}
 
--- Called when the panel is initialized.
+--- Builds a storage item icon (`cwStorageItem`) from the parent's `itemData` or the global
+-- `CURRENT_ITEM_DATA`.
+--
+-- Clicking the icon moves the item with the `StorageGiveItem` or `StorageTakeItem` command, at most once
+-- a second.
 function PANEL:Init()
   local itemData = self:GetParent().itemData or CURRENT_ITEM_DATA
 
@@ -311,7 +337,7 @@ function PANEL:Init()
   self.cachedInfo = { model = model, skin = skin }
 end
 
--- Called each frame.
+--- Refreshes the storage item's tooltip and color, and its model when the item's icon changes.
 function PANEL:Think()
   self.spawnIcon:SetMarkupToolTip(item.GetMarkupToolTip(self.itemTable))
   self.spawnIcon:SetColor(self.itemTable.color)
@@ -330,23 +356,31 @@ vgui.Register('cwStorageItem', PANEL, 'DPanel')
 
 local PANEL = {}
 
+--- Sets the maximum weight shown by the weight bar.
+-- @param weight [Number Maximum weight]
 function PANEL:SetWeight(weight)
   self.weight = weight
 end
 
+--- Returns the maximum weight shown by the weight bar.
+-- @return [Number Maximum weight, or 0 when unset]
 function PANEL:GetWeight()
   return self.weight or 0
 end
 
+--- Sets the used weight shown by the weight bar.
+-- @param usedWeight [Number Weight in use]
 function PANEL:SetUsedWeight(usedWeight)
   self.usedWeight = usedWeight
 end
 
+--- Returns the used weight shown by the weight bar.
+-- @return [Number Weight in use, or 0 when unset]
 function PANEL:GetUsedWeight()
   return self.usedWeight or 0
 end
 
--- Called when the panel is initialized.
+--- Creates the storage weight bar (`cwStorageWeight`) and its label.
 function PANEL:Init()
   local colorWhite = cw.option:GetColor('white')
 
@@ -379,7 +413,7 @@ function PANEL:Init()
   end
 end
 
--- Called each frame.
+--- Updates the weight bar's label with the used and maximum weight.
 function PANEL:Think()
   self.spaceUsed:SetSize(self:GetWide() - 2, self:GetTall() - 2)
   self.weightLabel:SetText(math.floor(self:GetUsedWeight())..'/'..math.floor(self:GetWeight())..L('#Unit_Kilograms'))
@@ -394,23 +428,31 @@ vgui.Register('cwStorageWeight', PANEL, 'DPanel')
 
 local PANEL = {}
 
+--- Sets the maximum space shown by the space bar.
+-- @param space [Number Maximum space]
 function PANEL:SetSpace(space)
   self.maxSpace = space
 end
 
+--- Returns the maximum space shown by the space bar.
+-- @return [Number Maximum space, or 0 when unset]
 function PANEL:GetSpace()
   return self.maxSpace or 0
 end
 
+--- Sets the used space shown by the space bar.
+-- @param usedSpace [Number Space in use]
 function PANEL:SetUsedSpace(usedSpace)
   self.usedSpace = usedSpace
 end
 
+--- Returns the used space shown by the space bar.
+-- @return [Number Space in use, or 0 when unset]
 function PANEL:GetUsedSpace()
   return self.usedSpace or 0
 end
 
--- Called when the panel is initialized.
+--- Creates the storage space bar (`cwStorageSpace`) and its label.
 function PANEL:Init()
   local colorWhite = cw.option:GetColor('white')
 
@@ -444,7 +486,7 @@ function PANEL:Init()
   end
 end
 
--- Called each frame.
+--- Updates the space bar's label with the used and maximum space.
 function PANEL:Think()
   self.spaceUsed:SetSize(self:GetWide() - 2, self:GetTall() - 2)
   self.space:SetText(math.floor(self:GetUsedSpace())..'/'..math.floor(self:GetSpace())..L('#Unit_Litres'))

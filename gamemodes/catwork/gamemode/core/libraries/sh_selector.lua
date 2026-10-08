@@ -15,7 +15,23 @@ cw.selector.COLOR_RED = Color(215, 50, 50, 255)
 --[[ Set the __index meta function of the class. --]]
 local CLASS_TABLE = { __index = CLASS_TABLE }
 
--- A function to start creating a new selector.
+--- Creates a new selector, a numbered list of options the player picks with number keys.
+--
+-- Build it with `CLASS_TABLE:AddText` and `CLASS_TABLE:AddOption`, then call `CLASS_TABLE:Create`.
+-- On the server the selector is sent to its players, who answer through the callback.
+--
+-- ```
+-- local selector = cw.selector:New()
+--   selector:AddText('Choose a ration:')
+--   selector:AddOption('Standard')
+--   selector:AddOption('Loyalist', cw.selector.COLOR_GREEN)
+--   selector:SetPlayer(player)
+--   selector:SetCallback(function(player, page, key, text)
+--   end)
+-- selector:Create()
+-- ```
+--
+-- @return [Map The new selector object]
 function cw.selector:New()
   local selector = cw.core:NewMetaTable(CLASS_TABLE)
 
@@ -35,22 +51,34 @@ function cw.selector:New()
   return selector
 end
 
--- A function to set whether text should be paginated.
+--- Sets whether text lines also start a new page once a page has six entries.
+--
+-- @param bPaginateText [Boolean Whether text is paginated]
 function CLASS_TABLE:SetPaginateText(bPaginateText)
   self.paginateText = bPaginateText
 end
 
--- A function to set the selector callback.
+--- Sets the function called when an option is chosen.
+--
+-- On the server it is called as `Callback(player, page, key, text)`; on the client as
+-- `Callback(page, key, text)`. Keys 1 to 6 are options, 7 is Back, 8 is Next and 9 is Exit.
+--
+-- @param Callback [Function Called with the chosen option]
 function CLASS_TABLE:SetCallback(Callback)
   self.Callback = Callback
 end
 
--- A function to set whether the selector can be exited.
+--- Sets whether the selector has an Exit option.
+--
+-- @param bCanExit [Boolean Whether the selector can be exited]
 function CLASS_TABLE:SetCanExit(bCanExit)
   self.canExit = bCanExit
 end
 
--- A function to add text to the selector.
+--- Adds a line of text that cannot be chosen.
+--
+-- @param text [String Text to show; converted with `tostring`]
+-- @param color=nil [Color Text color; `cw.selector.COLOR_CREAM` when `nil`]
 function CLASS_TABLE:AddText(text, color)
   if text then text = tostring(text) end
 
@@ -74,7 +102,12 @@ function CLASS_TABLE:AddText(text, color)
   end
 end
 
--- A function to add an option to the selector.
+--- Adds a numbered option.
+--
+-- On the client a new page starts after every six options.
+--
+-- @param text [String Option text; converted with `tostring`]
+-- @param color=nil [Color Text color; `cw.selector.COLOR_ORANGE` when `nil`]
 function CLASS_TABLE:AddOption(text, color)
   if text then text = tostring(text) end
 
@@ -105,7 +138,11 @@ if SERVER then
   local active = cw.selector.active or {}
   cw.selector.active = active
 
-  -- A function to set the selector's player.
+  --- Sets which players the selector is sent to.
+  --
+  -- Without a call, `CLASS_TABLE:Create` sends it to every player.
+  --
+  -- @param player [Player A single player, or a List of players]
   function CLASS_TABLE:SetPlayer(player)
     if type(player) != 'table' then
       self.player = { player }
@@ -114,7 +151,11 @@ if SERVER then
     end
   end
 
-  -- A function to create the selector.
+  --- Sends the selector to its players and waits for their choice.
+  --
+  -- Falls back to every player when `CLASS_TABLE:SetPlayer` was not called, but does so through the
+  -- undefined `g_Player`, which errors. Choosing an option other than Back, Next or Exit ends the
+  -- selector for that player.
   function CLASS_TABLE:Create()
     if !self.player then
       self.player = g_Player.GetAll()
@@ -159,7 +200,13 @@ else
     additive = false
   })
 
-  -- A function to select a selector's option by key.
+  --- Chooses an option on the current page by its number key.
+  --
+  -- Calls the callback, then goes back or forward a page for keys 7 and 8.
+  --
+  -- @param key [Number Number key that was pressed]
+  -- @return [Boolean `true` when the selector should close, `false` after changing page]
+  -- @warning [Internal] Called by the player option set up in `CLASS_TABLE:Create`.
   function CLASS_TABLE:Select(key)
     local bSuccess = false
     local tOption = nil
@@ -200,21 +247,25 @@ else
     end
   end
 
-  -- A function to go to the selector's next page.
+  --- Shows the selector's next page, if there is one.
   function CLASS_TABLE:NextPage()
     if self.pages[self.page + 1] then
       self.page = self.page + 1 self:Create()
     end
   end
 
-  -- A function to go to the selector's previous page.
+  --- Shows the selector's previous page, if there is one.
   function CLASS_TABLE:PreviousPage()
     if self.pages[self.page - 1] then
       self.page = self.page - 1 self:Create()
     end
   end
 
-  -- A function to create the selector.
+  --- Shows the selector on the local player's screen.
+  --
+  -- Adds the Back, Next and Exit options to the current page the first time it is shown. Uses
+  -- `cw.client:AddPlayerOption`, which is not defined in Catwork, so this errors unless a plugin
+  -- provides it.
   function CLASS_TABLE:Create()
     if !self.isCreated then
       self.page = 1 self.isCreated = true

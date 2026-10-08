@@ -8,7 +8,9 @@
 
 local PANEL = {}
 
--- Called when the panel is initialized.
+--- Builds the full-screen quiz with its question list and the Disconnect and Continue buttons.
+--
+-- Continue sends the `QuizCompleted` netstream; the server decides whether the answers pass.
 function PANEL:Init()
   local smallTextFont = cw.option:GetFont('menu_text_small')
   local scrH = ScrH()
@@ -55,7 +57,7 @@ function PANEL:Init()
   self.continueButton:SetPos((scrW * 0.8) - (self.continueButton:GetWide() / 2), scrH * 0.9)
 end
 
--- Called when the panel is painted.
+--- Blurs the background and draws a black backdrop over the screen.
 function PANEL:Paint(w, h)
   cw.core:RegisterBackgroundBlur(self, self.createTime)
   cw.core:DrawSimpleGradientBox(0, 0, 0, ScrW(), ScrH(), Color(0, 0, 0, 255))
@@ -63,7 +65,9 @@ function PANEL:Paint(w, h)
   return true
 end
 
--- A function to populate the panel.
+--- Fills the quiz with a combo box for each question from `cw.quiz:GetQuestions`, sorted by question text.
+--
+-- Each answer is sent to the server with the `QuizAnswer` netstream as soon as it is picked.
 function PANEL:Populate()
   local smallTextFont = cw.option:GetFont('menu_text_small')
   local quizQuestions = cw.quiz:GetQuestions()
@@ -117,7 +121,7 @@ function PANEL:Populate()
   end
 end
 
--- Called when the layout should be performed.
+--- Centres the question list on the screen at half the screen width.
 function PANEL:PerformLayout(w, h)
   local scrW = ScrW()
   local scrH = ScrH()
@@ -130,7 +134,7 @@ function PANEL:PerformLayout(w, h)
   derma.SkinHook('Layout', 'Panel', self)
 end
 
--- Called each frame.
+--- Lays the quiz out again each frame.
 function PANEL:Think()
   self:InvalidateLayout(true)
 end

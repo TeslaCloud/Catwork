@@ -10,7 +10,7 @@ local COMMAND = cw.command:New('AnimDeny')
 COMMAND.tip = '#Command_Animdeny_Description'
 COMMAND.flags = CMD_DEFAULT
 
--- Called when the command has been run.
+--- Plays the Civil Protection harass gesture (`harassfront2`) on a player who is not in a stance emote.
 function COMMAND:OnRun(player, arguments)
   local curTime = CurTime()
 

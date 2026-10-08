@@ -60,7 +60,7 @@ SWEP.IronSightAng = Vector(0, 0, 0)
 SWEP.NeverRaised = true
 SWEP.NoViewDraw = true
 
--- Called when the player attempts to primary fire.
+--- Toggles the owner's flashlight on the server.
 function SWEP:PrimaryAttack()
   if SERVER then
     if self.Owner:FlashlightIsOn() then
@@ -71,5 +71,5 @@ function SWEP:PrimaryAttack()
   end
 end
 
--- Called when the player attempts to secondary fire.
+--- Does nothing; the flashlight has no secondary fire.
 function SWEP:SecondaryAttack() end

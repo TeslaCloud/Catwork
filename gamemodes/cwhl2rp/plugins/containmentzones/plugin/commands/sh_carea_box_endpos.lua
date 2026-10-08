@@ -5,6 +5,9 @@ COMMAND.flags = CMD_DEFAULT
 COMMAND.access = 's'
 COMMAND.arguments = 0
 
+--- Sets the end corner of the box zone being placed to the position the player is looking at.
+--
+-- Requires the start corner to be set first with `/ContainmentBoxStartPos`.
 function COMMAND:OnRun(player, arguments)
   local trace = player:GetEyeTraceNoCursor()
 

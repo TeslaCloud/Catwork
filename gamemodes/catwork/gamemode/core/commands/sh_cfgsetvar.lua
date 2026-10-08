@@ -13,7 +13,10 @@ COMMAND.access = 's'
 COMMAND.arguments = 1
 COMMAND.optionalArguments = 1
 
--- Called when the command has been run.
+--- Sets a config variable and announces the change; arguments are the key, the value and an optional map name.
+--
+-- Static keys cannot be changed, and private values are shown as asterisks in the announcement. With a map name
+-- the value is set only for that map.
 function COMMAND:OnRun(player, arguments)
   local key = arguments[1]
   local value = arguments[2] or ''

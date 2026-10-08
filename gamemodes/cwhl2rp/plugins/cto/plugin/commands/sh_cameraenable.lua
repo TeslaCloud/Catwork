@@ -6,7 +6,9 @@ COMMAND.text = '#Command_Cameraenable_Syntax'
 COMMAND.flags = CMD_DEFAULT
 COMMAND.arguments = 1
 
--- Called when the command has been run.
+--- Enables the idle Combine camera with the given entity index.
+--
+-- Requires a Combine player of rank SCN, OfC, EpU, DvL or SeC, or an Overwatch soldier.
 function COMMAND:OnRun(player, arguments)
   if player:IsCombine() then
     if Schema:IsPlayerCombineRank(player, { 'SCN', 'OfC', 'EpU', 'DvL', 'SeC' }, true)

@@ -6,7 +6,7 @@
   with contributions from Cloud Sixteen community.
 --]]
 
--- Called when Clockwork has loaded all of the entities.
+--- Called after Catwork has loaded all of its entities; removes map vehicles when `remove_map_physics` is on.
 function cwCleanedMaps:ClockworkInitPostEntity()
   if config.Get('remove_map_physics'):Get() then
     for k, v in pairs(ents.FindByClass('prop_vehicle*')) do
@@ -15,7 +15,12 @@ function cwCleanedMaps:ClockworkInitPostEntity()
   end
 end
 
--- Called when the map has loaded all the entities.
+--- Called after the map has loaded all of its entities; strips unwanted map entities.
+--
+-- Removes physics props when the `remove_map_physics` config is on, gun store buttons, every class in
+-- `cwCleanedMaps.entityList` (chargers and map weapons) and soda machines near a fixed position, plus
+-- map-specific fixes for `rp_tb_city45_v02n`, `md_venetianredux_b2` and `rp_evocity_v2d` (where it spawns
+-- three building props as barricades). A second later it removes a few named entities.
 function cwCleanedMaps:InitPostEntity()
   local gunButtons = { 'gundoor', 'smgbutton', 'shotgunbutton', 'pistbutton', 'gunstore' }
   local position = Vector(-1836.6316, 244.3225, 724.9510)

@@ -13,7 +13,7 @@ COMMAND.flags = CMD_DEFAULT
 COMMAND.access = 'o'
 COMMAND.arguments = 1
 
--- Called when the command has been run.
+--- Sets the caller's voicemail reply for private messages; the argument is the text, or `none` to remove it.
 function COMMAND:OnRun(player, arguments)
   if arguments[1] == 'none' then
     player:SetCharacterData('Voicemail', nil)

@@ -9,7 +9,10 @@ ITEM.category = 'Medical'
 ITEM.business = true
 ITEM.description = '#Item_BlindnessSurgerykit_Description'
 
--- Called when a player uses the item.
+--- Operates on the player being looked at, curing blindness or colour blindness.
+--
+-- The kit is used up even when the patient has neither. Returns `false`, keeping the kit, when no
+-- player is looked at.
 function ITEM:OnUse(player, itemEntity)
   local lookingPly = player:GetEyeTrace().Entity
 
@@ -30,5 +33,5 @@ function ITEM:OnUse(player, itemEntity)
   end
 end
 
--- Called when a player drops the item.
+--- Lets the item be dropped, with no extra effect.
 function ITEM:OnDrop(player, position) end

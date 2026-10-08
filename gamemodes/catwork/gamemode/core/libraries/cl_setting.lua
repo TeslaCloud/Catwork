@@ -10,7 +10,24 @@ library.New('setting', cw)
 
 cw.setting.stored = cw.setting.stored or {}
 
--- A function to add a number slider setting.
+--- Adds a slider to the settings menu that changes a number console variable.
+--
+-- A setting is keyed by its console variable, so adding another setting for the
+-- same variable replaces it.
+--
+-- ```
+-- cw.setting:AddNumberSlider('#Framework', '#HeadbobAmount', 'cwHeadbobScale', 0, 1, 1, '#HeadbobAmountDesc')
+-- ```
+--
+-- @param category [String Category of the settings menu, or a language phrase]
+-- @param text [String Label of the setting, or a language phrase]
+-- @param conVar [String Name of the console variable]
+-- @param minimum [Number Lowest value]
+-- @param maximum [Number Highest value]
+-- @param decimals [Number Number of decimal places]
+-- @param toolTip=nil [String Tooltip of the setting, or a language phrase]
+-- @param Condition=nil [Function Returns whether the setting is shown; shown always when `nil`]
+-- @return [String Index of the setting, which is `conVar`]
 function cw.setting:AddNumberSlider(category, text, conVar, minimum, maximum, decimals, toolTip, Condition)
 //	local index = string.lower(string.gsub(category.."|"..text, " ", "_"))
   local index = conVar
@@ -30,7 +47,14 @@ function cw.setting:AddNumberSlider(category, text, conVar, minimum, maximum, de
   return index
 end
 
--- A function to add a multi-choice setting.
+--- Adds a drop-down list to the settings menu that sets a console variable.
+-- @param category [String Category of the settings menu, or a language phrase]
+-- @param text [String Label of the setting, or a language phrase]
+-- @param conVar [String Name of the console variable]
+-- @param options=nil [Map Values the variable is set to, keyed by the text shown for them]
+-- @param toolTip=nil [String Tooltip of the setting, or a language phrase]
+-- @param Condition=nil [Function Returns whether the setting is shown; shown always when `nil`]
+-- @return [String Index of the setting, which is `conVar`]
 function cw.setting:AddMultiChoice(category, text, conVar, options, toolTip, Condition)
 //	local index = string.lower(string.gsub(category.."|"..text, " ", "_"))
   local index = conVar
@@ -54,7 +78,16 @@ function cw.setting:AddMultiChoice(category, text, conVar, options, toolTip, Con
   return index
 end
 
--- A function to add a number wang setting.
+--- Adds a number box to the settings menu that changes a number console variable.
+-- @param category [String Category of the settings menu, or a language phrase]
+-- @param text [String Label of the setting, or a language phrase]
+-- @param conVar [String Name of the console variable]
+-- @param minimum [Number Lowest value]
+-- @param maximum [Number Highest value]
+-- @param decimals [Number Number of decimal places]
+-- @param toolTip=nil [String Tooltip of the setting, or a language phrase]
+-- @param Condition=nil [Function Returns whether the setting is shown; shown always when `nil`]
+-- @return [String Index of the setting, which is `conVar`]
 function cw.setting:AddNumberWang(category, text, conVar, minimum, maximum, decimals, toolTip, Condition)
 //	local index = string.lower(string.gsub(category.."|"..text, " ", "_"))
   local index = conVar
@@ -74,7 +107,13 @@ function cw.setting:AddNumberWang(category, text, conVar, minimum, maximum, deci
   return index
 end
 
--- A function to add a text entry setting.
+--- Adds a text box to the settings menu that sets a string console variable.
+-- @param category [String Category of the settings menu, or a language phrase]
+-- @param text [String Label of the setting, or a language phrase]
+-- @param conVar [String Name of the console variable]
+-- @param toolTip=nil [String Tooltip of the setting, or a language phrase]
+-- @param Condition=nil [Function Returns whether the setting is shown; shown always when `nil`]
+-- @return [String Index of the setting, which is `conVar`]
 function cw.setting:AddTextEntry(category, text, conVar, toolTip, Condition)
 //	local index = string.lower(string.gsub(category.."|"..text, " ", "_"))
   local index = conVar
@@ -91,7 +130,20 @@ function cw.setting:AddTextEntry(category, text, conVar, toolTip, Condition)
   return index
 end
 
--- A function to add a check box setting.
+--- Adds a check box to the settings menu that toggles a console variable.
+--
+-- ```
+-- cw.setting:AddCheckBox('#AdminESP', '#EnableAdminESP', 'cwAdminESP', '#EnableAdminESPDesc', function()
+--   return cw.player:IsAdmin(cw.client)
+-- end)
+-- ```
+--
+-- @param category [String Category of the settings menu, or a language phrase]
+-- @param text [String Label of the setting, or a language phrase]
+-- @param conVar [String Name of the console variable]
+-- @param toolTip=nil [String Tooltip of the setting, or a language phrase]
+-- @param Condition=nil [Function Returns whether the setting is shown; shown always when `nil`]
+-- @return [String Index of the setting, which is `conVar`]
 function cw.setting:AddCheckBox(category, text, conVar, toolTip, Condition)
 //	local index = string.lower(string.gsub(category.."|"..text, " ", "_"))
   local index = conVar
@@ -108,7 +160,16 @@ function cw.setting:AddCheckBox(category, text, conVar, toolTip, Condition)
   return index
 end
 
--- A function to add a color mixer setting.
+--- Adds a color picker to the settings menu.
+--
+-- The color is stored in four console variables named after `conVar` with `R`,
+-- `G`, `B` and `A` appended.
+-- @param category [String Category of the settings menu, or a language phrase]
+-- @param text [String Label of the setting, or a language phrase]
+-- @param conVar [String Prefix of the console variable names]
+-- @param toolTip=nil [String Tooltip of the setting, or a language phrase]
+-- @param Condition=nil [Function Returns whether the setting is shown; shown always when `nil`]
+-- @return [String Index of the setting, which is `conVar`]
 function cw.setting:AddColorMixer(category, text, conVar, toolTip, Condition)
 //	local index = string.lower(string.gsub(category.."|"..text, " ", "_"))
   local index = conVar
@@ -125,12 +186,14 @@ function cw.setting:AddColorMixer(category, text, conVar, toolTip, Condition)
   return index
 end
 
--- A function to remove a setting by its index.
+--- Removes a setting by its index.
+-- @param index [String Index returned when the setting was added]
 function cw.setting:RemoveByIndex(index)
   self.stored[index] = nil
 end
 
--- A function to remove a setting by its convar.
+--- Removes every setting bound to a console variable.
+-- @param conVar [String Name of the console variable]
 function cw.setting:RemoveByConVar(conVar)
   for k, v in pairs(self.stored) do
     if v.conVar == conVar then
@@ -139,7 +202,14 @@ function cw.setting:RemoveByConVar(conVar)
   end
 end
 
--- A function to remove a setting.
+--- Removes every setting that matches all of the given fields.
+--
+-- A `nil` field matches anything, so `cw.setting:Remove('#AdminESP')` removes a whole category.
+-- @param category=nil [String Category of the setting]
+-- @param text=nil [String Label of the setting]
+-- @param class=nil [String Kind of setting: `'numberSlider'`, `'multiChoice'`, `'numberWang'`,
+-- `'textEntry'`, `'checkBox'` or `'colorMixer'`]
+-- @param conVar=nil [String Name of the console variable]
 function cw.setting:Remove(category, text, class, conVar)
   for k, v in pairs(self.stored) do
     if (!category or v.category == category)
@@ -151,6 +221,10 @@ function cw.setting:Remove(category, text, class, conVar)
   end
 end
 
+--- Adds Catwork's own settings: framework options, language, theme and admin ESP.
+--
+-- Called from the `ClockworkInitialized` hook. Theme choice is only shown when
+-- the `modify_themes` config is on, and the ESP settings only to admins.
 function cw.setting:AddSettings()
   local langTable = {}
 

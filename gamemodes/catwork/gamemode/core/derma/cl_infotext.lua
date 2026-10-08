@@ -8,7 +8,7 @@
 
 local PANEL = {}
 
--- Called when the panel is initialized.
+--- Creates the notice's comment icon and text label on a blue background.
 function PANEL:Init()
   self:SetPos(4, 4)
   self:SetSize(self:GetWide() - 8, 24)
@@ -27,7 +27,7 @@ function PANEL:Init()
   self.label:SetExpensiveShadow(1, Color(0, 0, 0, 150))
 end
 
--- Called when the layout should be performed.
+--- Centres the text, or aligns it to the left when `SetTextToLeft` is set, and moves the icon next to it.
 function PANEL:PerformLayout(w, h)
   if self.textToLeft then
     if self.icon:IsVisible() then
@@ -44,7 +44,7 @@ function PANEL:PerformLayout(w, h)
   derma.SkinHook('Layout', 'Panel', self)
 end
 
--- Called when the panel is painted.
+--- Draws the notice's background, shrunk while pressed and lightened while a hovered button.
 function PANEL:Paint(w, h)
   if self:GetPaintBackground() then
     local width, height = self:GetSize()
@@ -68,12 +68,14 @@ function PANEL:Paint(w, h)
   return true
 end
 
--- A function to set the text to the left.
+--- Sets whether the text is aligned to the left instead of centred.
+-- @param bValue [Boolean `true` to align the text to the left]
 function PANEL:SetTextToLeft(bValue)
   self.textToLeft = bValue
 end
 
--- A function to set the text of the panel.
+--- Sets the notice's text and resizes the label to fit it.
+-- @param text [String Text to show; may be a language phrase]
 function PANEL:SetText(text)
   self.label:SetText(text)
   self.label:SizeToContents()
@@ -81,42 +83,49 @@ function PANEL:SetText(text)
   self:UpdateIconPosition()
 end
 
--- A function to set whether the panel is a button.
+--- Sets whether the notice acts as a button that calls `DoClick` when clicked.
+-- @param isButton [Boolean `true` to make the notice clickable]
 function PANEL:SetButton(isButton)
   self.isButton = isButton
 end
 
--- A function to get whether the panel is a button.
+--- Returns whether the notice acts as a button.
+-- @return [Boolean Whether the notice is clickable]
 function PANEL:IsButton()
   return self.isButton
 end
 
--- A function to set whether the panel is depressed.
+--- Sets whether the notice is held down.
+-- @param isDepressed [Boolean `true` while the mouse button is held on it]
 function PANEL:SetDepressed(isDepressed)
   self.isDepressed = isDepressed
 end
 
--- A function to get whether the panel is depressed.
+--- Returns whether the notice is held down.
+-- @return [Boolean Whether the notice is held down]
 function PANEL:IsDepressed()
   return self.isDepressed
 end
 
--- A function to set whether the panel is hovered.
+--- Sets whether the notice is hovered.
+-- @param isHovered [Boolean `true` while the cursor is over it]
 function PANEL:SetHovered(isHovered)
   self.isHovered = isHovered
 end
 
--- A function to get whether the panel is hovered.
+--- Returns whether the notice is hovered.
+-- @return [Boolean Whether the notice is hovered]
 function PANEL:IsHovered()
   return self.isHovered
 end
 
--- A function to set the text color of the panel.
+--- Sets the color of the notice's text.
+-- @param color [Color Text color]
 function PANEL:SetTextColor(color)
   self.label:SetTextColor(color)
 end
 
--- Called when the mouse is pressed on the panel.
+--- Marks the notice as held down and captures the mouse when it is a button.
 function PANEL:OnMousePressed(mouseCode)
   if self:IsButton() then
     self:SetDepressed(true)
@@ -124,7 +133,7 @@ function PANEL:OnMousePressed(mouseCode)
   end
 end
 
--- Called when the mouse is released on the panel.
+--- Plays the click sound and calls `DoClick` when a held button is released over the notice.
 function PANEL:OnMouseReleased(mouseCode)
   if self:IsButton() and self:IsDepressed()
   and self:IsHovered() then
@@ -138,22 +147,25 @@ function PANEL:OnMouseReleased(mouseCode)
   self:MouseCapture(false)
 end
 
--- Called when the mouse has entered the panel.
+--- Marks the notice as hovered.
 function PANEL:OnCursorEntered()
   self:SetHovered(true)
 end
 
--- Called when the mouse has entered the panel.
+--- Clears the notice's hovered state.
 function PANEL:OnCursorExited()
   self:SetHovered(false)
 end
 
--- A function to set whether the icon is shown.
+--- Shows or hides the notice's icon.
+-- @param showIcon [Boolean `true` to show the icon]
 function PANEL:SetShowIcon(showIcon)
   self.icon:SetVisible(showIcon)
 end
 
--- A function to set the icon.
+--- Sets and shows the notice's icon.
+-- @param icon [String Image path of the icon]
+-- @param size=nil [Number Width and height of the icon; defaults to the `info_text_icon_size` option]
 function PANEL:SetIcon(icon, size)
   if !size then
     size = cw.option:GetKey('info_text_icon_size')
@@ -166,7 +178,7 @@ function PANEL:SetIcon(icon, size)
   self:UpdateIconPosition()
 end
 
--- Update the icon position to align with the text.
+--- Moves the icon next to the text, or to the left edge when the text is aligned left.
 function PANEL:UpdateIconPosition()
   local size = self.icon:GetWide()
 
@@ -177,7 +189,12 @@ function PANEL:UpdateIconPosition()
   end
 end
 
--- A function to set the panel's info color.
+--- Sets the notice's background color and icon from a preset, or a custom color without an icon.
+--
+-- The presets are `'red'`, `'orange'`, `'green'` and `'blue'`, each with the icon from the matching
+-- `info_text_*_icon` option.
+--
+-- @param color [String Preset name, or a `Color` for a custom background]
 function PANEL:SetInfoColor(color)
   if color == 'red' then
     self:SetBackgroundColor(Color(179, 46, 49, 255))

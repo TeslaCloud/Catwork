@@ -8,7 +8,14 @@
 
 local PANEL = {}
 
--- A function to set the panel's text.
+--- Sets the form's header text, creating the header label on first use.
+--
+-- The label is drawn over a highlighted box and stretched to the form's width.
+--
+-- @param text [String Text of the header]
+-- @param fontName=nil [String Font to use; defaults to the `menu_text_tiny` theme font]
+-- @param color=nil [Color Text color, or the name of a theme color; defaults to `basic_form_color`]
+-- @param size=nil [Number Font size; defaults to 16 when no font is given, otherwise keeps the font's size]
 function PANEL:SetText(text, fontName, color, size)
   local label = self.Label
   local wasCreated = false
@@ -52,7 +59,13 @@ function PANEL:SetText(text, fontName, color, size)
   end
 end
 
--- A function to add an item (left and right).
+--- Adds a row to the form made of a label and a control.
+--
+-- When `right` is valid, both panels are placed side by side in a new row, with `right` offset 110 pixels
+-- from the left. Otherwise `left` is added on its own; nothing is added when neither is valid.
+--
+-- @param left [Panel Panel shown on the left, usually a label]
+-- @param right=nil [Panel Panel shown on the right]
 function PANEL:AddLeftRight(left, right)
   if IsValid(right) then
     local panel = vgui.Create('DSizeToContents', self)
@@ -75,7 +88,10 @@ function PANEL:AddLeftRight(left, right)
   end
 end
 
--- A function to create a text entry.
+--- Adds a labelled text entry bound to a console variable.
+-- @param strLabel [String Label text]
+-- @param strConVar [String Console variable the entry reads and writes]
+-- @return [Panel The `DTextEntry`, Panel The label]
 function PANEL:TextEntry(strLabel, strConVar)
   local left = vgui.Create('DLabel', self)
   left:SetText(strLabel)
@@ -91,7 +107,13 @@ function PANEL:TextEntry(strLabel, strConVar)
   return right, left
 end
 
--- A function to create a combo box.
+--- Adds a labelled combo box that sets a console variable when an option is picked.
+--
+-- The console variable is set to the option's data, or its text when it has no data.
+--
+-- @param strLabel [String Label text]
+-- @param strConVar [String Console variable to set]
+-- @return [Panel The `DComboBox`, Panel The label]
 function PANEL:ComboBox(strLabel, strConVar)
   local left = vgui.Create('DLabel', self)
   left:SetText(strLabel)
@@ -113,7 +135,13 @@ function PANEL:ComboBox(strLabel, strConVar)
   return right, left
 end
 
--- A function to create a number wang.
+--- Adds a labelled number wang bound to a console variable.
+-- @param strLabel [String Label text]
+-- @param strConVar [String Console variable the wang reads and writes]
+-- @param numMin [Number Smallest allowed value]
+-- @param numMax [Number Largest allowed value]
+-- @param numDecimals=nil [Number Number of decimal places to show]
+-- @return [Panel The `DNumberWang`, Panel The label]
 function PANEL:NumberWang(strLabel, strConVar, numMin, numMax, numDecimals)
   local left = vgui.Create('DLabel', self)
   left:SetText(strLabel)
@@ -135,7 +163,13 @@ function PANEL:NumberWang(strLabel, strConVar, numMin, numMax, numDecimals)
   return right, left
 end
 
--- A function to create a number slider.
+--- Adds a number slider bound to a console variable.
+-- @param strLabel [String Label text]
+-- @param strConVar [String Console variable the slider reads and writes]
+-- @param numMin [Number Smallest allowed value]
+-- @param numMax [Number Largest allowed value]
+-- @param numDecimals=nil [Number Number of decimal places to show]
+-- @return [Panel The `DNumSlider`]
 function PANEL:NumSlider(strLabel, strConVar, numMin, numMax, numDecimals)
   local left = vgui.Create('DNumSlider', self)
   left:SetText(strLabel)
@@ -155,7 +189,10 @@ function PANEL:NumSlider(strLabel, strConVar, numMin, numMax, numDecimals)
   return left
 end
 
--- A function to create a check box.
+--- Adds a labelled check box bound to a console variable.
+-- @param strLabel [String Label text]
+-- @param strConVar [String Console variable the check box reads and writes]
+-- @return [Panel The `DCheckBoxLabel`]
 function PANEL:CheckBox(strLabel, strConVar)
   local left = vgui.Create('DCheckBoxLabel', self)
   left:SetText(strLabel)
@@ -168,7 +205,9 @@ function PANEL:CheckBox(strLabel, strConVar)
   return left
 end
 
--- A function to create help text.
+--- Adds a wrapped help text label to the form.
+-- @param strHelp [String Help text]
+-- @return [Panel The label]
 function PANEL:Help(strHelp)
   local left = vgui.Create('DLabel', self)
 
@@ -188,7 +227,9 @@ function PANEL:Help(strHelp)
   return left
 end
 
--- A function to create a control help.
+--- Adds a centred, wrapped help label for the control above it.
+-- @param strHelp [String Help text]
+-- @return [Panel The label]
 function PANEL:ControlHelp(strHelp)
   local panel = vgui.Create('DSizeToContents', self)
   panel:SetSizeX(false)
@@ -212,7 +253,11 @@ function PANEL:ControlHelp(strHelp)
   return left
 end
 
--- A function to create a button.
+--- Adds a button, optionally running a console command when clicked.
+-- @param strName [String Button text]
+-- @param strConCommand=nil [String Console command to run on click]
+-- @param ... [Any Arguments passed to the console command]
+-- @return [Panel The `DButton`]
 function PANEL:Button(strName, strConCommand, ...)
   local left = vgui.Create('DButton', self)
 
@@ -226,14 +271,17 @@ function PANEL:Button(strName, strConCommand, ...)
   return left
 end
 
--- A function to create a panel select.
+--- Adds an empty panel select to the form.
+-- @return [Panel The `DPanelSelect`]
 function PANEL:PanelSelect()
   local left = vgui.Create('DPanelSelect', self)
   self:AddLeftRight(left)
   return left
 end
 
--- A function to create a list box.
+--- Adds a list box, preceded by a label when one is given.
+-- @param strLabel=nil [String Label text shown above the list box]
+-- @return [Panel The `DListBox`, Nil Always `nil`, since the label is local to the `if` block]
 function PANEL:ListBox(strLabel)
   if strLabel then
     local left = vgui.Create('DLabel', self)

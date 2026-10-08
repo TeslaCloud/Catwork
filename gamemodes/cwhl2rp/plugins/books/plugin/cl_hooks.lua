@@ -8,7 +8,10 @@
 
 local PLUGIN = PLUGIN
 
--- Called when an entity's menu options are needed.
+--- Called when an entity's menu options are needed; adds View and Take to books.
+--
+-- @param entity [Entity The entity the menu is for]
+-- @param options [Map The menu options, display text to option value, modified in place]
 function PLUGIN:GetEntityMenuOptions(entity, options)
   local class = entity:GetClass()
 

@@ -14,7 +14,9 @@ COMMAND.arguments = 1
 COMMAND.optionalArguments = 1
 COMMAND.alias = { 'SetDescription', 'SetDesc' }
 
--- Called when the command has been run.
+--- Sets the target character's physical description; arguments are the character name and the description.
+--
+-- Without a description it asks the caller for one with a text request.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
   local minimumPhysDesc = config.GetVal('minimum_physdesc')

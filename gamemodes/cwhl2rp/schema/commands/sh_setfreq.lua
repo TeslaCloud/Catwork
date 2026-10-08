@@ -11,7 +11,9 @@ COMMAND.tip = '#Command_Setfreq_Description'
 COMMAND.flags = CMD_DEFAULT
 COMMAND.arguments = 1
 
--- Called when the command has been run.
+--- Sets the radio frequency given as the first argument, in the `1X1.X` format.
+--
+-- Tunes the stationary radio being looked at, or else the player's handheld radio. Combine players cannot change it.
 function COMMAND:OnRun(player, arguments)
   if player:IsCombine() then
     cw.player:Notify(player, L('Radio_CannotChangeFrequency'))

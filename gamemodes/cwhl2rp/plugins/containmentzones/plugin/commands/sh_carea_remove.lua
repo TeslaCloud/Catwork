@@ -4,6 +4,9 @@ COMMAND.text = '#Command_Containmentremove_Syntax'
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = 's'
 
+--- Removes the containment zones whose centre or corner is near the position the player is looking at.
+--
+-- The optional first argument is the search radius, 64 by default.
 function COMMAND:OnRun(player, arguments)
   local position = player:GetEyeTraceNoCursor().HitPos
   local radius = tonumber(arguments[1]) or 64

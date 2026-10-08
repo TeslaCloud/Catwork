@@ -7,7 +7,11 @@ COMMAND.flags = CMD_DEFAULT
 COMMAND.arguments = 1
 COMMAND.alias = { 'VisorStatus' }
 
--- Called when the command has been run.
+--- Sets the city's socio-status to GREEN, BLUE, YELLOW, RED or BLACK.
+--
+-- Requires a Combine player of rank SCN, OfC, EpU, DvL or SeC, or an Overwatch soldier.
+-- Plays a tone to every Combine unit with a biosignal, adds a Combine display line and
+-- updates their HUD with the `RecalculateHUDObjectives` netstream.
 function COMMAND:OnRun(player, arguments)
   if player:IsCombine() then
     if Schema:IsPlayerCombineRank(player, { 'SCN', 'OfC', 'EpU', 'DvL', 'SeC' }, true)

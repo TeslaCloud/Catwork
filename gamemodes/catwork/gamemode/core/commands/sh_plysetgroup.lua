@@ -14,7 +14,9 @@ COMMAND.access = 's'
 COMMAND.arguments = 2
 COMMAND.alias = { 'SetGroup' }
 
--- Called when the command has been run.
+--- Sets the target player's user group and respawns them; arguments are the player name and the group.
+--
+-- The group must be `superadmin`, `admin` or `operator`.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
   local userGroup = arguments[2]

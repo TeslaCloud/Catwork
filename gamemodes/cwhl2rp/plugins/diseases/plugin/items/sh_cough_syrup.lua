@@ -11,7 +11,7 @@ ITEM.business = true
 ITEM.description = '#Item_CoughSyrup_Description'
 ITEM.customFunctions = { 'Give' }
 
--- Called when a player uses the item.
+--- Cures the player's cough.
 function ITEM:OnUse(player, itemEntity)
   if player:GetCharacterData('diseases') == 'cough' then
     player:SetCharacterData('diseases', 'none')
@@ -19,6 +19,9 @@ function ITEM:OnUse(player, itemEntity)
 end
 
 if SERVER then
+  --- Gives the syrup to the player being looked at with "Give", curing their cough.
+  --
+  -- Returns `false` when no player is looked at.
   function ITEM:OnCustomFunction(player, name)
     if name == 'Give' then
       local lookingPly = player:GetEyeTrace().Entity
@@ -39,5 +42,5 @@ if SERVER then
   end
 end
 
--- Called when a player drops the item.
+--- Lets the item be dropped, with no extra effect.
 function ITEM:OnDrop(player, position) end

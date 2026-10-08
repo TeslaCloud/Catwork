@@ -2,6 +2,7 @@ AddCSLuaFile('cl_init.lua')
 AddCSLuaFile('shared.lua')
 include('shared.lua')
 
+--- Sets up the recycler model, physics and empty garbage state.
 function ENT:Initialize()
   self:SetModel('models/props/cs_militia/microwave01.mdl')
   self:SetMoveType(MOVETYPE_VPHYSICS)
@@ -27,6 +28,8 @@ function ENT:Initialize()
   self.StopWorkTime = nil
 end
 
+--- Spawns a metal recycler 25 units off the aimed surface.
+-- @return [Entity The spawned recycler]
 function ENT:SpawnFunction(ply, trace)
   local ent = ents.Create('cw_factory_garbage_metal')
   ent:SetPos(trace.HitPos + trace.HitNormal * 25)
@@ -35,6 +38,9 @@ function ENT:SpawnFunction(ply, trace)
   return ent
 end
 
+--- Returns whether the recycler accepts an item as garbage.
+-- @param item [Item The item to check]
+-- @return [Boolean Whether the item's unique ID is in `ENT.GARBAGE_ITEMS`]
 function ENT:CanGarbageUsed(item)
   if table.HasValue(self.GARBAGE_ITEMS, item('uniqueID')) then
     return true
@@ -43,6 +49,8 @@ function ENT:CanGarbageUsed(item)
   return false
 end
 
+--- Returns the corners of the box above the recycler that garbage is collected from.
+-- @return [List<Vector> The two opposite corners, as passed to `ents.FindInBox`]
 function ENT:GetSearchPos()
   local up, right, forward = self:GetUp(), self:GetRight(), self:GetForward()
   local pos1 = self:GetPos() + (up * 23) + (right * 18) + (forward * 22)
@@ -50,6 +58,10 @@ function ENT:GetSearchPos()
   return { pos1, pos2 }
 end
 
+--- Starts a recycling cycle, or resumes a stopped one where it left off.
+--
+-- A new cycle only starts once the garbage count is at least `ENT.METAL_GARBAGE_COUNT_START`
+-- and lasts `ENT.WORK_TIME` seconds.
 function ENT:StartWork()
   if self:GetStopWorkTime() <= 0 then
     if self:GetGarbageCount() < self.METAL_GARBAGE_COUNT_START then
@@ -69,6 +81,11 @@ function ENT:StartWork()
   self.NextWorkSound = CurTime() + 1.4
 end
 
+--- Moves the collected garbage into the eject storage entity and empties the recycler.
+--
+-- The storage is found by the creation ID set with `SetEjectStorage`. Does nothing while working or
+-- paused, or when the storage does not exist. Items that would push a known container over its weight
+-- limit are dropped on top of it instead.
 function ENT:Eject()
   if self:GetIsWorking() then return end
   if self:GetStopWorkTime() > 0 then return end
@@ -115,6 +132,7 @@ function ENT:Eject()
   self.Garbages = {}
 end
 
+--- Pauses the current cycle, remembering the time left, and stops the work sounds.
 function ENT:StopWork()
   self:SetStopWorkTime(self:GetNextWorkTime() - CurTime())
   self:SetIsWorking(false)
@@ -124,6 +142,7 @@ function ENT:StopWork()
   self.NextGarbageDecrease = nil
 end
 
+--- Finishes the cycle, stops the work sounds and spawns a `scrap_metal` item at the product position.
 function ENT:EndWork()
   self:SetIsWorking(false)
   self.WorkSound:Stop()
@@ -135,10 +154,12 @@ function ENT:EndWork()
   cw.entity:CreateItem(nil, self.WORK_ITEM, self:GetProductPos())
 end
 
+--- Does nothing; the recycler is operated through its entity menu options.
 function ENT:Use(activator)
   return
 end
 
+--- Stops the recycler's work sound.
 function ENT:OnRemove()
   if self.WorkSound then
     self.WorkSound:Stop()

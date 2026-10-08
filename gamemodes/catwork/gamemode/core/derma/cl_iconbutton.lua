@@ -8,7 +8,7 @@
 
 local PANEL = {}
 
--- Called when the layout should be performed.
+--- Places the button's icon 8 pixels from the left, vertically centred, and moves the text past it.
 function PANEL:PerformLayout()
   if IsValid(self.m_Image) then
     self.m_Image:SetPos(8, (self:GetTall() - self.m_Image:GetTall()) * 0.5)

@@ -8,37 +8,43 @@
 
 local PANEL = {}
 
--- A function to set whether the panel is disabled.
+--- Sets whether the button ignores hovering and clicks.
+-- @param disabled [Boolean `true` to disable the button]
 function PANEL:SetDisabled(disabled)
   self.Disabled = disabled
 end
 
--- A function to get whether the panel is disabled.
+--- Returns whether the button is disabled.
+-- @return [Boolean Whether the button is disabled]
 function PANEL:GetDisabled()
   return self.Disabled
 end
 
--- A function to set whether the panel is depressed.
+--- Sets whether the button is held down.
+-- @param depressed [Boolean `true` while the mouse button is held on it]
 function PANEL:SetDepressed(depressed)
   self.Depressed = depressed
 end
 
--- A function to get whether the panel is depressed.
+--- Returns whether the button is held down.
+-- @return [Boolean Whether the button is held down]
 function PANEL:GetDepressed()
   return self.Depressed
 end
 
--- A function to set whether the panel is hovered.
+--- Sets whether the button is hovered.
+-- @param hovered [Boolean `true` while the cursor is over it]
 function PANEL:SetHovered(hovered)
   self.Hovered = hovered
 end
 
--- A function to get whether the panel is hovered.
+--- Returns whether the button is hovered.
+-- @return [Boolean Whether the button is hovered]
 function PANEL:GetHovered()
   return self.Hovered
 end
 
--- Called when the cursor has entered the panel.
+--- Marks the button as hovered unless it is disabled.
 function PANEL:OnCursorEntered()
   if !self:GetDisabled() then
     self:SetHovered(true)
@@ -47,19 +53,19 @@ function PANEL:OnCursorEntered()
   DImage.ApplySchemeSettings(self)
 end
 
--- Called when the cursor has exited the panel.
+--- Clears the button's hovered state.
 function PANEL:OnCursorExited()
   self:SetHovered(false)
   DImage.ApplySchemeSettings(self)
 end
 
--- Called when the mouse is pressed.
+--- Captures the mouse and marks the button as held down.
 function PANEL:OnMousePressed(code)
   self:MouseCapture(true)
   self:SetDepressed(true)
 end
 
--- Called when the mouse is released.
+--- Releases the mouse and calls `DoClick` when the left button is released over an enabled button.
 function PANEL:OnMouseReleased(code)
   self:MouseCapture(false)
 
@@ -79,7 +85,9 @@ function PANEL:OnMouseReleased(code)
   end
 end
 
--- A function to make the panel fade out.
+--- Fades the button out and hides it, playing the rollover sound.
+-- @param speed [Number Length of the fade in seconds]
+-- @param Callback=nil [Function Called once the button is hidden]
 function PANEL:FadeOut(speed, Callback)
   self.animation = Derma_Anim('Fade Panel', self, function(panel, animation, delta, data)
     panel:SetAlpha(255 - (delta * 255))
@@ -102,7 +110,9 @@ function PANEL:FadeOut(speed, Callback)
   cw.option:PlaySound('rollover')
 end
 
--- A function to make the panel fade in.
+--- Shows the button and fades it in, playing the click sound.
+-- @param speed [Number Length of the fade in seconds]
+-- @param Callback=nil [Function Called once the button is fully visible]
 function PANEL:FadeIn(speed, Callback)
   self.animation = Derma_Anim('Fade Panel', self, function(panel, animation, delta, data)
     panel:SetAlpha(delta * 255)
@@ -124,14 +134,15 @@ function PANEL:FadeIn(speed, Callback)
   self:SetVisible(true)
 end
 
--- Called every frame.
+--- Runs the fade animation.
 function PANEL:Think()
   if self.animation then
     self.animation:Run()
   end
 end
 
--- A function to set the panel's Callback.
+--- Sets the function called when the button is clicked, playing the click sound first.
+-- @param Callback [Function Called with the button]
 function PANEL:SetCallback(Callback)
   self.DoClick = function(button)
     cw.option:PlaySound('click')

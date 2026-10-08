@@ -8,7 +8,8 @@
 
 local PANEL = {}
 
--- Called when the panel is initialized.
+--- Sizes the directory menu tab to the menu, creates the category tree and page view, registers itself
+-- as `cw.directory.panel` and builds the tree.
 function PANEL:Init()
   self:SetSize(cw.menu:GetWidth(), cw.menu:GetHeight())
 
@@ -22,7 +23,8 @@ function PANEL:Init()
   self:Rebuild()
 end
 
--- Called to by the menu to get the width of the panel.
+--- Returns the width the menu should give the directory tab.
+-- @return [Number Half of the screen width]
 function PANEL:GetMenuWidth()
   return ScrW() * 0.5
 end
@@ -30,7 +32,15 @@ end
 -- proofreader-disable-next-line Layout/LineLength -- embedded base64 icon
 local PAGE_ICON = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAINSURBVBgZBcG/r55zGAfg6/4+z3va01NHlYgzEfE7MdCIGISFgS4Gk8ViYyM2Mdlsko4GSf8Do0FLRCIkghhYJA3aVBtEz3nP89wf11VJvPDepdd390+8Nso5nESBQoq0pfvXm9fzWf19453LF85vASqJlz748vInb517dIw6EyYBIIG49u+xi9/c9MdvR//99MPPZ7+4cP4IZhhTPbwzT2d+vGoaVRRp1rRliVvHq+cfvM3TD82+7mun0o/ceO7NT+/4/KOXjwZU1ekk0840bAZzMQ2mooqh0A72d5x/6sB9D5zYnff3PoYBoWBgFKPKqDKqjCpjKr//dcu9p489dra88cydps30KswACfNEKanSaxhlntjJ8Mv12Paie+vZ+0+oeSwwQ0Iw1xAR1CiFNJkGO4wu3ZMY1AAzBI0qSgmCNJsJUEOtJSMaCTBDLyQ0CknAGOgyTyFFiLI2awMzdEcSQgSAAKVUmAeNkxvWJWCGtVlDmgYQ0GFtgg4pNtOwbBcwQy/Rife/2yrRRVI0qYCEBly8Z+P4qMEMy7JaVw72N568e+iwhrXoECQkfH91kY7jwwXMsBx1L93ZruqrK6uuiAIdSnTIKKPLPFcvay8ww/Hh+ufeznTXu49v95IMoQG3784gYXdTqvRmqn/Wpa/ADFX58MW3L71SVU9ETgEIQQQIOOzub+fhIvwPRDgeVjWDahIAAAAASUVORK5CYII='
 
--- A function to show a directory category.
+--- Shows a directory category in the page view.
+--
+-- Plain categories join their pages (sorted with the category's sorting function, each page's
+-- `Callback` applied) and wrap them in the category and master formatting. HTML categories are wrapped
+-- the same way, and website categories open their URL. `[category]` and `{category}` in the result are
+-- replaced with the category name. Without a category, a page asking to pick one is shown. Unknown
+-- categories are ignored.
+--
+-- @param category=nil [String Name of the category to show]
 function PANEL:ShowCategory(category)
   if !category then
     local masterFormatting = cw.directory:GetMasterFormatting()
@@ -146,7 +156,7 @@ function PANEL:ShowCategory(category)
   end
 end
 
--- A function to clear the nodes.
+--- Removes every node from the category tree.
 function PANEL:ClearNodes()
   if self.treeNode.Items then
     for k, v in pairs(self.treeNode.Items) do
@@ -158,7 +168,10 @@ function PANEL:ClearNodes()
   self.treeNode.Items = {}
 end
 
--- A function to rebuild the panel.
+--- Rebuilds the category tree from `cw.directory.stored` and shows the current category again.
+--
+-- Runs the `ClockworkDirectoryRebuilt` hook first, so plugins can add categories. Nested categories go
+-- under their `parent`. Does nothing when called again from inside that hook.
 function PANEL:Rebuild()
   if !CW_REBUILDING_DIRECTORY then
     self:ClearNodes()
@@ -216,7 +229,7 @@ function PANEL:Rebuild()
   end
 end
 
--- Called when the layout should be performed.
+--- Places the category tree on the left quarter and the page view on the rest.
 function PANEL:PerformLayout(w, h)
   self:SetSize(w, ScrH() * 0.75)
   self.treeNode:SetPos(4, 4)
@@ -225,13 +238,13 @@ function PANEL:PerformLayout(w, h)
   self.htmlPanel:SetSize((w * 0.75) - 16, h - 8)
 end
 
--- Called when the panel is painted.
+--- Draws the white panel background.
 function PANEL:Paint(w, h)
   cdraw.DrawBox(0, 0, w, h, COLOR_WHITE)
   return true
 end
 
--- Called each frame.
+--- Lays the panel out again each frame.
 function PANEL:Think()
   self:InvalidateLayout(true)
 end

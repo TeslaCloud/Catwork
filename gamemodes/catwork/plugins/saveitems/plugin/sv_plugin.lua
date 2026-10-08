@@ -6,7 +6,10 @@
   with contributions from Cloud Sixteen community.
 --]]
 
--- A function to load the shipments.
+--- Spawns the shipments saved for the current map.
+--
+-- Shipments of items that no longer exist are skipped. Shipments that were frozen when saved are frozen
+-- again.
 function cwSaveItems:LoadShipments()
   local shipments = cw.core:RestoreSchemaData('plugins/shipments/'..game.GetMap())
 
@@ -27,7 +30,10 @@ function cwSaveItems:LoadShipments()
   end
 end
 
--- A function to save the shipments.
+--- Saves every `cw_shipment` entity on the map to the schema data.
+--
+-- Stores the item, the number of items left, position, angles, whether it can move, and the `key` and
+-- `uniqueID` properties.
 function cwSaveItems:SaveShipments()
   local shipments = {}
 
@@ -54,7 +60,10 @@ function cwSaveItems:SaveShipments()
   cw.core:SaveSchemaData('plugins/shipments/'..game.GetMap(), shipments)
 end
 
--- A function to load the items.
+--- Spawns the item entities saved for the current map.
+--
+-- Recreates each item instance with its saved item ID and data; items that cannot be created are skipped.
+-- Items that were frozen when saved are frozen again.
 function cwSaveItems:LoadItems()
   local items = cw.core:RestoreSchemaData('plugins/items/'..game.GetMap())
 
@@ -77,7 +86,10 @@ function cwSaveItems:LoadItems()
   end
 end
 
--- A function to save the items.
+--- Saves every `cw_item` entity on the map to the schema data.
+--
+-- Stores the item, its item ID and data, position, angles, whether it can move, and the `key` and
+-- `uniqueID` properties. Entities without an item table are skipped.
 function cwSaveItems:SaveItems()
   local items = {}
 

@@ -21,7 +21,8 @@ ITEM.category = 'Consumables'
 ITEM.description = '#ITEM_Smooth_Breens_Water_Desc'
 ITEM.thirst = 25
 
--- Called when a player uses the item.
+--- Restores 80 stamina and 6 health, boosts agility and stamina by 2 for two minutes and gives back an
+-- empty soda can.
 function ITEM:OnUse(player, itemEntity)
   player:SetCharacterData('Stamina', math.Clamp(player:GetCharacterData('Stamina') + 80, 0, 100))
   player:SetHealth(math.Clamp(player:Health() + 6, 0, player:GetMaxHealth()))
@@ -32,10 +33,10 @@ function ITEM:OnUse(player, itemEntity)
   player:GiveItem('empty_soda_can', true)
 end
 
--- Called when a player drops the item.
+--- Lets the item be dropped; nothing else happens.
 function ITEM:OnDrop(player, position) end
 
--- Called when the item's functions should be edited.
+--- Removes the Drink option from the item's menu when the local player is Combine.
 function ITEM:OnEditFunctions(functions)
   if Schema:PlayerIsCombine(cw.client, false) then
     for k, v in pairs(functions) do

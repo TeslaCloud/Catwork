@@ -6,17 +6,25 @@
   with contributions from Cloud Sixteen community.
 --]]
 
--- Called when Clockwork has loaded all of the entities.
+--- Called after Catwork has loaded all map entities; spawns the salesmen saved for the current map.
 function cwSalesmen:ClockworkInitPostEntity()
   self:LoadSalesmen()
 end
 
--- Called just after data should be saved.
+--- Called just after data is saved; saves the current map's salesmen.
 function cwSalesmen:PostSaveData()
   self:SaveSalesmen()
 end
 
--- Called when a player attempts to use a salesman.
+--- Called when a player attempts to use a salesman.
+--
+-- The player is refused when the salesman restricts factions or classes and the player's faction or
+-- class is not among them. When the salesman has flags set, having those flags (with `-` characters
+-- stripped) always allows use, and a flag string containing `-` refuses players without them. A
+-- refused player hears the salesman's `noSale` line. Return `false` to block the use.
+-- @param player [Player The player using the salesman]
+-- @param entity [Entity The `cw_salesman` entity]
+-- @return [Boolean `false` when the player may not trade with the salesman, otherwise `nil`]
 function cwSalesmen:PlayerCanUseSalesman(player, entity)
   local numFactions = table.Count(entity.cwFactions)
   local numClasses = table.Count(entity.cwClasses)
@@ -54,7 +62,12 @@ function cwSalesmen:PlayerCanUseSalesman(player, entity)
   end
 end
 
--- Called when a player uses a salesman.
+--- Called when a player uses a salesman; opens the trade menu on the player's client.
+--
+-- Sends the salesman's stock, prices, cash and restrictions with the `Salesmenu` netstream message and
+-- makes the salesman say its `start` line.
+-- @param player [Player The player using the salesman]
+-- @param entity [Entity The `cw_salesman` entity]
 function cwSalesmen:PlayerUseSalesman(player, entity)
   netstream.Start(player, 'Salesmenu', {
     buyInShipments = entity.cwBuyInShipments,

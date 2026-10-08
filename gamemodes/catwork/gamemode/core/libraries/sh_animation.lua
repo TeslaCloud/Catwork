@@ -387,12 +387,22 @@ stored.vortigaunt = {
   }
 }
 
--- A function to set a model's menu sequence.
+--- Sets the sequence a model plays in the character menu.
+--
+-- @param model [String Model path; case is ignored]
+-- @param sequence [Any Sequence name, or a List of sequence names to pick from at random]
+-- @see cw.animation:GetMenuSequence
 function cw.animation:SetMenuSequence(model, sequence)
   sequences[string.lower(model)] = sequence
 end
 
--- A function to get a model's menu sequence.
+--- Returns the sequence a model plays in the character menu.
+--
+-- @param model [String Model path; case is ignored]
+-- @param bRandom=nil [Boolean Pick one sequence at random when a list is stored]
+-- @return [Any The sequence name, the stored List when `bRandom` is not set, or `nil` if none is
+-- set]
+-- @see cw.animation:SetMenuSequence
 function cw.animation:GetMenuSequence(model, bRandom)
   local sequence = sequences[model:lower()]
 
@@ -409,14 +419,25 @@ function cw.animation:GetMenuSequence(model, bRandom)
   end
 end
 
--- A function to add a model.
+--- Assigns a model to an animation class.
+--
+-- @param class [String Animation class, a key of `cw.animation.stored` such as `'maleHuman'` or
+-- `'civilProtection'`]
+-- @param model [String Model path; case is ignored]
+-- @return [String The lowercased model path]
 function cw.animation:AddModel(class, model)
   local lowerModel = string.lower(model)
     models[lowerModel] = class
   return lowerModel
 end
 
--- A function to add an override.
+--- Overrides a model's animations for one hold type.
+--
+-- Overrides are checked by `cw.animation:GetForModel` before the model's animation class.
+--
+-- @param model [String Model path; case is ignored]
+-- @param key [String Hold type to override, such as `'pistol'`]
+-- @param value [Map Animations keyed by activity (`ACT_MP_*`) or by `'attack'`/`'reload'`]
 function cw.animation:AddOverride(model, key, value)
   local lowerModel = string.lower(model)
 
@@ -427,7 +448,22 @@ function cw.animation:AddOverride(model, key, value)
   override[lowerModel][key] = value
 end
 
--- A function to get an animation for a model.
+--- Returns the animation a model uses for an activity and hold type.
+--
+-- Unknown hold types fall back to `normal` and unknown activities to `ACT_MP_STAND_IDLE`, unless
+-- `bNoFallbacks` is set. Overrides from `cw.animation:AddOverride` take precedence. Prints a stack
+-- trace and returns nothing when `model` is `nil`.
+--
+-- ```
+-- local attackAnimation = cw.animation:GetForModel(model, weaponHoldType, 'attack', true)
+-- ```
+--
+-- @param model [String Model path]
+-- @param holdType [String Hold type, such as `'normal'` or `'smg'`]
+-- @param key [Any Activity (`ACT_MP_*`), or `'attack'`, `'reload'` or `'glide'`]
+-- @param bNoFallbacks=nil [Boolean Return `nil` instead of falling back]
+-- @return [Any The animation: an activity Number, a sequence String, or a List of two of these
+-- for the lowered and raised states]
 function cw.animation:GetForModel(model, holdType, key, bNoFallbacks)
   if !model then
     debug.Trace()
@@ -457,7 +493,11 @@ function cw.animation:GetForModel(model, holdType, key, bNoFallbacks)
   return finalAnimation
 end
 
--- A function to get a model's class.
+--- Returns the animation class a model was assigned with `cw.animation:AddModel`.
+--
+-- @param model [String Model path; case is ignored]
+-- @param alwaysReal=nil [Boolean Return `nil` instead of `'maleHuman'` for unassigned models]
+-- @return [String The animation class]
 function cw.animation:GetModelClass(model, alwaysReal)
   local modelClass = models[string.lower(model)]
 
@@ -470,32 +510,50 @@ function cw.animation:GetModelClass(model, alwaysReal)
   end
 end
 
--- A function to add a vortigaunt model.
+--- Assigns a model to the vortigaunt animation class.
+--
+-- @param model [String Model path]
+-- @return [String The lowercased model path]
 function cw.animation:AddVortigauntModel(model)
   return self:AddModel('vortigaunt', model)
 end
 
--- A function to add a Combine Overwatch model.
+--- Assigns a model to the Combine Overwatch animation class.
+--
+-- @param model [String Model path]
+-- @return [String The lowercased model path]
 function cw.animation:AddCombineOverwatchModel(model)
   return self:AddModel('combineOverwatch', model)
 end
 
--- A function to add a Civil Protection model.
+--- Assigns a model to the Civil Protection animation class.
+--
+-- @param model [String Model path]
+-- @return [String The lowercased model path]
 function cw.animation:AddCivilProtectionModel(model)
   return self:AddModel('civilProtection', model)
 end
 
--- A function to add a Civil Protection model.
+--- Assigns a model to the female Civil Protection animation class.
+--
+-- @param model [String Model path]
+-- @return [String The lowercased model path]
 function cw.animation:AddFemaleCivilProtectionModel(model)
   return self:AddModel('femaleCP', model)
 end
 
--- A function to add a female human model.
+--- Assigns a model to the female human animation class.
+--
+-- @param model [String Model path]
+-- @return [String The lowercased model path]
 function cw.animation:AddFemaleHumanModel(model)
   return self:AddModel('femaleHuman', model)
 end
 
--- A function to add a male human model.
+--- Assigns a model to the male human animation class.
+--
+-- @param model [String Model path]
+-- @return [String The lowercased model path]
 function cw.animation:AddMaleHumanModel(model)
   return self:AddModel('maleHuman', model)
 end
@@ -563,7 +621,14 @@ do
     ['sxbase_mp7_s_micro_ls'] = 'smg'
   }
 
-  -- A function to get a weapon's hold type.
+  --- Returns the hold type used to animate a weapon.
+  --
+  -- Known weapon classes have a fixed hold type. Otherwise the weapon's `HoldType` is used,
+  -- mapped to one of the hold types Catwork animates (for example `ar2` becomes `smg`).
+  --
+  -- @param player [Player The player holding the weapon, unused]
+  -- @param weapon [Weapon The weapon]
+  -- @return [String The lowercased hold type; `'normal'` when the weapon has none]
   function cw.animation:GetWeaponHoldType(player, weapon)
     local class = string.lower(weapon:GetClass())
     local holdType = 'normal'
@@ -582,7 +647,13 @@ do
   end
 end
 
--- A function to get an animation table.
+--- Returns the animation table for a model.
+--
+-- Models without an assigned class use the female human table when their path contains `female`
+-- and the male human table otherwise.
+--
+-- @param model [String Model path]
+-- @return [Map Animations keyed by hold type, or `nil` for models in a `/player/` folder]
 function cw.animation:GetTable(model)
   local lowerModel = string.lower(model)
 
@@ -604,17 +675,25 @@ end
 local handsModels = {}
 local blackModels = {}
 
--- A function to add viewmodel c_arms info to a model.
+--- Sets the viewmodel hands used for models whose path contains a string.
+--
+-- @param model [String Part of the model path; case is ignored]
+-- @param hands [Map Hands info with `model`, `skin` and `body` keys]
+-- @see cw.animation:GetHandsInfo
 function cw.animation:AddHandsModel(model, hands)
   handsModels[string.lower(model)] = hands
 end
 
--- A function to make a model use the black skin for hands viewmodels.
+--- Makes models whose path contains a string use the black skin on citizen and refugee hands.
+--
+-- @param model [String Part of the model path, such as `'/male_01.mdl'`]
 function cw.animation:AddBlackModel(model)
   blackModels[string.lower(model)] = true
 end
 
--- A function to make a model use the zombie skin for citizen hands.
+--- Makes models whose path contains a string use the citizen hands with the zombie skin.
+--
+-- @param model [String Part of the model path]
 function cw.animation:AddZombieHands(model)
   self:AddHandsModel(model, {
     body = 0000000,
@@ -623,7 +702,9 @@ function cw.animation:AddZombieHands(model)
   })
 end
 
--- A function to make a model use the HL2 HEV viewmodel hands.
+--- Makes models whose path contains a string use the HEV suit viewmodel hands.
+--
+-- @param model [String Part of the model path]
 function cw.animation:AddHEVHands(model)
   self:AddHandsModel(model, {
     body = 0000000,
@@ -632,7 +713,9 @@ function cw.animation:AddHEVHands(model)
   })
 end
 
--- A function to make a model use the combine viewmodel hands.
+--- Makes models whose path contains a string use the Combine viewmodel hands.
+--
+-- @param model [String Part of the model path]
 function cw.animation:AddCombineHands(model)
   self:AddHandsModel(model, {
     body = 0000000,
@@ -641,7 +724,9 @@ function cw.animation:AddCombineHands(model)
   })
 end
 
--- A function to make a model use the CSS viewmodel hands.
+--- Makes models whose path contains a string use the Counter-Strike: Source viewmodel hands.
+--
+-- @param model [String Part of the model path]
 function cw.animation:AddCSSHands(model)
   self:AddHandsModel(model, {
     body = 0000000,
@@ -650,7 +735,9 @@ function cw.animation:AddCSSHands(model)
   })
 end
 
--- A function to make a model use the refugee viewmodel hands.
+--- Makes models whose path contains a string use the refugee viewmodel hands.
+--
+-- @param model [String Part of the model path, such as `'/group03/'`]
 function cw.animation:AddRefugeeHands(model)
   self:AddHandsModel(model, {
     body = 01,
@@ -659,7 +746,9 @@ function cw.animation:AddRefugeeHands(model)
   })
 end
 
--- a function to make a model use the refugee viewmodel hands with a zombie skin.
+--- Makes models whose path contains a string use the refugee hands with the zombie skin.
+--
+-- @param model [String Part of the model path]
 function cw.animation:AddZombieRefugeeHands(model)
   self:AddHandsModel(model, {
     body = 0000000,
@@ -668,7 +757,14 @@ function cw.animation:AddZombieRefugeeHands(model)
   })
 end
 
--- A function to check for stored hands info by model.
+--- Returns the viewmodel hands info for a model.
+--
+-- Starts from the citizen hands, then the animation table's `hands`, then the first matching
+-- entry added with `cw.animation:AddHandsModel`, and applies `cw.animation:AdjustHandsInfo`.
+--
+-- @param model [String Lowercased model path]
+-- @param animTable=nil [Map The model's animation table]
+-- @return [Map Hands info with `model`, `skin` and `body` keys]
 function cw.animation:CheckHands(model, animTable)
   local info = {
     body = 0000000,
@@ -693,7 +789,14 @@ function cw.animation:CheckHands(model, animTable)
   return info
 end
 
--- A function to adjust the hands info with checks for if a model is set to use the black skin.
+--- Adjusts hands info for a model in place.
+--
+-- Citizen and refugee hands get the black skin for models added with
+-- `cw.animation:AddBlackModel`. Then runs the `AdjustCModelHandsInfo` hook (via `hook.Run`) with
+-- the model and the info.
+--
+-- @param model [String Lowercased model path]
+-- @param info [Map Hands info with `model`, `skin` and `body` keys; changed in place]
 function cw.animation:AdjustHandsInfo(model, info)
   if info.model == 'models/weapons/c_arms_citizen.mdl' or info.model == 'models/weapons/c_arms_refugee.mdl' then
     for k, v in pairs(blackModels) do
@@ -710,7 +813,10 @@ function cw.animation:AdjustHandsInfo(model, info)
   hook.Run('AdjustCModelHandsInfo', model, info)
 end
 
--- A function to get the c_model hands based on model.
+--- Returns the viewmodel hands a model should use.
+--
+-- @param model [String Model path]
+-- @return [Map Hands info with `model`, `skin` and `body` keys]
 function cw.animation:GetHandsInfo(model)
   local animTable = self:GetTable(model)
 

@@ -10,7 +10,7 @@ ITEM.business = true
 ITEM.description = '#Item_GreenAntidote_Description'
 ITEM.customFunctions = { 'Inject' }
 
--- Called when a player uses the item.
+--- Cures the slow lethal poison (`slow_deathinjection`); the fast one is not affected.
 function ITEM:OnUse(player, itemEntity)
   if player:GetCharacterData('diseases') == 'slow_deathinjection' then
     player:SetCharacterData('diseases', 'none')
@@ -21,6 +21,9 @@ function ITEM:OnUse(player, itemEntity)
 end
 
 if SERVER then
+  --- Injects the antidote into the player being looked at using "Inject".
+  --
+  -- Cures `slow_deathinjection` only. Returns `false` when no player is looked at.
   function ITEM:OnCustomFunction(player, name)
     if name == 'Inject' then
       local lookingPly = player:GetEyeTrace().Entity
@@ -44,5 +47,5 @@ if SERVER then
   end
 end
 
--- Called when a player drops the item.
+--- Lets the item be dropped, with no extra effect.
 function ITEM:OnDrop(player, position) end

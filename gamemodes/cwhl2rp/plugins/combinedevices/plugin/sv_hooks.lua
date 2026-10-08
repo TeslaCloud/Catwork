@@ -1,11 +1,11 @@
 local PLUGIN = PLUGIN
 
--- Called when Clockwork has loaded all of the entities.
+--- Called after Catwork has loaded the map entities; restores the saved Combine devices.
 function PLUGIN:ClockworkInitPostEntity()
   self:LoadCombineDevices()
 end
 
--- Called just after data should be saved.
+--- Called after data is saved; saves the Combine devices.
 function PLUGIN:PostSaveData()
   self:SaveCombineDevices()
 end

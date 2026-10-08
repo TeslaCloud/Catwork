@@ -19,10 +19,10 @@ ITEM.category = 'Consumables'
 ITEM.uniqueID = 'bleach'
 ITEM.description = '#ITEM_Bleach_Desc'
 
--- Called when a player uses the item.
+--- Deals 75 damage to the player who drinks it.
 function ITEM:OnUse(player, itemEntity)
   player:TakeDamage(75, player, player)
 end
 
--- Called when a player drops the item.
+--- Lets the item be dropped; nothing else happens.
 function ITEM:OnDrop(player, position) end

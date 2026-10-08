@@ -15,12 +15,15 @@ ENT.Spawnable = false
 ENT.AdminSpawnable = false
 ENT.UsableInVehicle = true
 
--- Called when the data tables are setup.
+--- Sets up the networked `Index` integer holding the shipped item's index.
 function ENT:SetupDataTables()
   self:DTVar('Int', 0, 'Index')
 end
 
--- A function to get the entity's item table.
+--- Returns the item the shipment contains.
+--
+-- On the client it looks the item up by the networked index.
+-- @return [Item The shipped item, or `nil` if it is not set]
 function ENT:GetItemTable()
   if CLIENT then
     local index = self:GetDTInt(0)

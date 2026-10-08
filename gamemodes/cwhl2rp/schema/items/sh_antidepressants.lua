@@ -18,7 +18,8 @@ ITEM.category = 'Medical'
 ITEM.business = true
 ITEM.description = '#ITEM_Antidepressants_Desc'
 
--- Called when a player uses the item.
+--- Sets the `antidepressants` net var to ten minutes from now, raises endurance by 2 and lowers strength
+-- by 2 for two minutes.
 function ITEM:OnUse(player, itemEntity)
   player:SetNetVar('antidepressants', CurTime() + 600)
 
@@ -26,5 +27,5 @@ function ITEM:OnUse(player, itemEntity)
   player:BoostAttribute(self.name, ATB_STRENGTH, -2, 120)
 end
 
--- Called when a player drops the item.
+--- Lets the item be dropped; nothing else happens.
 function ITEM:OnDrop(player, position) end

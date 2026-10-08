@@ -29,6 +29,13 @@ factionnpc.stored = {
   ['npc_monk'] = false
 }
 
+--- Returns whether an NPC belongs to the Combine.
+--
+-- Looks the NPC's class up in `factionnpc.stored`; floor turrets with the citizen spawn flag
+-- count as rebels.
+-- @param npc [NPC The NPC to check]
+-- @return [Boolean `true` for Combine NPC classes, `false` for anything else or an invalid entity]
+-- @see factionnpc:IsNPCRebel
 function factionnpc:IsNPCCombine(npc)
   if IsValid(npc) then
     if npc:HasSpawnFlags(SF_FLOOR_TURRET_CITIZEN) and npc:GetClass() == 'npc_turret_floor' then
@@ -45,6 +52,13 @@ function factionnpc:IsNPCCombine(npc)
   return false
 end
 
+--- Returns whether an NPC is on the rebels' side.
+--
+-- True for classes marked `false` in `factionnpc.stored` (citizens, vortigaunts, Alyx and other
+-- resistance characters) and for floor turrets with the citizen spawn flag.
+-- @param npc [NPC The NPC to check]
+-- @return [Boolean `true` for rebel NPCs, `false` for anything else or an invalid entity]
+-- @see factionnpc:IsNPCCombine
 function factionnpc:IsNPCRebel(npc)
   if IsValid(npc) then
     if npc:HasSpawnFlags(SF_FLOOR_TURRET_CITIZEN) and npc:GetClass() == 'npc_turret_floor' then
@@ -61,6 +75,13 @@ function factionnpc:IsNPCRebel(npc)
   return false
 end
 
+--- Sets how every NPC on the map feels about a player, based on the player's faction.
+--
+-- Combine NPCs like Combine players and hate everyone else; rebel NPCs hate Combine and admin
+-- faction players and like everyone else. Both hate the necro and antlion factions.
+-- Does nothing for an invalid entity or a non-player.
+-- @param ply [Player The player the relationships are set towards]
+-- @see factionnpc:UpdateNPCRelation
 function factionnpc:UpdateNPCRelations(ply)
   if ply then
     if IsValid(ply) then
@@ -95,6 +116,13 @@ function factionnpc:UpdateNPCRelations(ply)
   end
 end
 
+--- Sets how one NPC feels about every player, based on each player's faction.
+--
+-- Combine NPCs like Combine and admin faction players and hate everyone else; rebel NPCs
+-- hate Combine and admin faction players and like everyone else. Both hate the necro and
+-- antlion factions. Does nothing for NPCs that are neither Combine nor rebels.
+-- @param npc [NPC The NPC whose relationships are set]
+-- @see factionnpc:UpdateNPCRelations
 function factionnpc:UpdateNPCRelation(npc)
   if !IsValid(npc) then return end
   if !npc:IsNPC() then return end
@@ -126,10 +154,15 @@ function factionnpc:UpdateNPCRelation(npc)
   end
 end
 
+--- Called when a player spawns; updates every NPC's relationship towards them.
+-- @param ply [Player The player who spawned]
 function factionnpc:PlayerSpawn(ply)
   self:UpdateNPCRelations(ply)
 end
 
+--- Called after a player spawns an NPC; sets the new NPC's relationships towards all players.
+-- @param ply [Player The player who spawned the NPC]
+-- @param npc [NPC The NPC that was spawned]
 function factionnpc:PlayerSpawnedNPC(ply, npc)
   self:UpdateNPCRelation(npc)
 end

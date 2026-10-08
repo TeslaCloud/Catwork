@@ -11,22 +11,45 @@ library.New('voices', cw)
 local groups = cw.voices.groups or {}
 cw.voices.groups = groups
 
--- A function to get the local stored voice groups.
+--- Returns every registered voice group.
+--
+-- @return [Map<Map> Voice groups keyed by name, each with `bGender`, `IsPlayerMember` and `voices` keys]
 function cw.voices:GetAll()
   return groups
 end
 
--- A function to get a certain group by ID.
+--- Returns a voice group.
+--
+-- @param id [String Name of the group]
+-- @return [Map The group, or `nil` if it is not registered]
 function cw.voices:FindByID(id)
   return groups[id]
 end
 
--- A function to get the voices of a certain group by ID.
+--- Returns the voice lines of a group.
+--
+-- Errors if the group is not registered.
+--
+-- @param id [String Name of the group]
+-- @return [Map<Map> Voice lines keyed by their lowercased command]
 function cw.voices:GetVoices(id)
   return groups[id].voices
 end
 
--- A function to add a voice group.
+--- Registers a voice group.
+--
+-- Does nothing if the group already exists.
+--
+-- ```
+-- voices:RegisterGroup('Combine', false, function(player)
+--   return player:IsCombine()
+-- end)
+-- ```
+--
+-- @param group [String Name of the group]
+-- @param bGender=false [Boolean Whether female characters get the female version of each sound]
+-- @param callback [Function Called as `callback(player)`; returns whether the player can use the
+-- group's voices]
 function cw.voices:RegisterGroup(group, bGender, callback)
   if !bGender then
     bGender = false
@@ -39,7 +62,24 @@ function cw.voices:RegisterGroup(group, bGender, callback)
   }
 end
 
--- A function to add a voice.
+--- Adds a voice line to a group.
+--
+-- A player in the group who says `command` in IC chat plays `sound` and shows `phrase` instead.
+-- Prints an error if the group is not registered.
+--
+-- ```
+-- voices:Add('Human', 'Figures', 'Figures.', 'vo/npc/male01/answer03.wav', 'vo/npc/female01/answer03.wav')
+-- ```
+--
+-- @param groupName [String Name of the group]
+-- @param command [String Text that triggers the line; matched case-insensitively]
+-- @param phrase [String Text shown in chat; the message is hidden when empty or `nil`]
+-- @param sound [String Sound file path]
+-- @param female=nil [Any When set in a gender group, female characters play `sound` with `/male`
+-- replaced by `/female`]
+-- @param menu=nil [Any Stored with the line, unused by Catwork]
+-- @param pitch=nil [Number Sound pitch]
+-- @param volume=nil [Number Sound level; 80 when `nil`]
 function cw.voices:Add(groupName, command, phrase, sound, female, menu, pitch, volume)
   if !isstring(command) then return end
 
@@ -62,7 +102,11 @@ function cw.voices:Add(groupName, command, phrase, sound, female, menu, pitch, v
   end
 end
 
--- Called when the framework initializes.
+--- Called when the framework initializes; registers a voice group per faction and collects voices.
+--
+-- Each faction gets a group its members can use. Then runs the `RegisterVoiceGroups`,
+-- `RegisterVoices` and `AdjustVoices` hooks (via `hook.Run`), and on the client adds each group's
+-- lines to the directory.
 function cw.voices:ClockworkInitialized()
   for k, v in pairs(faction.GetAll()) do
     local FACTION = faction.FindByID(v.name)
@@ -109,7 +153,14 @@ function cw.voices:ClockworkInitialized()
   end
 end
 
--- Called when chat box info should be adjusted.
+--- Called when chat box info should be adjusted; turns matching IC messages into voice lines.
+--
+-- When the message matches a voice line of a group the sender belongs to and the sender's voice
+-- cooldown has passed (admins skip it), sets `info.voice`, replaces the text with the line's
+-- phrase (or hides the message) and starts the `voice_cooldown`.
+--
+-- @param info [Map The chat message info, with `filter`, `sender`, `text` and `data` keys]
+-- @return [Boolean `true` when the message became a voice line]
 function cw.voices:ChatboxAdjustMessageInfo(info)
   if info.filter == 'ic' then
     if IsValid(info.sender) and info.sender:HasInitialized()
@@ -161,7 +212,12 @@ function cw.voices:ChatboxAdjustMessageInfo(info)
   end
 end
 
--- Called when a chat box message has been added.
+--- Called when a chat box message has been sent; plays the voice line's sound.
+--
+-- The sender emits the sound. For global lines and radio messages, every listener except the
+-- sender also hears it.
+--
+-- @param info [Map The chat message info, with `voice`, `sender`, `listeners` and `data` keys]
 function cw.voices:ChatboxMessageSent(info)
   if info.voice then
     if IsValid(info.sender) and info.sender:HasInitialized() then

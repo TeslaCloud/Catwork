@@ -11,7 +11,10 @@ COMMAND.access = 's'
 COMMAND.arguments = 2
 COMMAND.alias = { 'SetIcon' }
 
--- Called when the command has been run.
+--- Sets a custom PNG icon for the target player and sends it to clients.
+--
+-- The icon is a local path or an http(s) URL; URLs are cached as `catwork/icon_<SteamID64>.png`.
+-- Stored in the player's `CustomIcon` data and sent with `Schema:SendIconData`.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
   local icon = arguments[2]

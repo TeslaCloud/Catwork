@@ -8,7 +8,7 @@ COMMAND.tip = '#Command_Nutvendoradd_Description'
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = 'a'
 
--- Called when the command has been run.
+--- Spawns a vending machine where the player is looking and notifies them.
 function COMMAND:OnRun(player, arguments)
   local trace = player:GetEyeTraceNoCursor()
   -- local entity = ents.Create("nut_vend")

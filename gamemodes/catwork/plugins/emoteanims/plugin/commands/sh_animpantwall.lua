@@ -10,7 +10,7 @@ local COMMAND = cw.command:New('AnimPantWall')
 COMMAND.tip = '#Command_Animpantwall_Description'
 COMMAND.flags = CMD_DEFAULT
 
--- Called when the command has been run.
+--- Toggles panting against the wall the human player is facing.
 function COMMAND:OnRun(player, arguments)
   local curTime = CurTime()
 

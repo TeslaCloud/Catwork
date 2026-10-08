@@ -6,7 +6,14 @@
   with contributions from Cloud Sixteen community.
 --]]
 
--- Called when the local player's animation is updated.
+--- Called when a player's animation is updated; creates or advances the local player's legs model.
+--
+-- Only acts for the local player: creates the legs with `cwAnimatedLegs:CreateLegs` if they do not exist
+-- yet, otherwise syncs them with `cwAnimatedLegs:LegsThink`.
+--
+-- @param player [Player The player whose animation is updated]
+-- @param velocity [Vector The player's velocity]
+-- @param maxSeqGroundSpeed [Number Ground speed of the current sequence, used to scale the playback rate]
 function cwAnimatedLegs:UpdateAnimation(player, velocity, maxSeqGroundSpeed)
   if cw.client == player then
     if IsValid(self.LegsEntity) then
@@ -17,7 +24,12 @@ function cwAnimatedLegs:UpdateAnimation(player, velocity, maxSeqGroundSpeed)
   end
 end
 
--- Called when the screenspace effects are rendered.
+--- Called when screenspace effects are rendered; draws the local player's legs model.
+--
+-- Positions the legs behind the player's eye position (or in the vehicle seat), tints them with the
+-- player's color, clips everything above the eyes and runs the `PostDrawAnimatedLegs` hook with the
+-- legs entity, render position and render angle. Does nothing when `cwAnimatedLegs:ShouldDrawLegs`
+-- returns false.
 function cwAnimatedLegs:RenderScreenspaceEffects()
   cam.Start3D(EyePos(), EyeAngles())
 

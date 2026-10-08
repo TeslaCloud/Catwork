@@ -9,4 +9,5 @@ ITEM.category = 'Other'
 ITEM.business = true
 ITEM.description = '#Item_Lenses_Description'
 
+--- Lets the item be dropped; nothing else happens.
 function ITEM:OnDrop(player, position) end

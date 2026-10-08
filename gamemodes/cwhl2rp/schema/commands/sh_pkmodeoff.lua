@@ -10,7 +10,7 @@ local COMMAND = cw.command:New('PKModeOff')
 COMMAND.tip = '#Command_Pkmodeoff_Description'
 COMMAND.access = 'o'
 
--- Called when the command has been run.
+--- Turns off PK mode by setting the `PKMode` global net var to `0`; takes no arguments.
 function COMMAND:OnRun(player, arguments)
   netvars.SetNetVar('PKMode', 0)
   timer.Remove('pk_mode')

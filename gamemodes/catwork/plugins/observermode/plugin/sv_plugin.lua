@@ -8,7 +8,14 @@
 
 config.Add('observer_reset', true, true)
 
--- A function to make a player exit observer mode.
+--- Takes a player out of observer mode.
+--
+-- Makes the player visible and solid again and restores their move type at once. Half a frame later it
+-- restores their color, and their position and eye angles from before entering when the
+-- `observer_reset` config is on, then clears the observer state.
+--
+-- @param player [Player The player leaving observer mode]
+-- @see cwObserverMode:MakePlayerEnterObserverMode
 function cwObserverMode:MakePlayerExitObserverMode(player)
   local bObserverReset = config.Get('observer_reset'):Get()
 
@@ -45,7 +52,13 @@ function cwObserverMode:MakePlayerExitObserverMode(player)
   end)
 end
 
--- A function to make a player enter observer mode.
+--- Puts a player into observer mode.
+--
+-- Stores the player's move type, position, eye angles and color so they can be restored later, then
+-- enables noclip and makes NPCs ignore them. Hiding the player is done in the `PlayerThink` hook.
+--
+-- @param player [Player The player entering observer mode]
+-- @see cwObserverMode:MakePlayerExitObserverMode
 function cwObserverMode:MakePlayerEnterObserverMode(player)
   player.cwObserverMoveType = player:GetMoveType()
   player.cwObserverPos = player:GetPos()

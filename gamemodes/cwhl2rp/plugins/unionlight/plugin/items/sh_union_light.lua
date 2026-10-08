@@ -10,7 +10,12 @@ ITEM.useText = '#Item_UnionLight_UseText'
 ITEM.business = true
 ITEM.description = '#Item_UnionLight_Description'
 
--- Called when a player uses the item.
+--- Places a `cw_unionlight` owned by the player where they are looking, within 192 units.
+--
+-- When used from the ground, the light takes the item entity's place and stays frozen if
+-- the item was.
+--
+-- @return [Boolean `false` when the spot is too far away]
 function ITEM:OnUse(player, itemEntity)
   local trace = player:GetEyeTraceNoCursor()
   local entity = ents.Create('cw_unionlight')
@@ -47,5 +52,5 @@ function ITEM:OnUse(player, itemEntity)
   end
 end
 
--- Called when a player drops the item.
+--- Called when the union light is dropped; does nothing, so it can be dropped freely.
 function ITEM:OnDrop(player, position) end

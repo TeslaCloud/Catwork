@@ -33,6 +33,7 @@ surface.CreateFont('_GR_CMB_FONT_4', {
   extended = true
 })
 
+--- Creates the render target and material for the indicator screen.
 function ENT:Initialize()
   self.RT = GetRenderTargetEx(
     '_cmb_FIndicatorRT'..self:EntIndex()..CurTime(),
@@ -59,6 +60,9 @@ function ENT:Initialize()
   })
 end
 
+--- Draws the recycler and its indicator screen with the status, garbage count and progress bars.
+--
+-- While the local player holds the toolgun, a marker also shows the product position.
 function ENT:Draw()
   self:DrawModel()
 

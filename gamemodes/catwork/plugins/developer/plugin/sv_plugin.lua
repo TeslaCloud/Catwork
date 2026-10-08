@@ -1,5 +1,11 @@
--- Developers are superadmins whose SteamID is in catDev.authorizedIDs (or, hashed, in catDev.authorizedHashes).
--- The lists alone never grant anything: the player has to be a superadmin already.
+--- Returns whether a player is a Catwork developer.
+--
+-- Developers are superadmins whose Steam ID is in `catDev.authorizedIDs`, or whose hashed Steam ID is in
+-- `catDev.authorizedHashes`. The lists alone never grant anything: the player has to be a superadmin
+-- already.
+--
+-- @param player [Player The player to check; anything that is not a valid player returns false]
+-- @return [Boolean Whether the player is a developer]
 function catDev:IsDeveloper(player)
   if !IsValid(player) or !player:IsPlayer() or !player:IsSuperAdmin() then
     return false

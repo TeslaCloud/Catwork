@@ -9,4 +9,5 @@ ITEM.business = true
 ITEM.description = '#Item_CombineLockAccess1_Description'
 ITEM.category = '#Item_Category_CardsAndLocks'
 
+--- Called when the access card is dropped; does nothing, so it can be dropped freely.
 function ITEM:OnDrop(player, position) end

@@ -13,7 +13,7 @@ COMMAND.flags = CMD_DEFAULT
 COMMAND.arguments = 2
 COMMAND.cooldown = 2
 
--- Called when the command has been run.
+--- Puts an item from the caller's inventory into the open storage; arguments are the item ID and instance ID.
 function COMMAND:OnRun(player, arguments)
   local storageTable = player:GetStorageTable()
   local uniqueID = arguments[1]

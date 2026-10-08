@@ -1,6 +1,6 @@
 local PANEL = {}
 
--- Called when the panel is initialized.
+--- Builds the craft menu's blueprint list and detail area, then fills them on the next frame.
 function PANEL:Init()
   self:SetSize(ScrW() * 0.5, ScrH() * 0.6)
 
@@ -40,7 +40,12 @@ function PANEL:Init()
   end)
 end
 
--- A function to rebuild the panel.
+--- Rebuilds the blueprint list and the details of the selected blueprint.
+--
+-- Lists the blueprints of this station's class (`self.class`) that `cwCraft:PlayerCanSeeCraft`
+-- allows, grouped by category. For the selected blueprint (`self.bpData`) it shows the model,
+-- description, attribute and custom requirements, materials and tools with the amounts the
+-- player has, and a button that asks the server to craft it.
 function PANEL:Rebuild()
   self.panelList:Clear()
   self.craft:Clear()
@@ -323,10 +328,10 @@ function PANEL:Rebuild()
   end
 end
 
--- Called when the panel is selected.
+--- Rebuilds the menu when the panel is selected.
 function PANEL:OnSelected() self:Rebuild() end
 
--- Called when the layout should be performed.
+--- Places the blueprint list in the left third and the details in the rest.
 function PANEL:PerformLayout(w, h)
   self.list:SetSize(w / 3 - 4, h - 8)
   self.list:SetPos(4, 4)
@@ -334,7 +339,7 @@ function PANEL:PerformLayout(w, h)
   self.craft:SetPos(w / 3 + 4, 4)
 end
 
--- Called when the panel is painted.
+--- Paints the panel background.
 function PANEL:Paint(w, h)
   draw.RoundedBox(0, 0, 0, w, h, cw.option:GetColor('panel_background'))
 

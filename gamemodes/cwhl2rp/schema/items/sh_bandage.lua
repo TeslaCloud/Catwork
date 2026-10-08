@@ -18,17 +18,18 @@ ITEM.business = true
 ITEM.description = '#ITEM_Bandage_Desc'
 ITEM.customFunctions = { 'Give' }
 
--- Called when a player uses the item.
+--- Heals the player by `Schema:GetHealAmount`, capped at max health, and fires the `PlayerHealed` hook.
 function ITEM:OnUse(player, itemEntity)
   player:SetHealth(math.Clamp(player:Health() + Schema:GetHealAmount(player), 0, player:GetMaxHealth()))
 
   hook.Run('PlayerHealed', player, player, self)
 end
 
--- Called when a player drops the item.
+--- Lets the item be dropped; nothing else happens.
 function ITEM:OnDrop(player, position) end
 
 if SERVER then
+  --- Runs the `CharHeal` command with this item when the Give option is chosen.
   function ITEM:OnCustomFunction(player, name)
     if name == 'Give' then
       cw.player:RunClockworkCommand(player, 'CharHeal', 'bandage')

@@ -11,6 +11,9 @@ ITEM.weight = 0.5
 ITEM.business = true
 ITEM.description = '#Item_PdbBook_Description'
 
+--- Raises the reader's Medical attribute to 50 if it is lower; the manual is kept.
+--
+-- Overwatch soldiers cannot learn from it.
 function ITEM:OnUse(player, itemEntity)
   local atrs = player:GetAttributes()
   local medical = atrs[ATB_MEDICAL]
@@ -29,4 +32,5 @@ function ITEM:OnUse(player, itemEntity)
   return false
 end
 
+--- Called when the manual is dropped; does nothing, so it can be dropped freely.
 function ITEM:OnDrop(player, position) end

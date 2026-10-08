@@ -13,7 +13,7 @@ ENT.PrintName = 'Salesman'
 ENT.Spawnable = false
 ENT.AdminSpawnable = false
 
--- Called when the entity is removed.
+--- Removes the salesman's chat bubble on the server.
 function ENT:OnRemove()
   if SERVER and IsValid(self.cwChatBubble) then
     self.cwChatBubble:Remove()

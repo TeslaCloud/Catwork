@@ -17,14 +17,20 @@ FACTION.models = {
   male = { 'models/combine_soldier.mdl' }
 }
 
--- Called when a player's name should be assigned for the faction.
+--- Returns a random soldier name for a new unit, such as `OTA.C24.ECHO.OWS:042`.
+-- @param player [Player The player]
+-- @param character [Character The character]
+-- @return [String The name]
 function FACTION:GetName(player, character)
   local unitID = math.random(1, 999)
 
   return 'OTA.C24.ECHO.OWS:'..cw.core:ZeroNumberToDigits(unitID, 3)
 end
 
--- Called when a player's model should be assigned for the faction.
+--- Returns the Combine soldier model for a new character of either gender.
+-- @param player [Player The player]
+-- @param character [Character The character]
+-- @return [String The model]
 function FACTION:GetModel(player, character)
   if character.gender == GENDER_MALE then
     return self.models.male[1]
@@ -33,7 +39,13 @@ function FACTION:GetModel(player, character)
   end
 end
 
--- Called when a player is transferred to the faction.
+--- Called when a player is transferred to the faction.
+--
+-- Civil Protection units keep their unit number in an Overwatch name; everyone else gets a new soldier
+-- name. The character gets the Overwatch model.
+-- @param player [Player The player]
+-- @param faction [Faction The faction the player comes from]
+-- @param name=nil [String The new name, unused]
 function FACTION:OnTransferred(player, faction, name)
   if faction.name == FACTION_MPF then
     cw.player:SetName(player, string.gsub(player:QueryCharacter('name'), '.+(%d%d%d)', 'OTA.C24.ECHO.OWS:%1'), true)

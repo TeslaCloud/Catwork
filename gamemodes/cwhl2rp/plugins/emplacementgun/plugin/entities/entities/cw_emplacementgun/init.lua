@@ -41,6 +41,9 @@ local SHOT_INTERVAL = 0.05
 local FindAR3At, AR3Position = ZAR3_FindAR3At, ZAR3_AR3Position
 ZAR3_FindAR3At, ZAR3_AR3Position = nil, nil
 
+--- Spawns a frozen Combine barricade under the gun and parents the gun to it.
+--
+-- Removing the barricade removes the gun. Used when restoring saved guns.
 function ENT:SpawnProp()
   local ent = ents.Create('prop_physics')
   ent:SetModel('models/props_combine/combine_barricade_short01a.mdl')
@@ -56,6 +59,13 @@ function ENT:SpawnProp()
   end
 end
 
+--- Spawns a gun on the barricade the player is looking at, or on a new frozen barricade.
+--
+-- Refuses, with a chat message, when the barricade already has a gun.
+--
+-- @param ply [Player The player spawning the gun]
+-- @param tr [Map The player's eye trace; `tr.Entity` is replaced by a new barricade if needed]
+-- @return [Entity The new barricade when one was created, otherwise the gun; `nil` on failure]
 function ENT:SpawnFunction(ply, tr)
   -- Whenever THAT can happen...
   if !tr.Hit then
@@ -105,6 +115,7 @@ function ENT:SpawnFunction(ply, tr)
   return clamped and clamp or ent
 end
 
+--- Sets the bunker gun model and shadow physics, centres the barrel and starts the motion controller.
 function ENT:Initialize()
   self:SetModel('models/props_combine/bunker_gun01.mdl')
   self:SetMoveType(MOVETYPE_NONE)
@@ -140,6 +151,12 @@ function ENT:Initialize()
   self:StartMotionController()
 end
 
+--- Fires the gun while its controller holds attack and releases it when they die or walk away.
+--
+-- Shoots an AR2 tracer bullet for 26 damage every 0.05 seconds, credited to the controller.
+-- Thinks every frame.
+--
+-- @return [Boolean `true`, so the next think time is used]
 function ENT:Think()
   if IsValid(self.Controller) then
 -- ~ 		self:TrackTarget()
@@ -181,7 +198,14 @@ function ENT:Think()
   return true
 end
 
--- A player takes over us.
+--- Makes a player the gun's controller.
+--
+-- Plays the activate sequence, turns the player's flashlight off and tells their client with
+-- the `ZAR3_S` net message to hide the view model and send attacks to the gun. The player
+-- becomes the controller once the sequence ends. Does nothing when the gun is in use or the
+-- player already controls a gun.
+--
+-- @param ply [Player The player taking over]
 function ENT:TakeOver(ply)
   -- If we already control one or the new player does, abort.
   if IsValid(self.Controller) or IsValid(ply.ZAR3) then
@@ -226,7 +250,9 @@ function ENT:TakeOver(ply)
   ply.ZAR3 = self
 end
 
--- +use: Take over or leave the AR3.
+--- Lets a Combine player take over the gun, or leave it when they already control it.
+--
+-- Non-Combine players are told the gun will not move.
 function ENT:Use(activator, caller)
   -- Too far away? We don't care.
   if (activator:GetPos() - self:GetPos()):LengthSqr() > MAX_DISTANCE then
@@ -252,7 +278,10 @@ function ENT:Use(activator, caller)
   self:TakeOver(activator)
 end
 
--- :'(
+--- Releases the gun's controller and retracts the gun.
+--
+-- Tells the controller's client with `ZAR3_S` to restore their controls, stops shooting and
+-- centres the barrel.
 function ENT:Abandon()
   self:ResetSequence('retract')
   -- Send the net message to the player to reset his controls.
@@ -274,7 +303,7 @@ function ENT:Abandon()
   self:GetPhysicsObject():Sleep()
 end
 
--- Enables the flashlight.
+--- Turns the gun's spotlight on, creating it and its projected texture if needed.
 function ENT:EnableFlashlight()
   if !IsValid(self.Flashlight) then
     self:CreateFlashlight()
@@ -325,7 +354,9 @@ local function FindCone(ent, retry)
   end
 end
 
--- Creates one. In case it gets lost (WHICH WOULD BE BAD).
+--- Creates the gun's spotlight, switched off, if it does not exist.
+--
+-- Searches for the spotlight's cone entity afterwards so it can be removed with the gun.
 function ENT:CreateFlashlight()
   if !IsValid(self.Flashlight) then
     local lightAttach = self:LookupAttachment('light')
@@ -359,6 +390,7 @@ function ENT:CreateFlashlight()
   end
 end
 
+--- Turns the gun's spotlight off and removes its projected texture.
 function ENT:DisableFlashlight()
   if IsValid(self.Flashlight) then
     self.Flashlight:Fire('LightOff')
@@ -370,7 +402,10 @@ function ENT:DisableFlashlight()
   end
 end
 
--- ~ void CFuncTank::TrackTarget(void)
+--- Turns the stored barrel angles up to 5 degrees towards the controller's crosshair.
+--
+-- A port of `CFuncTank::TrackTarget` from the Source SDK. Unused: its call in `ENT:Think`
+-- is commented out because the crosshair aiming does not work.
 function ENT:TrackTarget()
   local angles = self:AimBarrelAtPlayerCrosshair()
 
@@ -396,7 +431,11 @@ function ENT:TrackTarget()
   --]]
 end
 
--- void CFuncTank::CalcPlayerCrosshairTarget(Vector *pVecTarget)
+--- Returns the position the controller's crosshair points at, up to 8192 units away.
+--
+-- A port of `CFuncTank::CalcPlayerCrosshairTarget` from the Source SDK.
+--
+-- @return [Vector The hit position]
 function ENT:CalcPlayerCrosshairTarget()
   -- // Get the player.
   -- CBasePlayer *pPlayer = static_cast<CBasePlayer*>(m_hController.Get())
@@ -431,7 +470,11 @@ function ENT:CalcPlayerCrosshairTarget()
   return tr.HitPos
 end
 
--- void CFuncTank::AimBarrelAtPlayerCrosshair(QAngle *pAngles)
+--- Returns the barrel angles that aim at the controller's crosshair.
+--
+-- A port of `CFuncTank::AimBarrelAtPlayerCrosshair` from the Source SDK.
+--
+-- @return [Angle The local barrel angles]
 function ENT:AimBarrelAtPlayerCrosshair()
   -- CalcPlayerCrosshairTarget(&vecTarget)
   local vecTarget = self:CalcPlayerCrosshairTarget()
@@ -442,7 +485,13 @@ end
 
 -- Copied from a vmf
 
---	QAngle CFuncTank::AimBarrelAt(const Vector &parentTarget)
+--- Returns the barrel angles that aim the offset barrel at a local position.
+--
+-- A port of `CFuncTank::AimBarrelAt` from the Source SDK, with the barrel offset taken from
+-- a map file.
+--
+-- @param parentTarget [Vector The target, local to the gun]
+-- @return [Angle The local barrel angles]
 function ENT:AimBarrelAt(parentTarget)
 -- ~ 	local m_barrelPos = Vector(31, 0, 8)
   local m_barrelPos = Vector(20.8, 0, 18.15)
@@ -501,7 +550,12 @@ local m_yawRange, m_yawTolerance = 60, 15
 local m_pitchRange, m_pitchTolerance = 60, 15
 local m_yawRate, m_pitchRate = 200, 120
 
--- bool CFuncTank::RotateTankToAngles(const QAngle &angles, float *pDistX, float *pDistY)
+--- Sets the gun's stored angular velocity towards the given angles, within its turn range.
+--
+-- A port of `CFuncTank::RotateTankToAngles` from the Source SDK. Unused.
+--
+-- @param angles [Angle The angles to turn to]
+-- @return [Boolean Whether the angles were clamped to the gun's range]
 function ENT:RotateTankToAngles(angles)
 -- ~ 	local m_yawCenter = self.m_yawCenter
 -- ~ 	local m_pitchCenter = self.m_pitchCenter
@@ -567,8 +621,12 @@ end
 
 -- ]==]--
 
--- I have no idea why I have to set pose parameters *here* - but the C++ does it in PhysicsSimulate, so I guess that's
--- the way to do it.
+--- Turns the barrel towards the controller's view, a few degrees per tick.
+--
+-- The pose parameters are set here because the Source `func_tank` does the same in its
+-- physics simulation. Yaw is limited to 60 degrees each way and pitch to -35 to 50.
+--
+-- @return [Number `SIM_NOTHING`]
 function ENT:PhysicsSimulate()
   if !IsValid(self) or !IsValid(self.Controller) then
     return SIM_NOTHING
@@ -604,6 +662,7 @@ function ENT:PhysicsSimulate()
   return SIM_NOTHING
 end
 
+--- Removes the gun's spotlight and cone and releases its controller.
 function ENT:OnRemove()
   -- Try to find the cone one last time/first time, depending on the PoV.
   FindCone(self, 10)

@@ -5,6 +5,7 @@
 
 include('shared.lua')
 
+--- Draws what the packet contains and whether it is ready when the player looks at it.
 function ENT:HUDPaintTargetID(x, y, alpha)
   local colorTargetID = cw.option:GetColor('target_id')
   local colorWhite = cw.option:GetColor('white')
@@ -29,6 +30,7 @@ function ENT:HUDPaintTargetID(x, y, alpha)
   end
 end
 
+--- Draws the packet's model.
 function ENT:Draw()
   self:DrawModel()
 end

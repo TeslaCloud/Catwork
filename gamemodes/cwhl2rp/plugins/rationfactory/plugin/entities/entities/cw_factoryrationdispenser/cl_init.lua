@@ -7,6 +7,7 @@ include('shared.lua')
 
 local glowMaterial = Material('sprites/glow04_noz')
 
+--- Draws the dispenser's name and ration count for Combine players looking at it.
 function ENT:HUDPaintTargetID(x, y, alpha)
   local colorTargetID = cw.option:GetColor('target_id')
   local colorWhite = cw.option:GetColor('white')
@@ -17,6 +18,7 @@ function ENT:HUDPaintTargetID(x, y, alpha)
   end
 end
 
+--- Draws the status light: blinking blue while dispensing, red when flashing, orange when locked, else green.
 function ENT:Draw()
   local a = self:GetColor().a
   local rationTime = self:GetDTFloat(0)

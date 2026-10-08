@@ -8,7 +8,11 @@
 
 local PANEL = {}
 
--- Called when the panel is initialized.
+--- Builds the door management window: a Players tab and a Settings tab with the door text entry and,
+-- for the owner, parent sharing options and a Sell or Unown button.
+--
+-- Changes are sent to the server with the `DoorManagement` netstream. Door text containing "this door
+-- can be purchased" is not sent.
 function PANEL:Init()
   self:SetTitle(cw.door:GetName())
   self:SetSizable(false)
@@ -158,7 +162,10 @@ function PANEL:Init()
   cw.core:SetNoticePanel(self)
 end
 
--- A function to rebuild the panel.
+--- Rebuilds the Players tab, grouping players into complete, basic and no access lists.
+--
+-- Each player opens a menu to give or take access when clicked. Players are listed when the
+-- `PlayerShouldShowOnDoorAccessList` hook allows it, under the name from `GetPlayerDoorAccessName`.
 function PANEL:Rebuild()
   self.playersPanel:Clear(true)
 
@@ -277,7 +284,7 @@ function PANEL:Rebuild()
   end
 end
 
--- Called each frame.
+--- Keeps the window centred and closes it when the door is gone or more than 192 units away.
 function PANEL:Think()
   local entity = cw.door:GetEntity()
   local scrW = ScrW()
@@ -293,7 +300,7 @@ function PANEL:Think()
   end
 end
 
--- Called when the layout should be performed.
+--- Lays out the frame and stretches the tabs to fill it.
 function PANEL:PerformLayout(w, h)
   DFrame.PerformLayout(self)
 

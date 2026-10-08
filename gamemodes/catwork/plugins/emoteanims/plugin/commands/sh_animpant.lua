@@ -10,7 +10,7 @@ local COMMAND = cw.command:New('AnimPant')
 COMMAND.tip = '#Command_Animpant_Description'
 COMMAND.flags = CMD_DEFAULT
 
--- Called when the command has been run.
+--- Toggles the panting stance of a human player standing on the ground.
 function COMMAND:OnRun(player, arguments)
   local curTime = CurTime()
 

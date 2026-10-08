@@ -10,7 +10,7 @@ local COMMAND = cw.command:New('ViewObjectives')
 COMMAND.tip = '#Command_Viewobjectives_Description'
 COMMAND.flags = CMD_DEFAULT
 
--- Called when the command has been run.
+--- Opens the Combine objectives editor for a Combine player; takes no arguments.
 function COMMAND:OnRun(player, arguments)
   if player:IsCombine() then
     netstream.Start(player, 'EditObjectives', Schema.combineObjectives)

@@ -16,11 +16,11 @@ ITEM.description = '#Item_Chips_Description'
 ITEM.hunger = 15
 ITEM.thirst = -10
 
--- Called when a player uses the item.
+--- Boosts agility and stamina by 3 for two minutes.
 function ITEM:OnUse(player, itemEntity)
   player:BoostAttribute(self.name, ATB_AGILITY, 3, 120)
   player:BoostAttribute(self.name, ATB_STAMINA, 3, 120)
 end
 
--- Called when a player drops the item.
+--- Lets the item be dropped; nothing else happens.
 function ITEM:OnDrop(player, position) end

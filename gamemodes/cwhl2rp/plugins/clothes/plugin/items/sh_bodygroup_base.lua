@@ -19,6 +19,12 @@ ITEM.requiredBG = { -1, -1 }
 ITEM.isCombine = false
 ITEM.protection = 0
 
+--- Sets a bodygroup on the player, or tells them they cannot wear the item if the model lacks it.
+--
+-- @param player [Player The wearer]
+-- @param bg [Number The bodygroup index]
+-- @param val [Number The bodygroup value]
+-- @return [Boolean Whether the bodygroup was set]
 function ITEM:SetBodygroup(player, bg, val)
   if bg <= player:GetNumBodyGroups() then
     player:SetBodygroup(bg, val)
@@ -31,13 +37,21 @@ function ITEM:SetBodygroup(player, bg, val)
   end
 end
 
+--- Resets a bodygroup on the player to 0.
+--
+-- @param player [Player The wearer]
+-- @param bg [Number The bodygroup index]
+-- @return [Boolean Always `true`]
 function ITEM:ResetBodygroup(player, bg)
   player:SetBodygroup(bg, 0)
 
   return true
 end
 
--- Called when a player uses the item.
+--- Wears the item with `Player:SetBodygroupClothes` and keeps it in the inventory.
+--
+-- Fails when the item's `requiredBG` bodygroup is not worn, and Combine players can only
+-- wear items marked `isCombine`.
 function ITEM:OnUse(player, itemEntity)
   local clothesData = player.bgClothesData or {}
 
@@ -64,7 +78,7 @@ function ITEM:OnUse(player, itemEntity)
   end
 end
 
--- Called when a player drops the item.
+--- Takes the item off when it is dropped while worn.
 function ITEM:OnDrop(player, position)
   if self:HasPlayerEquipped(player) and self.bodyGroup != -1 then
     player:SetBodygroupClothes(self, true)
@@ -73,7 +87,7 @@ function ITEM:OnDrop(player, position)
   return true
 end
 
--- Called when a player attempts to sell the item to salesman.
+--- Takes the item off when it is sold while worn.
 function ITEM:CanSell(player)
   if self:HasPlayerEquipped(player) and self.bodyGroup != -1 then
     player:SetBodygroupClothes(self, true)
@@ -82,7 +96,7 @@ function ITEM:CanSell(player)
   return true
 end
 
--- Called when a player attempts to give the item to storage.
+--- Takes the item off when it is put into storage while worn.
 function ITEM:CanGiveStorage(player, storageTable)
   if self:HasPlayerEquipped(player) and self.bodyGroup != -1 then
     player:SetBodygroupClothes(self, true)
@@ -91,7 +105,10 @@ function ITEM:CanGiveStorage(player, storageTable)
   return true
 end
 
--- Called when a player changes clothes.
+--- Sets or resets the item's bodygroup and calls the item's `OnChangedClothes` if it has one.
+--
+-- @param player [Player The wearer]
+-- @param bIsWearing [Boolean Whether the item is being put on]
 function ITEM:OnChangeClothes(player, bIsWearing)
   if bIsWearing then
     self:SetBodygroup(player, self.bodyGroup, self.bodyGroupVal)
@@ -104,7 +121,13 @@ function ITEM:OnChangeClothes(player, bIsWearing)
   end
 end
 
--- Called to get whether a player has the item equipped.
+--- Returns whether the player wears this item instance in its bodygroup.
+--
+-- Uses the networked `bgClothesData` on the client.
+--
+-- @param player [Player The player to check]
+-- @param bIsValidWeapon [Boolean Unused]
+-- @return [Boolean Whether the item is worn]
 function ITEM:HasPlayerEquipped(player, bIsValidWeapon)
   local clothesData = player.bgClothesData or {}
 
@@ -121,7 +144,7 @@ function ITEM:HasPlayerEquipped(player, bIsValidWeapon)
   return false
 end
 
--- Called when a player has unequipped the item.
+--- Takes the item off when the player unequips it.
 function ITEM:OnPlayerUnequipped(player, extraData)
   player:SetBodygroupClothes(self, true)
 end

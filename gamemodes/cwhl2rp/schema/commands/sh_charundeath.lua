@@ -13,7 +13,9 @@ COMMAND.flags = CMD_DEFAULT
 COMMAND.access = 'a'
 COMMAND.arguments = 1
 
--- Called when the command has been run.
+--- Undoes the permakill of the character named in the first argument.
+--
+-- Online players' characters are changed in place; offline characters are changed in the database.
 function COMMAND:OnRun(player, arguments)
   local charName = string.lower(arguments[1])
 

@@ -13,7 +13,9 @@ COMMAND.access = 'a'
 COMMAND.optionalArguments = 1
 COMMAND.alias = { 'Restart' }
 
--- Called when the command has been run.
+--- Saves data and reloads the current map after a delay; the optional argument is the delay in seconds.
+--
+-- The delay defaults to ten seconds.
 function COMMAND:OnRun(player, arguments)
   local delay = tonumber(arguments[1]) or 10
 

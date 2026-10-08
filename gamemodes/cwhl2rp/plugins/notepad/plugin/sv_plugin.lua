@@ -18,7 +18,10 @@ netstream.Hook('EditNotepad', function(player, entity, text)
   end
 end)
 
--- A function to load the notepads.
+--- Spawns the notepads saved for the current map.
+--
+-- Restores each notepad's owner, position, angles and text, and freezes the ones that were
+-- frozen when saved.
 function cwNotepad:LoadNotepad()
   local notepad = cw.core:RestoreSchemaData('plugins/notepad/'..game.GetMap())
 
@@ -45,7 +48,10 @@ function cwNotepad:LoadNotepad()
   end
 end
 
--- A function to save the notepads.
+--- Saves every `cw_notepad` on the map to the schema data.
+--
+-- Writes `plugins/notepad/<map>` with each notepad's owner, text, position, angles and
+-- whether it can move.
 function cwNotepad:SaveNotepad()
   local notepad = {}
 

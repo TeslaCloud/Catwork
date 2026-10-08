@@ -12,6 +12,7 @@ ENT.Spawnable = false
 ENT.AdminSpawnable = false
 ENT.PhysgunDisabled = true
 
+--- Sets up the networked flags for the water, the supplements and the full state.
 function ENT:SetupDataTables()
   self:DTVar('Int', 0, 'index')
   self:DTVar('Bool', 1, 'breens_water')
@@ -19,6 +20,8 @@ function ENT:SetupDataTables()
   self:DTVar('Bool', 3, 'full')
 end
 
+--- Returns whether the packet holds both water and supplements.
+-- @return [Boolean Whether the packet is full]
 function ENT:IsFull()
   return self:GetDTBool(3)
 end

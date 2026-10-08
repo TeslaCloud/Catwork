@@ -9,7 +9,13 @@ local PLUGIN = PLUGIN
 util.Include('sv_plugin.lua')
 util.Include('cl_plugin.lua')
 
--- A function to draw the background blurs.
+--- Draws the screen blur behind every registered background blur panel.
+--
+-- Replaces the framework's version of this function with one that uses a lighter, blue-tinted
+-- overlay. Each blur fades in over one second from the time it was registered with
+-- `cw.core:RegisterBackgroundBlur`; string keys are always drawn, panel keys only while the
+-- panel is valid and visible. Only works on the client, since it draws with `surface`.
+-- @see cw.core:RemoveBackgroundBlur
 function cw.core:DrawBackgroundBlurs()
   local scrH, scrW = ScrH(), ScrW()
   local sysTime = SysTime()

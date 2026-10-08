@@ -24,6 +24,17 @@ local function AdjustInCombineFavor(player, target, adjust1, adjust2)
   end
 end
 
+--- Called when a player rolls against another player; adds bonuses to both rolls.
+--
+-- Between two non-Combine players, each gets up to 20 points from their strength. When one side
+-- is Combine and the caller's roll is 80 or less, the Combine side gets a bonus based on the rank
+-- in its name (from 4 for `RCT` to 40 for `EOW`, or from the unit number), and the other side
+-- takes a penalty of 2 or 5 offset by up to 20 points from their strength.
+-- @param player [Player The player who rolled]
+-- @param roll [Number The caller's unadjusted roll]
+-- @param max [Number The highest possible roll]
+-- @param target [Player The player being rolled against, or `nil` for a plain roll]
+-- @return [Number Adjustment for the caller's roll, Number Adjustment for the target's roll]
 function PLUGIN:AdjustRollNumber(player, roll, max, target)
   if IsValid(target) then
     -- Battle against combine player.

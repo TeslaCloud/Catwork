@@ -57,7 +57,18 @@ local function SafeIndex(tab, idx)
   return tab[RelativeClamp(idx, 1, #tab)]
 end
 
--- A function to draw a weapon's information.
+--- Draws the information box for the weapon highlighted in the weapon selector.
+--
+-- Shows the item's description, the clip and reserve ammo, and the weapon's instructions, purpose,
+-- contact and author when set. The box is vertically centered on `y`. The `PreDrawWeaponSelectionInfo`
+-- hook gets the box's `info` map (`drawBackground`, `weapon`, `x`, `y`, `width`, `height`, `alpha`) and
+-- can change it before drawing. Does nothing without an item table or a valid weapon.
+--
+-- @param itemTable [Item The weapon's item, as returned by `item.GetByWeapon`]
+-- @param weapon [Weapon The weapon to describe]
+-- @param x [Number Left edge of the box]
+-- @param y [Number Vertical center of the box]
+-- @param alpha [Number Opacity, 0-255]
 function PLUGIN:DrawWeaponInformation(itemTable, weapon, x, y, alpha)
   if !itemTable or !IsValid(weapon) then return end
 
@@ -163,12 +174,20 @@ function PLUGIN:DrawWeaponInformation(itemTable, weapon, x, y, alpha)
   end
 end
 
+--- Called to check whether a HUD element should draw; hides the default weapon selection.
+--
+-- @param element [String The HUD element name]
+-- @return [Boolean False for `CHudWeaponSelection`, otherwise nil]
 function PLUGIN:HUDShouldDraw(element)
   if element == 'CHudWeaponSelection' then
     return false
   end
 end
 
+--- Called when the HUD is painted; draws the open weapon selector and animates scrolling through it.
+--
+-- Shows five weapons around the selected one, scaled by their distance from it, and the selected
+-- weapon's information box beside them.
 function PLUGIN:HUDPaint()
   if self.IsOpen then
     local x, y = ScrW() - 306, ScrH() / 2 - 84, 200
@@ -264,6 +283,7 @@ function PLUGIN:HUDPaint()
   end
 end
 
+--- Called every frame; fades the weapon selector out and closes it five seconds after it was last used.
 function PLUGIN:Think()
   if self.IsOpen then
     if CurTime() - self.OpenTime > 5 then
@@ -278,6 +298,13 @@ function PLUGIN:Think()
   end
 end
 
+--- Builds the five weapon selector entries centered on a weapon index.
+--
+-- Indexes wrap around the local player's weapon list. Each entry has `weapon`, `scale`, `x` and `y`.
+--
+-- @param index [Number Index of the center weapon in the player's weapon list]
+-- @param tab=nil [Boolean True to return the entries instead of storing them in `PLUGIN.Display`]
+-- @return [List<Map> The entries when `tab` is true, otherwise nothing]
 function PLUGIN:MakeDisplay(index, tab)
   local clientWeapons = FixTable(cw.client:GetWeapons())
   local count = table.Count(clientWeapons)
@@ -304,6 +331,12 @@ function PLUGIN:MakeDisplay(index, tab)
   end
 end
 
+--- Called when the selected weapon index changes; opens the selector and starts the scroll animation.
+--
+-- Wrapping from the last weapon to the first (or back) scrolls in the direction of travel.
+--
+-- @param oldIndex [Number The previously selected index]
+-- @param index [Number The newly selected index]
 function PLUGIN:OnWeaponIndexChange(oldIndex, index)
   self.IsOpen = true
   self.OpenTime = CurTime()
@@ -323,12 +356,21 @@ function PLUGIN:OnWeaponIndexChange(oldIndex, index)
   end
 end
 
+--- Called to check whether the weapon selector may open; blocks it while the attack key is held.
+--
+-- @param player [Player The local player]
+-- @param oldIndex [Number The currently selected index]
+-- @param newIndex [Number The index being selected]
+-- @return [Boolean False while attacking, otherwise nil]
 function PLUGIN:ShouldWeaponMenuOpen(player, oldIndex, newIndex)
   if player:KeyDown(IN_ATTACK) then
     return false
   end
 end
 
+--- Called when a weapon is picked in the selector; closes the selector at once.
+--
+-- @param index [Number Index of the picked weapon]
 function PLUGIN:OnWeaponSelected(index)
   self.IsOpen = false
   self.CurAlpha = 0
@@ -337,6 +379,18 @@ end
 do
   local prevIndex = 0
 
+  --- Called when the local player presses a bind; drives the weapon selector.
+  --
+  -- `invprev`, `invnext` and the `slot` binds open the selector or move the selection (pressing the same
+  -- slot again, or slots 1 and 2 alternately, steps through the list); `attack` while it is open selects
+  -- the weapon through the `selectweapon` command and runs the `OnWeaponSelected` hook. Slot binds go to
+  -- an open `cpgui_radiomenu` instead. Nothing happens in vehicles, without a weapon, or when the
+  -- `ShouldWeaponMenuOpen` hook returns false.
+  --
+  -- @param player [Player The local player]
+  -- @param bind [String The bind pressed]
+  -- @param bIsPressed [Boolean Whether the bind was pressed rather than released]
+  -- @return [Boolean True when the selector handled the bind, which blocks it]
   function PLUGIN:PlayerBindPress(player, bind, bIsPressed)
     local weapon = player:GetActiveWeapon()
 

@@ -19,6 +19,7 @@ local browserNames = {
 
 local PANEL = {}
 
+--- Creates the PDA's search bar and registers the panel as `Schema.pdaPanel`.
 function PANEL:Init()
   self.searchBar = vgui.Create('DTextEntry', self)
 
@@ -26,6 +27,9 @@ function PANEL:Init()
   Schema.pdaPanel:Rebuild()
 end
 
+--- Lays out the PDA with a random browser and search engine name.
+--
+-- Pressing enter in the search bar opens a `cwCombinePlayerCard` for the player whose name matches.
 function PANEL:Rebuild()
   self:SetSize(ScrW() * 0.5, ScrH() * 0.6)
   self:SetTitle(table.Random(browserNames))
@@ -51,6 +55,7 @@ function PANEL:Rebuild()
   end
 end
 
+--- Hides the frame's close, minimise and maximise buttons.
 function PANEL:Think()
   if IsValid(self.btnClose) and self.btnClose:IsVisible() then
     self.btnClose:SetVisible(false)
@@ -59,7 +64,11 @@ function PANEL:Think()
   end
 end
 
--- #kill_clientside_fps
+--- Draws the search engine name and up to six players whose names match the search text.
+--
+-- Refugees and rebels are left out of the matches.
+--
+-- @warning [Expensive] Iterates every player each frame while the search bar has text.
 function PANEL:PaintOver(width, height)
   local w, h = util.GetTextSize('DermaNarrow42', combine_search_engine_name)
   local sX, sY = self.searchBar:GetPos()
@@ -108,11 +117,14 @@ function PANEL:PaintOver(width, height)
   end
 end
 
--- Called to by the menu to get the width of the panel.
+--- Returns the PDA's width in the main menu.
+-- @return [Number Half the screen width]
 function PANEL:GetMenuWidth()
   return ScrW() * 0.5
 end
 
+--- Returns the PDA's height in the main menu.
+-- @return [Number 60% of the screen height]
 function PANEL:GetMenuHeight()
   return ScrH() * 0.6
 end
@@ -122,6 +134,7 @@ vgui.Register('cwCombinePDA', PANEL, 'DFrame')
 local PANEL = {}
 PANEL.buttons = {}
 
+--- Creates the player card's civil record list and fires `AddCombinePDAButons` to collect its buttons.
 function PANEL:Init()
   self.buttons = {}
 
@@ -134,6 +147,9 @@ function PANEL:Init()
   self:Rebuild()
 end
 
+--- Lays out the card for its player: civil record, model and the buttons the viewer may use.
+--
+-- Buttons are hidden for Combine targets, and Combine-only buttons for non-Combine viewers.
 function PANEL:Rebuild()
   self:SetTitle('')
 
@@ -189,6 +205,18 @@ function PANEL:Rebuild()
   end
 end
 
+--- Adds an action button to the player card; it appears on the next `Rebuild`.
+--
+-- ```
+-- pda:AddButton('jail', '#PDA_Jail', true, function(card, button)
+--   netstream.Start('Application::PDA::Controller::Jail', card.player)
+-- end)
+-- ```
+--
+-- @param id [String Unique ID of the button]
+-- @param name [String Button text or language key]
+-- @param bIsCombine [Boolean Whether only Combine players see the button]
+-- @param callback [Function Called with the card panel and the button when clicked]
 function PANEL:AddButton(id, name, bIsCombine, callback)
   table.insert(self.buttons, {
     name = name,
@@ -198,6 +226,8 @@ function PANEL:AddButton(id, name, bIsCombine, callback)
   })
 end
 
+--- Sets the player the card shows and rebuilds it.
+-- @param player [Player The player, or a name to look up with `_player.Find`; invalid values are ignored]
 function PANEL:SetPlayer(player)
   if IsValid(player) then
     self.player = player
@@ -211,6 +241,9 @@ function PANEL:SetPlayer(player)
   end
 end
 
+--- Draws the player's name, faction, residence, points, loyalist tier and citizen status.
+--
+-- Combine players show an insufficient permissions message instead of their details.
 function PANEL:PaintOver(width, height)
   if !IsValid(self.player) then
     draw.SimpleText('#PDA_Error', 'DermaNarrow42', 32, 32, Color(255, 100, 100))

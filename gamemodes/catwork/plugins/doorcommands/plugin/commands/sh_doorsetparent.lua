@@ -11,7 +11,8 @@ COMMAND.tip = '#Command_Doorsetparent_Description'
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = 'a'
 
--- Called when the command has been run.
+--- Makes the door the player is looking at the active parent for `DoorSetChild` and outlines it and
+-- its existing children.
 function COMMAND:OnRun(player, arguments)
   local door = player:GetEyeTraceNoCursor().Entity
 

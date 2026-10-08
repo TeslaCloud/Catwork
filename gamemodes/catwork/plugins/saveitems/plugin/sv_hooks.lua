@@ -6,12 +6,12 @@
   with contributions from Cloud Sixteen community.
 --]]
 
--- Called when Clockwork has loaded all of the entities.
+--- Called after Catwork has loaded all of its entities; restores saved shipments and items.
 function cwSaveItems:ClockworkInitPostEntity()
   self:LoadShipments() self:LoadItems()
 end
 
--- Called just after data should be saved.
+--- Called after Catwork saves its data; saves the shipments and items lying on the map.
 function cwSaveItems:PostSaveData()
   self:SaveShipments() self:SaveItems()
 end

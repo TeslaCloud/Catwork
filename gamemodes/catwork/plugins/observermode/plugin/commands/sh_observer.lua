@@ -11,7 +11,7 @@ COMMAND.tip = '#Command_Observer_Description'
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = 'o'
 
--- Called when the command has been run.
+--- Toggles observer mode for the player; does nothing while dead, ragdolled or still leaving observer mode.
 function COMMAND:OnRun(player, arguments)
   if player:Alive() and !player:IsRagdolled() and !player.cwObserverReset then
     if player:GetMoveType(player) == MOVETYPE_NOCLIP then

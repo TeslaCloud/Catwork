@@ -13,7 +13,7 @@ COMMAND.flags = CMD_DEFAULT
 COMMAND.access = 's'
 COMMAND.arguments = 1
 
--- Called when the command has been run.
+--- Removes every area with the given name, ignoring case, from the server and all clients.
 function COMMAND:OnRun(player, arguments)
   local position = player:GetEyeTraceNoCursor().HitPos
   local removed = 0

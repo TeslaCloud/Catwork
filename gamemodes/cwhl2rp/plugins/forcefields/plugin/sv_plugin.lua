@@ -1,3 +1,6 @@
+--- Spawns the forcefields saved for the current map with their saved mode and power state.
+--
+-- Restored fields keep their exact position instead of snapping to the floor.
 function cwForceField:LoadForceFields()
   local forcefields = cw.core:RestoreSchemaData('plugins/forcefields/'..game.GetMap())
 
@@ -11,6 +14,9 @@ function cwForceField:LoadForceFields()
   end
 end
 
+--- Saves the position, angles, mode and power state of every `cw_forcefield` to the schema data.
+--
+-- Writes `plugins/forcefields/<map>`.
 function cwForceField:SaveForceFields()
   local forcefields = {}
 

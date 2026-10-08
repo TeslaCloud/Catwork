@@ -11,7 +11,7 @@ include('shared.lua')
 AddCSLuaFile('cl_init.lua')
 AddCSLuaFile('shared.lua')
 
--- Called when the entity initializes.
+--- Sets up the soda machine model and physics with an empty stock.
 function ENT:Initialize()
   self:SetModel('models/props_interiors/vendingmachinesoda01a.mdl')
 
@@ -22,12 +22,16 @@ function ENT:Initialize()
   self:SetStock(0, true)
 end
 
--- Called when the entity's transmit state should be updated.
+--- Always transmits the machine to every client.
 function ENT:UpdateTransmitState()
   return TRANSMIT_ALWAYS
 end
 
--- A function to create the entity's water.
+--- Takes one can from the stock and dispenses a random Breen's water in front of the machine.
+--
+-- Dispenses a special Breen's water 1 time in 20, a smooth one 10 times in 20 and a regular one otherwise.
+--
+-- @param activator [Player The buyer, recorded as the item entity's owner]
 function ENT:CreateWater(activator)
   self:GiveStock(-1)
   self:EmitSound('buttons/button4.wav')
@@ -62,17 +66,21 @@ function ENT:CreateWater(activator)
   end
 end
 
--- A function to get the entity's default stock.
+--- Returns the stock the machine is refilled to on restock.
+-- @return [Number The default stock, 0 when none was set]
 function ENT:GetDefaultStock()
   return self.defaultStock or 0
 end
 
--- A function to give stock to the entity.
+--- Adds to the machine's stock, clamped between 0 and the default stock.
+-- @param amount [Number Cans to add; negative to take some away]
 function ENT:GiveStock(amount)
   self:SetStock(math.Clamp(self:GetStock() + amount, 0, self:GetDefaultStock()))
 end
 
--- A function to set the entity's stock.
+--- Sets the machine's stock and optionally its default stock.
+-- @param amount [Number The new stock]
+-- @param default=nil [Any A number to use as the default stock, or `true` to make `amount` the default]
 function ENT:SetStock(amount, default)
   self:SetDTInt(0, amount)
 
@@ -85,14 +93,16 @@ function ENT:SetStock(amount, default)
   end
 end
 
--- A function to restock the entity.
+--- Refills the machine to its default stock with a flash and sound.
 function ENT:Restock()
   self:SetFlashDuration(3, true)
   self:EmitSound('buttons/button5.wav')
   self:SetStock(self:GetDefaultStock())
 end
 
--- A function to set the entity's flash duration.
+--- Flashes the machine's status light.
+-- @param duration [Number How long the light flashes, in seconds]
+-- @param action=nil [Boolean `true` for a blue success flash; otherwise a red refusal flash with a sound]
 function ENT:SetFlashDuration(duration, action)
   self:SetDTFloat(0, CurTime() + duration)
 
@@ -104,7 +114,7 @@ function ENT:SetFlashDuration(duration, action)
   end
 end
 
--- Called when the entity's physics should be updated.
+--- Keeps the machine still while nobody holds it and it is not constrained.
 function ENT:PhysicsUpdate(physicsObject)
   if !self:IsPlayerHolding() and !self:IsConstrained() then
     physicsObject:SetVelocity(Vector(0, 0, 0))
@@ -112,7 +122,10 @@ function ENT:PhysicsUpdate(physicsObject)
   end
 end
 
--- Called when the entity is used.
+--- Sells a Breen's water to a citizen for 8 tokens, or lets Combine restock an empty machine.
+--
+-- Citizens can buy once every 10 minutes; an empty machine, a player who cannot pay or one on cooldown
+-- gets a red flash. Uses are ignored within 3 seconds of each other and while the light flashes.
 function ENT:Use(activator, caller)
   if activator:IsPlayer() and activator:GetEyeTraceNoCursor().Entity == self then
     local curTime = CurTime()
@@ -141,7 +154,8 @@ function ENT:Use(activator, caller)
   end
 end
 
--- Called when a player attempts to use a tool.
+--- Blocks every toolgun action on the machine.
+-- @return [Boolean Always `false`]
 function ENT:CanTool(player, trace, tool)
   return false
 end

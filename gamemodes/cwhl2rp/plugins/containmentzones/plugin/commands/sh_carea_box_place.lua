@@ -5,6 +5,9 @@ COMMAND.flags = CMD_DEFAULT
 COMMAND.access = 's'
 COMMAND.arguments = 1
 
+--- Adds a box containment zone between the player's start and end corners.
+--
+-- The first argument is the zone's radiation level. Clears the player's corners afterwards.
 function COMMAND:OnRun(player, arguments)
   local trace = player:GetEyeTraceNoCursor()
 

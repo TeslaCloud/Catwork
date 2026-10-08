@@ -13,7 +13,9 @@ COMMAND.flags = CMD_HEAVY
 COMMAND.arguments = 1
 COMMAND.alias = { 'CharSetClass', 'ChangeClass' }
 
--- Called when the command has been run.
+--- Moves the target player into a class; arguments are the player name and the class name or ID.
+--
+-- Respects the class limit unless `PlayerCanBypassClassLimit` allows it, and runs `PlayerCanChangeClass`.
 function COMMAND:OnRun(player, arguments)
   local class = cw.class:FindByID(arguments[2])
   local target = _player.Find(arguments[1])

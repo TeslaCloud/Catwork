@@ -6,7 +6,10 @@
   with contributions from Cloud Sixteen community.
 --]]
 
--- Called when an entity's target ID HUD should be painted.
+--- Called when an entity's target ID is painted; labels containers with their custom or default name
+-- and an "open" hint.
+-- @param entity [Entity The entity being looked at]
+-- @param info [Map Drawing state with `x`, `y` and `alpha`; `y` is advanced past the drawn lines]
 function cwStorage:HUDPaintEntityTargetID(entity, info)
   local colorTargetID = cw.option:GetColor('target_id')
   local colorWhite = cw.option:GetColor('white')
@@ -26,7 +29,9 @@ function cwStorage:HUDPaintEntityTargetID(entity, info)
   end
 end
 
--- Called when an entity's menu options are needed.
+--- Called when an entity's menu options are collected; adds an "Open" option to containers.
+-- @param entity [Entity The entity the menu is for]
+-- @param options [Map Option labels mapped to their arguments; changed in place]
 function cwStorage:GetEntityMenuOptions(entity, options)
   if cw.entity:IsPhysicsEntity(entity) then
     local model = string.lower(entity:GetModel())
@@ -37,7 +42,10 @@ function cwStorage:GetEntityMenuOptions(entity, options)
   end
 end
 
--- Called when the local player's storage is rebuilt.
+--- Called when the local player's storage panel is rebuilt; shows the container's message above its
+-- contents.
+-- @param panel [Panel The storage panel list]
+-- @param categories [List The item categories shown in the panel]
 function cwStorage:PlayerStorageRebuilt(panel, categories)
   if panel.storageType == 'Container' then
     local entity = cw.storage:GetEntity()

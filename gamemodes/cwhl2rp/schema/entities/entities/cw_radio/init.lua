@@ -11,7 +11,7 @@ include('shared.lua')
 AddCSLuaFile('cl_init.lua')
 AddCSLuaFile('shared.lua')
 
--- Called when the entity initializes.
+--- Sets up the citizen radio model, physics and 25 health.
 function ENT:Initialize()
   self:SetModel('models/props_lab/citizenradio.mdl')
   self:SetMoveType(MOVETYPE_VPHYSICS)
@@ -28,22 +28,24 @@ function ENT:Initialize()
   end
 end
 
--- Called when the entity's transmit state should be updated.
+--- Always transmits the radio to every client.
 function ENT:UpdateTransmitState()
   return TRANSMIT_ALWAYS
 end
 
--- A function to get the entity's item table.
+--- Returns the item the radio was placed from.
+-- @return [Item The item set with `ENT:SetItemTable`, or `nil`]
 function ENT:GetItemTable()
   return self.cwItemTable
 end
 
--- A function to set the entity's item table.
+--- Sets the item the radio was placed from.
+-- @param itemTable [Item The stationary radio item]
 function ENT:SetItemTable(itemTable)
   self.cwItemTable = itemTable
 end
 
--- A function to explode the entity.
+--- Plays a glass impact effect and impact sound at the radio.
 function ENT:Explode()
   local effectData = EffectData()
 
@@ -56,7 +58,7 @@ function ENT:Explode()
   self:EmitSound('physics/body/body_medium_impact_soft'..math.random(1, 7)..'.wav')
 end
 
--- Called when the entity takes damage.
+--- Subtracts the damage from the radio's health and destroys it when it reaches 0.
 function ENT:OnTakeDamage(damageInfo)
   self:SetHealth(math.max(self:Health() - damageInfo:GetDamage(), 0))
 
@@ -65,17 +67,19 @@ function ENT:OnTakeDamage(damageInfo)
   end
 end
 
--- A function to set the frequency.
+--- Sets the frequency the radio is tuned to, networked to every client.
+-- @param frequency [String The frequency, such as `101.1`]
 function ENT:SetFrequency(frequency)
   self:SetNWString('frequency', frequency)
 end
 
--- A function to set whether the entity is off.
+--- Turns the radio off or on.
+-- @param off [Boolean Whether the radio is off]
 function ENT:SetOff(off)
   self:SetDTBool(0, off)
 end
 
--- A function to toggle whether the entity is off.
+--- Turns the radio on when it is off and off when it is on.
 function ENT:Toggle()
   if self:IsOff() then
     self:SetOff(false)

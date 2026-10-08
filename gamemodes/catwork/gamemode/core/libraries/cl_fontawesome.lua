@@ -656,6 +656,12 @@ cw.fonts:Add('cwFontAwesome', {
   antialias = true
 })
 
+--- Returns the Font Awesome character for an icon name.
+--
+-- Draw the result with the `cwFontAwesome` font.
+-- @param id [String Full icon name, such as `'fa-star'`]
+-- @return [String The icon's UTF-8 character, or `id` unchanged if it is not a known icon]
+-- @see cw.FontIcons:Draw
 function cw.FontIcons:GetIcon(id)
   if faCodes[id] then
     if !buffer[id] then
@@ -669,6 +675,21 @@ function cw.FontIcons:GetIcon(id)
   return id
 end
 
+--- Draws a Font Awesome icon.
+--
+-- The name may be written as `'fa fa-star'`, `'fa-star'` or `'star'`. Draws
+-- nothing if the icon is not known.
+--
+-- ```
+-- cw.FontIcons:Draw('fa-user', 4, 4, 24, Color(255, 200, 0))
+-- ```
+--
+-- @param id [String Name of the icon]
+-- @param x [Number Horizontal position]
+-- @param y [Number Vertical position]
+-- @param size=16 [Number Size of the icon in pixels]
+-- @param color=Color(255,255,255) [Color Color of the icon]
+-- @see cw.FontIcons:GetIcon
 function cw.FontIcons:Draw(id, x, y, size, color)
   if id:StartsWith('fa ') then
     id = id:sub(4, id:len())

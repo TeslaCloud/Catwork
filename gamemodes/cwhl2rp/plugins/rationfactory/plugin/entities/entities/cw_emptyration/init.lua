@@ -8,7 +8,7 @@ include('shared.lua')
 AddCSLuaFile('cl_init.lua')
 AddCSLuaFile('shared.lua')
 
--- Called when the entity initializes.
+--- Sets up the empty ration packet with 25 health and nothing inside.
 function ENT:Initialize()
   self:SetModel('models/weapons/w_package.mdl')
 
@@ -33,6 +33,7 @@ function ENT:Initialize()
   end
 end
 
+--- Plays the effect and sound of the packet breaking apart.
 function ENT:Explode()
   local effectData = EffectData()
 
@@ -45,10 +46,12 @@ function ENT:Explode()
   self:EmitSound('physics/body/body_medium_impact_soft'..math.random(1, 7)..'.wav')
 end
 
+--- Makes the packet always transmit to clients.
 function ENT:UpdateTransmitState()
   return TRANSMIT_ALWAYS
 end
 
+--- Takes damage off the packet's health and breaks it when the health runs out.
 function ENT:OnTakeDamage(damageInfo)
   self:SetHealth(math.max(self:Health() - damageInfo:GetDamage(), 0))
 
@@ -57,6 +60,7 @@ function ENT:OnTakeDamage(damageInfo)
   end
 end
 
+--- Absorbs a touching `breens_water` or `citizen_supplements` item entity the packet still lacks.
 function ENT:Touch(ent)
   if !self:GetDTBool(2) or !self:GetDTBool(1) then
     if IsValid(ent) and ent:GetClass() == 'cw_item' then
@@ -87,6 +91,7 @@ function ENT:Touch(ent)
   end
 end
 
+--- Marks the packet full once it holds both the water and the supplements.
 function ENT:CheckFull()
   if self:GetDTBool(2) and self:GetDTBool(1) then
     self:SetDTBool(3, true)

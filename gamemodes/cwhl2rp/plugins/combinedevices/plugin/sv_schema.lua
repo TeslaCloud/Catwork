@@ -1,5 +1,10 @@
 local PLUGIN = PLUGIN
 
+--- Saves the Combine devices on the map to the schema data.
+--
+-- Writes access monitors (with their texts, access level and status), `hl2_info_citizen` and
+-- `hl2_info_card` terminals (with their locked state) and `hl2_combinemonitor` screens to
+-- separate files under `plugins/combinedevices/` for the current map.
 function PLUGIN:SaveCombineDevices()
   local cmbMonitors = {}
 
@@ -53,6 +58,10 @@ function PLUGIN:SaveCombineDevices()
   cw.core:SaveSchemaData('plugins/combinedevices/infomonitor/'..game.GetMap(), infoMonitor)
 end
 
+--- Spawns the Combine devices saved for the current map, frozen in place.
+--
+-- Restores the access monitors' texts, access level and status and the terminals' locked
+-- state.
 function PLUGIN:LoadCombineDevices()
   local cmbMonitors = cw.core:RestoreSchemaData('plugins/combinedevices/monitors/'..game.GetMap())
 

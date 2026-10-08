@@ -11,7 +11,7 @@ include('shared.lua')
 AddCSLuaFile('cl_init.lua')
 AddCSLuaFile('shared.lua')
 
--- Called when the entity initializes.
+--- Sets up the gear as a non-solid, shadowless physics entity.
 function ENT:Initialize()
   self:SetMoveType(MOVETYPE_VPHYSICS)
   self:PhysicsInit(SOLID_VPHYSICS)
@@ -19,12 +19,17 @@ function ENT:Initialize()
   self:DrawShadow(false)
 end
 
--- Called when the entity's transmit state should be updated.
+--- Always transmits the gear to every client.
 function ENT:UpdateTransmitState()
   return TRANSMIT_ALWAYS
 end
 
--- A function to get whether the entity should exist.
+--- Returns whether the gear should still exist on the player.
+--
+-- Uses the item's `GetAttachmentExists(player, entity)` when defined. Weapon items exist while the player (or
+-- their ragdoll) has the weapon; other items always exist.
+-- @param player [Player The player wearing the gear]
+-- @return [Boolean Whether the gear should exist, or `nil` when the entity has no item]
 function ENT:GetShouldExist(player)
   local itemTable = self:GetItemTable()
 
@@ -45,7 +50,12 @@ function ENT:GetShouldExist(player)
   end
 end
 
--- A function to get whether the entity is visible.
+--- Returns whether the gear should be visible on the player.
+--
+-- Uses the item's `GetAttachmentVisible(player, entity)` when defined. Weapon gear is hidden while that
+-- weapon is the active one; other gear is always visible.
+-- @param player [Player The player wearing the gear]
+-- @return [Boolean Whether the gear is visible, or `nil` when the entity has no item]
 function ENT:GetIsVisible(player)
   local itemTable = self:GetItemTable()
 
@@ -60,19 +70,25 @@ function ENT:GetIsVisible(player)
   end
 end
 
--- A function to set whether the player must have the item.
+--- Sets whether the gear is removed when the player no longer has the item in their inventory.
+-- @param bMustHave [Boolean Remove the gear once the player loses the item]
 function ENT:SetMustHave(bMustHave)
   self.cwMustHave = bMustHave
 end
 
--- A function to set the entity's item.
+--- Sets the gear slot and item the entity represents and networks the item's index.
+-- @param gearClass [String The gear slot name, used as the key in the player's gear table]
+-- @param itemTable [Item The item instance shown as gear]
 function ENT:SetItemTable(gearClass, itemTable)
   self.cwGearClass = gearClass
   self.cwItemTable = itemTable
   self:SetDTInt(0, itemTable.index)
 end
 
--- Called each frame.
+--- Removes or hides the gear as `ENT:GetShouldExist` and `ENT:GetIsVisible` decide, and copies the owner's material.
+--
+-- Recreates the gear with `cw.player:CreateGear` when its model changed or the item's `ShouldGearRespawn`
+-- says so, and removes it when it must be carried (`ENT:SetMustHave`) but the player lost the item.
 function ENT:Think()
   local player = self:GetPlayer()
 

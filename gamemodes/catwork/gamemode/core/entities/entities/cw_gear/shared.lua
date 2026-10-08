@@ -15,12 +15,16 @@ ENT.Spawnable = false
 ENT.AdminSpawnable = false
 ENT.UsableInVehicle = true
 
--- Called when the data tables are setup.
+--- Sets up the networked `Index` integer holding the item's instance index.
 function ENT:SetupDataTables()
   self:DTVar('Int', 0, 'Index')
 end
 
--- A function to get the entity's real position.
+--- Returns where the gear should be drawn: the owner's attachment bone plus the item's offsets.
+--
+-- Uses the ragdoll's bone when the owner is ragdolled. The item's `AdjustAttachmentOffsetInfo(player, entity,
+-- info)` can change `info.offsetVector` and `info.offsetAngle` before they are applied.
+-- @return [Vector The world position, or `nil` when the owner or bone is missing, Angle The world angles]
 function ENT:GetRealPosition()
   local offsetVector = self:GetOffsetVector()
   local offsetAngle = self:GetOffsetAngle()
@@ -59,13 +63,17 @@ function ENT:GetRealPosition()
   end
 end
 
--- A function to get the entity's bone.
+--- Returns the name of the bone the gear is attached to.
+-- @return [String The item's `attachmentBone`, or an empty string]
 function ENT:GetBone()
   local itemTable = self:GetItemTable()
   return itemTable.attachmentBone or ''
 end
 
--- A function to get the entity's item table.
+--- Returns the item instance shown as this gear.
+--
+-- On the client it uses the fetched item data, falling back to `item.FindByID` with the networked index.
+-- @return [Item The item instance, or `nil` if it is not known]
 function ENT:GetItemTable()
   if CLIENT then
     local itemTable = cw.entity:FetchItemTable(self)
@@ -80,7 +88,8 @@ function ENT:GetItemTable()
   return self.cwItemTable
 end
 
--- A function to get the entity's player.
+--- Returns the player who owns the gear.
+-- @return [Player The owner, or `nil` when the owner is not a valid player]
 function ENT:GetPlayer()
   local player = self:GetOwner()
 
@@ -89,13 +98,15 @@ function ENT:GetPlayer()
   end
 end
 
--- A function to get the entity's offset vector.
+--- Returns the gear's position offset from its bone.
+-- @return [Vector The item's `attachmentOffsetVector`, or a zero vector]
 function ENT:GetOffsetVector()
   local itemTable = self:GetItemTable()
   return itemTable.attachmentOffsetVector or Vector(0, 0, 0)
 end
 
--- A function to get the entity's offset angle.
+--- Returns the gear's angle offset from its bone.
+-- @return [Angle The item's `attachmentOffsetAngles`, or a zero angle]
 function ENT:GetOffsetAngle()
   local itemTable = self:GetItemTable()
   return itemTable.attachmentOffsetAngles or Angle(0, 0, 0)

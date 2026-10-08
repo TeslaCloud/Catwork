@@ -6,6 +6,14 @@
   with contributions from Cloud Sixteen community.
 --]]
 
+--- Called when a player's access to a door is checked; grants access to the owner of a permanent door.
+--
+-- A character owns a permanent door when its `PermaDoorSecret` character data matches the door's secret.
+-- @param player [Player The player whose access is checked]
+-- @param door [Entity The door]
+-- @param access [Number The `DOOR_ACCESS_*` level being checked]
+-- @param isAccurate [Boolean Whether the exact access level must match]
+-- @return [Boolean `true` for the door's owner, otherwise `nil` to let other hooks decide]
 function cwPermaDoors:PlayerDoesHaveDoorAccess(player, door, access, isAccurate)
   local secretKey = player:GetCharacterData('PermaDoorSecret')
 
@@ -18,10 +26,16 @@ function cwPermaDoors:PlayerDoesHaveDoorAccess(player, door, access, isAccurate)
   end
 end
 
+--- Called after Catwork has loaded all map entities; restores the permanent doors.
 function cwPermaDoors:ClockworkInitPostEntity()
   self:LoadPermaDoors()
 end
 
+--- Restores the permanent doors saved for the current map.
+--
+-- Saved doors are matched to map doors by position; each matched door is made unownable,
+-- gets its saved name and text, and is added to `cwPermaDoors.stored`.
+-- @see cwPermaDoors:SavePermaDoors
 function cwPermaDoors:LoadPermaDoors()
   local positions = {}
   local data = cw.core:RestoreSchemaData('plugins/permadoors/'..game.GetMap())
@@ -49,6 +63,8 @@ function cwPermaDoors:LoadPermaDoors()
   end
 end
 
+--- Saves the name, text, secret and position of every permanent door to `plugins/permadoors/<map>`.
+-- @see cwPermaDoors:LoadPermaDoors
 function cwPermaDoors:SavePermaDoors()
   local toSave = {}
 

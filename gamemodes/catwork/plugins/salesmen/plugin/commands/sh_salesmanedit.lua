@@ -13,7 +13,8 @@ COMMAND.flags = CMD_DEFAULT
 COMMAND.access = 's'
 COMMAND.optionalArguments = 1
 
--- Called when the command has been run.
+--- Removes the salesman the player is looking at and opens the editor with its settings, so closing
+-- the editor respawns it in place.
 function COMMAND:OnRun(player, arguments)
   local target = player:GetEyeTraceNoCursor().Entity
 

@@ -8,7 +8,14 @@
 
 local PANEL = {}
 
--- A function to add a new sheet.
+--- Adds a sheet with a themed navigation button that shows the panel when clicked.
+--
+-- Uses a plain image button when `ButtonOnly` is set. The first sheet added becomes the active one.
+-- Unlike `DColumnSheet:AddSheet`, nothing is returned, and nothing is added when `panel` is not valid.
+--
+-- @param label [String Text of the navigation button]
+-- @param panel [Panel Panel shown when the sheet is active]
+-- @param material [String Icon of the navigation button]
 function PANEL:AddSheet(label, panel, material)
   if !IsValid(panel) then
     return
@@ -60,7 +67,8 @@ function PANEL:AddSheet(label, panel, material)
   end
 end
 
--- A function to set the active button.
+--- Makes a navigation button the active one, showing its panel and hiding the previous one.
+-- @param active [Panel The navigation button to activate]
 function PANEL:SetActiveButton(active)
   if self.ActiveButton == active then
     return

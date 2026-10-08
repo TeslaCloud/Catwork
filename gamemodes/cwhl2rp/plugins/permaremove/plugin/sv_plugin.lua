@@ -1,6 +1,9 @@
 local PLUGIN = PLUGIN
 
--- A function to load the door data.
+--- Removes every map entity whose class and exact position match an entry saved for the current map.
+--
+-- Resets `self.removeData` to an empty table; the loaded entries are not added back to it.
+-- @see PLUGIN:SaveRemoves
 function PLUGIN:LoadRemoves()
   self.removeData = {}
 
@@ -43,7 +46,8 @@ function PLUGIN:LoadRemoves()
   end
 end
 
--- A function to save the door data.
+--- Saves the class and position of every entity in `self.removeData` to `plugins/removeData/<map>`.
+-- @see PLUGIN:LoadRemoves
 function PLUGIN:SaveRemoves()
   local removeData = {}
 

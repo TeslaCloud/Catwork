@@ -28,17 +28,33 @@ cw.limb.bones = {
   ['ValveBiped.Bip01_Neck1'] = HITGROUP_HEAD
 }
 
--- A function to convert a bone to a hit group.
+--- Returns the hit group a bone belongs to.
+--
+-- @param bone [String Bone name, such as `'ValveBiped.Bip01_Head1'`]
+-- @return [Number The `HITGROUP_*` value; `HITGROUP_CHEST` for bones not in `cw.limb.bones`]
 function cw.limb:BoneToHitGroup(bone)
   return self.bones[bone] or HITGROUP_CHEST
 end
 
--- A function to get whether limb damage is active.
+--- Returns whether the limb damage system is enabled.
+--
+-- Reads the `limb_damage_system` config.
+--
+-- @return [Boolean Whether limb damage is enabled]
 function cw.limb:IsActive()
   return config.Get('limb_damage_system'):Get()
 end
 
 if SERVER then
+  --- Adds damage to one of a player's limbs.
+  --
+  -- Damage is rounded up and the limb's total is capped at 100. The damage is stored in the
+  -- `LimbData` character data, sent to the player and the `PlayerLimbTakeDamage` hook is run (via
+  -- `hook.Run`). Does nothing if the character has no limb data.
+  --
+  -- @param player [Player The injured player]
+  -- @param hitGroup [Number The `HITGROUP_*` of the limb]
+  -- @param damage [Number Damage to add]
   function cw.limb:TakeDamage(player, hitGroup, damage)
     local newDamage = math.ceil(damage)
     local limbData = player:GetCharacterData('LimbData')
@@ -54,7 +70,11 @@ if SERVER then
     end
   end
 
-  -- A function to heal a player's body.
+  --- Heals every damaged limb of a player by the same amount.
+  --
+  -- @param player [Player The player to heal]
+  -- @param amount [Number Damage to remove from each limb]
+  -- @see cw.limb:HealDamage
   function cw.limb:HealBody(player, amount)
     local limbData = player:GetCharacterData('LimbData')
 
@@ -65,7 +85,15 @@ if SERVER then
     end
   end
 
-  -- A function to heal a player's limb damage.
+  --- Removes damage from one of a player's limbs.
+  --
+  -- The amount is rounded up. A fully healed limb is removed from the `LimbData` character data.
+  -- The change is sent to the player and the `PlayerLimbDamageHealed` hook is run (via
+  -- `hook.Run`). Does nothing if the limb is not damaged.
+  --
+  -- @param player [Player The player to heal]
+  -- @param hitGroup [Number The `HITGROUP_*` of the limb]
+  -- @param amount [Number Damage to remove]
   function cw.limb:HealDamage(player, hitGroup, amount)
     local newAmount = math.ceil(amount)
     local limbData = player:GetCharacterData('LimbData')
@@ -85,7 +113,12 @@ if SERVER then
     end
   end
 
-  -- A function to reset a player's limb damage.
+  --- Heals all of a player's limbs at once.
+  --
+  -- Clears the `LimbData` character data, tells the player and runs the `PlayerLimbDamageReset`
+  -- hook (via `hook.Run`).
+  --
+  -- @param player [Player The player to heal]
   function cw.limb:ResetDamage(player)
     player:SetCharacterData('LimbData', {})
 
@@ -94,7 +127,10 @@ if SERVER then
     hook.Run('PlayerLimbDamageReset', player)
   end
 
-  -- A function to get whether any of a player's limbs are damaged.
+  --- Returns whether any of a player's limbs are damaged.
+  --
+  -- @param player [Player The player to check]
+  -- @return [Boolean Whether any limb has damage]
   function cw.limb:IsAnyDamaged(player)
     local limbData = player:GetCharacterData('LimbData')
 
@@ -105,12 +141,26 @@ if SERVER then
     end
   end
 
-  -- A function to get a player's limb health.
+  --- Returns the health of one of a player's limbs, 100 minus its damage.
+  --
+  -- With `asFraction`, the damage fraction is subtracted from 100, so the result stays between 99
+  -- and 100 instead of becoming a fraction.
+  --
+  -- @param player [Player The player to check]
+  -- @param hitGroup [Number The `HITGROUP_*` of the limb]
+  -- @param asFraction=nil [Boolean Subtract the damage as a fraction of 100]
+  -- @return [Number The limb's health]
+  -- @see cw.limb:GetDamage
   function cw.limb:GetHealth(player, hitGroup, asFraction)
     return 100 - self:GetDamage(player, hitGroup, asFraction)
   end
 
-  -- A function to get a player's limb damage.
+  --- Returns the damage of one of a player's limbs.
+  --
+  -- @param player [Player The player to check]
+  -- @param hitGroup [Number The `HITGROUP_*` of the limb]
+  -- @param asFraction=nil [Boolean Return the damage as a fraction from 0 to 1]
+  -- @return [Number The limb's damage from 0 to 100 (or 0 to 1); 0 when limb damage is disabled]
   function cw.limb:GetDamage(player, hitGroup, asFraction)
     if !config.Get('limb_damage_system'):Get() then
       return 0
@@ -152,7 +202,10 @@ else
     [HITGROUP_HEAD] = 'Head'
   }
 
-  -- A function to get a limb's texture.
+  --- Returns the material used to draw a limb on the limb status display.
+  --
+  -- @param hitGroup [Any The `HITGROUP_*` of the limb, or `'body'` for the whole body outline]
+  -- @return [IMaterial The limb's material, or `nil` for unknown hit groups]
   function cw.limb:GetTexture(hitGroup)
     if hitGroup == 'body' then
       return self.bodyTexture
@@ -161,12 +214,20 @@ else
     end
   end
 
-  -- A function to get a limb's name.
+  --- Returns the display name of a limb.
+  --
+  -- @param hitGroup [Number The `HITGROUP_*` of the limb]
+  -- @return [String The limb's name, such as `'Right Arm'`; `'Generic'` for unknown hit groups]
   function cw.limb:GetName(hitGroup)
     return self.names[hitGroup] or 'Generic'
   end
 
-  -- A function to get a limb color.
+  --- Returns the color a limb is drawn in for its health.
+  --
+  -- Green above 75, yellow above 50, orange above 25 and red otherwise.
+  --
+  -- @param health [Number Limb health from 0 to 100]
+  -- @return [Color The limb's color]
   function cw.limb:GetColor(health)
     if health > 75 then
       return Color(166, 243, 76, 255)
@@ -179,12 +240,23 @@ else
     end
   end
 
-  -- A function to get the local player's limb health.
+  --- Returns the health of one of the local player's limbs, 100 minus its damage.
+  --
+  -- Client version of the server's `cw.limb:GetHealth`. With `asFraction`, the damage fraction is
+  -- subtracted from 100, so the result stays between 99 and 100.
+  --
+  -- @param hitGroup [Number The `HITGROUP_*` of the limb]
+  -- @param asFraction=nil [Boolean Subtract the damage as a fraction of 100]
+  -- @return [Number The limb's health]
   function cw.limb:GetHealth(hitGroup, asFraction)
     return 100 - self:GetDamage(hitGroup, asFraction)
   end
 
-  -- A function to get the local player's limb damage.
+  --- Returns the damage of one of the local player's limbs, as networked by the server.
+  --
+  -- @param hitGroup [Number The `HITGROUP_*` of the limb]
+  -- @param asFraction=nil [Boolean Return the damage as a fraction from 0 to 1]
+  -- @return [Number The limb's damage from 0 to 100 (or 0 to 1); 0 when limb damage is disabled]
   function cw.limb:GetDamage(hitGroup, asFraction)
     if !config.Get('limb_damage_system'):Get() then
       return 0
@@ -203,7 +275,9 @@ else
     return 0
   end
 
-  -- A function to get whether any of the local player's limbs are damaged.
+  --- Returns whether any of the local player's limbs are damaged.
+  --
+  -- @return [Boolean Whether any limb has damage]
   function cw.limb:IsAnyDamaged()
     return table.Count(self.stored) > 0
   end

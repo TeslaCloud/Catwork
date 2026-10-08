@@ -9,6 +9,13 @@ cwCTO.socioStatus = cwCTO.socioStatus or 'GREEN'
 
 cwCTO.debug_paintBenchmark = cwCTO.debug_paintBenchmark or 0
 
+--- Updates the biosignal markers shown on the local player's HUD.
+--
+-- Drops expired requests (after 60 seconds) and markers of units that no longer count,
+-- marks the remaining markers as lost and then refreshes the marker above every other living
+-- Combine unit with a biosignal, unless the local player's own biosignal is gone. Lost
+-- markers expire after 120 seconds. Called by `Schema:AddCombineDisplayLine` for every
+-- uncoloured display line.
 function cwCTO:UpdateBiosignalLocations()
   local curTime = CurTime()
 
@@ -59,7 +66,12 @@ function cwCTO:UpdateBiosignalLocations()
   end
 end
 
--- Called when the foreground HUD should be painted.
+--- Called to paint the HUD foreground; draws the Combine biosignal overlay.
+--
+-- For Combine players, draws unit biosignal markers, requests for assistance, Combine
+-- cameras with the violations they see and, within 2048 units (three times that while
+-- zoomed), possible movement violations of other players. Markers near the centre of the
+-- screen show more detail.
 function cwCTO:HUDPaintForeground()
   local startTime = SysTime()
 
@@ -382,7 +394,7 @@ netstream.Hook('RecalculateHUDObjectives', function(data)
   cwCTO.hudObjectives = lines
 end)
 
--- Called when the top screen HUD should be painted.
+--- Called to paint the top of the screen; shows Combine players the socio-status and HUD objectives.
 function cwCTO:HUDPaintTopScreen()
   local blackFadeAlpha = cw.core:GetBlackFadeAlpha()
   local colorWhite = cw.option:GetColor('white')

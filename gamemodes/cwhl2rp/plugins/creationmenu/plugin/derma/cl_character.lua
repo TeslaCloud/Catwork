@@ -8,7 +8,11 @@
 
 local PANEL = {}
 
--- Called when the panel is initialized.
+--- Builds the main menu with its title, buttons and character model preview.
+--
+-- Creates the schema title and credits, the community, new, load, forum and leave buttons, the
+-- creation navigation buttons and the model preview.
+-- Skipped when the theme's `PreCharacterMenuInit` returns true; calls `PostCharacterMenuInit` after.
 function PANEL:Init()
   if !cw.theme:Call('PreCharacterMenuInit', self) then
     local smallTextFont = cw.option:GetFont('menu_text_small')
@@ -213,7 +217,12 @@ function PANEL:Init()
   end
 end
 
--- A function to fade in the model panel.
+--- Moves the character model preview next to the active panel and fades it in with a model.
+--
+-- Does nothing on screens shorter than 768 pixels.
+-- @param model [String Model path to show]
+-- @return [Boolean `true` when the screen is too small or the fade started, `false` if the preview was
+--   already visible or fading]
 function PANEL:FadeInModelPanel(model)
   if ScrH() < 768 then
     return true
@@ -236,12 +245,16 @@ function PANEL:FadeInModelPanel(model)
   end
 end
 
--- A function to fade out the model panel.
+--- Fades out the character model preview.
 function PANEL:FadeOutModelPanel()
   self.characterModel:FadeOut(0.5)
 end
 
--- A function to set the model panel's model.
+--- Sets the model shown in the character model preview.
+--
+-- Also applies the weapon model from the `GetModelSelectWeaponModel` hook and the sequence
+-- from the `GetModelSelectSequence` hook, when they return one.
+-- @param model [String Model path to show]
 function PANEL:SetModelPanelModel(model)
   if self.characterModel.currentModel != model then
     self.characterModel.currentModel = model
@@ -267,7 +280,10 @@ function PANEL:SetModelPanelModel(model)
   end
 end
 
--- A function to return to the main menu.
+--- Closes the active panel and returns to the title screen.
+--
+-- Fades out and removes the active panel, then fades the title back in and hides the model
+-- preview and the creation navigation.
 function PANEL:ReturnToMainMenu()
   local panel = cw.character:GetActivePanel()
 
@@ -291,7 +307,7 @@ function PANEL:ReturnToMainMenu()
   self:FadeOutNavigation()
 end
 
--- A function to fade out the navigation.
+--- Fades out the previous, cancel and next buttons, unless the theme's `PreCharacterFadeOutNavigation` returns true.
 function PANEL:FadeOutNavigation()
   if !cw.theme:Call('PreCharacterFadeOutNavigation', self) then
     self.previousButton:FadeOut(0.5)
@@ -300,7 +316,7 @@ function PANEL:FadeOutNavigation()
   end
 end
 
--- A function to fade in the navigation.
+--- Fades in the previous, cancel and next buttons, unless the theme's `PreCharacterFadeInNavigation` returns true.
 function PANEL:FadeInNavigation()
   if !cw.theme:Call('PreCharacterFadeInNavigation', self) then
     self.previousButton:FadeIn(0.5)
@@ -309,7 +325,7 @@ function PANEL:FadeInNavigation()
   end
 end
 
--- A function to fade out the title.
+--- Fades out the title, credits and main menu buttons, unless the theme's `PreCharacterFadeOutTitle` returns true.
 function PANEL:FadeOutTitle()
   if !cw.theme:Call('PreCharacterFadeOutTitle', self) then
     self.subLabel:FadeOut(0.5)
@@ -324,7 +340,7 @@ function PANEL:FadeOutTitle()
   end
 end
 
--- A function to fade in the title.
+--- Fades in the title, credits and main menu buttons, unless the theme's `PreCharacterFadeInTitle` returns true.
 function PANEL:FadeInTitle()
   if !cw.theme:Call('PreCharacterFadeInTitle', self) then
     self.subLabel:FadeIn(0.5)
@@ -339,7 +355,22 @@ function PANEL:FadeInTitle()
   end
 end
 
--- A function to open a panel.
+--- Opens a panel inside the character menu, replacing the active one.
+--
+-- The previous active panel fades out and is removed first; otherwise the title fades out.
+-- The new panel becomes `cw.character.activePanel`. Passing `childData` marks it as part of the
+-- creation process and shows the navigation buttons. Skipped when the theme's
+-- `PreCharacterMenuOpenPanel` returns true.
+--
+-- ```
+-- self:OpenPanel('cw.characterList', nil, function(panel)
+--   cw.character:RefreshPanelList()
+-- end)
+-- ```
+--
+-- @param vguiName [String Registered name of the panel to create]
+-- @param childData=nil [Any Creation step data; stored as `self.childData`]
+-- @param Callback=nil [Function Called with the new panel once it has been created]
 function PANEL:OpenPanel(vguiName, childData, Callback)
   if !cw.theme:Call('PreCharacterMenuOpenPanel', self, vguiName, childData, Callback) then
     local panel = cw.character:GetActivePanel()
@@ -397,7 +428,8 @@ function PANEL:OpenPanel(vguiName, childData, Callback)
   end
 end
 
--- Called when the panel is painted.
+--- Draws the schema logo, the header bar and, during character creation, the progress bar with each step's name.
+-- @return [Boolean Always `true`, so Derma skips its default painting]
 function PANEL:Paint(w, h)
   if !cw.theme:Call('PreCharacterMenuPaint', self) then
     local schemaLogo = cw.option:GetKey('schema_logo')
@@ -492,7 +524,10 @@ function PANEL:Paint(w, h)
   return true
 end
 
--- Called each frame.
+--- Updates the menu every frame: background blur, button visibility, disabled states and labels.
+--
+-- Buttons follow the `community_button_enable` and `forum_button_enable` configs, and the new
+-- and load buttons are disabled when the character limit is reached or characters are loading.
 function PANEL:Think()
   if !cw.theme:Call('PreCharacterMenuThink', self) then
     local characters = table.Count(cw.character:GetAll())

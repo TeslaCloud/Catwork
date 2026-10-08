@@ -13,7 +13,7 @@ COMMAND.access = 'o'
 COMMAND.arguments = 2
 COMMAND.alias = { 'SetName' }
 
--- Called when the command has been run.
+--- Renames the target character; arguments are the character name and the new name.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
 

@@ -15,7 +15,7 @@ ENT.Spawnable = false
 ENT.AdminSpawnable = false
 ENT.UsableInVehicle = true
 
--- Called when the data tables are setup.
+--- Sets up the networked `Amount` integer holding the cash amount.
 function ENT:SetupDataTables()
   self:DTVar('Int', 0, 'Amount')
 end

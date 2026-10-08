@@ -13,6 +13,18 @@ cw.flag:Add('k', 'Karma Manipulation', 'Access to karma commands.')
 local stored = cwKarma.stored or {}
 cwKarma.stored = stored
 
+--- Registers a named karma level covering a range of karma values.
+--
+-- Levels are checked in the order they were added, and `playerMeta:GetKarmaLevel` returns the
+-- phrase of the first one whose range contains the karma. Does nothing if an argument is missing.
+--
+-- ```
+-- cwKarma:AddKarmaLevel(-9, 9, '#Karma_Neutral')
+-- ```
+--
+-- @param bottom [Number Lowest karma value of the level, inclusive]
+-- @param ceiling [Number Highest karma value of the level, inclusive]
+-- @param phrase [String Language phrase naming the level]
 function cwKarma:AddKarmaLevel(bottom, ceiling, phrase)
   if !bottom or !ceiling or !phrase then return end
 
@@ -32,10 +44,21 @@ cwKarma:AddKarmaLevel(90, 100, '#Karma_Divine')
 do
   local playerMeta = FindMetaTable('Player')
 
+  --- Returns the player's karma, from -100 to 100.
+  --
+  -- Reads the `karma` character data and falls back to the networked `karma` variable, so it also
+  -- works on the client.
+  -- @return [Number The player's karma]
+  -- @see Player:SetKarma
   function playerMeta:GetKarma()
     return self:GetCharacterData('karma', self:GetNetVar('karma', 0))
   end
 
+  --- Returns the language phrase of the karma level the player's karma falls into.
+  --
+  -- The result is cached on the player until their karma changes.
+  -- @return [String Phrase such as `#Karma_Neutral`, or `#Karma_Error` when no level matches]
+  -- @see cwKarma:AddKarmaLevel
   function playerMeta:GetKarmaLevel()
     local karma = self:GetKarma()
 
@@ -55,6 +78,12 @@ do
     return self.cachedKarmaString
   end
 
+  --- Sets the player's karma, clamped to -100 to 100, and saves and networks it.
+  --
+  -- Fades the player's screen red when karma goes down and blue otherwise. Server only, since it
+  -- uses `ScreenFade` and `SetCharacterData`; the character must already have `karma` data.
+  -- @param karma [Number The new karma value]
+  -- @see Player:GetKarma
   function playerMeta:SetKarma(karma)
     local oldKarma = self:GetCharacterData('karma')
     local diff = oldKarma - tonumber(karma)

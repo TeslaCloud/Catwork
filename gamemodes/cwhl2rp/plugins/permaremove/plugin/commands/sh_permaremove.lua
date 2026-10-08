@@ -6,7 +6,9 @@ COMMAND.text = '<none>'
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = 's'
 
--- Called when the command has been run.
+--- Removes the entity the player is looking at and saves it so it stays removed after a map restart.
+--
+-- Players and the world cannot be removed.
 function COMMAND:OnRun(player, arguments)
   local ent = player:GetEyeTraceNoCursor().Entity
 

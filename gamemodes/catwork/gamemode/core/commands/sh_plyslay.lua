@@ -16,7 +16,7 @@ COMMAND.optionalArguments = 1
 COMMAND.access = 'o'
 COMMAND.alias = { 'Slay', 'Kill', 'PlyKill' }
 
--- Called when the command has been run.
+--- Kills the target player; arguments are the player name and an optional silent flag.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
   local isSilent = cw.core:ToBool(arguments[2])

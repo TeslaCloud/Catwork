@@ -17,7 +17,10 @@ ITEM.category = 'Communication'
 ITEM.business = true
 ITEM.description = '#ITEM_Stationary_Radio_Desc'
 
--- Called when a player uses the item.
+--- Places a `cw_radio` entity owned by the player where they are looking, within 192 units.
+--
+-- Used from the ground, the radio takes the item entity's position and angles and stays frozen if it was;
+-- otherwise it is placed flush to the ground. Keeps the item, with a notification, when the spot is too far.
 function ITEM:OnUse(player, itemEntity)
   local trace = player:GetEyeTraceNoCursor()
 
@@ -56,5 +59,5 @@ function ITEM:OnUse(player, itemEntity)
   end
 end
 
--- Called when a player drops the item.
+--- Lets the item be dropped; nothing else happens.
 function ITEM:OnDrop(player, position) end

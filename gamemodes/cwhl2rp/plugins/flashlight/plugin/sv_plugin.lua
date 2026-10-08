@@ -8,7 +8,12 @@
 
 local PLUGIN = PLUGIN
 
--- A function to get whether a player has a flashlight.
+--- Returns whether a player may use a flashlight.
+--
+-- Combine always may; other players need the `cw_flashlight` item, or must hold the flashlight
+-- weapon or a weapon whose item has `hasFlashlight` set.
+-- @param player [Player The player to check]
+-- @return [Boolean `true` when the player has a flashlight, otherwise `nil`]
 function PLUGIN:PlayerHasFlashlight(player)
   if player:IsCombine() then
     return true

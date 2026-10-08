@@ -6,6 +6,14 @@ cwCTO.fixedCameras = cwCTO.fixedCameras or false
 cwCTO.outputEntity = cwCTO.outputEntity or nil
 cwCTO.socioStatus = cwCTO.socioStatus or 'GREEN'
 
+--- Hooks a Combine camera up to the biosignal system.
+--
+-- Routes the camera's `OnFoundPlayer` output to `cwCTO:CombineCameraFoundPlayer` through a
+-- hidden `__cwctohook` entity, created on first use, and starts tracking the camera in
+-- `cwCTO.cameraData`. Once cameras are fixed, cameras not created by the map are marked so
+-- they are saved with the map.
+--
+-- @param combineCamera [Entity The `npc_combine_camera`]
 function cwCTO:SafelyPrepareCamera(combineCamera)
   if !IsValid(self.outputEntity) then
     self.outputEntity = ents.Create('base_entity')
@@ -33,6 +41,10 @@ function cwCTO:SafelyPrepareCamera(combineCamera)
   end
 end
 
+--- Starts tracking a player a Combine camera has spotted, unless they are noclipping.
+--
+-- @param combineCamera [Entity The camera that found the player]
+-- @param player [Player The player found]
 function cwCTO:CombineCameraFoundPlayer(combineCamera, player)
   if self.cameraData[combineCamera] and !cw.player:IsNoClipping(player) then
     if !self.cameraData[combineCamera][player] then
@@ -41,7 +53,12 @@ function cwCTO:CombineCameraFoundPlayer(combineCamera, player)
   end
 end
 
--- Called every tick.
+--- Called every half second; checks the camera targets for movement violations and networks the cameras.
+--
+-- An alert camera drops players more than 450 units away or out of sight, and flags
+-- running, jumping, crouching or fallen players that are not Combine with a biosignal; a
+-- flagged player makes the camera angry. The camera data, `0` for idle cameras, is sent to
+-- every Combine player with a biosignal with the `UpdateBiosignalCameraData` netstream.
 function cwCTO:HalfSecond()
   local networkedCameraData = {}
 
@@ -104,6 +121,13 @@ function cwCTO:HalfSecond()
   netstream.Start(players, 'UpdateBiosignalCameraData', networkedCameraData)
 end
 
+--- Marks a Combine player's biosignal as lost and alerts the other units.
+--
+-- Sets the `IsBiosignalGone` shared var, adds a line to the Combine display and plays the
+-- Overwatch lost-biosignal radio call with the digits of the unit's name to every other
+-- Combine player with a biosignal.
+--
+-- @param player [Player The unit that lost its biosignal]
 function cwCTO:DoPostBiosignalLoss(player)
   player:SetSharedVar('IsBiosignalGone', true)
 
@@ -161,6 +185,21 @@ function cwCTO:DoPostBiosignalLoss(player)
   end
 end
 
+--- Turns a Combine player's biosignal on or off.
+--
+-- Turning it on clears `IsBiosignalGone` and announces the found biosignal and its location
+-- to all units; turning it off runs `cwCTO:DoPostBiosignalLoss`.
+--
+-- ```
+-- if cwCTO:SetPlayerBiosignal(player, false) == cwCTO.ERROR_ALREADY_DISABLED then
+--   cw.player:Notify(player, L('CTO_BiosignalAlreadyOff'))
+-- end
+-- ```
+--
+-- @param player [Player The player]
+-- @param bEnable [Boolean Whether to turn the biosignal on]
+-- @return [Number `cwCTO.ERROR_NONE` on success, otherwise `ERROR_NOT_COMBINE`,
+-- `ERROR_ALREADY_ENABLED` or `ERROR_ALREADY_DISABLED`]
 function cwCTO:SetPlayerBiosignal(player, bEnable)
   if player:IsCombine() then
     local isDisabledAlready = player:GetSharedVar('IsBiosignalGone')
@@ -214,7 +253,15 @@ function cwCTO:SetPlayerBiosignal(player, bEnable)
   end
 end
 
--- Called just after a player spawns.
+--- Called after a player spawns; restores their biosignal and sends Combine their HUD objectives.
+--
+-- On the first spawn after the map loads, also enables the Combine cameras that do not start
+-- inactive and marks the cameras as fixed.
+--
+-- @param player [Player The player that spawned]
+-- @param lightSpawn [Boolean Whether this was a light spawn]
+-- @param changeClass [Boolean Whether the player changed class]
+-- @param firstSpawn [Boolean Whether this is the character's first spawn]
 function cwCTO:PostPlayerSpawn(player, lightSpawn, changeClass, firstSpawn)
   player:SetSharedVar('IsBiosignalGone', false)
 
@@ -240,6 +287,13 @@ function cwCTO:PostPlayerSpawn(player, lightSpawn, changeClass, firstSpawn)
   end
 end
 
+--- Sends a request for assistance from a player to every Combine unit with a biosignal.
+--
+-- Plays the "all teams respond, code 3" radio call and sends the `CombineRequestSignal`
+-- netstream, which marks the player's position on the units' HUD for 60 seconds.
+--
+-- @param player [Player The player requesting help]
+-- @param text [String The request text]
 function cwCTO:DispatchRequestSignal(player, text)
   local players = {}
 
@@ -263,7 +317,11 @@ function cwCTO:DispatchRequestSignal(player, text)
   netstream.Start(players, 'CombineRequestSignal', { player, text })
 end
 
--- Called when a player has been ragdolled.
+--- Called when a player is ragdolled; reports Combine units with a biosignal that are knocked out.
+--
+-- @param player [Player The ragdolled player]
+-- @param state [Number The ragdoll state, a `RAGDOLL_*` value]
+-- @param ragdoll [Map The player's ragdoll data]
 function cwCTO:PlayerRagdolled(player, state, ragdoll)
   if player:IsCombine() and !player:GetSharedVar('IsBiosignalGone') then
     if state == RAGDOLL_KNOCKEDOUT then
@@ -276,7 +334,7 @@ function cwCTO:PlayerRagdolled(player, state, ragdoll)
   end
 end
 
--- Called when Clockwork has loaded all of the entities.
+--- Called after the map entities are created; prepares every Combine camera on the map.
 function cwCTO:InitPostEntity()
   for k, v in pairs(ents.FindByClass('npc_combine_camera')) do
     if self.cameraData[v] == nil then
@@ -285,7 +343,9 @@ function cwCTO:InitPostEntity()
   end
 end
 
--- Called right after an Entity has been created.
+--- Called when an entity is created; prepares new Combine cameras.
+--
+-- @param entity [Entity The new entity]
 function cwCTO:OnEntityCreated(entity)
   if entity:GetClass() == 'npc_combine_camera' then
     if self.cameraData[entity] == nil then

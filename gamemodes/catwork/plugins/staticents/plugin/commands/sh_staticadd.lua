@@ -11,7 +11,7 @@ COMMAND.tip = '#Command_Static_Description'
 COMMAND.access = 'o'
 COMMAND.alias = { 'StaticAdd', 'StaticPropAdd' }
 
--- Called when the command has been run.
+--- Makes the entity the player is looking at static through the `PlayerMakeStatic` hook.
 function COMMAND:OnRun(player, arguments)
   plugin.Call('PlayerMakeStatic', player, true)
 end

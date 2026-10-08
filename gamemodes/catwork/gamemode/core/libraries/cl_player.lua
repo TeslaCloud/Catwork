@@ -10,7 +10,10 @@ if !cw.player then
   include('sh_player.lua')
 end
 
--- A function to get whether the local player can hold a weight.
+--- Returns whether the local player's inventory can take some more weight.
+-- @param weight [Number Weight to add]
+-- @return [Boolean Whether the total stays within `cw.player:GetMaxWeight`]
+-- @see cw.player:CanHoldSpace
 function cw.player:CanHoldWeight(weight)
   local inventoryWeight = cw.inventory:CalculateWeight(
     cw.inventory:GetClient()
@@ -23,7 +26,10 @@ function cw.player:CanHoldWeight(weight)
   end
 end
 
--- A function to get whether the local player can fit a space.
+--- Returns whether the local player's inventory can take some more space.
+-- @param space [Number Space to add]
+-- @return [Boolean Whether the total stays within `cw.player:GetMaxSpace`]
+-- @see cw.player:CanHoldWeight
 function cw.player:CanHoldSpace(space)
   local inventorySpace = cw.inventory:CalculateSpace(
     cw.inventory:GetClient()
@@ -36,7 +42,11 @@ function cw.player:CanHoldSpace(space)
   end
 end
 
--- A function to get the maximum amount of weight the local player can carry.
+--- Returns the maximum weight the local player can carry.
+--
+-- Starts from the `InvWeight` network variable, or the `default_inv_weight` config,
+-- and adds the `addInvSpace` of every item in the inventory.
+-- @return [Number Maximum inventory weight]
 function cw.player:GetMaxWeight()
   local itemsList = cw.inventory:GetAsItemsList(
     cw.inventory:GetClient()
@@ -55,7 +65,11 @@ function cw.player:GetMaxWeight()
   return weight
 end
 
--- A function to get the maximum amount of space the local player can carry.
+--- Returns the maximum space the local player can carry.
+--
+-- Starts from the `InvSpace` network variable, or the `default_inv_space` config,
+-- and adds the `addInvVolume` of every item in the inventory.
+-- @return [Number Maximum inventory space]
 function cw.player:GetMaxSpace()
   local itemsList = cw.inventory:GetAsItemsList(
     cw.inventory:GetClient()
@@ -73,17 +87,20 @@ function cw.player:GetMaxSpace()
   return space
 end
 
--- A function to get the local player's clothes data.
+--- Returns the local player's clothes data as sent by the server.
+-- @return [Map The clothes item's `uniqueID` and `itemID`, both `nil` when no clothes are worn]
 function cw.player:GetClothesData()
   return cw.ClothesData
 end
 
--- A function to get the local player's accessory data.
+--- Returns the accessories the local player is wearing.
+-- @return [Map<String> Item unique IDs keyed by item ID]
 function cw.player:GetAccessoryData()
   return cw.AccessoryData
 end
 
--- A function to get the local player's clothes item.
+--- Returns the clothes item the local player is wearing.
+-- @return [Item The clothes item from the inventory, or `nil` if none is worn]
 function cw.player:GetClothesItem()
   local clothesData = self:GetClothesData()
 
@@ -95,12 +112,15 @@ function cw.player:GetClothesItem()
   end
 end
 
--- A function to get whether the local player is wearing clothes.
+--- Returns whether the local player is wearing a clothes item.
+-- @return [Boolean Whether clothes are worn]
 function cw.player:IsWearingClothes()
   return (self:GetClothesItem() != nil)
 end
 
--- A function to get whether the local player has an accessory.
+--- Returns whether the local player is wearing an accessory of an item type.
+-- @param uniqueID [String Unique ID of the item type, compared case-insensitively]
+-- @return [Boolean Whether such an accessory is worn]
 function cw.player:HasAccessory(uniqueID)
   local accessoryData = self:GetAccessoryData()
 
@@ -113,7 +133,9 @@ function cw.player:HasAccessory(uniqueID)
   return false
 end
 
--- A function to get whether the local player is wearing an accessory.
+--- Returns whether the local player is wearing a specific accessory item.
+-- @param itemTable [Item The item instance]
+-- @return [Boolean Whether the item is worn]
 function cw.player:IsWearingAccessory(itemTable)
   local accessoryData = self:GetAccessoryData()
   local itemID = itemTable.itemID
@@ -125,13 +147,17 @@ function cw.player:IsWearingAccessory(itemTable)
   end
 end
 
--- A function to get whether the local player is wearing an item.
+--- Returns whether an item is the clothes item the local player is wearing.
+-- @param itemTable [Item The item instance]
+-- @return [Boolean Whether the item is worn, or `nil` if no clothes are worn]
 function cw.player:IsWearingItem(itemTable)
   local clothesItem = self:GetClothesItem()
   return (clothesItem and clothesItem:IsTheSameAs(itemTable))
 end
 
--- A function to get whether a player is noclipping.
+--- Returns whether a player is noclipping outside a vehicle.
+-- @param player [Player The player]
+-- @return [Boolean `true` if they are noclipping, `nil` otherwise]
 function cw.player:IsNoClipping(player)
   if player:GetMoveType() == MOVETYPE_NOCLIP
   and !player:InVehicle() then
@@ -139,19 +165,30 @@ function cw.player:IsNoClipping(player)
   end
 end
 
--- A function to get whether a player is an admin.
+--- Returns whether a player has the operator flag (`o`).
+-- @param player [Player The player]
+-- @return [Boolean `true` if they have it, `nil` otherwise]
+-- @see cw.player:HasFlags
 function cw.player:IsAdmin(player)
   if self:HasFlags(player, 'o') then
     return true
   end
 end
 
--- A function to get whether the local player's data has streamed.
+--- Returns whether the server has finished sending the local player's data.
+-- @return [Boolean Whether the data has streamed]
 function cw.player:HasDataStreamed()
   return cw.DataHasStreamed
 end
 
--- A function to get whether a player can hear another player.
+--- Returns whether a player can hear another player.
+--
+-- Always `true` unless the `messages_must_see_player` config is on, in which case
+-- `cw.player:CanSeePlayer` decides, ignoring every entity in the way.
+-- @param player [Player The listener]
+-- @param target [Player The speaker]
+-- @param allowance=0.5 [Number Fraction of the line of sight that must be clear]
+-- @return [Boolean Whether `player` can hear `target`]
 function cw.player:CanHearPlayer(player, target, allowance)
   if config.GetVal('messages_must_see_player') then
     return self:CanSeePlayer(player, target, (allowance or 0.5), true)
@@ -160,7 +197,10 @@ function cw.player:CanHearPlayer(player, target, allowance)
   end
 end
 
--- A function to get whether the target recognises the local player.
+--- Returns whether the player the local player is looking at recognises them.
+--
+-- Always `true` when the `recognise_system` config is off.
+-- @return [Boolean Whether the target recognises the local player, from the `TargetKnows` network variable]
 function cw.player:DoesTargetRecognise()
   if config.GetVal('recognise_system') then
     return cw.client:GetNetVar('TargetKnows')
@@ -169,7 +209,13 @@ function cw.player:DoesTargetRecognise()
   end
 end
 
--- A function to get a player's real trace.
+--- Returns a trace along a player's aim that can hit players and NPCs by their hitboxes.
+--
+-- Traces 4096 units from the player's eyes. A second trace with a hitbox mask is
+-- used when it hits an entity the plain trace missed, or the plain trace hit a vehicle.
+-- @param player [Player The player whose aim to trace]
+-- @param useFilterTrace=nil [Boolean Whether to always use the hitbox trace]
+-- @return [Map The `TraceResult`, or `nil` if the player is not valid]
 function cw.player:GetRealTrace(player, useFilterTrace)
   if !IsValid(player) then
     return
@@ -203,7 +249,17 @@ function cw.player:GetRealTrace(player, useFilterTrace)
   return trace
 end
 
--- A function to get the local player's action.
+--- Returns a player's current action.
+-- @variant GetAction(player)
+-- Returns the action with its duration and start time.
+--   @param player [Player The player]
+--   @return [String The action, or `''` if there is none, Number Its duration in seconds, Number The `CurTime` it
+--   started at]
+-- @variant GetAction(player, percentage)
+-- Returns the action with how far it has progressed.
+--   @param player [Player The player]
+--   @param percentage [Boolean `true`]
+--   @return [String The action, or `''` if there is none, Number Progress from `0` to `100`]
 function cw.player:GetAction(player, percentage)
   local startActionTime = player:GetNetVar('StartActTime') or 0
   local actionDuration = player:GetNetVar('ActDuration') or 0
@@ -221,7 +277,11 @@ function cw.player:GetAction(player, percentage)
   end
 end
 
--- A function to get the local player's maximum characters.
+--- Returns how many characters the local player may have.
+--
+-- The `additional_characters` config plus one for every faction that is not
+-- whitelisted or that the player is whitelisted for.
+-- @return [Number Maximum number of characters]
 function cw.player:GetMaximumCharacters()
   local whitelisted = cw.character:GetWhitelisted()
   local maximum = config.Get('additional_characters'):Get(2)
@@ -235,12 +295,17 @@ function cw.player:GetMaximumCharacters()
   return maximum
 end
 
--- A function to get whether a player's weapon is raised.
+--- Returns whether a player's weapon is raised.
+-- @param player [Player The player]
+-- @return [Boolean Whether the weapon is raised, from `Player:IsWeaponRaised`]
 function cw.player:GetWeaponRaised(player)
   return player:IsWeaponRaised()
 end
 
--- A function to get a player's unrecognised name.
+--- Returns the name shown for a player the local player does not recognise.
+-- @param player [Player The player]
+-- @return [String The player's physical description, or the `unrecognised_name` config if there is none,
+-- Boolean `true` if the physical description was used]
 function cw.player:GetUnrecognisedName(player)
   local unrecognisedPhysDesc = self:GetPhysDesc(player)
   local unrecognisedName = config.Get('unrecognised_name'):Get()
@@ -254,6 +319,10 @@ function cw.player:GetUnrecognisedName(player)
   return unrecognisedName, usedPhysDesc
 end
 
+--- Returns a player's name as the local player knows it.
+-- @param target [Player The player]
+-- @return [String Their character name if the local player recognises them, otherwise
+-- `cw.player:GetUnrecognisedName`]
 function cw.player:GetName(target)
   if self:DoesRecognise(target) then
     return target:Name()
@@ -262,7 +331,15 @@ function cw.player:GetName(target)
   end
 end
 
--- A function to get whether a player can see an NPC.
+--- Returns whether a player can see an NPC.
+--
+-- `true` straight away if the player is looking at it; otherwise traces between
+-- their shoot positions.
+-- @param player [Player The player looking]
+-- @param target [NPC The NPC]
+-- @param allowance=0.75 [Number Fraction of the trace that must be clear]
+-- @param ignoreEnts=nil [List<Entity> Entities the trace ignores; any other true value ignores every entity]
+-- @return [Boolean `true` if the NPC can be seen, `nil` otherwise]
 function cw.player:CanSeeNPC(player, target, allowance, ignoreEnts)
   if player:GetEyeTraceNoCursor().Entity == target then
     return true
@@ -291,7 +368,15 @@ function cw.player:CanSeeNPC(player, target, allowance, ignoreEnts)
   end
 end
 
--- A function to get whether a player can see a player.
+--- Returns whether two players can see each other.
+--
+-- `true` straight away if either is looking at the other; otherwise traces between
+-- their shoot positions.
+-- @param player [Player The player looking]
+-- @param target [Player The other player]
+-- @param allowance=0.75 [Number Fraction of the trace that must be clear]
+-- @param ignoreEnts=nil [List<Entity> Entities the trace ignores; any other true value ignores every entity]
+-- @return [Boolean `true` if the player can be seen, `nil` otherwise]
 function cw.player:CanSeePlayer(player, target, allowance, ignoreEnts)
   if player:GetEyeTraceNoCursor().Entity == target then
     return true
@@ -322,7 +407,15 @@ function cw.player:CanSeePlayer(player, target, allowance, ignoreEnts)
   end
 end
 
--- A function to get whether a player can see an entity.
+--- Returns whether a player can see an entity.
+--
+-- `true` straight away if the player is looking at it; otherwise traces from their
+-- shoot position to the entity's center.
+-- @param player [Player The player looking]
+-- @param target [Entity The entity]
+-- @param allowance=0.75 [Number Fraction of the trace that must be clear]
+-- @param ignoreEnts=nil [List<Entity> Entities the trace ignores; any other true value ignores every entity]
+-- @return [Boolean `true` if the entity can be seen, `nil` otherwise]
 function cw.player:CanSeeEntity(player, target, allowance, ignoreEnts)
   if player:GetEyeTraceNoCursor().Entity == target then
     return true
@@ -351,7 +444,12 @@ function cw.player:CanSeeEntity(player, target, allowance, ignoreEnts)
   end
 end
 
--- A function to get whether a player can see a position.
+--- Returns whether a player has a clear line of sight to a position.
+-- @param player [Player The player looking]
+-- @param position [Vector The position]
+-- @param allowance=0.75 [Number Fraction of the trace that must be clear]
+-- @param ignoreEnts=nil [List<Entity> Entities the trace ignores; any other true value ignores every entity]
+-- @return [Boolean `true` if the position can be seen, `nil` otherwise]
 function cw.player:CanSeePosition(player, position, allowance, ignoreEnts)
   local trace = {}
 
@@ -376,12 +474,19 @@ function cw.player:CanSeePosition(player, position, allowance, ignoreEnts)
   end
 end
 
--- A function to get a player's wages name.
+--- Returns what wages are called for a player's class.
+-- @param player [Player The player]
+-- @return [String The class's `wagesName`, or the `wages_name` config]
 function cw.player:GetWagesName(player)
   return cw.class:Query(player:Team(), 'wagesName', config.Get('wages_name'):Get())
 end
 
--- A function to check whether a player is ragdolled
+--- Returns whether a player is ragdolled.
+-- @param player [Player The player]
+-- @param exception=nil [Number A `RAGDOLL_*` state that does not count as ragdolled]
+-- @param entityless=nil [Boolean Whether to check the state even when the player has no ragdoll entity]
+-- @return [Boolean Whether the player is ragdolled, or `nil` if they have no ragdoll entity and
+-- `entityless` is not set]
 function cw.player:IsRagdolled(player, exception, entityless)
   if player:GetRagdollEntity() or entityless then
     if player:GetDTInt(INT_RAGDOLLSTATE) == 0 then
@@ -394,7 +499,15 @@ function cw.player:IsRagdolled(player, exception, entityless)
   end
 end
 
--- A function to get whether the local player recognises another player.
+--- Returns whether the local player recognises another player.
+--
+-- Always `true` when the `recognise_system` config is off, and for the local
+-- player's own character. The `PlayerDoesRecognisePlayer` hook receives the
+-- computed value and returns the result.
+-- @param player [Player The player to check]
+-- @param status=RECOGNISE_PARTIAL [Number Lowest `RECOGNISE_*` level that counts]
+-- @param isAccurate=nil [Boolean Whether the level must equal `status` instead of reaching it]
+-- @return [Boolean Whether the player is recognised]
 function cw.player:DoesRecognise(player, status, isAccurate)
   if !status then
     return self:DoesRecognise(player, RECOGNISE_PARTIAL)
@@ -418,14 +531,18 @@ function cw.player:DoesRecognise(player, status, isAccurate)
   end
 end
 
--- A function to get a player's character key.
+--- Returns the key of a player's character, used to identify it in recognition data.
+-- @param player [Player The player]
+-- @return [Number The `Key` network variable, or `nil` if the player is not valid]
 function cw.player:GetCharacterKey(player)
   if IsValid(player) then
     return player:GetNetVar('Key')
   end
 end
 
--- A function to get a player's ragdoll state.
+--- Returns a player's ragdoll state.
+-- @param player [Player The player]
+-- @return [Number The `RAGDOLL_*` state, or `false` if it is unset]
 function cw.player:GetRagdollState(player)
   if player:GetDTInt(INT_RAGDOLLSTATE) == 0 then
     return false
@@ -434,7 +551,13 @@ function cw.player:GetRagdollState(player)
   end
 end
 
--- A function to get a player's physical description.
+--- Returns a player's physical description.
+--
+-- Falls back to the class's `defaultPhysDesc`, then the `default_physdesc` config,
+-- then the `#PhysDesc_MatchesModel` phrase. The `GetPlayerPhysDescOverride` hook
+-- can return a replacement.
+-- @param player=cw.client [Player The player]
+-- @return [String The physical description]
 function cw.player:GetPhysDesc(player)
   if !player then
     player = cw.client
@@ -466,17 +589,21 @@ function cw.player:GetPhysDesc(player)
   return physDesc
 end
 
--- A function to get the local player's wages.
+--- Returns the local player's wages.
+-- @return [Number The `Wages` network variable]
 function cw.player:GetWages()
   return cw.client:GetNetVar('Wages')
 end
 
--- A function to get the local player's cash.
+--- Returns the local player's cash.
+-- @return [Number The `Cash` network variable, or `0`]
 function cw.player:GetCash()
   return cw.client:GetNetVar('Cash') or 0
 end
 
--- A function to get a player's ragdoll entity.
+--- Returns a player's ragdoll entity.
+-- @param player [Player The player]
+-- @return [Entity The ragdoll, or `nil` if the player is not ragdolled]
 function cw.player:GetRagdollEntity(player)
   local ragdollEntity = player:GetDTEntity(2)
 
@@ -485,20 +612,33 @@ function cw.player:GetRagdollEntity(player)
   end
 end
 
--- A function to get a player's default skin.
+--- Returns the skin of the model a player's class gives them.
+-- @param player [Player The player]
+-- @return [Number The skin, from `cw.class:GetAppropriateModel`]
 function cw.player:GetDefaultSkin(player)
   local model, skin = cw.class:GetAppropriateModel(player:Team(), player)
 
   return skin
 end
 
--- A function to get a player's default model.
+--- Returns the model a player's class gives them.
+-- @param player [Player The player]
+-- @return [String The model path, from `cw.class:GetAppropriateModel`]
 function cw.player:GetDefaultModel(player)
   local model, skin = cw.class:GetAppropriateModel(player:Team(), player)
   return model
 end
 
--- A function to check if a player has any flags.
+--- Returns whether a player has at least one of some flags.
+--
+-- The flags of the player's class count, and the `PlayerDoesHaveFlag` hook can
+-- grant or deny a flag. `s`, `a` and `o` are also granted by the superadmin,
+-- admin and operator user groups.
+-- @param player [Player The player]
+-- @param flags [String The flags, such as `'pet'`]
+-- @param bByDefault=nil [Boolean Whether to ignore the class flags and the hook]
+-- @return [Boolean `true` if the player has one of the flags, `nil` otherwise or if they have no flags]
+-- @see cw.player:HasFlags
 function cw.player:HasAnyFlags(player, flags, bByDefault)
   local playerFlags = player:GetDTString(STRING_FLAGS)
 
@@ -546,7 +686,25 @@ function cw.player:HasAnyFlags(player, flags, bByDefault)
   end
 end
 
--- A function to check if a player has access.
+--- Returns whether a player has some flags.
+--
+-- Without `bIsStrict` any one of the flags is enough; with it every flag is needed.
+-- The flags of the player's class count, and the `PlayerDoesHaveFlag` hook can
+-- grant or deny a flag. `s`, `a` and `o` are also granted by the superadmin,
+-- admin and operator user groups.
+--
+-- ```
+-- if cw.player:HasFlags(cw.client, cmdTable.access) then
+--   -- show the command
+-- end
+-- ```
+--
+-- @param player [Player The player]
+-- @param flags [String The flags, such as `'pet'`]
+-- @param bByDefault=nil [Boolean Whether to ignore the class flags and the hook]
+-- @param bIsStrict=nil [Boolean Whether every flag is needed]
+-- @return [Boolean Whether the player has the flags; `nil` if they have no flags at all]
+-- @see cw.player:HasAnyFlags
 function cw.player:HasFlags(player, flags, bByDefault, bIsStrict)
   local playerFlags = player:GetDTString(STRING_FLAGS)
 
@@ -626,7 +784,8 @@ function cw.player:HasFlags(player, flags, bByDefault, bIsStrict)
   end
 end
 
--- A function to get whether the local player is drunk.
+--- Returns how drunk the local player is.
+-- @return [Number The `IsDrunk` network variable, or `nil` if the player is sober]
 function cw.player:GetDrunk()
   local isDrunk = LocalPlayer():GetNetVar('IsDrunk') or 0
 
@@ -635,7 +794,12 @@ function cw.player:GetDrunk()
   end
 end
 
--- A function to get a player's chat icon.
+--- Returns the icon shown next to a player's name in the chat box.
+--
+-- Uses the icons registered with `cw.icon:Add`, preferring player icons. Without
+-- one, whitelisted factions get `icon16/add.png` and everyone else `icon16/user.png`.
+-- @param player [Player The player]
+-- @return [String Path of the icon material; `icon16/user_delete.png` if the player is not valid]
 function cw.player:GetChatIcon(player)
   local icon
 

@@ -6,22 +6,32 @@
   with contributions from Cloud Sixteen community.
 --]]
 
--- Called when the client initializes.
+--- Called when the client initializes; creates the `cwShowAreas` client convar as `CW_CONVAR_SHOWAREAS`.
 function cwAreaDisplays:Initialize()
   CW_CONVAR_SHOWAREAS = cw.core:CreateClientConVar('cwShowAreas', 1, true, true)
 end
 
--- Called when the local player has entered an area.
+--- Called when the local player enters an area; tells the server, which runs `PlayerEnteredArea` there
+-- with the player as the first argument.
+-- @param name [String The area's name]
+-- @param minimum [Vector One corner of the area's box]
+-- @param maximum [Vector The opposite corner of the area's box]
 function cwAreaDisplays:PlayerEnteredArea(name, minimum, maximum)
   netstream.Start('EnteredArea', { name, minimum, maximum })
 end
 
--- Called when the local player has exited an area.
+--- Called when the local player leaves an area; forgets the current area.
+-- @param name [String The area's name]
+-- @param minimum [Vector One corner of the area's box]
+-- @param maximum [Vector The opposite corner of the area's box]
 function cwAreaDisplays:PlayerExitedArea(name, minimum, maximum)
   self.currentAreaDisplay = nil
 end
 
--- Called just after the translucent renderables have been drawn.
+--- Called after translucent renderables are drawn; draws and fades the active 3D area displays.
+-- @param bDrawingDepth [Boolean Whether the depth pass is being drawn]
+-- @param bDrawingSkybox [Boolean Whether the skybox is being drawn]
+-- @param bDrawing3DSkybox [Boolean Whether the 3D skybox is being drawn]
 function cwAreaDisplays:PostDrawTranslucentRenderables(bDrawingDepth, bDrawingSkybox, bDrawing3DSkybox)
   if bDrawing3DSkybox or bDrawingDepth then return end
 
@@ -33,7 +43,7 @@ function cwAreaDisplays:PostDrawTranslucentRenderables(bDrawingDepth, bDrawingSk
   end
 end
 
--- Called when the foreground HUD should be painted.
+--- Called when the foreground HUD is painted; draws and fades the active scrolling area displays.
 function cwAreaDisplays:HUDPaintForeground()
   local info = { x = ScrW() * 0.1, y = ScrH() * 0.6 }
 
@@ -45,7 +55,10 @@ function cwAreaDisplays:HUDPaintForeground()
   end
 end
 
--- Called each tick.
+--- Called every tick; once a second, checks which stored area the local player is in.
+--
+-- Entering a new area runs `cwAreaDisplays:HandleAreaTable`, and leaving the current area runs the
+-- `PlayerExitedArea` hook.
 function cwAreaDisplays:Tick()
   local lastAreaDisplay = self.currentAreaDisplay
   local bDidLeave = false

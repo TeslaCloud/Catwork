@@ -8,28 +8,37 @@
 
 local PANEL = {}
 
--- Called when the panel is initialized.
+--- Sets the list's default dark background and black outline.
 function PANEL:Init()
   self.backgroundColor = Color(50, 50, 50, 255)
   self.backgroundColorOutline = Color(0, 0, 0, 255)
 end
 
--- A function to set the background color.
+--- Sets the list's background and outline colors.
+-- @param color [Color Background color]
+-- @param col2=nil [Color Outline color; black when not given]
 function PANEL:SetBackgroundColor(color, col2)
   self.backgroundColor = color
   self.backgroundColorOutline = col2 or Color(0, 0, 0)
 end
 
+--- Stops the list from drawing its background.
 function PANEL:HideBackground()
   self.backgroundHidden = true
 end
 
+--- Sets the space left below each item added afterwards.
+-- @param spacing [Number Space in pixels]
 function PANEL:SetSpacing(spacing)
   self.defaultSpacing = spacing
 end
 
+--- Does nothing; kept so code written for `DPanelList` keeps working.
 function PANEL:EnableVerticalScrollbar() end
 
+--- Docks an item to the top of the list with the list's padding around it.
+-- @param item [Panel Panel to add]
+-- @param bottomMargin=nil [Number Space below the item; defaults to the `SetSpacing` value, or 8]
 function PANEL:AddItem(item, bottomMargin)
   bottomMargin = bottomMargin or self.defaultSpacing or 8
 
@@ -44,7 +53,7 @@ function PANEL:AddItem(item, bottomMargin)
   self:InvalidateLayout(true)
 end
 
--- Called when the panel should be painted.
+--- Draws the outlined background unless it is hidden.
 function PANEL:Paint(width, height)
   if !self.backgroundHidden then
     draw.RoundedBox(0, 0, 0, width, height, self.backgroundColorOutline)

@@ -1,6 +1,10 @@
 local PLUGIN = PLUGIN
 
--- A function to load the ration machines.
+--- Spawns the vending machines saved for the current map.
+--
+-- Reads `plugins/nutVend/<map>` from the schema data and restores each machine's position,
+-- angles, active state and the stock of its four buttons.
+-- @see PLUGIN:SaveNuttyVendingMachines
 function PLUGIN:LoadNuttyVendingMachines()
   local nutVend = cw.core:RestoreSchemaData('plugins/nutVend/'..game.GetMap())
 
@@ -19,7 +23,10 @@ function PLUGIN:LoadNuttyVendingMachines()
   end
 end
 
--- A function to save the ration machines.
+--- Saves every `nut_vend` entity on the map to the schema data.
+--
+-- Stores position, angles, active state and stock per machine under `plugins/nutVend/<map>`.
+-- @see PLUGIN:LoadNuttyVendingMachines
 function PLUGIN:SaveNuttyVendingMachines()
   local nutVend = {}
 

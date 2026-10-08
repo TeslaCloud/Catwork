@@ -6,6 +6,7 @@ ENT.Spawnable = false
 ENT.AdminSpawnable = false
 ENT.RenderGroup = RENDERGROUP_BOTH
 
+--- Sets up the shell model, flight movement and smoke trail on the server.
 function ENT:Initialize()
   if SERVER then
     self:SetModel('models/props_phx/amraam.mdl')
@@ -35,6 +36,8 @@ function ENT:Initialize()
 end
 
 if SERVER then
+  --- Spawns a shell high above the aimed position, just under the ceiling or skybox.
+  -- @return [Entity The spawned shell]
   function ENT:SpawnFunction(ply, trace)
     local ent = ents.Create('combine_mortar_shell')
     local tr = util.TraceLine({
@@ -49,6 +52,7 @@ if SERVER then
     return ent
   end
 
+  --- Removes the shell's smoke trail.
   function ENT:OnRemove()
     if IsValid(self.SmokeTrail) then
       SafeRemoveEntity(self.SmokeTrail)
@@ -56,6 +60,9 @@ if SERVER then
   end
 end
 
+--- Explodes the shell and shakes the screens of nearby players once a hull trace below it hits something.
+--
+-- Hits on `sammyservers_textscreen` entities are ignored. The shell removes itself after exploding.
 function ENT:HitThink()
   local tr = util.TraceHull({
     start = self:GetPos(),
@@ -79,6 +86,8 @@ function ENT:HitThink()
   end
 end
 
+--- Moves the shell downwards and checks for impact every tick on the server.
+-- @return [Boolean Always `true` to keep thinking every frame]
 function ENT:Think()
   if SERVER then
     self:SetVelocity(Vector(0, 0, -1) * 10 ^ 1.5)
@@ -91,6 +100,7 @@ function ENT:Think()
 end
 
 if CLIENT then
+  --- Draws the glowing sprites on the shell's tail while it is visible.
   function ENT:DrawTranslucent()
     local pos = self:GetPos() + Vector(7, 0, 60)
 
@@ -128,10 +138,12 @@ if CLIENT then
     end
   end
 
+  --- Creates the pixel visibility handle used by `ENT:DrawTranslucent`.
   function ENT:Initialize()
     self.PixVis = util.GetPixelVisibleHandle()
   end
 
+  --- Draws the shell model.
   function ENT:Draw()
     self:DrawModel()
   end

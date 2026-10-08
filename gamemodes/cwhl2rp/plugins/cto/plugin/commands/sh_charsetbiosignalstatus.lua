@@ -7,7 +7,9 @@ COMMAND.access = 'o'
 COMMAND.flags = CMD_DEFAULT
 COMMAND.arguments = 2
 
--- Called when the command has been run.
+--- Turns another character's biosignal on or off with `cwCTO:SetPlayerBiosignal`.
+--
+-- The arguments are the target's name and a boolean.
 function COMMAND:OnRun(player, arguments)
   local ply = _player.Find(arguments[1])
   local bEnable = cw.core:ToBool(arguments[2])

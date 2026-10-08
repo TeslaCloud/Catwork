@@ -8,7 +8,7 @@
 
 include('shared.lua')
 
--- Called each frame.
+--- Fetches the item data, then hides the gear while the local player wears it in first person or is dead.
 function ENT:Think()
   if !cw.entity:HasFetchedItemData(self) then
     cw.entity:FetchItemData(self)
@@ -31,7 +31,10 @@ function ENT:Think()
   end
 end
 
--- Called when the entity should draw.
+--- Positions the gear on its owner's bone, applies the model scale and draws it.
+--
+-- Does nothing when `PreGearEntityDraw` returns `true`. The item's `GetAttachmentModelScale` can change the
+-- scale, and `GearEntityDraw` can return `false` to skip drawing.
 function ENT:Draw()
   if !hook.Run('PreGearEntityDraw', self) then
     if !cw.entity:HasFetchedItemData(self) then

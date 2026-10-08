@@ -13,7 +13,7 @@ COMMAND.access = 's'
 COMMAND.arguments = 2
 COMMAND.alias = { 'Whitelist', 'CharWhitelist', 'GiveWhitelist' }
 
--- Called when the command has been run.
+--- Adds the target player to a faction whitelist; arguments are the player name and the faction.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
 

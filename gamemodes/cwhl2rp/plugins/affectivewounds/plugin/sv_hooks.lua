@@ -10,6 +10,11 @@ local NoStripWeps = {
   ['cw_stunstick'] = true
 }
 
+--- Called after a player's character has loaded; resets the leg and arm hit counters.
+--
+-- OTA and MPF characters start below zero by their faction's `affectivewounds_additionalhits*`
+-- config value when the plugin affects that faction, so they take extra hits.
+-- @param ply [Player The player whose character loaded]
 function PLUGIN:PlayerCharacterLoaded(ply)
   if ply:GetFaction() == FACTION_OTA and config.Get('affectivewounds_affectota'):Get() then
     ply:SetNetVar('legshotamount', 0 - config.Get('affectivewounds_additionalhitsota'):Get())
@@ -23,6 +28,16 @@ function PLUGIN:PlayerCharacterLoaded(ply)
   end
 end
 
+--- Called when a player is hit by a traced attack; counts limb hits and applies their effects.
+--
+-- Once the leg hit count reaches `affectivewounds_legshotlimit` the player falls over for 5
+-- seconds; once the arm count reaches `affectivewounds_armshotlimit` the player drops the
+-- active weapon as an item, unless it is listed in `NoStripWeps`. Counters then reset.
+-- Does nothing when the plugin is disabled, for unaffected factions, in vehicles or in noclip.
+-- @param ply [Player The player being hit]
+-- @param dmginfo [CTakeDamageInfo The damage being dealt]
+-- @param dir [Vector Direction of the attack]
+-- @param trace [Map Trace result; `HitGroup` decides which limb was hit]
 function PLUGIN:PlayerTraceAttack(ply, dmginfo, dir, trace)
   if config.Get('affectivewounds_enabled'):Get() then
     if ply:GetFaction() == FACTION_OTA and !config.Get('affectivewounds_affectota'):Get() then return end

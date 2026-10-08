@@ -11,7 +11,7 @@ COMMAND.access = 'a'
 COMMAND.arguments = 1
 COMMAND.alias = { 'ResetCustomSpawn', 'RemoveCustomSpawn', 'CustomSpawnRemove', 'CustomSpawnReset' }
 
--- Called when the command has been run.
+--- Removes the target character's custom spawn point.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
 

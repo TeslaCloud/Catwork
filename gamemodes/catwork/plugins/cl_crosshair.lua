@@ -14,6 +14,11 @@ local halfSize = size / 2
 local gap = 8
 local curGap = gap
 
+--- Called when the HUD is painted; draws a five-dot crosshair whose gap widens with the aimed distance.
+--
+-- Nothing is drawn when the `PreDrawCrosshair` hook returns true. The `AdjustCrosshairColor` and
+-- `AdjustCrosshairGap` hooks, called with the eye trace and its distance, can override the color and
+-- the gap; the gap eases towards its target each frame.
 function PLUGIN:HUDPaint()
   if !plugin.Call('PreDrawCrosshair') then
     local trace = cw.client:GetEyeTraceNoCursor()
@@ -39,6 +44,11 @@ function PLUGIN:HUDPaint()
   end
 end
 
+--- Called to pick the crosshair color; uses the `information` color when aiming at a nearby player or item.
+--
+-- @param trace [Map The local player's eye trace]
+-- @param distance [Number Distance from the player to the trace hit position]
+-- @return [Color The crosshair color within 600 units of a player or `cw_item`, otherwise nil]
 function PLUGIN:AdjustCrosshairColor(trace, distance)
   local ent = trace.Entity
 
@@ -47,6 +57,11 @@ function PLUGIN:AdjustCrosshairColor(trace, distance)
   end
 end
 
+--- Called to pick the crosshair gap; keeps it at 8 when aiming at a nearby player or item.
+--
+-- @param trace [Map The local player's eye trace]
+-- @param distance [Number Distance from the player to the trace hit position]
+-- @return [Number The gap in pixels within 600 units of a player or `cw_item`, otherwise nil]
 function PLUGIN:AdjustCrosshairGap(trace, distance)
   local ent = trace.Entity
 
@@ -55,6 +70,9 @@ function PLUGIN:AdjustCrosshairGap(trace, distance)
   end
 end
 
+--- Called before the crosshair is drawn; hides it when the `enable_crosshair` config is false.
+--
+-- @return [Boolean True to skip drawing the crosshair, otherwise nil]
 function PLUGIN:PreDrawCrosshair()
   if config.GetVal('enable_crosshair') == false then
     return true

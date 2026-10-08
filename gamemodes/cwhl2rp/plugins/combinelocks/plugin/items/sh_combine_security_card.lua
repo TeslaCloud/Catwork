@@ -7,4 +7,5 @@ ITEM.business = true
 ITEM.description = '#Item_CombineSecurityCard_Description'
 ITEM.category = '#Item_Category_CardsAndLocks'
 
+--- Called when the security card is dropped; does nothing, so it can be dropped freely.
 function ITEM:OnDrop(player, position) end

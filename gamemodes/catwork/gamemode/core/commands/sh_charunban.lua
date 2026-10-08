@@ -13,7 +13,7 @@ COMMAND.flags = CMD_DEFAULT
 COMMAND.access = 'a'
 COMMAND.arguments = 1
 
--- Called when the command has been run.
+--- Unbans a character by name, online or in the database; the argument is the character name.
 function COMMAND:OnRun(player, arguments)
   local charName = string.lower(arguments[1])
 

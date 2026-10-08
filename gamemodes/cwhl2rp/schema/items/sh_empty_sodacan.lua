@@ -9,5 +9,5 @@ ITEM.business = false
 ITEM.category = 'Junk'
 ITEM.description = '#Item_EmptySodacan_Description'
 
--- Called when a player drops the item.
+--- Lets the item be dropped; nothing else happens.
 function ITEM:OnDrop(player, position) end

@@ -9,7 +9,11 @@
 library.New('time', cw)
 library.New('date', cw)
 
--- A function to get the time minute.
+--- Returns the in-game minute.
+--
+-- On the client this reads the `minute` global net variable.
+--
+-- @return [Number The minute, 0 when unknown]
 function cw.time:GetMinute()
   if CLIENT then
     return netvars.GetNetVar('minute', 0)
@@ -18,7 +22,11 @@ function cw.time:GetMinute()
   end
 end
 
--- A function to get the time hour.
+--- Returns the in-game hour, from 0 to 23.
+--
+-- On the client this reads the `hour` global net variable.
+--
+-- @return [Number The hour, 0 when unknown]
 function cw.time:GetHour()
   if CLIENT then
     return netvars.GetNetVar('hour', 0)
@@ -27,7 +35,11 @@ function cw.time:GetHour()
   end
 end
 
--- A function to get the time day.
+--- Returns the in-game day of the week.
+--
+-- On the client this reads the `day` global net variable.
+--
+-- @return [Number The day index, 1 when unknown]
 function cw.time:GetDay()
   if CLIENT then
     return netvars.GetNetVar('day', 1)
@@ -36,7 +48,12 @@ function cw.time:GetDay()
   end
 end
 
--- A function to get the day name.
+--- Returns the name of the in-game day of the week.
+--
+-- Names come from the `default_days` option.
+--
+-- @return [String The day name (often a language phrase), `#UnknownDay` for an unnamed day, or `nil`
+-- if the option is not set]
 function cw.time:GetDayName()
   local defaultDays = cw.option:GetKey('default_days')
 
@@ -46,6 +63,9 @@ function cw.time:GetDayName()
 end
 
 if SERVER then
+  --- Returns the in-game time as a table for saving.
+  --
+  -- @return [Map Table with `minute`, `hour` and `day` keys]
   function cw.time:GetSaveData()
     return {
       minute = self:GetMinute(),
@@ -54,7 +74,9 @@ if SERVER then
     }
   end
 
-  -- A function to get the date save data.
+  --- Returns the in-game date as a table for saving.
+  --
+  -- @return [Map Table with `month`, `year` and `day` keys]
   function cw.date:GetSaveData()
     return {
       month = self:GetMonth(),
@@ -63,26 +85,40 @@ if SERVER then
     }
   end
 
-  -- A function to get the date year.
+  --- Returns the in-game year.
+  --
+  -- @return [Number The year]
   function cw.date:GetYear()
     return self.year
   end
 
-  -- A function to get the date month.
+  --- Returns the in-game month.
+  --
+  -- @return [Number The month]
   function cw.date:GetMonth()
     return self.month
   end
 
-  -- A function to get the date day.
+  --- Returns the in-game day of the month.
+  --
+  -- @return [Number The day]
   function cw.date:GetDay()
     return self.day
   end
 else
+  --- Returns the in-game date as networked by the server.
+  --
+  -- @return [String The formatted date, or `nil` before it has been received]
   function cw.date:GetString()
     return netvars.GetNetVar('date')
   end
 
-  -- A function to get the time as a string.
+  --- Returns the in-game time formatted for display.
+  --
+  -- Uses a 12-hour clock with an `am`/`pm` suffix when the player's twelve-hour clock setting is
+  -- on, otherwise `HH:MM`.
+  --
+  -- @return [String The formatted time]
   function cw.time:GetString()
     local minute = cw.core:ZeroNumberToDigits(self:GetMinute(), 2)
     local hour = cw.core:ZeroNumberToDigits(self:GetHour(), 2)

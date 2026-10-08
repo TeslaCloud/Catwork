@@ -1,16 +1,16 @@
 local PLUGIN = PLUGIN
 
--- Called when CW has loaded all of the entities.
+--- Called after Catwork has loaded the map entities; spawns the saved emplacement guns.
 function PLUGIN:ClockworkInitPostEntity()
   self:LoadEmplacementGuns()
 end
 
--- Called just after data should be saved.
+--- Called after data is saved; saves the emplacement guns.
 function PLUGIN:PostSaveData()
   self:SaveEmplacementGuns()
 end
 
--- A function to load the Union locks.
+--- Spawns the emplacement guns saved for the current map, each on a new frozen barricade.
 function PLUGIN:LoadEmplacementGuns()
   local emplacementGuns = cw.core:RestoreSchemaData('plugins/emplacementGuns/'..game.GetMap())
 
@@ -28,7 +28,9 @@ function PLUGIN:LoadEmplacementGuns()
   end
 end
 
--- A function to save the Union locks.
+--- Saves the position and angles of every `cw_emplacementgun` on the map to the schema data.
+--
+-- Writes `plugins/emplacementGuns/<map>`.
 function PLUGIN:SaveEmplacementGuns()
   local emplacementGuns = {}
 

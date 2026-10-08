@@ -14,7 +14,7 @@ COMMAND.access = 'a'
 COMMAND.arguments = 1
 COMMAND.optionalArguments = 4
 
--- Called when the command has been run.
+--- Adds a surface text where the player is looking, with optional scale, style, color and box color.
 function COMMAND:OnRun(player, arguments)
   local text = arguments[1]
   local scale = tonumber(arguments[2])

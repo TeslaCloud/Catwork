@@ -19,7 +19,8 @@ if CLIENT then
   SYSTEM.groupPlayers = nil
   SYSTEM.doesCreateForm = false
 
-  -- Called to get whether the local player has access to the system.
+  --- Shows the Manage Groups system to players who may use `PlySetGroup`, unless `use_own_group_system` is enabled.
+  -- @return [Boolean `true` when the player has access, otherwise `nil`]
   function SYSTEM:HasAccess()
     if !config.Get('use_own_group_system'):Get() then
       local commandTable = cw.command:FindByID('PlySetGroup')
@@ -30,7 +31,12 @@ if CLIENT then
     end
   end
 
-  -- Called when the system should be displayed.
+  --- Shows the user group buttons, or the paged member list of the selected group with demote buttons.
+  --
+  -- Members are requested with the `SystemGroupGet` netstream unless `noRefresh` is set; demoting asks for
+  -- confirmation, requires the `PlyDemote` command's access and sends `SystemGroupDemote`.
+  -- @param systemPanel [Panel The system panel to add the group buttons or member list to]
+  -- @param systemForm [Panel The system's form (unused, the system does not create one)]
   function SYSTEM:OnDisplay(systemPanel, systemForm)
     if self.groupType == GROUP_USER then
       local label = vgui.Create('cwInfoText', systemPanel)

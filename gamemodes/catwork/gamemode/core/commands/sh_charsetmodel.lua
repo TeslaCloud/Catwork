@@ -13,7 +13,7 @@ COMMAND.access = 'o'
 COMMAND.arguments = 2
 COMMAND.alias = { 'SetModel' }
 
--- Called when the command has been run.
+--- Sets and saves the target character's model; arguments are the character name and the model path.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
 

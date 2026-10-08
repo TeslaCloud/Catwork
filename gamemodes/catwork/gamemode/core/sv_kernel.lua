@@ -28,6 +28,12 @@ DeriveGamemode('sandbox')
 if system.IsLinux() then
   ClockworkFileRead = ClockworkFileRead or file.Read
 
+  --- Reads a file like the stock `file.Read`, dropping one trailing newline from the contents.
+  --
+  -- Defined only on Linux servers, where the original is kept as `ClockworkFileRead`.
+  -- @param fileName [String Path of the file to read]
+  -- @param pathName [String Search path, as for the stock `file.Read` (e.g. `'GAME'` or `'DATA'`)]
+  -- @return [String The file contents, or `nil` if the file could not be read]
   function file.Read(fileName, pathName)
     local contents = ClockworkFileRead(fileName, pathName)
 
@@ -39,7 +45,13 @@ if system.IsLinux() then
   end
 end
 
--- Fix for SQLite duplicating ' character.
+--- Escapes a value for an SQLite query, replacing the stock `sql.SQLStr`.
+--
+-- Converts the value with `tostring` and cuts it at the first NULL character. Unlike the stock version it
+-- does not double single quotes, which used to duplicate `'` characters.
+-- @param str_in [Any Value to escape]
+-- @param bNoQuotes=nil [Boolean Whether to return the string without surrounding single quotes]
+-- @return [String The value as a string, wrapped in single quotes unless `bNoQuotes` is set]
 function sql.SQLStr(str_in, bNoQuotes)
   local str = tostring(str_in)
 
@@ -62,11 +74,21 @@ File.mkdir('logs/clockwork')
 
 base64 = base64 or {}
 
--- util.Base64* are binary safe, so NULL (0) characters need no special treatment anymore.
+--- Encodes a value as Base64.
+--
+-- Uses `util.Base64Encode` without line breaks; it is binary safe, so NULL characters need no special
+-- treatment.
+-- @param str [Any Value to encode; converted with `tostring`]
+-- @return [String The Base64 encoded string]
+-- @see base64.decode
 function base64.encode(str)
   return util.Base64Encode(tostring(str), true)
 end
 
+--- Decodes a Base64 string with `util.Base64Decode`.
+-- @param str [String Base64 encoded string]
+-- @return [String The decoded data, or `nil` if the string is not valid Base64]
+-- @see base64.encode
 function base64.decode(str)
   return util.Base64Decode(str)
 end
@@ -126,7 +148,15 @@ cw.WorkshopMaps = {
   rp_gc_city8 = 760771478
 }
 
--- A function to save schema data.
+--- Serializes a table and writes it to the current schema's data folder.
+--
+-- The file is `settings/catwork/schemas/<schema>/<fileName>.cw`, encoded with `cw.core:Serialize`.
+-- Prints an error and saves nothing when `data` is not a table.
+-- @param fileName [String File name without extension; may contain subfolders]
+-- @param data [Map Table to save]
+-- @param bForceJSON=nil [Boolean Whether to encode as JSON instead of pON]
+-- @return [Boolean The result of `File.write`, or `nil` when `data` is not a table]
+-- @see cw.core:RestoreSchemaData
 function cw.core:SaveSchemaData(fileName, data, bForceJSON)
   if type(data) != 'table' then
     MsgC(
@@ -140,24 +170,33 @@ function cw.core:SaveSchemaData(fileName, data, bForceJSON)
   return File.write('settings/catwork/schemas/'..cw.Schema..'/'..fileName..'.cw', self:Serialize(data, bForceJSON))
 end
 
--- A function to delete schema data.
+--- Deletes a file from the current schema's data folder.
+-- @param fileName [String File name without extension, as passed to `cw.core:SaveSchemaData`]
+-- @return [Boolean The result of `File.delete`]
 function cw.core:DeleteSchemaData(fileName)
   return File.delete('settings/catwork/schemas/'..cw.Schema..'/'..fileName..'.cw')
 end
 
--- A function to check if schema data exists.
+--- Returns whether a file exists in the current schema's data folder.
+-- @param fileName [String File name without extension, as passed to `cw.core:SaveSchemaData`]
+-- @return [Boolean Whether the file exists]
 function cw.core:SchemaDataExists(fileName)
   return _file.Exists('settings/catwork/schemas/'..cw.Schema..'/'..fileName..'.cw', 'GAME')
 end
 
--- A function to get the schema data path.
+--- Returns the path of the current schema's data folder.
+-- @return [String The path, `settings/catwork/schemas/<schema>`, relative to the `garrysmod` folder]
 function cw.core:GetSchemaDataPath()
   return 'settings/catwork/schemas/'..cw.Schema
 end
 
 SCHEMA_GAMEMODE_INFO = SCHEMA_GAMEMODE_INFO or nil
 
--- A function to get the schema gamemode info.
+--- Returns the schema's gamemode information from its gamemode `.txt` file.
+--
+-- Reads `gamemodes/<schema>/<schema>.txt` once and caches the result in the `SCHEMA_GAMEMODE_INFO` global.
+-- Missing fields are `'Undefined'`.
+-- @return [Map The `name` (the file's `title`), `author`, `description` and `version` of the schema]
 function cw.core:GetSchemaGamemodeInfo()
   if SCHEMA_GAMEMODE_INFO then return SCHEMA_GAMEMODE_INFO end
 
@@ -182,7 +221,8 @@ function cw.core:GetSchemaGamemodeInfo()
   return SCHEMA_GAMEMODE_INFO
 end
 
--- A function to get the schema gamemode name.
+--- Returns the name of the loaded schema.
+-- @return [String The schema's name from `Schema:GetName`, or `'Catwork'` before the schema has loaded]
 function cw.core:GetSchemaGamemodeName()
   if Schema then
     return Schema:GetName()
@@ -191,19 +231,30 @@ function cw.core:GetSchemaGamemodeName()
   end
 end
 
--- A function to get the schema version.
+--- Returns the version of the schema from its gamemode `.txt` file.
+-- @return [String The version, or `'Undefined'` if the file does not set one]
+-- @see cw.core:GetSchemaGamemodeInfo
 function cw.core:GetSchemaGamemodeVersion()
   local schemaInfo = self:GetSchemaGamemodeInfo()
 
   return schemaInfo['version']
 end
 
--- A function to find schema data in a directory.
+--- Finds files and folders in the current schema's data folder.
+-- @param directory [String Path and wildcard relative to the schema data folder, e.g. `'plugins/*'`]
+-- @return [List<String> File names, List<String> Folder names, as returned by `file.Find`]
 function cw.core:FindSchemaDataInDir(directory)
   return _file.Find('settings/catwork/schemas/'..self:GetSchemaFolder()..'/'..directory, 'GAME')
 end
 
--- A function to restore schema data.
+--- Reads and deserializes a file from the current schema's data folder.
+--
+-- If the file cannot be deserialized, an error is printed and the file is deleted.
+-- @param fileName [String File name without extension, as passed to `cw.core:SaveSchemaData`]
+-- @param failSafe=nil [Any Value to return when the file is missing or invalid; an empty table if `nil`]
+-- @param bForceJSON=nil [Boolean Whether the file is JSON instead of pON]
+-- @return [Any The stored table, or `failSafe` when it could not be restored]
+-- @see cw.core:SaveSchemaData
 function cw.core:RestoreSchemaData(fileName, failSafe, bForceJSON)
   if self:SchemaDataExists(fileName) then
     local data = File.read('settings/catwork/schemas/'..cw.Schema..'/'..fileName..'.cw')
@@ -231,7 +282,13 @@ function cw.core:RestoreSchemaData(fileName, failSafe, bForceJSON)
   end
 end
 
--- A function to restore Clockwork data.
+--- Reads and deserializes a file from the framework-wide data folder, `settings/clockwork/`.
+--
+-- If the file cannot be deserialized, an error is printed and the file is deleted.
+-- @param fileName [String File name without extension, as passed to `cw.core:SaveClockworkData`]
+-- @param failSafe=nil [Any Value to return when the file is missing or invalid; an empty table if `nil`]
+-- @return [Any The stored table, or `failSafe` when it could not be restored]
+-- @see cw.core:SaveClockworkData
 function cw.core:RestoreClockworkData(fileName, failSafe)
   if self:ClockworkDataExists(fileName) then
     local data = File.read('settings/clockwork/'..fileName..'.cw')
@@ -256,7 +313,14 @@ function cw.core:RestoreClockworkData(fileName, failSafe)
   end
 end
 
--- A function to save Clockwork data.
+--- Serializes a table with pON and writes it to `settings/clockwork/<fileName>.cw`.
+--
+-- Unlike schema data, this data is shared by every schema. Prints an error and saves nothing when `data`
+-- is not a table.
+-- @param fileName [String File name without extension]
+-- @param data [Map Table to save]
+-- @return [Boolean The result of `File.write`, or `nil` when `data` is not a table]
+-- @see cw.core:RestoreClockworkData
 function cw.core:SaveClockworkData(fileName, data)
   if type(data) != 'table' then
     MsgC(
@@ -271,17 +335,26 @@ function cw.core:SaveClockworkData(fileName, data)
   return File.write('settings/clockwork/'..fileName..'.cw', self:Serialize(data))
 end
 
--- A function to check if Clockwork data exists.
+--- Returns whether a file exists in the framework-wide data folder, `settings/clockwork/`.
+-- @param fileName [String File name without extension]
+-- @return [Boolean Whether the file exists]
 function cw.core:ClockworkDataExists(fileName)
   return _file.Exists('settings/clockwork/'..fileName..'.cw', 'GAME')
 end
 
--- A function to delete Clockwork data.
+--- Deletes a file from the framework-wide data folder, `settings/clockwork/`.
+-- @param fileName [String File name without extension]
+-- @return [Boolean The result of `File.delete`]
 function cw.core:DeleteClockworkData(fileName)
   return File.delete('settings/clockwork/'..fileName..'.cw')
 end
 
--- A function to convert a force.
+--- Scales a force vector down so that its length does not exceed a limit.
+--
+-- Used to keep damage forces applied to ragdolls and players within reason.
+-- @param force [Vector The force to limit]
+-- @param limit=800 [Number Maximum length of the returned vector]
+-- @return [Vector The force, shortened to `limit` if it was longer, or a zero vector for a zero force]
 function cw.core:ConvertForce(force, limit)
   local forceLength = force:Length()
 
@@ -300,7 +373,13 @@ function cw.core:ConvertForce(force, limit)
   end
 end
 
--- A function to save a player's attribute boosts.
+--- Stores a player's attribute boosts in their character data so they survive a reconnect.
+--
+-- Writes the `AttrBoosts` key of `data`, keeping the remaining duration of timed boosts and dropping
+-- expired ones. Called from `PlayerSaveCharacterData` when the `save_attribute_boosts` config is on.
+-- @param player [Player The player whose boosts are saved]
+-- @param data [Map The character data table being saved]
+-- @warning [Internal] Called by the kernel when a character is saved.
 function cw.core:SavePlayerAttributeBoosts(player, data)
   local attributeBoosts = player:GetAttributeBoosts()
   local curTime = CurTime()
@@ -333,7 +412,15 @@ function cw.core:SavePlayerAttributeBoosts(player, data)
   end
 end
 
--- A function to calculate a player's spawn time.
+--- Starts a dead player's respawn timer.
+--
+-- The delay is the `spawn_time` config, adjusted by the `PlayerAdjustDeathInfo` hook through an info table
+-- with `attacker`, `inflictor`, `spawnTime` and `damageInfo`. Sets the player's `spawn` action when the
+-- resulting time is above zero.
+-- @param player [Player The player who died]
+-- @param inflictor [Entity The entity that inflicted the damage]
+-- @param attacker [Entity The entity that caused the death]
+-- @param damageInfo=nil [CTakeDamageInfo The fatal damage]
 function cw.core:CalculateSpawnTime(player, inflictor, attacker, damageInfo)
   local info = {
     attacker = attacker,
@@ -349,7 +436,11 @@ function cw.core:CalculateSpawnTime(player, inflictor, attacker, damageInfo)
   end
 end
 
--- A function to create a decal.
+--- Spawns an `infodecal` entity that paints a decal at a position.
+-- @param texture [String Material path of the decal]
+-- @param position [Vector Where to place the decal]
+-- @param temporary=nil [Boolean Whether the decal is low priority, so the engine may remove it]
+-- @return [Entity The decal entity]
 function cw.core:CreateDecal(texture, position, temporary)
   local decal = ents.Create('infodecal')
 
@@ -365,7 +456,14 @@ function cw.core:CreateDecal(texture, position, temporary)
   return decal
 end
 
--- A function to handle a player's weapon fire delay.
+--- Blocks or restores a weapon's primary and secondary fire based on the `PlayerCanFireWeapon` hook.
+--
+-- When firing is not allowed, the next fire time is pushed a minute ahead and the original time is kept
+-- on the weapon to restore once firing is allowed again. The SMG's secondary fire is never delayed.
+-- @param player [Player The player holding the weapon]
+-- @param bIsRaised [Boolean Whether the weapon is raised]
+-- @param weapon [Weapon The weapon]
+-- @param curTime [Number The current `CurTime`]
 function cw.core:HandleWeaponFireDelay(player, bIsRaised, weapon, curTime)
   local delaySecondaryFire = nil
   local delayPrimaryFire = nil
@@ -412,7 +510,14 @@ function cw.core:HandleWeaponFireDelay(player, bIsRaised, weapon, curTime)
   end
 end
 
--- A function to calculate player damage.
+--- Applies damage to a player's armor, health and limbs.
+--
+-- Bullet, club and slash damage is taken from armor first (only on the chest and generic hit groups when
+-- `armor_chest_only` is on); damage that gets through hurts the hit limb with `cw.limb:TakeDamage`.
+-- Health never drops below 1 here, and fall damage also hurts both legs.
+-- @param player [Player The damaged player]
+-- @param hitGroup [Number The `HITGROUP_*` that was hit]
+-- @param damageInfo [CTakeDamageInfo The damage]
 function cw.core:CalculatePlayerDamage(player, hitGroup, damageInfo)
   local bDamageIsValid =
     damageInfo:IsBulletDamage() or damageInfo:IsDamageType(DMG_CLUB) or damageInfo:IsDamageType(DMG_SLASH)
@@ -445,7 +550,14 @@ function cw.core:CalculatePlayerDamage(player, hitGroup, damageInfo)
   end
 end
 
--- A function to get a ragdoll's hit bone.
+--- Returns the bone of a ragdoll closest to a position.
+--
+-- Only the bones listed in `cw.HitGroupBonesCache` are considered.
+-- @param entity [Entity The ragdoll]
+-- @param position [Vector The position to check, usually the damage position]
+-- @param failSafe=nil [Any Value to return when no bone is close enough]
+-- @param minimum=nil [Number Maximum distance a bone may be from the position]
+-- @return [Number The bone index, or `failSafe`]
 function cw.core:GetRagdollHitBone(entity, position, failSafe, minimum)
   local closest = {}
 
@@ -475,7 +587,10 @@ function cw.core:GetRagdollHitBone(entity, position, failSafe, minimum)
   end
 end
 
--- A function to get a ragdoll's hit group.
+--- Returns the hit group of the ragdoll bone closest to a position.
+-- @param entity [Entity The ragdoll]
+-- @param position [Vector The position to check, usually the damage position]
+-- @return [Number The `HITGROUP_*` of the closest bone in `cw.HitGroupBonesCache`, or `HITGROUP_GENERIC`]
 function cw.core:GetRagdollHitGroup(entity, position)
   local closest = { nil, HITGROUP_GENERIC }
 
@@ -499,7 +614,14 @@ function cw.core:GetRagdollHitGroup(entity, position)
   return closest[2]
 end
 
--- A function to create blood effects at a position.
+--- Plays blood smoke and impact effects at a position and sprays blood decals.
+--
+-- Does nothing if the entity bled less than half a second ago.
+-- @param position [Vector Where the blood appears]
+-- @param decals [Number How many blood decals to trace]
+-- @param entity [Entity The bleeding entity; also filtered out of the decal traces]
+-- @param forceVec=nil [Vector Direction of the blood smoke; random if `nil`]
+-- @param fScale=0.5 [Number Scale of the effects]
 function cw.core:CreateBloodEffects(position, decals, entity, forceVec, fScale)
   if !entity.cwNextBlood or CurTime() >= entity.cwNextBlood then
     local effectData = EffectData()
@@ -529,7 +651,11 @@ function cw.core:CreateBloodEffects(position, decals, entity, forceVec, fScale)
   end
 end
 
--- A function to perform the date and time think.
+--- Advances the in-game clock by one minute, rolling over hours, days, months and years.
+--
+-- Runs the `TimePassed` hook with `TIME_MINUTE`, `TIME_HOUR`, `TIME_DAY`, `TIME_MONTH` or `TIME_YEAR` for
+-- each unit that changed and networks the time and date with `netvars.SetNetVar`.
+-- @warning [Internal] Called by the kernel every `minute_time` seconds (one in-game minute).
 function cw.core:PerformDateTimeThink()
   local defaultDays = cw.option:GetKey('default_days')
   local minute = cw.time:GetMinute()
@@ -594,7 +720,12 @@ function cw.core:PerformDateTimeThink()
   netvars.SetNetVar('day', day)
 end
 
--- A function to create a ConVar.
+--- Creates a console variable and runs the `ClockworkConVarChanged` hook whenever it changes.
+-- @param name [String Name of the convar]
+-- @param value [String Default value]
+-- @param flags=nil [Number `FCVAR_*` flags; replicated, notify and archive when `nil`]
+-- @param Callback=nil [Function Called as `Callback(conVar, previousValue, newValue)` on every change]
+-- @return [ConVar The created convar]
 function cw.core:CreateConVar(name, value, flags, Callback)
   local conVar = CreateConVar(name, value, flags or FCVAR_REPLICATED + FCVAR_NOTIFY + FCVAR_ARCHIVE)
 
@@ -609,12 +740,20 @@ function cw.core:CreateConVar(name, value, flags, Callback)
   return conVar
 end
 
--- A function to check if the server is shutting down.
+--- Returns whether the server is shutting down.
+--
+-- Set in the `ShutDown` hook; used to skip work such as dropping belongings while the map unloads.
+-- @return [Boolean `true` during shutdown, otherwise `nil`]
 function cw.core:IsShuttingDown()
   return cw.ShuttingDown
 end
 
--- A function to distribute wages cash.
+--- Pays wages to every initialized, living player.
+--
+-- For each player the `PlayerModifyWagesInfo` hook may change the `wages` field of an info table. When
+-- `PlayerCanEarnWagesCash` allows it and the wages are positive, `PlayerGiveWagesCash` decides whether the
+-- cash is given with `cw.player:GiveCash`; `PlayerEarnWagesCash` runs afterwards in any case.
+-- @warning [Internal] Called by the kernel every `wages_interval` seconds.
 function cw.core:DistributeWagesCash()
   for k, v in ipairs(_player.GetAll()) do
     if v:HasInitialized() and v:Alive() then
@@ -637,7 +776,8 @@ function cw.core:DistributeWagesCash()
   end
 end
 
--- A function to include the schema.
+--- Loads the schema, loading the config before and after it.
+-- @warning [Internal] Called once while the framework boots, from `shared.lua`.
 function cw.core:IncludeSchema()
   local schemaFolder = self:GetSchemaFolder()
 
@@ -648,7 +788,12 @@ function cw.core:IncludeSchema()
   end
 end
 
--- A function to print a log message.
+--- Sends a log message to admins who have log display enabled and writes it to the server log.
+--
+-- Admins receive it when their `cwShowLog` client convar is `1`. On dedicated servers with
+-- `CW_CONVAR_LOG` enabled the message is also passed to `cw.core:ServerLog`.
+-- @param logType=LOGTYPE_GENERIC [Number One of the `LOGTYPE_*` enums]
+-- @param text [String The message]
 function cw.core:PrintLog(logType, text)
   local listeners = {}
   local plyTable = _player.GetAll()
@@ -670,7 +815,11 @@ function cw.core:PrintLog(logType, text)
   end
 end
 
--- A function to log to the server.
+--- Writes a message to the server log and to the day's Catwork log file.
+--
+-- Appends a timestamped line to `logs/clockwork/<YYYY-MM-DD>.log`, passes the text to the engine's
+-- `ServerLog` and runs the `ClockworkLog` hook with the text and the Unix time.
+-- @param text [String The message; newlines are removed in the log file]
 function cw.core:ServerLog(text)
   local dateInfo = os.date('*t')
   local unixTime = os.time()
@@ -695,7 +844,10 @@ end
 -- the function below is from Gristwork I believe.
 -- so kudos to Alex Grist for making it
 
--- A function to add workshop collections to the resources.
+--- Adds every item of a Steam Workshop collection to the client downloads.
+--
+-- Fetches the collection page asynchronously and calls `resource.AddWorkshop` for each item on it.
+-- @param id [String The collection's Workshop ID]
 function cw.core:AddWorkshopCollection(id)
   http.Fetch('http://steamcommunity.com/sharedfiles/filedetails/?id='..id, function(page)
     for k in string.gmatch(page, [[<div id="sharedfile_(.-)" class="collectionItem">]]) do
@@ -720,7 +872,15 @@ do
   end
 end
 
--- A function to do the entity take damage hook.
+--- Runs the player-specific part of the `EntityTakeDamage` hook.
+--
+-- For players and their ragdolls it runs `PrePlayerTakeDamage`, cancels damage that `PlayerShouldTakeDamage`
+-- rejects or that hits a player in god mode, redirects damage from a ragdolled player to the ragdoll and
+-- turns crush damage on a ragdoll into fall damage (at most once a second) using `GetFallDamage`.
+-- @param entity [Entity The damaged entity]
+-- @param damageInfo [CTakeDamageInfo The damage; modified in place]
+-- @return [Boolean `true` when the damage was cancelled or redirected and the caller should stop]
+-- @warning [Internal] Called by the kernel's `EntityTakeDamage` hook.
 function cw.core:DoEntityTakeDamageHook(entity, damageInfo)
   if !IsValid(entity) then
     return
@@ -834,6 +994,11 @@ playerMeta.ClockworkPlayStepSound = playerMeta.ClockworkPlayStepSound or playerM
 
 playerMeta.SteamName = playerMeta.SteamName or playerMeta.Name
 
+--- Returns the player's 64-bit Steam ID, or an empty string where the engine returns `nil`.
+--
+-- Wraps the engine function, kept as `Player:ClockworkSteamID64`, so callers can concatenate the result
+-- safely; prints a message when the fallback is used.
+-- @return [String The SteamID64, or `''` if it is not available]
 function playerMeta:SteamID64()
   local value = self:ClockworkSteamID64()
 
@@ -845,7 +1010,10 @@ function playerMeta:SteamID64()
   end
 end
 
--- A function to override player's name returned by player:Name().
+--- Overrides the name `Player:Name` returns for this player, on the server and on clients.
+--
+-- Stored in the `NameOverride` net variable.
+-- @param name [String The name to show; `nil` or `''` removes the override]
 function playerMeta:OverrideName(name)
   if name and name != '' then
     self:SetNetVar('NameOverride', name)
@@ -854,11 +1022,22 @@ function playerMeta:OverrideName(name)
   end
 end
 
--- A function to get a player's name.
+--- Returns the player's display name.
+--
+-- This is the name set with `Player:OverrideName` if any, otherwise the character's name, otherwise the
+-- Steam name (`Player:SteamName` is the engine's original `Name`).
+-- @param bRealName=nil [Boolean Whether to ignore the name override]
+-- @return [String The player's name]
+-- @alias [Player.GetName]
+-- @alias [Player.Nick]
 function playerMeta:Name(bRealName)
   return (!bRealName and self:GetNetVar('NameOverride', nil)) or self:QueryCharacter('Name', self:SteamName())
 end
 
+--- Plays a footstep sound, at most once every quarter second.
+--
+-- Wraps the engine function, kept as `Player:ClockworkPlayStepSound`.
+-- @param volume [Number Volume of the sound, from 0 to 1]
 function playerMeta:PlayStepSound(volume)
   local curTime = CurTime()
 
@@ -871,7 +1050,12 @@ function playerMeta:PlayStepSound(volume)
   end
 end
 
--- A function to make a player fire bullets.
+--- Fires bullets from the entity after letting hooks adjust them.
+--
+-- Runs `PlayerAdjustBulletInfo` for players and `EntityFireBullets` for every entity, both with the bullet
+-- table, then calls the engine function, kept as `Entity:ClockworkFireBullets`.
+-- @param bulletInfo [Map Bullet structure, as for the engine's `Entity:FireBullets`]
+-- @param ... [Any Extra arguments passed to the engine function]
 function entityMeta:FireBullets(bulletInfo, ...)
   if self:IsPlayer() then
     hook.Run('PlayerAdjustBulletInfo', self, bulletInfo)
@@ -881,7 +1065,9 @@ function entityMeta:FireBullets(bulletInfo, ...)
   return self:ClockworkFireBullets(bulletInfo, ...)
 end
 
--- A function to get whether a player is alive.
+--- Returns whether the player is alive, treating a player who is faking death as dead.
+-- @return [Boolean Whether the player is alive]
+-- @see Player:SetFakingDeath
 function playerMeta:Alive()
   if !self.fakingDeath then
     return self:ClockworkAlive()
@@ -890,7 +1076,9 @@ function playerMeta:Alive()
   end
 end
 
--- A function to set whether a player is faking death.
+--- Sets whether the player is faking death, which makes `Player:Alive` return `false`.
+-- @param fakingDeath [Boolean Whether the player is faking death]
+-- @param killSilent=nil [Boolean When ending the fake death, kill the player silently]
 function playerMeta:SetFakingDeath(fakingDeath, killSilent)
   self.fakingDeath = fakingDeath
 
@@ -899,17 +1087,29 @@ function playerMeta:SetFakingDeath(fakingDeath, killSilent)
   end
 end
 
--- A function to save a player's character.
+--- Saves the player's current character to the database.
+-- @see cw.player:SaveCharacter
 function playerMeta:SaveCharacter()
   cw.player:SaveCharacter(self)
 end
 
--- A function to give a player an item weapon.
+--- Gives the player the weapon of a weapon item.
+-- @param itemTable [Item The weapon item instance]
+-- @see cw.player:GiveItemWeapon
 function playerMeta:GiveItemWeapon(itemTable)
   cw.player:GiveItemWeapon(self, itemTable)
 end
 
--- A function to give a weapon to a player.
+--- Gives the player a weapon, optionally tied to an item.
+--
+-- Does nothing if the `PlayerCanBeGivenWeapon` hook returns `false`. While the player is ragdolled the weapon
+-- is added to the ragdoll's weapons and handed out when they get up, unless `bForceReturn` is set. With an
+-- item, the weapon gets its `ItemID` networked string, the item definition is sent to the player and
+-- the item's `OnWeaponGiven` callback runs. Runs `PlayerGivenWeapon` afterwards. Unlike the engine function
+-- (kept as `Player:ClockworkGive`), nothing is returned.
+-- @param class [String Weapon class name]
+-- @param itemTable=nil [Item Item instance the weapon belongs to]
+-- @param bForceReturn=nil [Boolean Give the weapon now even if the player is ragdolled]
 function playerMeta:Give(class, itemTable, bForceReturn)
   local iTeamIndex = self:Team()
 
@@ -968,7 +1168,11 @@ function playerMeta:Give(class, itemTable, bForceReturn)
   hook.Run('PlayerGivenWeapon', self, class, itemTable)
 end
 
--- A function to get a player's data.
+--- Returns a value from the player's persistent data, which belongs to the player rather than a character.
+-- @param key [String Name of the value]
+-- @param default=nil [Any Value to return when the key is not set]
+-- @return [Any The stored value, or `default`]
+-- @see Player:SetData
 function playerMeta:GetData(key, default)
   if self.cwData and self.cwData[key] != nil then
     return self.cwData[key]
@@ -977,12 +1181,16 @@ function playerMeta:GetData(key, default)
   end
 end
 
--- A function to get a player's playback rate.
+--- Returns the playback rate of the player's animations.
+-- @return [Number The playback rate, `1` by default]
 function playerMeta:GetPlaybackRate()
   return self.cwPlaybackRate or 1
 end
 
--- A function to set an entity's skin.
+--- Sets the entity's skin; for players also updates their ragdoll's saved skin.
+--
+-- Runs the `PlayerSkinChanged` hook for players.
+-- @param skin [Number Skin index]
 function entityMeta:SetSkin(skin)
   self:ClockworkSetSkin(skin)
 
@@ -995,7 +1203,10 @@ function entityMeta:SetSkin(skin)
   end
 end
 
--- A function to set an entity's model.
+--- Sets the entity's model; for players also updates their ragdoll's saved model.
+--
+-- Runs the `PlayerModelChanged` hook for players.
+-- @param model [String Model path]
 function entityMeta:SetModel(model)
   self:ClockworkSetModel(model)
 
@@ -1008,27 +1219,34 @@ function entityMeta:SetModel(model)
   end
 end
 
--- A function to get an entity's owner key.
+--- Returns the character key of the entity's owner.
+-- @return [Number The owner's character key, or `nil` if the entity has no owner]
 function entityMeta:GetOwnerKey()
   return self.cwOwnerKey
 end
 
--- A function to set an entity's owner key.
+--- Sets the character key of the entity's owner.
+-- @param key [Number The owner's character key, as returned by `Player:GetCharacterKey`; `nil` clears it]
 function entityMeta:SetOwnerKey(key)
   self.cwOwnerKey = key
 end
 
--- A function to get whether an entity is a map entity.
+--- Returns whether the entity was created by the map.
+-- @return [Boolean Whether the entity is a map entity]
+-- @see cw.entity:IsMapEntity
 function entityMeta:IsMapEntity()
   return cw.entity:IsMapEntity(self)
 end
 
--- A function to get an entity's start position.
+--- Returns the position the entity was at when it was recorded as spawned.
+-- @return [Vector The start position, or `nil` if none was stored]
+-- @see cw.entity:GetStartPosition
 function entityMeta:GetStartPosition()
   return cw.entity:GetStartPosition(self)
 end
 
--- A function to emit a hit sound for an entity.
+--- Plays a body hit sound from the entity, followed a few frames later by another sound.
+-- @param sound [String Sound to play after the hit sound]
 function entityMeta:EmitHitSound(sound)
   self:EmitSound('weapons/crossbow/hitbod2.wav',
     math.random(100, 150), math.random(150, 170)
@@ -1041,7 +1259,8 @@ function entityMeta:EmitHitSound(sound)
   end)
 end
 
--- A function to set an entity's material.
+--- Sets the entity's material, also applying it to a ragdolled player's ragdoll.
+-- @param material [String Material path; `''` restores the default]
 function entityMeta:SetMaterial(material)
   if self:IsPlayer() and self:IsRagdolled() then
     self:GetRagdollEntity():SetMaterial(material)
@@ -1050,7 +1269,8 @@ function entityMeta:SetMaterial(material)
   self:ClockworkSetMaterial(material)
 end
 
--- A function to set an entity's color.
+--- Sets the entity's color, also applying it to a ragdolled player's ragdoll.
+-- @param color [Color The new color]
 function entityMeta:SetColor(color)
   if self:IsPlayer() and self:IsRagdolled() then
     self:GetRagdollEntity():SetColor(color)
@@ -1059,12 +1279,14 @@ function entityMeta:SetColor(color)
   self:ClockworkSetColor(color)
 end
 
--- A function to get a player's information table.
+--- Returns the table of movement and inventory values the kernel refreshes for the player every think.
+-- @return [Map The info table, with keys such as `walkSpeed`, `jumpPower` and `inventoryWeight`]
 function playerMeta:GetInfoTable()
   return self.cwInfoTable
 end
 
--- A function to set a player's armor.
+--- Sets the player's armor and runs the `PlayerArmorSet` hook with the new and old values.
+-- @param armor [Number The new armor; does nothing if `nil`]
 function playerMeta:SetArmor(armor)
   if !armor then
     return
@@ -1075,7 +1297,8 @@ function playerMeta:SetArmor(armor)
   hook.Run('PlayerArmorSet', self, armor, oldArmor)
 end
 
--- A function to set a player's health.
+--- Sets the player's health and runs the `PlayerHealthSet` hook with the new and old values.
+-- @param health [Number The new health; does nothing if `nil`]
 function playerMeta:SetHealth(health)
   if !health then
     return
@@ -1086,12 +1309,18 @@ function playerMeta:SetHealth(health)
   hook.Run('PlayerHealthSet', self, health, oldHealth)
 end
 
--- A function to get whether a player is noclipping.
+--- Returns whether the player is in noclip.
+-- @return [Boolean Whether the player is noclipping]
+-- @see cw.player:IsNoClipping
 function playerMeta:IsNoClipping()
   return cw.player:IsNoClipping(self)
 end
 
--- A function to get whether a player is running.
+--- Returns whether the player is sprinting.
+--
+-- True while the player is alive, not ragdolled, crouching or in a vehicle, holds the sprint key and moves
+-- at least at walking speed.
+-- @return [Boolean Whether the player is running]
 function playerMeta:IsRunning()
   if self:Alive() and !self:IsRagdolled() and !self:InVehicle()
   and !self:Crouching() and self:KeyDown(IN_SPEED) then
@@ -1104,7 +1333,8 @@ function playerMeta:IsRunning()
   return false
 end
 
--- A function to get whether a player is jumping.
+--- Returns whether the player is in the middle of a jump.
+-- @return [Boolean Whether the player is jumping and alive, not ragdolled, crouching or in a vehicle]
 function playerMeta:IsJumping()
   if self:Alive() and !self:IsRagdolled() and !self:InVehicle()
   and !self:Crouching() and self.m_bJumping then
@@ -1114,7 +1344,8 @@ function playerMeta:IsJumping()
   return false
 end
 
--- A function to strip a weapon from a player.
+--- Removes a weapon from the player, or from their ragdoll's weapons while they are ragdolled.
+-- @param weaponClass [String Weapon class name]
 function playerMeta:StripWeapon(weaponClass)
   if self:IsRagdolled() then
     local ragdollWeapons = self:GetRagdollWeapons()
@@ -1129,12 +1360,17 @@ function playerMeta:StripWeapon(weaponClass)
   end
 end
 
--- A function to get the player's target run speed.
+--- Returns the run speed the player is meant to have.
+-- @return [Number The target run speed, or the current run speed if none is set]
 function playerMeta:GetTargetRunSpeed()
   return self.cwTargetRunSpeed or self:GetRunSpeed()
 end
 
--- A function to handle a player's attribute progress.
+--- Sends the player's accumulated attribute progress to their client every 30 seconds.
+--
+-- Clears the accumulated progress after sending it.
+-- @param curTime [Number The current `CurTime`]
+-- @warning [Internal] Called by the kernel once a second for each player.
 function playerMeta:HandleAttributeProgress(curTime)
   if self.cwAttrProgressTime and curTime >= self.cwAttrProgressTime then
     self.cwAttrProgressTime = curTime + 30
@@ -1155,7 +1391,9 @@ function playerMeta:HandleAttributeProgress(curTime)
   end
 end
 
--- A function to handle a player's attribute boosts.
+--- Updates the player's timed attribute boosts, fading their amount out and removing expired ones.
+-- @param curTime [Number The current `CurTime`]
+-- @warning [Internal] Called by the kernel once a second for each player.
 function playerMeta:HandleAttributeBoosts(curTime)
   for k, v in pairs(self.cwAttrBoosts) do
     for k2, v2 in pairs(v) do
@@ -1178,7 +1416,8 @@ function playerMeta:HandleAttributeBoosts(curTime)
   end
 end
 
--- A function to strip a player's weapons.
+--- Removes all of the player's weapons, or their ragdoll's weapons while they are ragdolled.
+-- @param ragdollForce=nil [Boolean Strip the player's real weapons even while ragdolled]
 function playerMeta:StripWeapons(ragdollForce)
   if self:IsRagdolled() and !ragdollForce then
     self:GetRagdollTable().weapons = {}
@@ -1187,17 +1426,18 @@ function playerMeta:StripWeapons(ragdollForce)
   end
 end
 
--- A function to enable God for a player.
+--- Enables god mode for the player and remembers it for `Player:IsInGodMode`.
 function playerMeta:GodEnable()
   self.godMode = true self:ClockworkGodEnable()
 end
 
--- A function to disable God for a player.
+--- Disables god mode for the player.
 function playerMeta:GodDisable()
   self.godMode = nil self:ClockworkGodDisable()
 end
 
--- A function to get whether a player has God mode enabled.
+--- Returns whether god mode was enabled with `Player:GodEnable`.
+-- @return [Boolean `true` in god mode, otherwise `nil`]
 function playerMeta:IsInGodMode()
   return self.godMode
 end
@@ -1216,7 +1456,11 @@ do
     ['weapon_hl2shovel'] = 15
   }
 
-  -- A function to update whether a player's weapon has fired.
+  --- Detects whether the player's active weapon fired since the last check by comparing its clips.
+  --
+  -- Runs the `PlayerFireWeapon` hook with the weapon, `CLIP_ONE` or `CLIP_TWO` and the ammo type when a clip
+  -- went down. Firing a listed melee weapon is meant to drain stamina.
+  -- @warning [Internal] Called by the kernel from `PlayerThink`.
   function playerMeta:UpdateWeaponFired()
     local activeWeapon = self:GetActiveWeapon()
 
@@ -1259,7 +1503,8 @@ do
   end
 end
 
--- A function to get a player's water level.
+--- Returns how deep the player is in water, using their ragdoll while they are ragdolled.
+-- @return [Number Water level from 0 (dry) to 3 (fully submerged)]
 function playerMeta:WaterLevel()
   if self:IsRagdolled() then
     return self:GetRagdollEntity():WaterLevel()
@@ -1268,7 +1513,8 @@ function playerMeta:WaterLevel()
   end
 end
 
--- A function to get whether a player is on fire.
+--- Returns whether the player, or their ragdoll while they are ragdolled, is on fire.
+-- @return [Boolean Whether the player is burning]
 function playerMeta:IsOnFire()
   if self:IsRagdolled() then
     return self:GetRagdollEntity():IsOnFire()
@@ -1277,7 +1523,7 @@ function playerMeta:IsOnFire()
   end
 end
 
--- A function to extinguish a player.
+--- Puts out the fire on the player, or on their ragdoll while they are ragdolled.
 function playerMeta:Extinguish()
   if self:IsRagdolled() then
     return self:GetRagdollEntity():Extinguish()
@@ -1286,22 +1532,26 @@ function playerMeta:Extinguish()
   end
 end
 
--- A function to get whether a player is using their hands.
+--- Returns whether the player's active weapon is the hands (`cw_hands`).
+-- @return [Boolean Whether the player is using their hands]
 function playerMeta:IsUsingHands()
   return cw.player:GetWeaponClass(self) == 'cw_hands'
 end
 
--- A function to get whether a player is using their hands.
+--- Returns whether the player's active weapon is the keys (`cw_keys`).
+-- @return [Boolean Whether the player is using their keys]
 function playerMeta:IsUsingKeys()
   return cw.player:GetWeaponClass(self) == 'cw_keys'
 end
 
--- A function to get a player's wages.
+--- Returns the wages the player earns each wages interval.
+-- @return [Number The wages, from the `Wages` net variable]
 function playerMeta:GetWages()
   return cw.player:GetWages(self)
 end
 
--- A function to get a player's community ID.
+--- Returns the player's Steam community ID, computed from their Steam ID.
+-- @return [Number The community ID, or the Steam ID string if it could not be parsed (e.g. for bots)]
 function playerMeta:CommunityID()
   local x, y, z = string.match(self:SteamID(), 'STEAM_(%d+):(%d+):(%d+)')
 
@@ -1312,22 +1562,32 @@ function playerMeta:CommunityID()
   end
 end
 
--- A function to get whether a player is ragdolled.
+--- Returns whether the player is ragdolled (knocked out or fallen over).
+-- @param exception=nil [Number A `RAGDOLL_*` state that does not count as ragdolled]
+-- @param entityless=nil [Boolean Check the ragdoll state even if the player has no ragdoll entity]
+-- @return [Boolean Whether the player is ragdolled, or `nil` when there is no ragdoll entity]
+-- @see cw.player:IsRagdolled
 function playerMeta:IsRagdolled(exception, entityless)
   return cw.player:IsRagdolled(self, exception, entityless)
 end
 
--- A function to get whether a player is kicked.
+--- Returns the reason the player is being kicked, if `Player:Kick` was called for them.
+-- @return [String The kick reason, or `nil` if the player is not being kicked]
 function playerMeta:IsKicked()
   return self.isKicked
 end
 
--- A function to get whether a player has spawned.
+--- Returns whether the player's initial spawn has happened.
+-- @return [Boolean `true` once `PlayerInitialSpawn` has run for the player, otherwise `nil`]
 function playerMeta:HasSpawned()
   return self.cwHasSpawned
 end
 
--- A function to kick a player.
+--- Kicks the player with a reason.
+--
+-- The kick happens a moment later; a player whose initial spawn has not happened yet is kicked once it has.
+-- The engine function is kept as `Player:ClockworkKick`.
+-- @param reason='You have been kicked.' [String Reason shown to the player]
 function playerMeta:Kick(reason)
   if !self:IsKicked() then
     timer.Simple(FrameTime() * 0.5, function()
@@ -1352,12 +1612,16 @@ function playerMeta:Kick(reason)
   end
 end
 
--- A function to ban a player.
+--- Bans the player's Steam ID, which also kicks them.
+-- @param duration [Number Ban length in minutes; `0` bans permanently]
+-- @param reason=nil [String Ban reason]
+-- @see cw.bans:Add
 function playerMeta:Ban(duration, reason)
   cw.bans:Add(self:SteamID(), duration * 60, reason)
 end
 
--- A function to get a player's cash.
+--- Returns the cash of the player's character.
+-- @return [Number The cash, or `0` when the `cash_enabled` config is off]
 function playerMeta:GetCash()
   if config.GetVal('cash_enabled') then
     return self:QueryCharacter('Cash')
@@ -1366,65 +1630,92 @@ function playerMeta:GetCash()
   end
 end
 
--- A function to get a character's flags.
+--- Returns the flags of the player's character.
+-- @return [String The character's flags, one letter each]
+-- @see Player:GetPlayerFlags
 function playerMeta:GetFlags() return self:QueryCharacter('Flags') end
 
--- A function to get a player's faction.
+--- Returns the faction of the player's character.
+-- @return [String The faction name, or `nil` without a character]
 function playerMeta:GetFaction() return self:QueryCharacter('Faction') end
 
--- A function to get a player's gender.
+--- Returns the gender of the player's character.
+-- @return [String `GENDER_MALE` or `GENDER_FEMALE`, or `nil` without a character]
 function playerMeta:GetGender() return self:QueryCharacter('Gender') end
 
--- A function to get a player's inventory.
+--- Returns the inventory of the player's character.
+-- @return [Inventory The inventory, or `nil` without a character]
 function playerMeta:GetInventory() return self:QueryCharacter('Inventory') end
 
--- A function to get a player's attributes.
+--- Returns the attributes of the player's character.
+-- @return [Map Attribute unique IDs mapped to `{ amount = Number, progress = Number }`, or `nil` without a
+-- character]
 function playerMeta:GetAttributes() return self:QueryCharacter('Attributes') end
 
--- A function to get a player's saved ammo.
+--- Returns the ammo saved with the player's character.
+-- @return [Map Ammo types mapped to amounts, or `nil` without a character]
 function playerMeta:GetSavedAmmo() return self:QueryCharacter('Ammo') end
 
--- A function to get a player's default model.
+--- Returns the model chosen for the player's character.
+-- @return [String The model path, or `nil` without a character]
 function playerMeta:GetDefaultModel() return self:QueryCharacter('Model') end
 
--- A function to get a player's character ID.
+--- Returns the ID of the player's character among the player's own characters.
+-- @return [Number The character ID, or `nil` without a character]
+-- @see Player:GetCharacterKey
 function playerMeta:GetCharacterID() return self:QueryCharacter('CharacterID') end
 
--- A function to get the time when a player's character was created.
+--- Returns when the player's character was created.
+-- @return [Number The creation time, or `nil` without a character]
 function playerMeta:GetTimeCreated() return self:QueryCharacter('TimeCreated') end
 
--- A function to get a player's character key.
+--- Returns the key of the player's character, which is unique among all characters.
+--
+-- Used to identify a character across players, e.g. for recognition and entity ownership.
+-- @return [Number The character key, or `nil` without a character]
 function playerMeta:GetCharacterKey() return self:QueryCharacter('Key') end
 
--- A function to get a player's recognised names.
+--- Returns the characters the player's character recognises.
+-- @return [Map Character keys mapped to `RECOGNISE_*` values, or `nil` without a character]
 function playerMeta:GetRecognisedNames()
   return self:QueryCharacter('RecognisedNames')
 end
 
--- A function to get a player's character table.
+--- Returns the player's current character.
+-- @return [Character The character, or `nil` if the player has not loaded one]
 function playerMeta:GetCharacter() return cw.player:GetCharacter(self) end
 
--- A function to get a player's storage table.
+--- Returns the storage the player has open.
+-- @return [Map The storage table, or `nil` if no storage is open]
+-- @see cw.storage:GetTable
 function playerMeta:GetStorageTable() return cw.storage:GetTable(self) end
 
--- A function to get a player's ragdoll table.
+--- Returns the player's ragdoll table, which holds the ragdoll entity and what to restore when they get up.
+-- @return [Map The ragdoll table, with keys such as `entity`, `weapons`, `model` and `skin`]
 function playerMeta:GetRagdollTable() return cw.player:GetRagdollTable(self) end
 
--- A function to get a player's ragdoll state.
+--- Returns the player's ragdoll state.
+-- @return [Number One of `RAGDOLL_KNOCKEDOUT`, `RAGDOLL_FALLENOVER`, `RAGDOLL_RESET` or `RAGDOLL_NONE`]
 function playerMeta:GetRagdollState() return cw.player:GetRagdollState(self) end
 
--- A function to get a player's storage entity.
+--- Returns the entity whose storage the player has open.
+-- @return [Entity The storage entity, or `nil` if no storage is open]
+-- @see cw.storage:GetEntity
 function playerMeta:GetStorageEntity() return cw.storage:GetEntity(self) end
 
--- A function to get a player's ragdoll entity.
+--- Returns the player's ragdoll entity.
+-- @return [Entity The ragdoll, or `nil` if the player has no valid ragdoll]
 function playerMeta:GetRagdollEntity() return cw.player:GetRagdollEntity(self) end
 
--- A function to get a player's ragdoll weapons.
+--- Returns the weapons the player will get back when their ragdoll gets up.
+-- @return [List<Map> Entries with `weaponData` (`class`, `itemTable`), `canHolster` and `teamIndex`]
 function playerMeta:GetRagdollWeapons()
   return self:GetRagdollTable().weapons or {}
 end
 
--- A function to get whether a player's ragdoll has a weapon.
+--- Returns whether the player's ragdoll holds a weapon of a class.
+-- @param weaponClass [String Weapon class name]
+-- @return [Boolean `true` if the ragdoll has the weapon, otherwise `nil`]
 function playerMeta:RagdollHasWeapon(weaponClass)
   local ragdollWeapons = self:GetRagdollWeapons()
 
@@ -1437,12 +1728,15 @@ function playerMeta:RagdollHasWeapon(weaponClass)
   end
 end
 
--- A function to set a player's maximum armor.
+--- Sets the player's maximum armor, networked as `MaxAP`.
+-- @param armor [Number The maximum armor]
 function playerMeta:SetMaxArmor(armor)
   self:SetNetVar('MaxAP', armor)
 end
 
--- A function to get a player's maximum armor.
+--- Returns the player's maximum armor.
+-- @param armor=nil [Any Unused]
+-- @return [Number The maximum armor; `100` when it is unset or not positive]
 function playerMeta:GetMaxArmor(armor)
   local maxArmor = self:GetNetVar('MaxAP') or 100
 
@@ -1453,12 +1747,15 @@ function playerMeta:GetMaxArmor(armor)
   end
 end
 
--- A function to set a player's maximum health.
+--- Sets the player's maximum health, networked as `MaxHP`.
+-- @param health [Number The maximum health]
 function playerMeta:SetMaxHealth(health)
   self:SetNetVar('MaxHP', health)
 end
 
--- A function to get a player's maximum health.
+--- Returns the player's maximum health.
+-- @param health=nil [Any Unused]
+-- @return [Number The maximum health; `100` when it is unset or not positive]
 function playerMeta:GetMaxHealth(health)
   local maxHealth = self:GetNetVar('MaxHP') or 100
 
@@ -1469,39 +1766,50 @@ function playerMeta:GetMaxHealth(health)
   end
 end
 
--- A function to get whether a player is viewing the starter hints.
+--- Returns whether the player is still being shown the starter hints after joining.
+-- @return [Boolean Whether the starter hints are showing]
 function playerMeta:IsViewingStarterHints()
   return self.cwViewStartHints
 end
 
--- A function to get a player's last hit group.
+--- Returns the hit group the player was last hit in, including hits on their ragdoll.
+-- @return [Number A `HITGROUP_*` value]
 function playerMeta:LastHitGroup()
   return self.cwLastHitGroup or self:ClockworkLastHitGroup()
 end
 
--- A function to get whether an entity is being held.
+--- Returns whether a player is holding the entity, as answered by the `GetEntityBeingHeld` hook.
+-- @return [Boolean Whether the entity is being held, or `nil` for an invalid entity]
 function entityMeta:IsBeingHeld()
   if IsValid(self) then
     return hook.Run('GetEntityBeingHeld', self)
   end
 end
 
--- A function to run a command on a player.
+--- Runs a console command on the player's client.
+--
+-- The client refuses to run `cwlua` this way.
+-- @param ... [String The command and its arguments, as for `RunConsoleCommand`]
 function playerMeta:RunCommand(...)
   netstream.Start(self, 'RunCommand', { ... })
 end
 
--- A function to run a Clockwork command on a player.
+--- Runs a Catwork command as the player.
+-- @param command [String Name of the command]
+-- @param ... [String The command's arguments]
+-- @see cw.player:RunClockworkCommand
 function playerMeta:RunClockworkCmd(command, ...)
   cw.player:RunClockworkCommand(self, command, ...)
 end
 
--- A function to get a player's wages name.
+--- Returns the name of the player's wages, as shown to players (e.g. "Supplies").
+-- @return [String The wages name]
 function playerMeta:GetWagesName()
   return cw.player:GetWagesName(self)
 end
 
--- A function to create a player'a animation stop delay.
+--- Stops the player's forced animation after a delay, replacing any pending stop timer.
+-- @param delay [Number Seconds until the animation stops]
 function playerMeta:CreateAnimationStopDelay(delay)
   timer.Create('ForcedAnim'..self:SteamID64(), delay, 1, function()
     if IsValid(self) then
@@ -1514,7 +1822,23 @@ function playerMeta:CreateAnimationStopDelay(delay)
   end)
 end
 
--- A function to set a player's forced animation.
+--- Forces the player to play an animation, or stops the current forced animation.
+--
+-- The sequence is networked in the `ForceAnim` net variable. A permanent animation started with a `delay`
+-- of `0` cannot be replaced until it is stopped. The previous animation's `OnFinish` runs when it is
+-- replaced or stopped.
+--
+-- ```
+-- player:SetForcedAnimation('pickup', 1.2, nil, function(player)
+--   player:EmitSound('items/ammo_pickup.wav')
+-- end)
+-- ```
+--
+-- @param animation [String Sequence name or activity number; `false` stops the forced animation]
+-- @param delay=nil [Number Seconds to play it for; `nil` or `0` plays it until stopped]
+-- @param OnAnimate=nil [Function Called as `OnAnimate(player)` when the animation first plays]
+-- @param OnFinish=nil [Function Called as `OnFinish(player)` when the animation ends or is replaced]
+-- @return [Boolean `true` if the animation started, `false` if it was stopped, `nil` if it was not played]
 function playerMeta:SetForcedAnimation(animation, delay, OnAnimate, OnFinish)
   local forcedAnimation = self:GetForcedAnimation()
   local sequence = nil
@@ -1565,34 +1889,41 @@ function playerMeta:SetForcedAnimation(animation, delay, OnAnimate, OnFinish)
   end
 end
 
--- A function to set whether a player's config has initialized.
+--- Sets whether the player has received the config.
+-- @param initialized [Boolean Whether the config was sent]
 function playerMeta:SetConfigInitialized(initialized)
   self.cwConfigInitialized = initialized
 end
 
--- A function to get whether a player's config has initialized.
+--- Returns whether the player has received the config.
+-- @return [Boolean Whether the config was sent to the player]
 function playerMeta:HasConfigInitialized()
   return self.cwConfigInitialized
 end
 
--- A function to get a player's forced animation.
+--- Returns the player's current forced animation.
+-- @return [Map `animation`, `delay`, `OnAnimate` and `OnFinish`, or `nil` if none is playing]
+-- @see Player:SetForcedAnimation
 function playerMeta:GetForcedAnimation()
   return self.cwForcedAnimation
 end
 
--- A function to get a player's item entity.
+--- Returns the item entity the player is interacting with.
+-- @return [Entity The item entity, or `nil` if it is not set or no longer valid]
 function playerMeta:GetItemEntity()
   if IsValid(self.itemEntity) then
     return self.itemEntity
   end
 end
 
--- A function to set a player's item entity.
+--- Sets the item entity the player is interacting with.
+-- @param entity [Entity The item entity; `nil` clears it]
 function playerMeta:SetItemEntity(entity)
   self.itemEntity = entity
 end
 
--- A function to make a player fake pickup an entity.
+--- Plays a pickup animation towards an entity: a low pickup when it is nearer the feet, a reach otherwise.
+-- @param entity [Entity The entity being picked up]
 function playerMeta:FakePickup(entity)
   local entityPosition = entity:GetPos()
 
@@ -1611,7 +1942,10 @@ function playerMeta:FakePickup(entity)
   end
 end
 
--- A function to set the player's Clockwork user group.
+--- Sets the player's user group, saves it and runs the `OnPlayerUserGroupSet` hook.
+--
+-- Does nothing if the player is already in the group. Also sets the engine user group.
+-- @param userGroup [String The user group, e.g. `'superadmin'`, `'admin'`, `'operator'` or `'user'`]
 function playerMeta:SetClockworkUserGroup(userGroup)
   if self:GetClockworkUserGroup() != userGroup then
     self.cwUserGroup = userGroup
@@ -1622,26 +1956,39 @@ function playerMeta:SetClockworkUserGroup(userGroup)
   end
 end
 
--- A function to get the player's Clockwork user group.
+--- Returns the player's Catwork user group.
+-- @return [String The user group]
 function playerMeta:GetClockworkUserGroup()
   return self.cwUserGroup
 end
 
--- A function to get a player's items by ID.
+--- Returns all instances of an item in the player's inventory.
+-- @param uniqueID [String Unique ID, index or name of the item, as accepted by `item.FindByID`]
+-- @return [Map<Item> Item IDs mapped to instances, or `nil` if the player has none; an empty table for an
+-- unknown item]
+-- @see cw.inventory:GetItemsByID
 function playerMeta:GetItemsByID(uniqueID)
   return cw.inventory:GetItemsByID(
     self:GetInventory(), uniqueID
   )
 end
 
--- A function to find a player's items by name.
+--- Returns the instances of an item in the player's inventory whose name matches, ignoring case.
+-- @param uniqueID [String Unique ID, index or name of the item, as accepted by `item.FindByID`]
+-- @param name [String Name to match against each instance's `name` and `PrintName`]
+-- @return [List<Item> The matching instances, or `nil` if the player has none of the item]
+-- @see cw.inventory:FindItemsByName
 function playerMeta:FindItemsByName(uniqueID, name)
   return cw.inventory:FindItemsByName(
     self:GetInventory(), uniqueID, name
   )
 end
 
--- A function to get the maximum weight a player can carry.
+--- Returns the maximum weight the player can carry.
+--
+-- This is the `InvWeight` net variable (8 by default) plus the `addInvSpace` of every carried item.
+-- Runs the `PlayerAdjustMaxWeight` hook with the result, but cannot be changed by it.
+-- @return [Number The maximum weight]
 function playerMeta:GetMaxWeight()
   local itemsList = cw.inventory:GetAsItemsList(self:GetInventory())
   local weight = self:GetNetVar('InvWeight') or 8
@@ -1659,7 +2006,11 @@ function playerMeta:GetMaxWeight()
   return weight
 end
 
--- A function to get the maximum space a player can carry.
+--- Returns the maximum inventory space the player has.
+--
+-- This is the `InvSpace` net variable (10 by default) plus the `addInvVolume` of every carried item.
+-- Runs the `PlayerAdjustMaxSpace` hook with the result, but cannot be changed by it.
+-- @return [Number The maximum space]
 function playerMeta:GetMaxSpace()
   local itemsList = cw.inventory:GetAsItemsList(self:GetInventory())
   local space = self:GetNetVar('InvSpace') or 10
@@ -1677,7 +2028,9 @@ function playerMeta:GetMaxSpace()
   return space
 end
 
--- A function to get whether a player can hold a weight.
+--- Returns whether the player can carry additional weight.
+-- @param weight [Number The weight to add]
+-- @return [Boolean Whether the inventory stays within `Player:GetMaxWeight`]
 function playerMeta:CanHoldWeight(weight)
   local inventoryWeight = cw.inventory:CalculateWeight(
     self:GetInventory()
@@ -1690,7 +2043,10 @@ function playerMeta:CanHoldWeight(weight)
   end
 end
 
--- A function to get whether a player can hold a weight.
+--- Returns whether the player has room for additional inventory space.
+-- @param space [Number The space to add]
+-- @return [Boolean Whether the inventory stays within `Player:GetMaxSpace`; always `true` when the space
+-- system is disabled]
 function playerMeta:CanHoldSpace(space)
   if !cw.inventory:UseSpaceSystem() then
     return true
@@ -1707,45 +2063,61 @@ function playerMeta:CanHoldSpace(space)
   end
 end
 
--- A function to get a player's inventory weight.
+--- Returns the total weight of the player's inventory.
+-- @return [Number The weight]
 function playerMeta:GetInventoryWeight()
   return cw.inventory:CalculateWeight(self:GetInventory())
 end
 
--- A function to get a player's inventory weight.
+--- Returns the total space taken by the player's inventory.
+-- @return [Number The space]
 function playerMeta:GetInventorySpace()
   return cw.inventory:CalculateSpace(self:GetInventory())
 end
 
--- A function to get whether a player has an item by ID.
+--- Returns whether the player has at least one instance of an item.
+-- @param uniqueID [String Unique ID of the item]
+-- @return [Boolean Whether the player has the item]
+-- @see cw.inventory:HasItemByID
 function playerMeta:HasItemByID(uniqueID)
   return cw.inventory:HasItemByID(
     self:GetInventory(), uniqueID
   )
 end
 
--- A function to count how many items a player has by ID.
+--- Returns how many instances of an item the player has.
+-- @param uniqueID [String Unique ID, index or name of the item, as accepted by `item.FindByID`]
+-- @return [Number The number of instances]
 function playerMeta:GetItemCountByID(uniqueID)
   return cw.inventory:GetItemCountByID(
     self:GetInventory(), uniqueID
   )
 end
 
--- A function to get whether a player has a certain amount of items by ID.
+--- Returns whether the player has at least an amount of instances of an item.
+-- @param uniqueID [String Unique ID, index or name of the item, as accepted by `item.FindByID`]
+-- @param amount [Number The amount needed]
+-- @return [Boolean Whether the player has at least `amount` of the item]
 function playerMeta:HasItemCountByID(uniqueID, amount)
   return cw.inventory:HasItemCountByID(
     self:GetInventory(), uniqueID, amount
   )
 end
 
--- A function to find a player's item by ID.
+--- Finds an instance of an item in the player's inventory.
+-- @param uniqueID [String Unique ID, index or name of the item, as accepted by `item.FindByID`]
+-- @param itemID=nil [Number Item ID of the instance; any instance of the item when `nil`]
+-- @return [Item The instance, or `nil` if the player does not have it]
+-- @see cw.inventory:FindItemByID
 function playerMeta:FindItemByID(uniqueID, itemID)
   return cw.inventory:FindItemByID(
     self:GetInventory(), uniqueID, itemID
   )
 end
 
--- A function to get whether a player has an item as a weapon.
+--- Returns whether the player has one of their weapons from an item instance.
+-- @param itemTable [Item The item instance]
+-- @return [Boolean Whether a weapon of the player belongs to the item]
 function playerMeta:HasItemAsWeapon(itemTable)
   for k, v in pairs(self:GetWeapons()) do
     local weaponItemTable = item.GetByWeapon(v)
@@ -1758,7 +2130,10 @@ function playerMeta:HasItemAsWeapon(itemTable)
   return false
 end
 
--- A function to find a player's weapon item by ID.
+--- Returns the item instance behind one of the player's weapons.
+-- @param uniqueID [String Unique ID of the item]
+-- @param itemID [Number Item ID of the instance]
+-- @return [Item The instance, or `nil` if no weapon of the player belongs to it]
 function playerMeta:FindWeaponItemByID(uniqueID, itemID)
   for k, v in pairs(self:GetWeapons()) do
     local weaponItemTable = item.GetByWeapon(v)
@@ -1770,21 +2145,30 @@ function playerMeta:FindWeaponItemByID(uniqueID, itemID)
   end
 end
 
--- A function to get whether a player has an item instance.
+--- Returns whether a specific item instance is in the player's inventory.
+-- @param itemTable [Item The item instance]
+-- @return [Boolean Whether the instance is in the inventory]
 function playerMeta:HasItemInstance(itemTable)
   return cw.inventory:HasItemInstance(
     self:GetInventory(), itemTable
   )
 end
 
--- A function to get a player's item instance.
+--- Finds an instance of an item in the player's inventory; the same as `Player:FindItemByID`.
+-- @param uniqueID [String Unique ID, index or name of the item, as accepted by `item.FindByID`]
+-- @param itemID=nil [Number Item ID of the instance; any instance of the item when `nil`]
+-- @return [Item The instance, or `nil` if the player does not have it]
 function playerMeta:GetItemInstance(uniqueID, itemID)
   return cw.inventory:FindItemByID(
     self:GetInventory(), uniqueID, itemID
   )
 end
 
--- A function to take a player's item by ID.
+--- Takes an instance of an item from the player's inventory.
+-- @param uniqueID [String Unique ID, index or name of the item, as accepted by `item.FindByID`]
+-- @param itemID=nil [Number Item ID of the instance; any instance of the item when `nil`]
+-- @return [Boolean Whether an item was taken]
+-- @see Player:TakeItem
 function playerMeta:TakeItemByID(uniqueID, itemID)
   local itemTable = self:GetItemInstance(uniqueID, itemID)
 
@@ -1795,17 +2179,35 @@ function playerMeta:TakeItemByID(uniqueID, itemID)
   end
 end
 
--- A function to get a player's attribute boosts.
+--- Returns the player's attribute boosts.
+-- @return [Map Attribute unique IDs mapped to tables of boosts by identifier, each with `amount`,
+-- `default`, `duration` and `endTime`]
 function playerMeta:GetAttributeBoosts()
   return self.cwAttrBoosts
 end
 
--- A function to rebuild a player's inventory.
+--- Tells the player's client to rebuild its inventory panel on the next frame.
 function playerMeta:RebuildInventory()
   cw.inventory:Rebuild(self)
 end
 
--- A function to give an item to a player.
+--- Gives the player an item.
+--
+-- Fails when the item does not fit within `Player:GetMaxWeight` and `Player:GetMaxSpace`, unless `bForce`
+-- is set. On success, calls the item's `OnGiveToPlayer`, logs it, sends the item to the client, runs the
+-- `PlayerItemGiven` hook and rebuilds the inventory.
+--
+-- ```
+-- local success, fault = player:GiveItem('ration')
+--
+-- if !success then
+--   player:Notify(fault)
+-- end
+-- ```
+--
+-- @param itemTable [Item The item instance, or an item unique ID to create a new instance of]
+-- @param bForce=nil [Boolean Give the item even if the player cannot carry it]
+-- @return [Item The given instance, or `false` on failure, String The failure reason, as a language phrase]
 function playerMeta:GiveItem(itemTable, bForce)
   if isstring(itemTable) then
     itemTable = item.CreateInstance(itemTable)
@@ -1838,7 +2240,12 @@ function playerMeta:GiveItem(itemTable, bForce)
   end
 end
 
--- A function to take an item from a player.
+--- Takes an item instance from the player.
+--
+-- Calls the item's `OnTakeFromPlayer`, logs it, runs the `PlayerItemTaken` hook, removes the instance,
+-- tells the client and rebuilds the inventory.
+-- @param itemTable [Item The item instance]
+-- @return [Boolean `true`, or `false` when `itemTable` is not an item instance]
 function playerMeta:TakeItem(itemTable)
   if !itemTable or !itemTable:IsInstance() then
     debug.Trace()
@@ -1862,52 +2269,86 @@ function playerMeta:TakeItem(itemTable)
   return true
 end
 
--- An easy function to give a table of items to a player.
+--- Gives the player several items.
+-- @param itemTables [List<Item> Item instances or unique IDs]
+-- @see Player:GiveItem
 function playerMeta:GiveItems(itemTables)
   for _, itemTable in pairs(itemTables) do
     self:GiveItem(itemTables)
   end
 end
 
--- An easy function to take a table of items from a player.
+--- Takes several item instances from the player.
+-- @param itemTables [List<Item> The item instances]
+-- @see Player:TakeItem
 function playerMeta:TakeItems(itemTables)
   for _, itemTable in pairs(itemTables) do
     self:TakeItem(itemTable)
   end
 end
 
--- A function to update a player's attribute.
+--- Changes one of the player's attributes by a number of points.
+-- @param attribute [Any Attribute index, unique ID or name]
+-- @param amount [Number Points to add; negative values remove points]
+-- @return [Boolean Whether the attribute was updated, String The reason it was not]
+-- @see cw.attributes:Update
 function playerMeta:UpdateAttribute(attribute, amount)
   return cw.attributes:Update(self, attribute, amount)
 end
 
--- A function to progress a player's attribute.
+--- Adds progress towards the next point of one of the player's attributes.
+-- @param attribute [Any Attribute index, unique ID or name]
+-- @param amount [Number Progress to add; negative values remove progress]
+-- @param gradual=nil [Boolean Whether to scale positive progress down as the attribute grows]
+-- @return [Boolean `false` when the progress was not applied, String The reason]
+-- @see cw.attributes:Progress
 function playerMeta:ProgressAttribute(attribute, amount, gradual)
   return cw.attributes:Progress(self, attribute, amount, gradual)
 end
 
--- A function to boost a player's attribute.
+--- Adds or removes a boost to one of the player's attributes.
+-- @param identifier [String Boost identifier; generated when `nil` and `amount` is given]
+-- @param attribute [Any Attribute index, unique ID or name]
+-- @param amount=nil [Number Points to add while the boost lasts, or `nil` to remove boosts]
+-- @param duration=nil [Number How long the boost lasts in seconds, or `nil` for no time limit]
+-- @return [String The boost identifier when a boost was added, or `true` when boosts were removed]
+-- @see cw.attributes:Boost
 function playerMeta:BoostAttribute(identifier, attribute, amount, duration)
   return cw.attributes:Boost(self, identifier, attribute, amount, duration)
 end
 
--- A function to get whether a boost is active for a player.
+--- Returns whether the player has a specific attribute boost.
+-- @param identifier [String Boost identifier]
+-- @param attribute [Any Attribute index, unique ID or name]
+-- @param amount=nil [Number Amount the boost must have]
+-- @param duration=nil [Number Duration the boost must have, in seconds]
+-- @return [Boolean Whether the boost is active]
+-- @see cw.attributes:IsBoostActive
 function playerMeta:IsBoostActive(identifier, attribute, amount, duration)
   return cw.attributes:IsBoostActive(self, identifier, attribute, amount, duration)
 end
 
--- A function to get a player's characters.
+--- Returns the player's characters.
+-- @return [Map<Character> Character IDs mapped to characters]
 function playerMeta:GetCharacters()
   return self.cwCharacterList
 end
 
--- A function to set a player's run speed.
+--- Sets the player's run speed and, unless `bClockwork` is set, remembers it as their base run speed.
+--
+-- The kernel passes `bClockwork` for temporary changes such as slowing injured players.
+-- @param speed [Number The run speed]
+-- @param bClockwork=nil [Boolean Whether this is a temporary change that keeps the base speed]
 function playerMeta:SetRunSpeed(speed, bClockwork)
   if !bClockwork then self.cwRunSpeed = speed end
   self:ClockworkSetRunSpeed(speed)
 end
 
--- A function to set a player's walk speed.
+--- Sets the player's walk speed and, unless `bClockwork` is set, remembers it as their base walk speed.
+--
+-- Also sets the slow walk (`+walk`) speed to the same value.
+-- @param speed [Number The walk speed]
+-- @param bClockwork=nil [Boolean Whether this is a temporary change that keeps the base speed]
 function playerMeta:SetWalkSpeed(speed, bClockwork)
   if !bClockwork then self.cwWalkSpeed = speed end
   self:ClockworkSetWalkSpeed(speed)
@@ -1916,24 +2357,35 @@ function playerMeta:SetWalkSpeed(speed, bClockwork)
   self:SetSlowWalkSpeed(speed)
 end
 
--- A function to set a player's jump power.
+--- Sets the player's jump power and, unless `bClockwork` is set, remembers it as their base jump power.
+-- @param power [Number The jump power]
+-- @param bClockwork=nil [Boolean Whether this is a temporary change that keeps the base power]
 function playerMeta:SetJumpPower(power, bClockwork)
   if !bClockwork then self.cwJumpPower = power end
   self:ClockworkSetJumpPower(power)
 end
 
--- A function to set a player's crouched walk speed.
+--- Sets the player's crouched walk speed and, unless `bClockwork` is set, remembers it as the base speed.
+-- @param speed [Number The crouched walk speed multiplier]
+-- @param bClockwork=nil [Boolean Whether this is a temporary change that keeps the base speed]
 function playerMeta:SetCrouchedWalkSpeed(speed, bClockwork)
   if !bClockwork then self.cwCrouchedSpeed = speed end
   self:ClockworkSetCrouchedWalkSpeed(speed)
 end
 
--- A function to get whether a player has initialized.
+--- Returns whether the player has loaded a character and finished initializing.
+-- @return [Boolean Whether the player has initialized]
 function playerMeta:HasInitialized()
   return self.cwInitialized
 end
 
--- A function to query a player's character table.
+--- Returns a field of the player's character.
+--
+-- The key is converted to camel case, so `'Name'` reads `character.name`.
+-- @param key [String Name of the field]
+-- @param default=nil [Any Value to return when the field is not set or there is no character]
+-- @return [Any The field's value, or `default`]
+-- @see cw.player:Query
 function playerMeta:QueryCharacter(key, default)
   if self:GetCharacter() then
     return cw.player:Query(self, key, default)
@@ -1942,17 +2394,29 @@ function playerMeta:QueryCharacter(key, default)
   end
 end
 
--- A function to get a player's shared variable.
+--- Returns a net variable of the player.
+-- @param key [String Name of the variable]
+-- @param default=nil [Any Value to return when the variable is not set]
+-- @return [Any The value, or `default`]
+-- @deprecation [Use `Player:GetNetVar` instead.]
 function playerMeta:GetSharedVar(key, default)
   return self:GetNetVar(key, default)
 end
 
--- A function to set a shared variable for a player.
+--- Sets a net variable of the player.
+-- @param key [String Name of the variable]
+-- @param value [Any The new value]
+-- @param sharedTable=nil [Any Ignored]
+-- @deprecation [Use `Player:SetNetVar` instead.]
 function playerMeta:SetSharedVar(key, value, sharedTable)
   return self:SetNetVar(key, value)
 end
 
--- A function to get a player's character data.
+--- Returns a value from the player's character data.
+-- @param key [String Name of the value, as registered with `cw.player:AddCharacterData`]
+-- @param default=nil [Any Value to return when the key is not set or there is no character]
+-- @return [Any The stored value, or `default`]
+-- @see Player:SetCharacterData
 function playerMeta:GetCharacterData(key, default)
   if self:GetCharacter() then
     local data = self:QueryCharacter('Data')
@@ -1965,17 +2429,20 @@ function playerMeta:GetCharacterData(key, default)
   return default
 end
 
--- A function to get a player's time joined.
+--- Returns when the player first joined the server.
+-- @return [Number Unix time of the first join; the current time if it is not known yet]
 function playerMeta:TimeJoined()
   return self.cwTimeJoined or os.time()
 end
 
--- A function to get when a player last played.
+--- Returns when the player last played on the server.
+-- @return [Number Unix time of the last session; the current time if it is not known yet]
 function playerMeta:LastPlayed()
   return self.cwLastPlayed or os.time()
 end
 
--- A function to get a player's clothes data.
+--- Returns the clothes data of the player's character.
+-- @return [Map `uniqueID` and `itemID` of the worn clothes; an empty table when no data is stored]
 function playerMeta:GetClothesData()
   local clothesData = self:GetCharacterData('Clothes')
 
@@ -1986,7 +2453,8 @@ function playerMeta:GetClothesData()
   return clothesData
 end
 
--- A function to get a player's accessory data.
+--- Returns the accessory data of the player's character.
+-- @return [Map Item IDs of worn accessories mapped to their unique IDs; an empty table when no data is stored]
 function playerMeta:GetAccessoryData()
   local accessoryData = self:GetCharacterData('Accessories')
 
@@ -1997,7 +2465,9 @@ function playerMeta:GetAccessoryData()
   return accessoryData
 end
 
--- A function to remove a player's clothes.
+--- Takes off the player's clothes, optionally removing the clothes item from their inventory.
+-- @param bRemoveItem=nil [Boolean Whether to also take the clothes item]
+-- @return [Item The removed clothes item when `bRemoveItem` is set and the player wore one]
 function playerMeta:RemoveClothes(bRemoveItem)
   self:SetClothesData(nil)
 
@@ -2011,7 +2481,8 @@ function playerMeta:RemoveClothes(bRemoveItem)
   end
 end
 
--- A function to get the player's clothes item.
+--- Returns the clothes item the player is wearing.
+-- @return [Item The clothes item, or `nil` if the player wears none or no longer has it]
 function playerMeta:GetClothesItem()
   local clothesData = self:GetClothesData()
 
@@ -2024,18 +2495,23 @@ function playerMeta:GetClothesItem()
   end
 end
 
--- A function to get whether a player is wearing clothes.
+--- Returns whether the player is wearing a clothes item.
+-- @return [Boolean Whether the player wears clothes]
 function playerMeta:IsWearingClothes()
   return (self:GetClothesItem() != nil)
 end
 
--- A function to get whether a player is wearing an item.
+--- Returns whether the player is wearing an item as clothes.
+-- @param itemTable [Item The item instance]
+-- @return [Boolean Whether the item is the worn clothes, or `nil` if the player wears none]
 function playerMeta:IsWearingItem(itemTable)
   local clothesItem = self:GetClothesItem()
   return (clothesItem and clothesItem:IsTheSameAs(itemTable))
 end
 
--- A function to network the player's clothes data.
+--- Networks the player's worn clothes in the `Clothes` net variable as `'<uniqueID> <itemID>'`.
+--
+-- The variable is an empty string when no clothes are worn.
 function playerMeta:NetworkClothesData()
   local clothesData = self:GetClothesData()
 
@@ -2046,7 +2522,11 @@ function playerMeta:NetworkClothesData()
   end
 end
 
--- A function to set a player's clothes data.
+--- Puts clothes on the player, or takes them off.
+--
+-- Calls `OnChangeClothes` on the old and new items and networks the change. Wearing clothes does nothing
+-- when the player's class forces a model.
+-- @param itemTable [Item The clothes item to wear, or `nil` to take the current clothes off]
 function playerMeta:SetClothesData(itemTable)
   local clothesItem = self:GetClothesItem()
 
@@ -2077,32 +2557,46 @@ function playerMeta:SetClothesData(itemTable)
   end
 end
 
--- A function to get the entity a player is holding.
+--- Returns the entity the player is holding.
+--
+-- The `PlayerGetHoldingEntity` hook is asked first.
+-- @return [Entity The held entity, or `nil` if the player holds nothing]
 function playerMeta:GetHoldingEntity()
   return hook.Run('PlayerGetHoldingEntity', self) or self.cwIsHoldingEnt
 end
 
--- A function to get whether a player's character menu is reset.
+--- Returns whether the player's character menu was opened with a reset, which kills them silently.
+-- @return [Boolean Whether the character menu was reset]
 function playerMeta:IsCharacterMenuReset()
   return self.cwCharMenuReset
 end
 
--- A function to check if a player can afford an amount.
+--- Returns whether the player has at least an amount of cash.
+-- @param amount [Number The amount of cash]
+-- @return [Boolean Whether the player can afford it; always `true` when cash is disabled]
+-- @see cw.player:CanAfford
 function playerMeta:CanAfford(amount)
   return cw.player:CanAfford(self, amount)
 end
 
--- A function to get a player's rank within their faction.
+--- Returns the player's rank within their faction.
+-- @param character=nil [Character Character to check instead of the player's current one]
+-- @return [String The rank name, Map The rank's table from the faction's `ranks`]
+-- @see cw.player:GetFactionRank
 function playerMeta:GetFactionRank(character)
   return cw.player:GetFactionRank(self, character)
 end
 
--- A function to set a player's rank within their faction.
+--- Sets the player's rank within their faction, applying the rank's class, model and weapons.
+-- @param rank [String Name of a rank in the faction's `ranks`]
+-- @see cw.player:SetFactionRank
 function playerMeta:SetFactionRank(rank)
   return cw.player:SetFactionRank(self, rank)
 end
 
--- A function to get a player's global flags.
+--- Returns the player's global flags, which apply to all of their characters.
+-- @return [String The flags, one letter each; `''` when none]
+-- @see Player:GetFlags
 function playerMeta:GetPlayerFlags()
   return cw.player:GetPlayerFlags(self)
 end
@@ -2490,12 +2984,17 @@ end)
 --[[ Accessories --]]
 local playerMeta = FindMetaTable('Player')
 
+--- Sends all of the player's worn accessories to their client.
 function playerMeta:NetworkAccessories()
   local accessoryData = self:GetAccessoryData()
 
   netstream.Start(self, 'AllAccessories', accessoryData)
 end
 
+--- Takes off an accessory the player is wearing.
+--
+-- Tells the client and calls the item's `OnWearAccessory` with `false`. Does nothing if it is not worn.
+-- @param itemTable [Item The accessory item instance]
 function playerMeta:RemoveAccessory(itemTable)
   if !self:IsWearingAccessory(itemTable) then return end
 
@@ -2513,6 +3012,9 @@ function playerMeta:RemoveAccessory(itemTable)
   end
 end
 
+--- Returns whether the player is wearing any accessory of an item type.
+-- @param uniqueID [String Unique ID of the accessory item, compared ignoring case]
+-- @return [Boolean Whether such an accessory is worn]
 function playerMeta:HasAccessory(uniqueID)
   local accessoryData = self:GetAccessoryData()
 
@@ -2525,6 +3027,9 @@ function playerMeta:HasAccessory(uniqueID)
   return false
 end
 
+--- Returns whether the player is wearing a specific accessory item instance.
+-- @param itemTable [Item The accessory item instance]
+-- @return [Boolean Whether it is worn]
 function playerMeta:IsWearingAccessory(itemTable)
   local accessoryData = self:GetAccessoryData()
   local itemID = itemTable.itemID
@@ -2536,6 +3041,10 @@ function playerMeta:IsWearingAccessory(itemTable)
   end
 end
 
+--- Puts on an accessory item.
+--
+-- Tells the client and calls the item's `OnWearAccessory` with `true`. Does nothing if it is already worn.
+-- @param itemTable [Item The accessory item instance]
 function playerMeta:WearAccessory(itemTable)
   if self:IsWearingAccessory(itemTable) then return end
 
@@ -2553,7 +3062,15 @@ function playerMeta:WearAccessory(itemTable)
   end
 end
 
--- A function to set a player's character data.
+--- Sets a value in the player's character data, or a base field of the character.
+--
+-- When the value changes, it is sent to clients with `cw.player:UpdateCharacterData` and the
+-- `PlayerCharacterDataChanged` hook is called with the key, old and new value. Base fields
+-- (`bFromBase`) are camel cased, only set if they already exist, and are not networked.
+-- @param key [String Name of the value, as registered with `cw.player:AddCharacterData`]
+-- @param value [Any The new value]
+-- @param bFromBase=nil [Boolean Set a base field of the character table instead of its data]
+-- @see Player:GetCharacterData
 function playerMeta:SetCharacterData(key, value, bFromBase)
   local character = self:GetCharacter()
 
@@ -2577,7 +3094,13 @@ function playerMeta:SetCharacterData(key, value, bFromBase)
   end
 end
 
--- A function to set a player's data.
+--- Sets a value in the player's persistent data, which belongs to the player rather than a character.
+--
+-- When the value changes, it is sent with `cw.player:UpdatePlayerData` and the `PlayerDataChanged` hook is
+-- called with the key, old and new value. Does nothing before the player's data has loaded.
+-- @param key [String Name of the value]
+-- @param value [Any The new value]
+-- @see Player:GetData
 function playerMeta:SetData(key, value)
   if self.cwData then
     local oldValue = self.cwData[key]

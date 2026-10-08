@@ -11,7 +11,9 @@ COMMAND.access = 'a'
 COMMAND.arguments = 2
 COMMAND.alias = { 'SetBodyGroup', 'CharBodyGroup' }
 
--- Called when the command has been run.
+--- Sets a bodygroup on the target character and saves it so it is reapplied on spawn.
+--
+-- The value defaults to 0 when omitted.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
   local bg = tonumber(arguments[2])

@@ -5,6 +5,9 @@
 
 local PLUGIN = PLUGIN
 
+--- Called to add HUD bars; adds the hunger bar, with thirst as its second value, below 90 hunger.
+--
+-- @param bars [Map The HUD bars being built]
 function PLUGIN:GetBars(bars)
   local hunger = cw.client:GetNetVar('Hunger') or 100
   local thirst = cw.client:GetNetVar('Thirst') or 100

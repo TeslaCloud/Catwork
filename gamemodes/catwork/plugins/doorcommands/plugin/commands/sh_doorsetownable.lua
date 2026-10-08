@@ -13,7 +13,8 @@ COMMAND.flags = CMD_DEFAULT
 COMMAND.access = 'a'
 COMMAND.arguments = 1
 
--- Called when the command has been run.
+--- Makes the door the player is looking at ownable under the name given by the arguments and saves the
+-- door data.
 function COMMAND:OnRun(player, arguments)
   local door = player:GetEyeTraceNoCursor().Entity
 

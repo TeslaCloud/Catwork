@@ -14,7 +14,7 @@ COMMAND.access = 'o'
 COMMAND.arguments = 2
 COMMAND.alias = { 'Mute' }
 
--- Called when the command has been run.
+--- Blocks the target player from OOC and LOOC chat; arguments are the player name and the minutes.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
   local duration = tonumber(arguments[2])

@@ -14,7 +14,9 @@ COMMAND.text = ''
 COMMAND.flags = bit.bor(CMD_DEFAULT, CMD_DEATHCODE, CMD_FALLENOVER)
 COMMAND.arguments = 0
 
--- Called when the command has been run.
+--- Toggles night vision for players allowed to use it, with the goggle on or off sound.
+--
+-- The state is stored in the `nightvisionfx` networked boolean, which drives the client effect.
 function COMMAND:OnRun(player, arguments)
   if Schema:PlayerCanUseNightvision(player) then
     if player:GetNWBool('nightvisionfx') then

@@ -13,7 +13,7 @@ COMMAND.flags = CMD_DEFAULT
 COMMAND.access = 's'
 COMMAND.arguments = 2
 
--- Called when the command has been run.
+--- Sets the target player's cash to an exact amount; arguments are the player name and the amount.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
   local cash = math.floor(tonumber((arguments[2] or 0)))

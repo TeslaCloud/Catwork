@@ -12,7 +12,7 @@ COMMAND.flags = CMD_DEFAULT
 COMMAND.access = 's'
 COMMAND.alias = { 'AddGarbage', 'GarbageSpawnAdd' }
 
--- Called when the command has been run.
+--- Adds a garbage spawn point where the player is looking, spawns a pile there and saves the points.
 function COMMAND:OnRun(player, arguments)
   local entity = ents.Create('cw_garbage')
 

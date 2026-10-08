@@ -13,6 +13,18 @@ if CLIENT then
   local cvSmooth = CreateClientConVar('chasecam_smooth', 1, true, false)
   local cvSmoothScale = CreateClientConVar('chasecam_smoothscale', 0.2, true, false)
 
+  --- Computes the third person camera view; runs as a `CalcView` hook.
+  --
+  -- Only acts while the player's `thirdperson` networked int is 1. The camera sits behind and to
+  -- the right of the player, offset by the `chasecam_back`, `chasecam_right` and `chasecam_up`
+  -- convars (or close up while zoomed), is traced so it stays out of walls, and moves forward and
+  -- bobs while sprinting. Position and field of view are eased when `chasecam_smooth` is on.
+  -- Also turns the player to face the aim direction.
+  -- @param player [Player The local player]
+  -- @param pos [Vector The default view origin]
+  -- @param angles [Angle The default view angles]
+  -- @param fov [Number The default field of view]
+  -- @return [Map The view table from `GAMEMODE:CalcView`, or `nil` when third person is off]
   function cw.thirdperson.CalcView(player, pos, angles, fov)
     local smooth = cvSmooth:GetFloat()
     local smoothscale = cvSmoothScale:GetFloat()
@@ -105,6 +117,10 @@ if CLIENT then
 
   -- thanks to termy58's crosshair example
   -- ... and thanks to termy58 for finding my stupid bug :P
+  --- Draws the third person crosshair where the local player's aim hits; runs as a `HUDPaint` hook.
+  --
+  -- The crosshair grows as the target gets closer and turns red when the camera cannot see the
+  -- hit position.
   function cw.thirdperson.HUDPaint()
     local player = LocalPlayer()
 
@@ -147,6 +163,9 @@ if CLIENT then
 
   hook.Add('HUDPaint', 'cw.thirdperson.HUDPaint', cw.thirdperson.HUDPaint)
 
+  --- Hides the default crosshair while third person is on; runs as a `HUDShouldDraw` hook.
+  -- @param name [String Name of the HUD element]
+  -- @return [Boolean `false` for `CHudCrosshair` in third person, otherwise `nil`]
   function cw.thirdperson.HUDShouldDraw(name)
     if name == 'CHudCrosshair' and LocalPlayer():GetNWInt('thirdperson') == 1 then
       return false
@@ -155,6 +174,10 @@ if CLIENT then
 
   hook.Add('HUDShouldDraw', 'cw.thirdperson.HUDShouldDraw', cw.thirdperson.HUDShouldDraw)
 
+  --- Toggles the close-up third person camera; bound to the `chasecam_zoom` console command.
+  -- @param player [Player The local player]
+  -- @param command [String The console command name]
+  -- @param arguments [List<String> The command arguments; unused]
   function cw.thirdperson.Zoom(player, command, arguments)
     if player:GetVar('thirdperson_zoom') == 1 then
       player:SetVar('thirdperson_zoom', 0)
@@ -167,6 +190,12 @@ if CLIENT then
 
   -- Server
 else
+  --- Handles the `chasecam` console command: `1` enables third person, `0` disables it and no argument toggles it.
+  -- @param player [Player The player who ran the command]
+  -- @param command [String The console command name]
+  -- @param arguments [List<String> The command arguments]
+  -- @see cw.thirdperson.Enable
+  -- @see cw.thirdperson.Disable
   function cw.thirdperson.Command(player, command, arguments)
     if !arguments[1] then
       if player:GetNWInt('thirdperson') == 1 then
@@ -183,6 +212,12 @@ else
 
   concommand.Add('chasecam', cw.thirdperson.Command)
 
+  --- Turns third person off for a player.
+  --
+  -- Resets the view entity to the player and removes the camera entity. Does nothing when third
+  -- person is already off.
+  -- @param player [Player The player to switch to first person]
+  -- @see cw.thirdperson.Enable
   function cw.thirdperson.Disable(player)
     if player:GetNWInt('thirdperson') == 0 then
       return
@@ -198,6 +233,12 @@ else
     end
   end
 
+  --- Turns third person on for a player.
+  --
+  -- Creates an invisible `prop_dynamic` parented to the player, makes it the player's view entity
+  -- and sets the `thirdperson` networked int to 1. Does nothing when third person is already on.
+  -- @param player [Player The player to switch to third person]
+  -- @see cw.thirdperson.Disable
   function cw.thirdperson.Enable(player)
     if player:GetNWInt('thirdperson') == 1 then
       return
@@ -220,6 +261,8 @@ else
 end
 
 -- Shared
+--- Speeds up the player's animation playback while sprinting; runs as an `UpdateAnimation` hook.
+-- @param player [Player The player being animated]
 function cw.thirdperson.UpdateAnimation(player)
   if player:KeyDown(IN_SPEED) then
     player:SetPlaybackRate(1.5)

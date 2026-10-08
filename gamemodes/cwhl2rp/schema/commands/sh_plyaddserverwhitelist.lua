@@ -13,7 +13,7 @@ COMMAND.flags = CMD_DEFAULT
 COMMAND.access = 'a'
 COMMAND.arguments = 2
 
--- Called when the command has been run.
+--- Adds the player named in the first argument to the server whitelist named in the second argument.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
   local identity = string.lower(arguments[2])

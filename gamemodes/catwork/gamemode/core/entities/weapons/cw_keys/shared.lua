@@ -62,7 +62,7 @@ SWEP.LoweredAngles = Angle(0.000, 0.000, -22.000)
 
 --[[Bunch of key functionality bullshit.]] --
 
--- Called when the SWEP is deployed.
+--- Plays the fists draw animation.
 function SWEP:Deploy()
   local vm = self:GetOwner():GetViewModel()
   vm:SendViewModelMatchingSequence(vm:LookupSequence('fists_draw'))
@@ -70,13 +70,16 @@ function SWEP:Deploy()
   return true
 end
 
--- Called when the SWEP is holstered.
+--- Plays the holster animation and allows the keys to be holstered.
 function SWEP:Holster(switchingTo)
   self:SendWeaponAnim(ACT_VM_HOLSTER)
   return true
 end
 
--- Called when the player attempts to primary fire.
+--- Starts locking the entity the owner looks at within 192 units.
+--
+-- `PlayerGetLockInfo` supplies the lock duration, callback and sound flag; `PlayerCanLockEntity` must allow it
+-- and keep allowing it until the timer ends.
 function SWEP:PrimaryAttack()
   self:SetNextPrimaryFire(CurTime() + 1)
 
@@ -119,7 +122,10 @@ function SWEP:PrimaryAttack()
   end
 end
 
--- Called when the player attempts to secondary fire.
+--- Starts unlocking the entity the owner looks at within 192 units.
+--
+-- `PlayerGetUnlockInfo` supplies the unlock duration, callback and sound flag; `PlayerCanUnlockEntity` must
+-- allow it and keep allowing it until the timer ends.
 function SWEP:SecondaryAttack()
   self:SetNextSecondaryFire(CurTime() + 1)
 

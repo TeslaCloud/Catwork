@@ -6,7 +6,7 @@ COMMAND.access = 'o'
 COMMAND.arguments = 1
 COMMAND.alias = { 'CharGetKarma', 'GetKarma' }
 
--- Called when the command has been run.
+--- Tells the player the target character's karma level and value.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
 

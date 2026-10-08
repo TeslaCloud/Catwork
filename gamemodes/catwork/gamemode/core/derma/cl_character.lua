@@ -8,7 +8,11 @@
 
 local PANEL = {}
 
--- Called when the panel is initialized.
+--- Builds the full-screen character menu: schema title or logo, credits, the New, Load and Leave buttons,
+-- the creation navigation buttons and the model preview.
+--
+-- Skipped when the theme's `PreCharacterMenuInit` hook returns `true`; `PostCharacterMenuInit` runs
+-- afterwards.
 function PANEL:Init()
   if !cw.theme:Call('PreCharacterMenuInit', self) then
     local smallTextFont = cw.option:GetFont('menu_text_small')
@@ -187,7 +191,12 @@ function PANEL:Init()
   end
 end
 
--- A function to fade in the model panel.
+--- Moves the model preview next to the active panel, fades it in and shows a model in it.
+--
+-- Does nothing on screens shorter than 768 pixels.
+--
+-- @param model [String Model to show once the preview is fading in]
+-- @return [Boolean `true` when the screen is too small or the fade started, `false` otherwise]
 function PANEL:FadeInModelPanel(model)
   if ScrH() < 768 then
     return true
@@ -210,12 +219,17 @@ function PANEL:FadeInModelPanel(model)
   end
 end
 
--- A function to fade out the model panel.
+--- Fades out the model preview.
 function PANEL:FadeOutModelPanel()
   self.characterModel:FadeOut(0.5)
 end
 
--- A function to set the model panel's model.
+--- Sets the model shown in the model preview and applies the weapon model and sequence from hooks.
+--
+-- The weapon model comes from the `GetModelSelectWeaponModel` hook and the animation from the
+-- `GetModelSelectSequence` hook.
+--
+-- @param model [String Model path to show]
 function PANEL:SetModelPanelModel(model)
   if self.characterModel.currentModel != model then
     self.characterModel.currentModel = model
@@ -241,7 +255,8 @@ function PANEL:SetModelPanelModel(model)
   end
 end
 
--- A function to return to the main menu.
+--- Fades out and removes the active panel, then brings back the title, and hides the model preview and
+-- navigation.
 function PANEL:ReturnToMainMenu()
   local panel = cw.character:GetActivePanel()
 
@@ -259,7 +274,8 @@ function PANEL:ReturnToMainMenu()
   self:FadeOutNavigation()
 end
 
--- A function to fade out the navigation.
+--- Fades out the Previous, Cancel and Next buttons unless the theme's `PreCharacterFadeOutNavigation`
+-- hook returns `true`.
 function PANEL:FadeOutNavigation()
   if !cw.theme:Call('PreCharacterFadeOutNavigation', self) then
     self.previousButton:FadeOut(0.5)
@@ -268,7 +284,8 @@ function PANEL:FadeOutNavigation()
   end
 end
 
--- A function to fade in the navigation.
+--- Fades in the Previous, Cancel and Next buttons unless the theme's `PreCharacterFadeInNavigation`
+-- hook returns `true`.
 function PANEL:FadeInNavigation()
   if !cw.theme:Call('PreCharacterFadeInNavigation', self) then
     self.previousButton:FadeIn(0.5)
@@ -277,7 +294,8 @@ function PANEL:FadeInNavigation()
   end
 end
 
--- A function to fade out the title.
+--- Fades out the schema title, description and credits unless the theme's `PreCharacterFadeOutTitle`
+-- hook returns `true`.
 function PANEL:FadeOutTitle()
   if !cw.theme:Call('PreCharacterFadeOutTitle', self) then
     self.subLabel:FadeOut(0.5)
@@ -287,7 +305,8 @@ function PANEL:FadeOutTitle()
   end
 end
 
--- A function to fade in the title.
+--- Fades in the schema title, description and credits unless the theme's `PreCharacterFadeInTitle`
+-- hook returns `true`.
 function PANEL:FadeInTitle()
   if !cw.theme:Call('PreCharacterFadeInTitle', self) then
     self.subLabel:FadeIn(0.5)
@@ -297,7 +316,23 @@ function PANEL:FadeInTitle()
   end
 end
 
--- A function to open a panel.
+--- Replaces the active panel of the character menu with a new panel.
+--
+-- The current active panel fades out and is removed first; with no active panel the title fades out
+-- instead. The new panel becomes `cw.character.activePanel`, fades in and gets popup focus. When
+-- `childData` is given the panel is marked as part of the creation process and the navigation buttons
+-- fade in. Skipped when the theme's `PreCharacterMenuOpenPanel` hook returns `true`;
+-- `PostCharacterMenuOpenPanel` runs afterwards.
+--
+-- ```
+-- cw.character:GetPanel():OpenPanel('cw.characterList', nil, function(panel)
+--   cw.character:RefreshPanelList()
+-- end)
+-- ```
+--
+-- @param vguiName [String Registered name of the panel to create]
+-- @param childData=nil [Any Data stored as `self.childData` for the new panel to read; marks a creation step]
+-- @param Callback=nil [Function Called with the new panel once it has been created]
 function PANEL:OpenPanel(vguiName, childData, Callback)
   if !cw.theme:Call('PreCharacterMenuOpenPanel', self, vguiName, childData, Callback) then
     local panel = cw.character:GetActivePanel()
@@ -355,7 +390,10 @@ function PANEL:OpenPanel(vguiName, childData, Callback)
   end
 end
 
--- Called when the panel is painted.
+--- Draws the schema logo, the top bar and, during character creation, the step progress bar.
+--
+-- Skipped when the theme's `PreCharacterMenuPaint` hook returns `true`; `PostCharacterMenuPaint` runs
+-- afterwards.
 function PANEL:Paint(w, h)
   if !cw.theme:Call('PreCharacterMenuPaint', self) then
     local schemaLogo = cw.option:GetKey('schema_logo')
@@ -450,7 +488,10 @@ function PANEL:Paint(w, h)
   return true
 end
 
--- Called each frame.
+--- Updates the background blur and enables or disables the menu buttons each frame.
+--
+-- Skipped when the theme's `PreCharacterMenuThink` hook returns `true`; `PostCharacterMenuThink` runs
+-- afterwards.
 function PANEL:Think()
   if !cw.theme:Call('PreCharacterMenuThink', self) then
     local characters = table.Count(cw.character:GetAll())
@@ -555,7 +596,8 @@ end)
 
 local PANEL = {}
 
--- Called when the panel is initialized.
+--- Sets up the character list (`cw.characterList`), stores it in the global `CHAR_LIST` and shows the
+-- navigation buttons.
 function PANEL:Init()
   self.selectedIdx = 1
   self.characterPanels = {}
@@ -566,10 +608,15 @@ function PANEL:Init()
   cw.character:FadeInNavigation()
 end
 
--- Called when the panel is painted.
+--- Draws nothing.
 function PANEL:Paint(w, h) end
 
--- A function to make the panel fade out.
+--- Fades the character list out and hides it, playing the rollover sound.
+--
+-- When the list is already invisible or animating, it is hidden at once.
+--
+-- @param speed [Number Length of the fade in seconds]
+-- @param Callback=nil [Function Called once the list is hidden]
 function PANEL:FadeOut(speed, Callback)
   if self:GetAlpha() > 0 and (!self.animation or !self.animation:Active()) then
     self.animation = Derma_Anim('Fade Panel', self, function(panel, animation, delta, data)
@@ -599,7 +646,12 @@ function PANEL:FadeOut(speed, Callback)
   end
 end
 
--- A function to make the panel fade in.
+--- Shows the character list and fades it in, playing the click sound.
+--
+-- When the list is already visible or animating, it is made fully visible at once.
+--
+-- @param speed [Number Length of the fade in seconds]
+-- @param Callback=nil [Function Called once the list is fully visible]
 function PANEL:FadeIn(speed, Callback)
   if self:GetAlpha() == 0 and (!self.animation or !self.animation:Active()) then
     self.animation = Derma_Anim('Fade Panel', self, function(panel, animation, delta, data)
@@ -630,7 +682,7 @@ function PANEL:FadeIn(speed, Callback)
   end
 end
 
--- A function to clear the panel's panels.
+--- Removes every character panel from the list.
 function PANEL:Clear()
   for k, v in pairs(self.characterPanels) do
     v:Remove()
@@ -639,32 +691,40 @@ function PANEL:Clear()
   self.characterPanels = {}
 end
 
--- A function to add a panel to the panel.
+--- Adds a character panel to the end of the list.
+-- @param panel [Panel The `cw.characterPanel` to add]
 function PANEL:AddPanel(panel)
   self.characterPanels[#self.characterPanels + 1] = panel
 end
 
--- Called to get whether the previous button is disabled.
+--- Returns whether the Previous button should be disabled.
+-- @return [Boolean `true` when the first character is selected]
 function PANEL:GetPreviousDisabled()
   return (self.characterPanels[self.selectedIdx - 1] == nil)
 end
 
--- Called to get whether the next button is disabled.
+--- Returns whether the Next button should be disabled.
+-- @return [Boolean `true` when the last character is selected]
 function PANEL:GetNextDisabled()
   return (self.characterPanels[self.selectedIdx + 1] == nil)
 end
 
--- A function to get the panel's character panels.
+--- Returns the character panels in the list.
+-- @return [List<Panel> The `cw.characterPanel` panels in order]
 function PANEL:GetCharacterPanels()
   return self.characterPanels
 end
 
--- A function to get the panel's selected model.
+--- Returns the selected character panel.
+-- @return [Panel The selected `cw.characterPanel`, or `nil` when the list is empty]
 function PANEL:GetSelectedModel()
   return self.characterPanels[self.selectedIdx]
 end
 
--- A function to manage a panel's targets.
+--- Moves a character panel a step closer to its target position and alpha.
+-- @param panel [Panel The character panel to move]
+-- @param position [Number Target x position]
+-- @param alpha [Number Target alpha, from 0 to 255]
 function PANEL:ManageTargets(panel, position, alpha)
   if !panel.TargetPosition then
     panel.TargetPosition = position
@@ -682,27 +742,29 @@ function PANEL:ManageTargets(panel, position, alpha)
   panel:SetPos(panel.TargetPosition, 0)
 end
 
--- A function to set the panel's selected index.
+--- Selects a character by index and restarts the slide animation.
+-- @param index [Number Index of the character panel to select]
 function PANEL:SetSelectedIdx(index)
   self.selectedIdx = index
   self.easingValue = 0
 end
 
--- Called when the previous button is pressed.
+--- Selects the previous character.
 function PANEL:OnPrevious()
   self.selectedIdx = math.max(self.selectedIdx - 1, 1)
   self.easingValue = 0
   self:MakePopup()
 end
 
--- Called when the next button is pressed.
+--- Selects the next character.
 function PANEL:OnNext()
   self.selectedIdx = math.min(self.selectedIdx + 1, #self.characterPanels)
   self.easingValue = 0
   self:MakePopup()
 end
 
--- Called each frame.
+--- Slides the selected character to the centre and lays the others out to each side, fading them with
+-- distance.
 function PANEL:Think()
   self:InvalidateLayout(true)
 
@@ -752,7 +814,7 @@ function PANEL:Think()
   end
 end
 
--- Called when the layout should be performed.
+--- Fills the screen below the top bar and above the navigation buttons.
 function PANEL:PerformLayout(w, h)
   self:SetPos(0, 96)
   self:SetSize(ScrW(), ScrH() - (96 * 2))
@@ -762,7 +824,13 @@ vgui.Register('cw.characterList', PANEL, 'EditablePanel')
 
 local PANEL = {}
 
--- Called when the panel is initialized.
+--- Builds a character card (`cw.characterPanel`) from the parent's `customData`: name, faction, model,
+-- the Use and Delete buttons and any extra buttons and labels from hooks.
+--
+-- Extra buttons come from the `GetCustomCharacterButtons` hook, extra labels from
+-- `GetCharacterPanelLabels` and the model's animation from `GetCharacterPanelSequence`. Clicking the
+-- model of the selected card opens a menu with the options from `GetCustomCharacterOptions`; clicking
+-- another card selects it. Every action is sent to the server with the `InteractCharacter` netstream.
 function PANEL:Init()
   local smallTextFont = cw.option:GetFont('menu_text_small')
   local tinyTextFont = cw.option:GetFont('menu_text_tiny')
@@ -970,7 +1038,8 @@ function PANEL:Init()
   end
 end
 
--- A function to set whether the panel is active.
+--- Highlights the character's name when it is the selected one.
+-- @param bActive [Boolean Whether this card is selected]
 function PANEL:SetActive(bActive)
   if bActive then
     self.nameLabel:OverrideTextColor(
@@ -981,7 +1050,8 @@ function PANEL:SetActive(bActive)
   end
 end
 
--- Called each frame.
+--- Updates the card's model tooltip and weapon model from the `GetCharacterPanelToolTip` and
+-- `GetCharacterPanelWeaponModel` hooks.
 function PANEL:Think()
   local markupObject = cw.theme:GetMarkupObject()
   local weaponModel = hook.Run(
@@ -1015,7 +1085,9 @@ vgui.Register('cw.characterPanel', PANEL, 'DPanel')
 
 local PANEL = {}
 
--- Called when the panel is initialized.
+--- Sets up the model panel (`cw.characterModel`) with full ambient light and a markup tooltip.
+--
+-- Overridden by the second `Init` further down in the file, so this one never runs.
 function PANEL:Init()
   self:SetPaintBackground(false)
   self:SetAmbientLight(Color(255, 255, 255, 255))
@@ -1023,7 +1095,13 @@ function PANEL:Init()
   cw.core:CreateMarkupToolTip(self)
 end
 
--- A function to make the panel fade out.
+--- Fades the model panel out and hides it, playing the rollover sound.
+--
+-- When the panel is already transparent or animating, it is hidden at once.
+--
+-- @param speed [Number Length of the fade in seconds]
+-- @param Callback=nil [Function Called once the panel is hidden]
+-- @return [Boolean `true` when the fade started, otherwise `nil`]
 function PANEL:FadeOut(speed, Callback)
   if self:GetAlpha() > 0 and (!self.animation or !self.animation:Active()) then
     self.animation = Derma_Anim('Fade Panel', self, function(panel, animation, delta, data)
@@ -1055,7 +1133,13 @@ function PANEL:FadeOut(speed, Callback)
   end
 end
 
--- A function to make the panel fade in.
+--- Shows the model panel and fades it in, playing the click sound.
+--
+-- When the panel is already visible or animating, it is made fully visible at once.
+--
+-- @param speed [Number Length of the fade in seconds]
+-- @param Callback=nil [Function Called once the panel is fully visible]
+-- @return [Boolean `true` when the fade started, otherwise `nil`]
 function PANEL:FadeIn(speed, Callback)
   if self:GetAlpha() == 0 and (!self.animation or !self.animation:Active()) then
     self.animation = Derma_Anim('Fade Panel', self, function(panel, animation, delta, data)
@@ -1088,21 +1172,24 @@ function PANEL:FadeIn(speed, Callback)
   end
 end
 
--- A function to set the alpha of the panel.
+--- Sets the model panel's alpha by changing the alpha of its model color.
+-- @param alpha [Number Alpha from 0 to 255]
 function PANEL:SetAlpha(alpha)
   local color = self:GetColor()
 
   self:SetColor(Color(color.r, color.g, color.b, alpha))
 end
 
--- A function to get the alpha of the panel.
+--- Returns the model panel's alpha, taken from its model color.
+-- @param alpha [Any Unused]
+-- @return [Number Alpha from 0 to 255]
 function PANEL:GetAlpha(alpha)
   local color = self:GetColor()
 
   return color.a
 end
 
--- Called each frame.
+--- Runs the fade animation and keeps the panel at `forceX` when it is set.
 function PANEL:Think()
   local entity = self.Entity
 
@@ -1118,12 +1205,17 @@ function PANEL:Think()
   -- self:InvalidateLayout(true)
 end
 
--- A function to set the model details.
+--- Sets the markup tooltip shown when hovering the model.
+-- @param details [String Markup text of the tooltip]
 function PANEL:SetDetails(details)
   self:SetMarkupToolTip(details)
 end
 
--- A function to set the model weapon.
+--- Bonemerges a weapon model onto the displayed model, or removes it.
+--
+-- Does nothing when the same weapon model is already shown.
+--
+-- @param weaponModel [String Weapon model path, or `false` to remove the current weapon]
 function PANEL:SetWeaponModel(weaponModel)
   if !weaponModel and IsValid(self.weaponEntity) then
     self.weaponEntity:Remove()
@@ -1144,12 +1236,14 @@ function PANEL:SetWeaponModel(weaponModel)
   self.weaponEntity:AddEffects(EF_BONEMERGE)
 end
 
+--- Calls the panel's `DoClick` field, when set, on any mouse press.
 function PANEL:OnMousePressed()
   if self.DoClick then
     self:DoClick()
   end
 end
 
+--- Turns the model's head towards the cursor, faces it at a fixed angle and runs its animation.
 function PANEL:LayoutEntity()
   local screenW = ScrW()
   local screenH = ScrH()
@@ -1169,6 +1263,12 @@ function PANEL:LayoutEntity()
   self:RunAnimation()
 end
 
+--- Sets up the model panel (`cw.characterModel`): hides the cursor, adds a markup tooltip and wraps
+-- `SetModel` to pick an idle animation.
+--
+-- The wrapped `SetModel` plays the model's menu sequence from `cw.animation:GetMenuSequence` when it has
+-- one, otherwise one of the `LineIdle` sequences or an idle or walk sequence. The original `SetModel` is
+-- kept as `ClockworkSetModel`.
 function PANEL:Init()
   self:SetCursor('none')
   self.ClockworkSetModel = self.SetModel
@@ -1226,7 +1326,8 @@ vgui.Register('cw.characterModel', PANEL, 'DModelPanel')
 
 local PANEL = {}
 
--- Called when the panel is initialized.
+--- Builds an attribute row for character creation (`cw.characterAttribute`) with a points bar and add
+-- and remove buttons.
 function PANEL:Init()
   local colorWhite = cw.option:GetColor('white')
   local colorTargetID = cw.option:GetColor('target_id')
@@ -1291,7 +1392,7 @@ function PANEL:Init()
   end
 end
 
--- Called each frame.
+--- Lays out the attribute row and refreshes its tooltip with the attribute's points and description.
 function PANEL:Think()
   self.pointsUsed:SetSize(self:GetWide() - (self.pointsUsed.x * 2), 16)
   self.pointsLabel:SetText(self.attributeTable.name)
@@ -1314,7 +1415,7 @@ function PANEL:Think()
   self.pointsLabel:SetMarkupToolTip(markupObject:GetText())
 end
 
--- A function to add a point.
+--- Adds a point to the attribute when the shared point budget allows it.
 function PANEL:AddPoint()
   local pointsUsed = self:GetPointsUsed()
 
@@ -1323,17 +1424,19 @@ function PANEL:AddPoint()
   end
 end
 
--- A function to remove a point.
+--- Removes a point from the attribute, never going below zero.
 function PANEL:RemovePoint()
   self.totalPoints = math.max(self.totalPoints - 1, 0)
 end
 
--- A function to get the total points.
+--- Returns the points given to this attribute.
+-- @return [Number Points given to this attribute]
 function PANEL:GetTotalPoints()
   return self.totalPoints
 end
 
--- A function to get the points used.
+--- Returns the points spent on every attribute row in the group.
+-- @return [Number Sum of the points of the panels set with `SetAttributePanels`]
 function PANEL:GetPointsUsed()
   local pointsUsed = 0
 
@@ -1344,22 +1447,26 @@ function PANEL:GetPointsUsed()
   return pointsUsed
 end
 
--- A function to get the panel's attribute ID.
+--- Returns the unique ID of the row's attribute.
+-- @return [String The attribute's `uniqueID`]
 function PANEL:GetAttributeID()
   return self.attributeTable.uniqueID
 end
 
--- A function to set the panel's attribute panels.
+--- Sets the group of attribute rows that share the point budget.
+-- @param attributePanels [List<Panel> The `cw.characterAttribute` rows of the creation step]
 function PANEL:SetAttributePanels(attributePanels)
   self.attributePanels = attributePanels
 end
 
--- A function to set the panel's attribute table.
+--- Sets the attribute the row is for.
+-- @param attributeTable [Attribute The attribute table]
 function PANEL:SetAttributeTable(attributeTable)
   self.attributeTable = attributeTable
 end
 
--- A function to set the panel's maximum points.
+--- Sets the point budget shared by the group of attribute rows.
+-- @param maximumPoints [Number Number of points that can be spent in total]
 function PANEL:SetMaximumPoints(maximumPoints)
   self.maximumPoints = maximumPoints
 end
@@ -1368,7 +1475,11 @@ vgui.Register('cw.characterAttribute', PANEL, 'DPanel')
 
 local PANEL = {}
 
--- Called when the panel is initialized.
+--- Builds the attributes creation step (`cw.characterStageFour`) with a row for each attribute shown on the
+-- character screen.
+--
+-- The point budget is the `default_attribute_points` config value, scaled by the faction's
+-- `attributePointsScale` or replaced by its `maximumAttributePoints`.
 function PANEL:Init()
   self.info = cw.character:GetCreationInfo()
 
@@ -1421,17 +1532,22 @@ function PANEL:Init()
   self.categoryList:AddItem(self.attributesForm)
 end
 
--- Called when the next button is pressed.
+--- Stores the points of each attribute in the creation info.
 function PANEL:OnNext()
   for k, v in pairs(self.attributePanels) do
     self.info.attributes[v:GetAttributeID()] = v:GetTotalPoints()
   end
 end
 
--- Called when the panel is painted.
+--- Draws nothing.
 function PANEL:Paint(w, h) end
 
--- A function to make the panel fade out.
+--- Fades the step out and hides it, playing the rollover sound.
+--
+-- When the step is already transparent or animating, it is hidden at once.
+--
+-- @param speed [Number Length of the fade in seconds]
+-- @param Callback=nil [Function Called once the step is hidden]
 function PANEL:FadeOut(speed, Callback)
   if self:GetAlpha() > 0 and (!self.animation or !self.animation:Active()) then
     self.animation = Derma_Anim('Fade Panel', self, function(panel, animation, delta, data)
@@ -1461,7 +1577,12 @@ function PANEL:FadeOut(speed, Callback)
   end
 end
 
--- A function to make the panel fade in.
+--- Shows the step and fades it in, playing the click sound.
+--
+-- When the step is already visible or animating, it is made fully visible at once.
+--
+-- @param speed [Number Length of the fade in seconds]
+-- @param Callback=nil [Function Called once the step is fully visible]
 function PANEL:FadeIn(speed, Callback)
   if self:GetAlpha() == 0 and (!self.animation or !self.animation:Active()) then
     self.animation = Derma_Anim('Fade Panel', self, function(panel, animation, delta, data)
@@ -1492,7 +1613,7 @@ function PANEL:FadeIn(speed, Callback)
   end
 end
 
--- Called each frame.
+--- Updates the remaining points text and runs the fade animation.
 function PANEL:Think()
   self:InvalidateLayout(true)
 
@@ -1511,7 +1632,7 @@ function PANEL:Think()
   end
 end
 
--- Called when the layout should be performed.
+--- Sizes the step to fit its attribute list, up to 60% of the screen height.
 function PANEL:PerformLayout(w, h)
   self.categoryList:StretchToParent(0, 0, 0, 0)
   self:SetSize(512, math.min(self.categoryList.pnlCanvas:GetTall() + 8, ScrH() * 0.6))
@@ -1521,7 +1642,10 @@ vgui.Register('cw.characterStageFour', PANEL, 'EditablePanel')
 
 local PANEL = {}
 
--- Called when the panel is initialized.
+--- Builds the class creation step (`cw.characterStageThree`) with a `cwClassesItem` for each class of the
+-- chosen faction that is shown on the character screen.
+--
+-- Clicking a class stores its index as the creation info's `class`.
 function PANEL:Init()
   self.info = cw.character:GetCreationInfo()
 
@@ -1549,10 +1673,15 @@ function PANEL:Init()
   self.categoryList:AddItem(self.classForm)
 end
 
--- Called when the panel is painted.
+--- Draws nothing.
 function PANEL:Paint(w, h) end
 
--- A function to make the panel fade out.
+--- Fades the step out and hides it, playing the rollover sound.
+--
+-- When the step is already transparent or animating, it is hidden at once.
+--
+-- @param speed [Number Length of the fade in seconds]
+-- @param Callback=nil [Function Called once the step is hidden]
 function PANEL:FadeOut(speed, Callback)
   if self:GetAlpha() > 0 and (!self.animation or !self.animation:Active()) then
     self.animation = Derma_Anim('Fade Panel', self, function(panel, animation, delta, data)
@@ -1582,7 +1711,12 @@ function PANEL:FadeOut(speed, Callback)
   end
 end
 
--- A function to make the panel fade in.
+--- Shows the step and fades it in, playing the click sound.
+--
+-- When the step is already visible or animating, it is made fully visible at once.
+--
+-- @param speed [Number Length of the fade in seconds]
+-- @param Callback=nil [Function Called once the step is fully visible]
 function PANEL:FadeIn(speed, Callback)
   if self:GetAlpha() == 0 and (!self.animation or !self.animation:Active()) then
     self.animation = Derma_Anim('Fade Panel', self, function(panel, animation, delta, data)
@@ -1613,7 +1747,7 @@ function PANEL:FadeIn(speed, Callback)
   end
 end
 
--- Called each frame.
+--- Runs the step's fade animation.
 function PANEL:Think()
   self:InvalidateLayout(true)
 
@@ -1622,7 +1756,8 @@ function PANEL:Think()
   end
 end
 
--- Called when the next button is pressed.
+--- Checks that a valid class was picked, showing an error otherwise.
+-- @return [Boolean `false` to stay on the step when no valid class is selected]
 function PANEL:OnNext()
   if !self.info.class or !cw.class:FindByID(self.info.class) then
     cw.character:SetFault('#CharCreation_Classes_ErrorMessage')
@@ -1630,7 +1765,7 @@ function PANEL:OnNext()
   end
 end
 
--- Called when the layout should be performed.
+--- Sizes the step to fit its class list, up to 60% of the screen height.
 function PANEL:PerformLayout(w, h)
   self.categoryList:StretchToParent(0, 0, 0, 0)
   self:SetSize(512, math.min(self.categoryList.pnlCanvas:GetTall() + 8, ScrH() * 0.6))
@@ -1640,7 +1775,13 @@ vgui.Register('cw.characterStageThree', PANEL, 'EditablePanel')
 
 local PANEL = {}
 
--- Called when the panel is initialized.
+--- Builds the description creation step (`cw.characterStageTwo`): name entries, physical description and
+-- model selection, depending on the chosen faction.
+--
+-- The name entries are left out when the faction has a `GetName` function, and use a single full name
+-- entry when it sets `useFullName`. A model list is shown when the faction has no `GetModel` function and
+-- more than one model for the chosen gender; with a single model, that model is used. The physical
+-- description entry is shown when the `CharPhysDesc` command exists.
 function PANEL:Init()
   local smallTextFont = cw.option:GetFont('menu_text_small')
   local panel = cw.character:GetPanel()
@@ -1754,7 +1895,13 @@ function PANEL:Init()
   end
 end
 
--- Called when the next button is pressed.
+--- Validates the name, model and physical description and stores them in the creation info.
+--
+-- Forenames and surnames must be 2 to 16 characters long, contain a vowel and no punctuation, spaces or
+-- digits. The physical description must be at least `minimum_physdesc` characters long. Shows the matching
+-- error when a check fails.
+--
+-- @return [Boolean `false` to stay on the step when a check fails]
 function PANEL:OnNext()
   if self.overrideModel then
     self.info.model = self.overrideModel
@@ -1817,10 +1964,15 @@ function PANEL:OnNext()
   end
 end
 
--- Called when the panel is painted.
+--- Draws nothing.
 function PANEL:Paint(w, h) end
 
--- A function to make the panel fade out.
+--- Fades the step out and hides it, playing the rollover sound.
+--
+-- When the step is already transparent or animating, it is hidden at once.
+--
+-- @param speed [Number Length of the fade in seconds]
+-- @param Callback=nil [Function Called once the step is hidden]
 function PANEL:FadeOut(speed, Callback)
   if self:GetAlpha() > 0 and (!self.animation or !self.animation:Active()) then
     self.animation = Derma_Anim('Fade Panel', self, function(panel, animation, delta, data)
@@ -1850,7 +2002,12 @@ function PANEL:FadeOut(speed, Callback)
   end
 end
 
--- A function to make the panel fade in.
+--- Shows the step and fades it in, playing the click sound.
+--
+-- When the step is already visible or animating, it is made fully visible at once.
+--
+-- @param speed [Number Length of the fade in seconds]
+-- @param Callback=nil [Function Called once the step is fully visible]
 function PANEL:FadeIn(speed, Callback)
   if self:GetAlpha() == 0 and (!self.animation or !self.animation:Active()) then
     self.animation = Derma_Anim('Fade Panel', self, function(panel, animation, delta, data)
@@ -1881,7 +2038,7 @@ function PANEL:FadeIn(speed, Callback)
   end
 end
 
--- Called each frame.
+--- Runs the step's fade animation.
 function PANEL:Think()
   self:InvalidateLayout(true)
 
@@ -1890,7 +2047,7 @@ function PANEL:Think()
   end
 end
 
--- Called when the layout should be performed.
+--- Sizes the step to fit its forms, up to 60% of the screen height, with a 256 pixel tall model list.
 function PANEL:PerformLayout(w, h)
   self.categoryList:StretchToParent(0, 0, 0, 0)
 
@@ -1905,7 +2062,12 @@ vgui.Register('cw.characterStageTwo', PANEL, 'EditablePanel')
 
 local PANEL = {}
 
--- Called when the panel is initialized.
+--- Builds the persuasion creation step (`cw.characterStageOne`) with faction and gender choices and the
+-- custom choices from the `GetPersuasionChoices` hook.
+--
+-- Only factions the player is whitelisted for and that have not reached their maximum are offered. With
+-- a single faction, that faction is used and only the gender is asked. Custom choices are combo boxes or,
+-- when their `type` is `'textentry'`, text entries.
 function PANEL:Init()
   local smallTextFont = cw.option:GetFont('menu_text_small')
   local factions = {}
@@ -2009,7 +2171,12 @@ function PANEL:Init()
   self.categoryList:AddItem(self.settingsForm)
 end
 
--- Called when the next button is pressed.
+--- Validates the custom choices, faction and gender and stores them in the creation info.
+--
+-- Custom choice values are stored in the creation info's `plugin` table by choice name; choices with
+-- `isNumber` must be numbers within their `min` and `max`. Shows the matching error when a check fails.
+--
+-- @return [Boolean `true` when the faction and gender are valid, `false` to stay on the step]
 function PANEL:OnNext()
   self.info.plugin = {}
 
@@ -2075,10 +2242,15 @@ function PANEL:OnNext()
   return false
 end
 
--- Called when the panel is painted.
+--- Draws nothing.
 function PANEL:Paint(w, h) end
 
--- A function to make the panel fade out.
+--- Fades the step out and hides it, playing the rollover sound.
+--
+-- When the step is already transparent or animating, it is hidden at once.
+--
+-- @param speed [Number Length of the fade in seconds]
+-- @param Callback=nil [Function Called once the step is hidden]
 function PANEL:FadeOut(speed, Callback)
   if self:GetAlpha() > 0 and (!self.animation or !self.animation:Active()) then
     self.animation = Derma_Anim('Fade Panel', self, function(panel, animation, delta, data)
@@ -2108,7 +2280,12 @@ function PANEL:FadeOut(speed, Callback)
   end
 end
 
--- A function to make the panel fade in.
+--- Shows the step and fades it in, playing the click sound.
+--
+-- When the step is already visible or animating, it is made fully visible at once.
+--
+-- @param speed [Number Length of the fade in seconds]
+-- @param Callback=nil [Function Called once the step is fully visible]
 function PANEL:FadeIn(speed, Callback)
   if self:GetAlpha() == 0 and (!self.animation or !self.animation:Active()) then
     self.animation = Derma_Anim('Fade Panel', self, function(panel, animation, delta, data)
@@ -2139,7 +2316,7 @@ function PANEL:FadeIn(speed, Callback)
   end
 end
 
--- Called each frame.
+--- Runs the step's fade animation.
 function PANEL:Think()
   self:InvalidateLayout(true)
 
@@ -2148,7 +2325,7 @@ function PANEL:Think()
   end
 end
 
--- Called when the layout should be performed.
+--- Sizes the step to fit its form, up to 60% of the screen height.
 function PANEL:PerformLayout(w, h)
   self.categoryList:StretchToParent(0, 0, 0, 0)
   self:SetSize(512, math.min(self.categoryList.pnlCanvas:GetTall() + 8, ScrH() * 0.6))

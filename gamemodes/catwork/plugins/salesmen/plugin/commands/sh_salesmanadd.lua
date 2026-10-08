@@ -13,7 +13,9 @@ COMMAND.flags = CMD_DEFAULT
 COMMAND.access = 's'
 COMMAND.optionalArguments = 1
 
--- Called when the command has been run.
+--- Opens the salesman editor for a new salesman at the point the player is looking at.
+--
+-- The optional argument is the animation sequence, as a number or the name of a global constant.
 function COMMAND:OnRun(player, arguments)
   player.cwSalesmanSetup = true
   player.cwSalesmanAnim = tonumber(arguments[1])

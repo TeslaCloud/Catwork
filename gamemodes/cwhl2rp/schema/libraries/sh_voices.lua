@@ -6,6 +6,11 @@
   with contributions from Cloud Sixteen community.
 --]]
 
+--- Called when voice groups should be registered.
+--
+-- Adds the `Combine` and `Dispatch` groups for Combine players and the gendered `Human` group for
+-- everyone else.
+-- @param voices [Map The `cw.voices` library]
 function Schema:RegisterVoiceGroups(voices)
   voices:RegisterGroup('Combine', false, function(player)
     return player:IsCombine()
@@ -20,6 +25,11 @@ function Schema:RegisterVoiceGroups(voices)
   end)
 end
 
+--- Called when voices should be registered.
+--
+-- Adds the schema's Dispatch announcements, Combine lines and human lines, each with its chat command,
+-- phrase and Half-Life 2 sound; human lines also have a female sound.
+-- @param voices [Map The `cw.voices` library]
 function Schema:RegisterVoices(voices)
   voices:Add('Dispatch', 'anticitizen1', 'Внимание. Неопознанное лицо. Немедленно подтвердить статус в отделе Гражданской Обороны.', 'npc/overwatch/cityvoice/f_confirmcivilstatus_1_spkr.wav')
   voices:Add('Dispatch', 'anticitizen2', 'Вниманию наземных сил. В сообществе найден нарушитель. Код: ОКРУЖИТЬ, КЛЕЙМИТЬ, УСМИРИТЬ.', 'npc/overwatch/cityvoice/f_anticitizenreport_spkr.wav')

@@ -11,12 +11,26 @@ cw.PlayerInfoText.text = cw.PlayerInfoText.text or {}
 cw.PlayerInfoText.width = cw.PlayerInfoText.width or {}
 cw.PlayerInfoText.subText = cw.PlayerInfoText.subText or {}
 
--- A function to get whether any player info text exists.
+--- Returns whether there is any text for the local player's information box.
+-- @return [Boolean Whether any text or sub text has been added this frame]
 function cw.PlayerInfoText:DoesAnyExist()
   return (#self.text > 0 or #self.subText > 0)
 end
 
--- A function to add some player info text.
+--- Adds a line of text to the local player's information box.
+--
+-- The text is cleared and rebuilt every frame, so call this from the
+-- `GetPlayerInfoText` hook. Does nothing when `text` is `nil`.
+--
+-- ```
+-- function PLUGIN:GetPlayerInfoText(playerInfoText)
+--   playerInfoText:Add('CASH', 'Cash: '..cw.player:GetCash())
+-- end
+-- ```
+--
+-- @param uniqueID [String Unique ID of the line]
+-- @param text [String Text of the line]
+-- @see cw.PlayerInfoText:AddSub
 function cw.PlayerInfoText:Add(uniqueID, text)
   if text then
     self.text[#self.text + 1] = {
@@ -26,7 +40,9 @@ function cw.PlayerInfoText:Add(uniqueID, text)
   end
 end
 
--- A function to get some player info text.
+--- Returns a line of the local player's information box.
+-- @param uniqueID [String Unique ID of the line]
+-- @return [Map The line (`uniqueID`, `text`), or `nil` if there is none]
 function cw.PlayerInfoText:Get(uniqueID)
   for k, v in pairs(self.text) do
     if v.uniqueID == uniqueID then
@@ -35,7 +51,13 @@ function cw.PlayerInfoText:Get(uniqueID)
   end
 end
 
--- A function to add some sub player info text.
+--- Adds a line of sub text, shown under the player's name, to the information box.
+--
+-- Call this from the `GetPlayerInfoText` hook. Lines with a higher priority are
+-- drawn first. Does nothing when `text` is `nil`.
+-- @param uniqueID [String Unique ID of the line]
+-- @param text [String Text of the line]
+-- @param priority=0 [Number Sort priority]
 function cw.PlayerInfoText:AddSub(uniqueID, text, priority)
   if text then
     self.subText[#self.subText + 1] = {
@@ -46,7 +68,9 @@ function cw.PlayerInfoText:AddSub(uniqueID, text, priority)
   end
 end
 
--- A function to get some sub player info text.
+--- Returns a line of sub text of the information box.
+-- @param uniqueID [String Unique ID of the line]
+-- @return [Map The line (`uniqueID`, `text`, `priority`), or `nil` if there is none]
 function cw.PlayerInfoText:GetSub(uniqueID)
   for k, v in pairs(self.subText) do
     if v.uniqueID == uniqueID then
@@ -55,7 +79,10 @@ function cw.PlayerInfoText:GetSub(uniqueID)
   end
 end
 
--- A function to destroy some player info text.
+--- Removes a line from the information box.
+--
+-- Call this from the `DestroyPlayerInfoText` hook.
+-- @param uniqueID [String Unique ID of the line]
 function cw.PlayerInfoText:Destroy(uniqueID)
   for k, v in pairs(self.text) do
     if v.uniqueID == uniqueID then
@@ -64,7 +91,10 @@ function cw.PlayerInfoText:Destroy(uniqueID)
   end
 end
 
--- A function to destroy some sub player info text.
+--- Removes a line of sub text from the information box.
+--
+-- Call this from the `DestroyPlayerInfoText` hook.
+-- @param uniqueID [String Unique ID of the line]
 function cw.PlayerInfoText:DestroySub(uniqueID)
   for k, v in pairs(self.subText) do
     if v.uniqueID == uniqueID then

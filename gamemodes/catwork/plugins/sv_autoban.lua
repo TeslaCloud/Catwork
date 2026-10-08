@@ -57,6 +57,9 @@ local badKeywords = {
   'cloud sixteen'
 }
 
+--- Called when the plugins have loaded; replaces the built-in blacklist with `data/flux_blacklist.txt`.
+--
+-- The file holds a pON-encoded map of Steam IDs to kick reasons.
 function PLUGIN:FluxPluginsLoaded()
   local contents = File.read('data/flux_blacklist.txt')
 
@@ -65,6 +68,17 @@ function PLUGIN:FluxPluginsLoaded()
   end
 end
 
+--- Called when a player tries to join; drops blacklisted players and those with banned keywords in their name.
+--
+-- A player whose name contains a banned keyword is added to the blacklist with the default reason, and
+-- the blacklist is written to `data/flux_blacklist.txt`.
+--
+-- @param steamID64 [String The joining player's 64-bit Steam ID]
+-- @param ip [String The player's IP address]
+-- @param password [String The server password]
+-- @param clPassword [String The password the player entered]
+-- @param name [String The player's Steam name]
+-- @return [Boolean False to refuse the connection, or nil to allow it, String The kick reason]
 function PLUGIN:CheckPassword(steamID64, ip, password, clPassword, name)
   local steamid = util.SteamIDFrom64(steamID64)
   local entry = blacklist[steamid]

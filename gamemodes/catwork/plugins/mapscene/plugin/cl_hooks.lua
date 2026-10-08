@@ -6,12 +6,23 @@
   with contributions from Cloud Sixteen community.
 --]]
 
--- Called when the character background should be drawn.
+--- Called to check whether the character menu background should be drawn; hides it when a map scene is set.
+--
+-- @return [Boolean False while a map scene is shown, otherwise nil]
 function cwMapScene:ShouldDrawCharacterBackground()
   if self.curStored then return false end
 end
 
--- Called when the view should be calculated.
+--- Called when the view is calculated; moves the camera to the map scene while choosing a character.
+--
+-- Spinning scenes slowly sway the camera's yaw back and forth.
+--
+-- @param player [Player The local player]
+-- @param origin [Vector The default view origin]
+-- @param angles [Angle The default view angles]
+-- @param fov [Number The default field of view, kept as is]
+-- @return [Map The view table with `origin`, `angles`, `fov`, `vm_origin` and `vm_angles`, or nil
+-- when no scene applies]
 function cwMapScene:CalcView(player, origin, angles, fov)
   if cw.core:IsChoosingCharacter() and self.curStored then
     local addAngles = Angle(0, 0, 0)

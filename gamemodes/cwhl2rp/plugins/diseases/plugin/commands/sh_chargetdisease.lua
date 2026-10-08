@@ -5,7 +5,7 @@ COMMAND.flags = CMD_DEFAULT
 COMMAND.access = 'a'
 COMMAND.arguments = 1
 
--- Called when the command has been run.
+--- Tells the player which disease the target character has.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
 

@@ -13,7 +13,7 @@ COMMAND.access = 's'
 COMMAND.arguments = 2
 COMMAND.alias = { 'GiveAccess' }
 
--- Called when the command has been run.
+--- Lets the target player use a command; arguments are the player name and the command name or alias.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
   local permission = string.lower(arguments[2])

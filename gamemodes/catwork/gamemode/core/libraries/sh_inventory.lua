@@ -8,7 +8,20 @@
 
 library.New('inventory', cw)
 
--- A function to add an instance to a table.
+--- Adds an item instance to an inventory table.
+--
+-- Only changes the table; it does not network anything or touch a player. Use `Player:GiveItem`
+-- to give a player an item. For quantities above one, new instances of the same item are created
+-- and added as well. A quantity below one never stops recursing.
+--
+-- ```
+-- cw.inventory:AddInstance(inventory, item.CreateInstance('ration'), 2)
+-- ```
+--
+-- @param inventory [Inventory The inventory table]
+-- @param itemTable [Item The item instance]
+-- @param quantity=1 [Number How many of the item to add]
+-- @return [Item The instance added, or `false` when `itemTable` is `nil` or not an instance]
 function cw.inventory:AddInstance(inventory, itemTable, quantity)
   quantity = quantity or 1
 
@@ -34,7 +47,9 @@ function cw.inventory:AddInstance(inventory, itemTable, quantity)
   return itemTable
 end
 
--- A function to calculate the space of an inventory.
+--- Returns the total space taken by the items in an inventory.
+-- @param inventory [Inventory The inventory table]
+-- @return [Number The sum of the items' `space`]
 function cw.inventory:CalculateSpace(inventory)
   local space = 0
 
@@ -46,7 +61,9 @@ function cw.inventory:CalculateSpace(inventory)
   return space
 end
 
--- A function to calculate the weight of an inventory.
+--- Returns the total weight of the items in an inventory.
+-- @param inventory [Inventory The inventory table]
+-- @return [Number The sum of the items' `weight`]
 function cw.inventory:CalculateWeight(inventory)
   local weight = 0
 
@@ -59,7 +76,11 @@ function cw.inventory:CalculateWeight(inventory)
   return weight
 end
 
--- A function to create a duplicate of an inventory.
+--- Returns a copy of an inventory table.
+--
+-- The tables of each unique ID are copied, but the item instances in them are shared.
+-- @param inventory [Inventory The inventory table]
+-- @return [Inventory The copy]
 function cw.inventory:CreateDuplicate(inventory)
   local duplicate = {}
 
@@ -74,7 +95,16 @@ function cw.inventory:CreateDuplicate(inventory)
   return duplicate
 end
 
--- A function to find an item within an inventory by ID.
+--- Finds an item instance in an inventory.
+--
+-- ```
+-- local itemTable = cw.inventory:FindItemByID(player:GetInventory(), 'ration')
+-- ```
+--
+-- @param inventory [Inventory The inventory table]
+-- @param uniqueID [String Unique ID, index or name of the item, as accepted by `item.FindByID`]
+-- @param itemID=nil [Number Item ID of the instance; any instance of the item when `nil`]
+-- @return [Item The instance, or `nil` when the inventory has none]
 function cw.inventory:FindItemByID(inventory, uniqueID, itemID)
   local itemTable = item.FindByID(uniqueID)
 
@@ -106,7 +136,13 @@ function cw.inventory:FindItemByID(inventory, uniqueID, itemID)
   end
 end
 
--- A function to find an item within an inventory by name.
+--- Finds the first instance of an item in an inventory whose name matches, case insensitive.
+--
+-- Both the instance's `name` and `PrintName` are compared.
+-- @param inventory [Inventory The inventory table]
+-- @param uniqueID [String Unique ID, index or name of the item, as accepted by `item.FindByID`]
+-- @param name [String The name to match]
+-- @return [Item The instance, or `nil` when none matches]
 function cw.inventory:FindItemByName(inventory, uniqueID, name)
   local itemTable = item.FindByID(uniqueID)
 
@@ -122,7 +158,11 @@ function cw.inventory:FindItemByName(inventory, uniqueID, name)
   end
 end
 
--- A function to get an inventory's items by unique ID.
+--- Returns the instances of an item in an inventory, indexed by item ID.
+-- @param inventory [Inventory The inventory table]
+-- @param uniqueID [String Unique ID, index or name of the item, as accepted by `item.FindByID`]
+-- @return [Map<Item> The instances indexed by item ID; `nil` when the inventory has none, an empty table when the
+-- item does not exist]
 function cw.inventory:GetItemsByID(inventory, uniqueID)
   local itemTable = item.FindByID(uniqueID)
 
@@ -133,7 +173,13 @@ function cw.inventory:GetItemsByID(inventory, uniqueID)
   end
 end
 
--- A function to find an item within an inventory by name.
+--- Finds every instance of an item in an inventory whose name matches, case insensitive.
+--
+-- Both the instance's `name` and `PrintName` are compared.
+-- @param inventory [Inventory The inventory table]
+-- @param uniqueID [String Unique ID, index or name of the item, as accepted by `item.FindByID`]
+-- @param name [String The name to match]
+-- @return [List<Item> The matching instances, or `nil` when the inventory has none of the item]
 function cw.inventory:FindItemsByName(inventory, uniqueID, name)
   local itemTable = item.FindByID(uniqueID)
   local itemsList = {}
@@ -152,7 +198,9 @@ function cw.inventory:FindItemsByName(inventory, uniqueID, name)
   return itemsList
 end
 
--- A function to get an inventory as an items list.
+--- Returns every item instance in an inventory as a flat list.
+-- @param inventory [Inventory The inventory table]
+-- @return [List<Item> The instances]
 function cw.inventory:GetAsItemsList(inventory)
   local itemsList = {}
 
@@ -163,14 +211,12 @@ function cw.inventory:GetAsItemsList(inventory)
   return itemsList
 end
 
---[[
-  @codebase Shared
-  @details A function to get the amount of items an entity has in its inventory by ID.
-  @param Table Inventory of the entity.
-  @param Int ID of item looked up in the inventory to get the amount.
-  @returns Int Number of items in the inventory that match the ID.
---]]
-
+--- Returns how many instances of an item an inventory has.
+--
+-- Errors when the item does not exist.
+-- @param inventory [Inventory The inventory table]
+-- @param uniqueID [String Unique ID, index or name of the item, as accepted by `item.FindByID`]
+-- @return [Number The number of instances]
 function cw.inventory:GetItemCountByID(inventory, uniqueID)
   local itemTable = item.FindByID(uniqueID)
 
@@ -181,22 +227,23 @@ function cw.inventory:GetItemCountByID(inventory, uniqueID)
   end
 end
 
--- A function to get whether an inventory has an item by ID.
+--- Returns whether an inventory has at least one instance of an item.
+--
+-- The `uniqueID` is looked up in the inventory as given, so it should be the item's exact unique ID.
+-- @param inventory [Inventory The inventory table]
+-- @param uniqueID [String Unique ID of the item]
+-- @return [Boolean Whether the inventory has the item; `nil` when it never had any]
 function cw.inventory:HasItemByID(inventory, uniqueID)
   local itemTable = item.FindByID(uniqueID)
   return (inventory[uniqueID or itemTable.uniqueID]
   and table.Count(inventory[uniqueID or itemTable.uniqueID]) > 0)
 end
 
---[[
-  @codebase Shared
-  @details A function to get whether a player has a specific amount of items in their inventory by ID.
-  @param Table Inventory of the entity.
-  @param Int ID of the item being checked for its amount in the inventory.
-  @param Int Amount of items the entity needs to have in order to return true.
-  @returns Bool Whether the entity has a specific amount of items in its inventory or not.
---]]
-
+--- Returns whether an inventory has at least an amount of instances of an item.
+-- @param inventory [Inventory The inventory table]
+-- @param uniqueID [String Unique ID, index or name of the item, as accepted by `item.FindByID`]
+-- @param amount [Number The amount needed]
+-- @return [Boolean Whether the inventory has at least `amount` of the item]
 function cw.inventory:HasItemCountByID(inventory, uniqueID, amount)
   local amountInInventory = self:GetItemCountByID(inventory, uniqueID)
 
@@ -207,13 +254,18 @@ function cw.inventory:HasItemCountByID(inventory, uniqueID, amount)
   end
 end
 
--- A function to get whether an inventory item instance.
+--- Returns whether an inventory contains a specific item instance.
+-- @param inventory [Inventory The inventory table]
+-- @param itemTable [Item The item instance]
+-- @return [Boolean Whether the instance is in the inventory]
 function cw.inventory:HasItemInstance(inventory, itemTable)
   local uniqueID = itemTable.uniqueID
   return (inventory[uniqueID] and inventory[uniqueID][itemTable.itemID] != nil)
 end
 
--- A function to get whether an inventory is empty.
+--- Returns whether an inventory has no items.
+-- @param inventory [Inventory The inventory table; `nil` counts as empty]
+-- @return [Boolean Whether the inventory is empty]
 function cw.inventory:IsEmpty(inventory)
   if !inventory then return true end
 
@@ -228,7 +280,13 @@ function cw.inventory:IsEmpty(inventory)
   return true
 end
 
--- A function to remove an instance from a table.
+--- Removes an item instance from an inventory table.
+--
+-- Only changes the table; use `Player:TakeItem` to take an item from a player.
+-- @param inventory [Inventory The inventory table]
+-- @param itemTable [Item The item instance]
+-- @return [Item The removed instance; `false` when `itemTable` is not an instance, `nil` when the inventory has none
+-- of the item]
 function cw.inventory:RemoveInstance(inventory, itemTable)
   if !itemTable:IsInstance() then
     debug.Trace()
@@ -241,7 +299,11 @@ function cw.inventory:RemoveInstance(inventory, itemTable)
   end
 end
 
--- A function to remove a uniquen ID from a table.
+--- Removes an instance of an item from an inventory table.
+-- @param inventory [Inventory The inventory table]
+-- @param uniqueID [String Unique ID, index or name of the item, as accepted by `item.FindByID`]
+-- @param itemID=nil [Number Item ID of the instance to remove; the first instance when `nil`]
+-- @return [Item The removed instance when no `itemID` was given; nothing otherwise]
 function cw.inventory:RemoveUniqueID(inventory, uniqueID, itemID)
   local itemTable = item.FindByID(uniqueID)
   if itemID then itemID = tonumber(itemID) end
@@ -260,7 +322,12 @@ function cw.inventory:RemoveUniqueID(inventory, uniqueID, itemID)
   end
 end
 
--- A function to make an inventory loadable.
+--- Converts a saved inventory back into an inventory of item instances.
+--
+-- Creates an instance for every saved entry and keeps it unless its `OnLoaded` returns `false`.
+-- Entries saved under a key that is not the item's current unique ID are dropped.
+-- @param inventory [Map Saved data of each item ID, indexed by unique ID, as made by `cw.inventory:ToSaveable`]
+-- @return [Inventory The inventory of instances]
 function cw.inventory:ToLoadable(inventory)
   local newTable = {}
 
@@ -295,7 +362,13 @@ function cw.inventory:ToLoadable(inventory)
   return newTable
 end
 
--- A function to make an inventory saveable.
+--- Converts an inventory into a table that can be saved.
+--
+-- For each instance only the data fields that differ from the item's defaults are kept, indexed by
+-- the item ID as a string. An instance is skipped when its `OnSaved(newData)` returns `false`.
+-- @param inventory [Inventory The inventory table]
+-- @return [Map The saved data of each item ID, indexed by unique ID]
+-- @see cw.inventory:ToLoadable
 function cw.inventory:ToSaveable(inventory)
   local newTable = {}
 
@@ -334,7 +407,8 @@ function cw.inventory:ToSaveable(inventory)
   return newTable
 end
 
--- A function to get whether we should use the space system.
+--- Returns whether inventory space is limited as well as weight.
+-- @return [Boolean The value of the `enable_space_system` config]
 function cw.inventory:UseSpaceSystem()
   return config.Get('enable_space_system'):Get()
 end
@@ -342,17 +416,21 @@ end
 if CLIENT then
   cw.inventory.client = cw.inventory.client or {}
 
-  -- A function to get the local player's inventory.
+  --- Returns the local player's inventory.
+  -- @return [Inventory The local player's inventory]
   function cw.inventory:GetClient()
     return self.client
   end
 
-  -- A function to get the inventory panel.
+  --- Returns the inventory menu panel.
+  -- @return [Panel The inventory panel, or `nil` when it has not been created]
   function cw.inventory:GetPanel()
     return self.panel
   end
 
-  -- A function to get whether the client has an item equipped.
+  --- Returns whether the local player has an item equipped.
+  -- @param itemTable [Item The item instance]
+  -- @return [Boolean Whether the item's `HasPlayerEquipped` returns `true` for the local player]
   function cw.inventory:HasEquipped(itemTable)
     if itemTable.HasPlayerEquipped then
       return (itemTable:HasPlayerEquipped(cw.client) == true)
@@ -361,7 +439,10 @@ if CLIENT then
     return false
   end
 
-  -- A function to rebuild the local player's inventory.
+  --- Rebuilds the inventory panel on the next frame.
+  --
+  -- Does nothing unless the inventory panel is the active menu panel or `bForceRebuild` is set.
+  -- @param bForceRebuild=nil [Boolean Rebuild even when the panel is not active]
   function cw.inventory:Rebuild(bForceRebuild)
     if cw.menu:IsPanelActive(self:GetPanel()) or bForceRebuild then
       cw.core:OnNextFrame('RebuildInv', function()
@@ -440,6 +521,9 @@ if CLIENT then
     cw.inventory:Rebuild()
   end)
 else
+  --- Sends an item instance in a player's inventory to that player over the `InvUpdate` netstream message.
+  -- @param player [Player The player to send to]
+  -- @param itemTable [Item The item instance; nothing is sent when `nil`]
   function cw.inventory:SendUpdateByInstance(player, itemTable)
     if itemTable then
       netstream.Start(
@@ -448,6 +532,9 @@ else
     end
   end
 
+  --- Sends every item in a player's inventory to that player.
+  -- @param player [Player The player to send to]
+  -- @see cw.inventory:SendUpdateByID
   function cw.inventory:SendUpdateAll(player)
     local inventory = player:GetInventory()
 
@@ -456,6 +543,10 @@ else
     end
   end
 
+  --- Sends every instance of an item in a player's inventory to that player over the `InvUpdate`
+  -- netstream message.
+  -- @param player [Player The player to send to]
+  -- @param uniqueID [String Unique ID, index or name of the item, as accepted by `item.FindByID`]
   function cw.inventory:SendUpdateByID(player, uniqueID)
     local itemTables = self:GetItemsByID(player:GetInventory(), uniqueID)
 
@@ -470,6 +561,10 @@ else
     end
   end
 
+  --- Tells a player's client to rebuild its inventory panel on the next frame.
+  --
+  -- Repeated calls in the same frame send a single `InvRebuild` message.
+  -- @param player [Player The player]
   function cw.inventory:Rebuild(player)
     cw.core:OnNextFrame('RebuildInv'..player:UniqueID(), function()
       if IsValid(player) then

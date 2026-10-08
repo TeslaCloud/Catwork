@@ -3,6 +3,8 @@
   Do not share, re-distribute or sell.
 --]]
 
+--- Called when a player's character has loaded; networks the character's civil record.
+-- @param player [Player The player whose character loaded]
 function PLUGIN:PlayerCharacterLoaded(player)
   local logs = player:GetCharacterData('CCA_Logs') or {}
   player:SetNetVar('CCA_Logs', logs)

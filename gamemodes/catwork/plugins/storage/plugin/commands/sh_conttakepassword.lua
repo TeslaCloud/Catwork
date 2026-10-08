@@ -11,7 +11,7 @@ COMMAND.tip = '#Command_Conttakepassword_Description'
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = 'a'
 
--- Called when the command has been run.
+--- Removes the password of the container the player is looking at.
 function COMMAND:OnRun(player, arguments)
   local trace = player:GetEyeTraceNoCursor()
 

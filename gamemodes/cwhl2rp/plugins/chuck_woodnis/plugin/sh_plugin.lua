@@ -3,6 +3,11 @@
   Like, feel free to do stuff with my code I guess?
 --]]
 
+--- Called after Catwork has loaded all map entities; gives wooden props a damage filter.
+--
+-- One second later the server creates a `filter_activator_name` entity named `woodnorris` and
+-- applies it to every non-player entity whose model name contains wood, table, bench, chair,
+-- box, cardboard or pallet.
 function PLUGIN:ClockworkInitPostEntity()
   if SERVER then
     timer.Simple(1, function()

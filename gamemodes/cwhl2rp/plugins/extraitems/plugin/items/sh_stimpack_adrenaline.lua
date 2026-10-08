@@ -18,7 +18,7 @@ ITEM.category = '#ITEM_Category_Stimpacks'
 ITEM.uniqueID = 'stimpack_adrenaline'
 ITEM.description = '#ITEM_Adrenaline_Desc'
 
--- Called when a player uses the item.
+--- Restores full stamina, clears fatigue, heals 25 health and boosts agility, endurance and strength for 240 seconds.
 function ITEM:OnUse(player, itemEntity)
   player:SetCharacterData('Stamina', 100)
   player:SetCharacterData('Fatigue', 0)
@@ -31,7 +31,7 @@ function ITEM:OnUse(player, itemEntity)
   cw.player:Notify(player, '#ITEM_Adrenaline_Effect')
 end
 
--- Called when a player drops the item.
+--- Lets the item be dropped without any extra effect.
 function ITEM:OnDrop(player, position) end
 
 local eng = cw.lang:GetTable('en')

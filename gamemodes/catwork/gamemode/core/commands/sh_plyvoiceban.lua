@@ -14,7 +14,7 @@ COMMAND.access = 'o'
 COMMAND.arguments = 1
 COMMAND.alias = { 'VoiceBan', 'PlyBanVoice' }
 
--- Called when the command has been run.
+--- Bans the target player from voice chat; the argument is the player name.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
 

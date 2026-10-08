@@ -11,7 +11,7 @@ COMMAND.tip = '#Command_Doorunparent_Description'
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = 'a'
 
--- Called when the command has been run.
+--- Removes the parent of the door the player is looking at and saves the parents.
 function COMMAND:OnRun(player, arguments)
   local door = player:GetEyeTraceNoCursor().Entity
 

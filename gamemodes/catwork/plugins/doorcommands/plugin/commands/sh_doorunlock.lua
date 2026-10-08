@@ -11,7 +11,7 @@ COMMAND.tip = '#Command_Doorunlock_Description'
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = 'o'
 
--- Called when the command has been run.
+--- Unlocks the door the player is looking at.
 function COMMAND:OnRun(player, arguments)
   local door = player:GetEyeTraceNoCursor().Entity
 

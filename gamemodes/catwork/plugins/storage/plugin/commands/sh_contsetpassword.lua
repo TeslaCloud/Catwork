@@ -13,7 +13,7 @@ COMMAND.flags = CMD_DEFAULT
 COMMAND.access = 'a'
 COMMAND.arguments = 1
 
--- Called when the command has been run.
+--- Sets the password needed to open the container the player is looking at.
 function COMMAND:OnRun(player, arguments)
   local trace = player:GetEyeTraceNoCursor()
 

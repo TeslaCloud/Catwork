@@ -8,7 +8,7 @@ include('shared.lua')
 AddCSLuaFile('cl_init.lua')
 AddCSLuaFile('shared.lua')
 
--- Called when the entity initializes.
+--- Sets up the button model, attaches two pipes and defaults to producing supply crates.
 function ENT:Initialize()
   self:SetModel('models/MaxOfS2D/button_05.mdl')
 
@@ -47,16 +47,20 @@ function ENT:Initialize()
   self:SetSpawnType(1)
 end
 
+--- Sets what the dispenser produces; other values are ignored.
+-- @param entType [Number `TYPE_WATERCAN` (0) for empty ration packets, `TYPE_SUPPLIES` (1) for empty crates]
 function ENT:SetSpawnType(entType)
   if entType == TYPE_WATERCAN or entType == TYPE_SUPPLIES then
     self:SetDTInt(1, entType)
   end
 end
 
+--- Makes the dispenser always transmit to clients.
 function ENT:UpdateTransmitState()
   return TRANSMIT_ALWAYS
 end
 
+--- Plays one of the dispenser's machine sounds at random.
 function ENT:EmitRandomSound()
   local randomSounds = {
     'ambient/machines/combine_terminal_idle2.wav',
@@ -66,6 +70,7 @@ function ENT:EmitRandomSound()
   self:EmitSound(randomSounds[math.random(1, #randomSounds)])
 end
 
+--- Keeps the dispenser still unless a player holds it or it is constrained.
 function ENT:PhysicsUpdate(physicsObject)
   if !self:IsPlayerHolding() and !self:IsConstrained() then
     physicsObject:SetVelocity(Vector(0, 0, 0))
@@ -73,6 +78,9 @@ function ENT:PhysicsUpdate(physicsObject)
   end
 end
 
+--- Produces an item when a player presses the button, then waits out the item's cooldown.
+--
+-- Pressing it during the cooldown plays a denial sound.
 function ENT:Use(activator, caller)
   if activator:IsPlayer() and activator:GetEyeTraceNoCursor().Entity == self then
     local curTime = CurTime()
@@ -89,6 +97,8 @@ function ENT:Use(activator, caller)
   end
 end
 
+--- Spawns a `cw_emptyration` (8 second cooldown) or a `cw_emptycrate` (60 seconds) at the pipe.
+-- @param activator [Player The player who pressed the button; unused]
 function ENT:SpawnItem(activator)
   if self:GetSpawnType() == TYPE_WATERCAN then
     local entity = ents.Create('cw_emptyration')
@@ -105,6 +115,7 @@ function ENT:SpawnItem(activator)
   end
 end
 
+--- Blocks every toolgun action on the dispenser.
 function ENT:CanTool(player, trace, tool)
   return false
 end

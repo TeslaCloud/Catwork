@@ -16,12 +16,13 @@ ENT.AdminSpawnable = false
 ENT.UsableInVehicle = true
 ENT.PhysgunDisabled = true
 
--- A function to get the entity's stock.
+--- Returns how many cans the machine has left.
+-- @return [Number The current stock]
 function ENT:GetStock()
   return self:GetDTInt(0)
 end
 
--- Called when the datatables are setup.
+--- Declares the stock, flash action and flash time data table variables.
 function ENT:SetupDataTables()
   self:DTVar('Int', 0, 'stock')
   self:DTVar('Bool', 0, 'action')

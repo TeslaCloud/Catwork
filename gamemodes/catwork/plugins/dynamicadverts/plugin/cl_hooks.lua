@@ -6,7 +6,13 @@
   with contributions from Cloud Sixteen community.
 --]]
 
--- Called just after the translucent renderables have been drawn.
+--- Called after translucent renderables are drawn; draws every advert whose material has loaded.
+--
+-- Skips the depth and 3D skybox passes.
+--
+-- @param bDrawingDepth [Boolean Whether this is the depth pass]
+-- @param bDrawingSkybox [Boolean Whether the skybox is being drawn]
+-- @param bDrawing3DSkybox [Boolean Whether the 3D skybox is being drawn]
 function cwDynamicAdverts:PostDrawTranslucentRenderables(bDrawingDepth, bDrawingSkybox, bDrawing3DSkybox)
   if bDrawing3DSkybox or bDrawingDepth then return end
 

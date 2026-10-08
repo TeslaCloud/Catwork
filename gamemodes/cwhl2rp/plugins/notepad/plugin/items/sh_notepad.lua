@@ -13,7 +13,12 @@ ITEM.classes = { CLASS_EMP, CLASS_EOW }
 ITEM.business = true
 ITEM.description = '#Item_Notepad_Description'
 
--- Called when a player uses the item.
+--- Places a blank `cw_notepad` owned by the player where they are looking, within 192 units.
+--
+-- When used from the ground, the notepad takes the item entity's place and stays frozen if
+-- the item was.
+--
+-- @return [Boolean `false` when the spot is too far away]
 function ITEM:OnUse(player, itemEntity)
   local trace = player:GetEyeTraceNoCursor()
 
@@ -50,5 +55,5 @@ function ITEM:OnUse(player, itemEntity)
   end
 end
 
--- Called when a player drops the item.
+--- Called when the notepad is dropped; does nothing, so it can be dropped freely.
 function ITEM:OnDrop(player, position) end

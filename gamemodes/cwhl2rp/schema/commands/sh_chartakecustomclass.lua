@@ -12,7 +12,7 @@ COMMAND.text = '#Command_Chartakecustomclass_Syntax'
 COMMAND.access = 'o'
 COMMAND.arguments = 1
 
--- Called when the command has been run.
+--- Removes the custom class of the character named in the first argument.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
 

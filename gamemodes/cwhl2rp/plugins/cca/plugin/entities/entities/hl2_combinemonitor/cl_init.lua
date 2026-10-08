@@ -54,6 +54,7 @@ surface.CreateFont('_CMB_FONT_5', {
   extended = true
 })
 
+--- Creates the render target and scanline material the monitor's screen is drawn with.
 function ENT:Initialize()
   self.RT = GetRenderTarget('_CMB_SMALLMONITOR_ENT'..self:EntIndex()..CurTime(), 256, 256, false)
   self.RTMat = CreateMaterial('_CMB_SMALLMONITOR_ENT_RTMAT'..self:EntIndex()..CurTime(), 'UnlitTwoTexture', {
@@ -83,6 +84,10 @@ local function bitkek(int)
   return str
 end
 
+--- Draws the monitor and its screen for players within 1000 units.
+--
+-- The screen shows a waiting message when off and the networked civil record when on. Anti-citizens get
+-- a red error screen with scrolling noise, drawn only within 300 units.
 function ENT:DrawTranslucent()
   local pos = self:GetPos()
   local clientPos = cw.client:GetPos()

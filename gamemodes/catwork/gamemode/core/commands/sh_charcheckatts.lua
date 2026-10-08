@@ -13,7 +13,7 @@ COMMAND.access = 's'
 COMMAND.arguments = 1
 COMMAND.alias = { 'CheckAtts' }
 
--- Called when the command has been run.
+--- Lists the target character's attribute values to the caller; the argument is the character name.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
 

@@ -20,6 +20,15 @@ TOOL.ClientConVar['contname'] = 'A Container'
 TOOL.ClientConVar['contmessage'] = 'A Message'
 TOOL.ClientConVar['contpassword'] = 'password'
 
+--- Fills the container a trace hit with random items from the tool's fill category.
+--
+-- Only works on props whose model is in `cwStorage.containerList`; props without an inventory are made
+-- into storage first. Items from `cwStorage:GetRandomItem` are added until the inventory weighs at least
+-- the container's capacity divided by `6 - scale`, where the `contfillscale` setting (1-5) is the scale.
+-- The owner is notified of the result. Does nothing on the client.
+--
+-- @param entity [Map The trace result whose `Entity` is the container]
+-- @return [Boolean True on the client, otherwise nil]
 function TOOL:AddItems(entity)
   local trace = entity
   local scale = self:GetClientNumber('contfillscale', 1)
@@ -78,6 +87,13 @@ function TOOL:AddItems(entity)
   end
 end
 
+--- Sets the message of the prop a trace hit to the tool's `contmessage` setting.
+--
+-- Stored in the entity's `cwMessage` field. Works on any physics prop; the owner is notified of the
+-- result. Does nothing on the client.
+--
+-- @param entity [Map The trace result whose `Entity` is the container]
+-- @return [Boolean True on the client, otherwise nil]
 function TOOL:SetMessage(entity)
   local trace = entity
   local player = self:GetOwner()
@@ -97,6 +113,14 @@ function TOOL:SetMessage(entity)
   end
 end
 
+--- Sets the name of the container a trace hit to the tool's `contname` setting.
+--
+-- Only works on props whose model is in `cwStorage.containerList`; props without an inventory are made
+-- into storage first. The name is stored in the entity's `Name` networked string. Does nothing on the
+-- client.
+--
+-- @param entity [Map The trace result whose `Entity` is the container]
+-- @return [Boolean True on the client, otherwise nil]
 function TOOL:SetName(entity)
   local trace = entity
   local player = self:GetOwner()
@@ -127,6 +151,14 @@ function TOOL:SetName(entity)
   end
 end
 
+--- Sets the password of the container a trace hit to the tool's `contpassword` setting.
+--
+-- Only works on props whose model is in `cwStorage.containerList`; props without an inventory are made
+-- into storage first. The password is stored in the entity's `cwPassword` field and shown to the owner.
+-- Does nothing on the client.
+--
+-- @param entity [Map The trace result whose `Entity` is the container]
+-- @return [Boolean True on the client, otherwise nil]
 function TOOL:SetPassword(entity)
   local trace = entity
   local player = self:GetOwner()
@@ -158,6 +190,9 @@ function TOOL:SetPassword(entity)
   end
 end
 
+--- Runs the selected mode on the container the owner is looking at: fill, set message, name or password.
+--
+-- Admins only.
 function TOOL:LeftClick(trace)
   local mode = self:GetClientNumber('mode')
   local player = self:GetOwner()
@@ -272,6 +307,13 @@ if CLIENT then
     end
   end
 
+  --- Switches the container tool to another mode and rebuilds its control panel.
+  --
+  -- Registered as the `cont_setmode` console command and run when a mode is picked in the panel.
+  --
+  -- @param player [Player The local player]
+  -- @param tool [String The console command name]
+  -- @param args [List<String> Command arguments; the first is the mode number (1-4)]
   function cont_setmode(player, tool, args)
     if LocalPlayer():GetInfoNum('containertool_mode', 3) != args[1] then
       RunConsoleCommand('containertool_mode', args[1])
@@ -281,6 +323,9 @@ if CLIENT then
 
   concommand.Add('cont_setmode', cont_setmode)
 
+  --- Rebuilds the container tool's control panel for the current mode.
+  --
+  -- Registered as the `cont_updatepanel` console command. Does nothing when the panel does not exist.
   function cont_updatepanel()
     local Panel = controlpanel.Get('containertool')
     if !Panel then return end
@@ -290,6 +335,9 @@ if CLIENT then
 
   concommand.Add('cont_updatepanel', cont_updatepanel)
 
+  --- Builds the tool's control panel: the mode list and the settings for the current mode.
+  --
+  -- @param Panel [Panel The tool's control panel]
   function TOOL.BuildCPanel(Panel)
     AddDefControls(Panel)
   end

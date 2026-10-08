@@ -8,10 +8,14 @@
 
 config.Add('nodes_respawn_delay', 30)
 
+--- Saves the resource node spawn points of the current map to the schema data.
+--
+-- Writes `plugins/gather/<map>`.
 function cwGather:SaveNodesSpawnPoints()
   cw.core:SaveSchemaData('plugins/gather/'..game.GetMap(), self.nodePoints)
 end
 
+--- Loads the resource node spawn points of the current map and makes each spawn as soon as possible.
 function cwGather:LoadNodesSpawnPoints()
   self.nodePoints = cw.core:RestoreSchemaData('plugins/gather/'..game.GetMap())
 
@@ -24,6 +28,13 @@ function cwGather:LoadNodesSpawnPoints()
   end
 end
 
+--- Returns whether no entity of a class is within 50 units of a position.
+--
+-- Same check as the `CanSpawnNode` hook; not used by the plugin itself.
+--
+-- @param position [Vector The position to check]
+-- @param class [String The entity class to look for]
+-- @return [Boolean Whether the position is free]
 function cwGather:CanSpawnNodeAtPos(position, class)
   local props = ents.FindInSphere(position, 50)
 
@@ -38,6 +49,12 @@ function cwGather:CanSpawnNodeAtPos(position, class)
   return true
 end
 
+--- Spawns a resource node at a spawn point.
+--
+-- Wood points (`data` is `'wood'`) get a random model from `cwGather.woodNodes`. The node is
+-- raised so its bottom rests on the point.
+--
+-- @param pointTable [Map The spawn point, with `class`, `data`, `position` and `angles`]
 function cwGather:SpawnNode(pointTable)
   local entity = ents.Create(pointTable.class)
 
@@ -58,6 +75,14 @@ function cwGather:SpawnNode(pointTable)
   end
 end
 
+--- Gives a player wood for breaking a wooden prop.
+--
+-- Rolls once per 25 units of the prop's mass (1 to 5 rolls), each roll raised by the
+-- player's Scavenger attribute, and drops a `wooden_board` or `wooden_parts` item at the
+-- prop for good rolls. Progresses Scavenger by 5 to 25 depending on the mass.
+--
+-- @param player [Player The player who broke the prop]
+-- @param ent [Entity The broken prop]
 function cwGather:PlayerBreaksWood(player, ent)
   if !IsValid(player) or !player:HasInitialized() then return end
 

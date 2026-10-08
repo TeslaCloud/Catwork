@@ -8,7 +8,7 @@ include('shared.lua')
 AddCSLuaFile('cl_init.lua')
 AddCSLuaFile('shared.lua')
 
--- Called when the entity initializes.
+--- Sets up the lock model, physics, 800 health and the status light sprite.
 function ENT:Initialize()
   self:SetModel('models/props_combine/combine_lock01.mdl')
 
@@ -36,12 +36,17 @@ function ENT:Initialize()
   end
 end
 
--- Called when the entity's transmit state should be updated.
+--- Always transmits the lock to every client.
 function ENT:UpdateTransmitState()
   return TRANSMIT_ALWAYS
 end
 
--- Called each frame.
+--- Keeps the doors locked or unlocked, updates the status light and keeps the lock frozen.
+--
+-- Removes the lock with an explosion when its door is gone. With the `combine_lock_overrides` config
+-- enabled, the lock state is forced onto its doors every think. The light flashes red with a beep while a
+-- smoke charge counts down, is red during an access denied flash, orange (or the override color) when
+-- locked and green when unlocked.
 function ENT:Think()
   if IsValid(self.entity) then
     if config.Get('combine_lock_overrides'):Get() then
@@ -111,11 +116,19 @@ function ENT:Think()
   self:NextThink(curTime + 0.1)
 end
 
+--- Sets the color the status light shows while the lock is locked.
+-- @param color [Color Light color, or `nil` for the default orange]
 function ENT:SetOverrideColor(color)
   self.overrideColor = color
 end
 
--- A function to set the entity's door.
+--- Attaches the lock to a door, together with its double door partner if it has one.
+--
+-- A partner is a door of the same class, model and skin 90 to 100 units away at the same height with a
+-- different angle. The lock is removed with the door, and each locked door's `combineLock` field is set
+-- to the lock.
+--
+-- @param entity [Entity The door to lock]
 function ENT:SetDoor(entity)
   local position = entity:GetPos()
   local angles = entity:GetAngles()
@@ -148,15 +161,19 @@ function ENT:SetDoor(entity)
   end
 end
 
+--- Sets the access level a non-Combine player needs a matching `combine_lock_access_*` item for.
+-- @param int [Number The access level]
 function ENT:SetAccess(int)
   self.access = int
 end
 
+--- Sets the Combine rank that `Schema:PlayerHasCombineLockAccess` checks for this lock.
+-- @param str [String The rank, or `nil` to let every Combine use the lock]
 function ENT:SetCPRank(str)
   self.rank = str
 end
 
--- A function to toggle whether the entity is locked.
+--- Locks the lock when it is unlocked and unlocks it when it is locked.
 function ENT:Toggle()
   if self:IsLocked() then
     self:Unlock()
@@ -165,7 +182,7 @@ function ENT:Toggle()
   end
 end
 
--- A function to lock the entity.
+--- Locks and closes the lock's doors and plays a random button sound.
 function ENT:Lock()
   self:EmitRandomSound()
 
@@ -179,7 +196,7 @@ function ENT:Lock()
   self:SetDTBool(0, true)
 end
 
--- A function to unlock the entity.
+--- Unlocks the lock's doors and plays a random button sound.
 function ENT:Unlock()
   self:EmitRandomSound()
 
@@ -192,13 +209,19 @@ function ENT:Unlock()
   self:SetDTBool(0, false)
 end
 
--- A function to set the entity's flash duration.
+--- Flashes the status light red and plays the denied sound.
+-- @param duration [Number How long the light flashes, in seconds]
 function ENT:SetFlashDuration(duration)
   self:EmitSound('buttons/combine_button_locked.wav')
   self:SetDTFloat(1, CurTime() + duration)
 end
 
--- A function to activate the entity's smoke charge.
+--- Starts the 12 second smoke charge that busts the lock's rotating doors open.
+--
+-- Does nothing while a charge is already counting down. When the timer ends, each `prop_door_rotating`
+-- is busted down with `Schema:BustDownDoor` and a smoke effect plays at the lock.
+--
+-- @param force [Vector Force applied to the busted doors]
 function ENT:ActivateSmokeCharge(force)
   local curTime = CurTime()
 
@@ -224,7 +247,7 @@ function ENT:ActivateSmokeCharge(force)
   end
 end
 
--- A function to emit a random sound from the entity.
+--- Plays one random Combine button sound from the lock and each of its doors.
 function ENT:EmitRandomSound()
   local randomSounds = {
     'buttons/combine_button1.wav',
@@ -247,7 +270,7 @@ function ENT:EmitRandomSound()
   self:EmitSound(randomSound)
 end
 
--- A function to explode the entity.
+--- Plays an explosion effect and impact sound at the lock.
 function ENT:Explode()
   local effectData = EffectData()
 
@@ -260,7 +283,7 @@ function ENT:Explode()
   self:EmitSound('physics/body/body_medium_impact_soft'..math.random(1, 7)..'.wav')
 end
 
--- Called when the entity is removed.
+--- Plays the explosion and unlocks the lock's doors.
 function ENT:OnRemove()
   self:Explode() self:Unlock()
 
@@ -273,7 +296,12 @@ function ENT:OnRemove()
   end
 end
 
--- A function to toggle the entity with checks.
+--- Toggles the lock if the player has access, or flashes it red if they do not.
+--
+-- Does nothing within 3 seconds of the last use, during a flash or while a smoke charge is counting down.
+-- Access is checked with `Schema:PlayerHasCombineLockAccess`; admin faction players always have it.
+--
+-- @param activator [Player The player using the lock]
 function ENT:ToggleWithChecks(activator)
   local curTime = CurTime()
 
@@ -293,14 +321,14 @@ function ENT:ToggleWithChecks(activator)
   end
 end
 
--- Called when the entity is used.
+--- Toggles the lock with access checks when a player uses it while looking at it.
 function ENT:Use(activator, caller)
   if activator:IsPlayer() and activator:GetEyeTraceNoCursor().Entity == self then
     self:ToggleWithChecks(activator)
   end
 end
 
--- Called when the entity takes damage.
+--- Subtracts the damage from the lock's health and starts the smoke charge when it reaches 0.
 function ENT:OnTakeDamage(damageInfo)
   self:SetHealth(math.max(self:Health() - damageInfo:GetDamage(), 0))
 
@@ -309,15 +337,20 @@ function ENT:OnTakeDamage(damageInfo)
   end
 end
 
--- Called when a player attempts to use a tool.
+--- Blocks every toolgun action on the lock.
+-- @return [Boolean Always `false`]
 function ENT:CanTool(player, trace, tool)
   return false
 end
 
+--- Returns the lock's access level.
+-- @return [Number The access level set with `ENT:SetAccess`]
 function ENT:GetAccess()
   return self.access
 end
 
+--- Returns the Combine rank required by the lock.
+-- @return [String The rank, or `nil`]
 function ENT:GetCPRank()
   return self.rank
 end

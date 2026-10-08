@@ -48,7 +48,11 @@ local function BANS_LOAD_CALLBACK(result)
   end
 end
 
--- A function to load the bans.
+--- Loads the current schema's bans from the database into `cw.bans.stored`.
+--
+-- Also removes timed bans whose unban time has passed from memory (without
+-- deleting their database rows) and deletes malformed entries.
+-- @see cw.bans:Add
 function cw.bans:Load()
   local bansTable = config.Get('mysql_bans_table'):Get()
   local schemaFolder = cw.core:GetSchemaFolder()
@@ -71,7 +75,27 @@ function cw.bans:Load()
   end
 end
 
--- A function to add a ban.
+--- Bans a Steam ID or IP address and kicks any matching player.
+--
+-- Every connected player whose Steam ID or IP matches, or who `player.Find`
+-- returns for the identifier, fires the `PlayerBanned` hook and is kicked
+-- with the reason. The ban is stored in `cw.bans.stored` and, unless
+-- `bSaveless` is set, inserted into the bans table for the current schema.
+-- For offline Steam IDs and IPs the Steam name is looked up in the players
+-- table first, so the callback runs asynchronously in that case.
+--
+-- ```
+-- cw.bans:Add('STEAM_0:1:123456', 3600, 'Mic spam.', function(steamName, duration, reason)
+--   cw.player:NotifyAll(steamName..' has been banned for one hour.')
+-- end)
+-- ```
+--
+-- @param identifier [String Steam ID, IP address or player name; Steam IDs are upper-cased]
+-- @param duration [Number Ban length in seconds; `0` bans permanently]
+-- @param reason=nil [String Kick and ban reason; defaults to 'Banned for an unspecified reason.']
+-- @param Callback=nil [Function Called as `Callback(steamName, duration, reason)` once the ban is stored]
+-- @param bSaveless=false [Boolean Keep the ban in memory only and do not write it to the database]
+-- @see cw.bans:Remove
 function cw.bans:Add(identifier, duration, reason, Callback, bSaveless)
   local steamName = nil
   local playerGet = _player.Find(identifier)
@@ -268,7 +292,12 @@ function cw.bans:Add(identifier, duration, reason, Callback, bSaveless)
   end
 end
 
--- A function to remove a ban.
+--- Lifts a ban and deletes it from the database.
+--
+-- Does nothing if no ban is stored under the identifier.
+-- @param identifier [String The Steam ID or IP address the ban is stored under]
+-- @param bSaveless=false [Boolean Only remove the ban from memory and keep the database row]
+-- @see cw.bans:Add
 function cw.bans:Remove(identifier, bSaveless)
   local bansTable = config.Get('mysql_bans_table'):Get()
   local schemaFolder = cw.core:GetSchemaFolder()

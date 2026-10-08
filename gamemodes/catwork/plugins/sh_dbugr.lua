@@ -14,6 +14,10 @@ PLUGIN.compatibility = '1.2'
 if DBugR then
   local hooksDetoured = false
 
+  --- Called when Catwork has loaded; wraps every cached plugin hook in a DBugR profiler.
+  --
+  -- Each hook's run time is reported to DBugR as `<plugin name>:<hook name>`. Only defined when DBugR is
+  -- installed, and only detours the hooks once.
   function PLUGIN:ClockworkLoaded()
     if hooksDetoured then return end
 

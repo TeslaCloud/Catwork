@@ -13,7 +13,7 @@ COMMAND.access = 'o'
 COMMAND.arguments = 1
 COMMAND.alias = { 'GoTo' }
 
--- Called when the command has been run.
+--- Teleports the caller to the target player; the argument is the player name.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
 

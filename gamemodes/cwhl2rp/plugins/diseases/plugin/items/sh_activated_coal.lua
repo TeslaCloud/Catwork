@@ -11,7 +11,7 @@ ITEM.business = true
 ITEM.description = '#Item_ActivatedCoal_Description'
 ITEM.customFunctions = { 'Give' }
 
--- Called when a player uses the item.
+--- Cures the player's gastritis after 30 to 60 seconds and fires `PlayerHealed`.
 function ITEM:OnUse(player, itemEntity)
   if player:GetCharacterData('diseases') == 'gastrits' then
     timer.Simple(math.random(30, 60), function()
@@ -23,6 +23,9 @@ function ITEM:OnUse(player, itemEntity)
 end
 
 if SERVER then
+  --- Gives the charcoal to the player being looked at with "Give", curing their gastritis after a delay.
+  --
+  -- Fires `PlayerHealed` with the giver as the healer. Returns `false` when no player is looked at.
   function ITEM:OnCustomFunction(player, name)
     if name == 'Give' then
       local lookingPly = player:GetEyeTrace().Entity
@@ -47,5 +50,5 @@ if SERVER then
   end
 end
 
--- Called when a player drops the item.
+--- Lets the item be dropped, with no extra effect.
 function ITEM:OnDrop(player, position) end

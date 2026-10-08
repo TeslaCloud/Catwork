@@ -9,6 +9,15 @@ local maxArmorValue = 60
 
 local playerMeta = FindMetaTable('Player')
 
+--- Wears or takes off a bodygroup clothing item.
+--
+-- Calls the item's `OnChangeClothes`, which sets the bodygroup, records the item in
+-- `player.bgClothesData` under its bodygroup, adds or subtracts its `protection` from the
+-- total and sends the data to the player with the `BGClothes` netstream. Errors in
+-- `OnChangeClothes` are printed and do not stop the change.
+--
+-- @param itemTable [Item The item, based on `bodygroup_base`]
+-- @param bShouldUnwear=nil [Boolean `true` to take the item off instead of wearing it]
 function playerMeta:SetBodygroupClothes(itemTable, bShouldUnwear)
   if !bShouldUnwear then
     if itemTable.OnChangeClothes then
@@ -68,6 +77,14 @@ function playerMeta:SetBodygroupClothes(itemTable, bShouldUnwear)
   end
 end
 
+--- Wears or takes off a skin clothing item.
+--
+-- Calls the item's `OnChangeClothes`, which sets the skin, records the item in
+-- `player.skinClothesData` under its skin, adds or subtracts its `protection` from the total
+-- and sends the data to the player with the `SkinClothes` netstream.
+--
+-- @param itemTable [Item The item, based on `skin_base`]
+-- @param bShouldUnwear=nil [Boolean `true` to take the item off instead of wearing it]
 function playerMeta:SetSkinClothes(itemTable, bShouldUnwear)
   if !bShouldUnwear then
     if itemTable.OnChangeClothes then
@@ -127,6 +144,14 @@ function playerMeta:SetSkinClothes(itemTable, bShouldUnwear)
   end
 end
 
+--- Called when an entity takes damage; applies clothing protection to players.
+--
+-- Radiation-proof clothes block all damage but bullets, explosions and falls. Without a
+-- clothes item, the summed `protection` of bodygroup and skin clothing, capped at 60,
+-- reduces non-fall damage by that percentage.
+--
+-- @param victim [Entity The damaged entity]
+-- @param dmg [CTakeDamageInfo The damage, scaled in place]
 function PLUGIN:EntityTakeDamage(victim, dmg)
   if IsValid(victim) and victim:IsPlayer() and !dmg:IsFallDamage() then
     local clothesItem = victim:GetClothesItem()
@@ -148,6 +173,9 @@ function PLUGIN:EntityTakeDamage(victim, dmg)
   end
 end
 
+--- Called when a player's character is unloaded; clears their bodygroup and skin clothing.
+--
+-- @param player [Player The player whose character was unloaded]
 function PLUGIN:PlayerCharacterUnloaded(player)
   netstream.Start(player, 'BGClothes', nil, true)
   player.bgClothesData = nil
@@ -162,6 +190,11 @@ function PLUGIN:PlayerCharacterUnloaded(player)
   player:SetSkin(0)
 end
 
+--- Called when a player gets up from a ragdoll; reapplies their clothing bodygroups.
+--
+-- @param player [Player The player who got up]
+-- @param state [Number The ragdoll state, a `RAGDOLL_*` value]
+-- @param ragdollTable [Map The player's ragdoll data]
 function PLUGIN:PlayerUnragdolled(player, state, ragdollTable)
   local bodyGroup = player.bgClothesData
   local skin = player.skinClothesData

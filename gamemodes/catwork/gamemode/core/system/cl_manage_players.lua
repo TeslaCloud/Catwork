@@ -10,12 +10,18 @@ local SYSTEM = cw.system:New('Manage Players')
 SYSTEM.toolTip = '#System_ManagePlayers_ToolTip'
 SYSTEM.doesCreateForm = false
 
--- Called to get whether the local player has access to the system.
+--- Shows the Manage Players system to admins only.
+-- @return [Boolean Whether the local player is an admin]
 function SYSTEM:HasAccess()
   return cw.player:IsAdmin(cw.client)
 end
 
--- Called when the system should be displayed.
+--- Lists initialized players grouped by scoreboard class, each opening the scoreboard options menu when clicked.
+--
+-- Groups come from the `GetPlayerScoreboardClass` hook and are sorted with `ScoreboardSortClassPlayers`;
+-- the menu entries come from `GetPlayerScoreboardOptions`.
+-- @param systemPanel [Panel The system panel to add the player lists to]
+-- @param systemForm [Panel The system's form (unused, the system does not create one)]
 function SYSTEM:OnDisplay(systemPanel, systemForm)
   local availableClasses = {}
   local classes = {}

@@ -14,7 +14,9 @@ COMMAND.arguments = 2
 COMMAND.optionalArguments = 1
 COMMAND.alias = { 'PlyGiveItem', 'GiveItem' }
 
--- Called when the command has been run.
+--- Gives the target character an item; arguments are the character name, the item ID and an optional amount.
+--
+-- Requires the `G` flag; the amount must be between 1 and 10 and defaults to 1. Both players are notified.
 function COMMAND:OnRun(player, arguments)
   if cw.player:HasFlags(player, 'G') then
     local target = _player.Find(arguments[1])

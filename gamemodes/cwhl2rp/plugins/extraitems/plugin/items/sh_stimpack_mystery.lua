@@ -18,7 +18,9 @@ ITEM.category = '#ITEM_Category_Stimpacks'
 ITEM.uniqueID = 'stimpack_mystery'
 ITEM.description = '#ITEM_Mystery_Desc'
 
--- Called when a player uses the item.
+--- Restores full stamina, clears fatigue, sets health to 200 and boosts agility, endurance and strength.
+--
+-- Each attribute is boosted by 100 for 600 seconds.
 function ITEM:OnUse(player, itemEntity)
   player:SetCharacterData('Stamina', 100)
   player:SetCharacterData('Fatigue', 0)
@@ -31,7 +33,7 @@ function ITEM:OnUse(player, itemEntity)
   cw.player:Notify(player, '#ITEM_Mystery_Effect')
 end
 
--- Called when a player drops the item.
+--- Lets the item be dropped without any extra effect.
 function ITEM:OnDrop(player, position) end
 
 local eng = cw.lang:GetTable('en')

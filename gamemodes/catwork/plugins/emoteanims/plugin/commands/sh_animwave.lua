@@ -12,7 +12,7 @@ COMMAND.text = '#Command_Animwave_Syntax'
 COMMAND.flags = CMD_DEFAULT
 COMMAND.optionalArguments = 1
 
--- Called when the command has been run.
+--- Plays a two second wave on a human player; `Close` waves at someone nearby.
 function COMMAND:OnRun(player, arguments)
   local curTime = CurTime()
 

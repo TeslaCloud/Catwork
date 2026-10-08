@@ -6,7 +6,13 @@
   with contributions from Cloud Sixteen community.
 --]]
 
--- Called when a player's typing display has started.
+--- Called when a player starts typing; plays their rank's or faction's `startChatNoise`.
+--
+-- Only plays for talking, yelling, whispering and radio codes, once per message, and not while
+-- noclipping.
+--
+-- @param player [Player The player who started typing]
+-- @param code [String Typing mode code sent by the client: `n`, `y`, `w`, `r`, `p` or `o`]
 function PLUGIN:PlayerStartTypingDisplay(player, code)
   if !player:IsNoClipping() then
     if code == 'n' or code == 'y' or code == 'w' or code == 'r' then
@@ -26,7 +32,10 @@ function PLUGIN:PlayerStartTypingDisplay(player, code)
   end
 end
 
--- Called when a player's typing display has finished.
+--- Called when a player stops typing; plays their rank's or faction's `endChatNoise` if a message was sent.
+--
+-- @param player [Player The player who stopped typing]
+-- @param textTyped=nil [Boolean True when the player sent the message instead of cancelling it]
 function PLUGIN:PlayerFinishTypingDisplay(player, textTyped)
   if textTyped then
     if player.typingBeep then

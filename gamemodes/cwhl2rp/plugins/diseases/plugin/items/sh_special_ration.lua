@@ -12,7 +12,7 @@ ITEM.description = '#Item_SpecialRation_Description'
 ITEM.hunger = 40
 ITEM.customFunctions = { 'Give' }
 
--- Called when a player uses the item.
+--- Cures the player's gastritis, heals them and fires `PlayerHealed`.
 function ITEM:OnUse(player, itemEntity)
   if player:GetCharacterData('diseases') == 'gastrits' then
     player:SetCharacterData('diseases', 'none')
@@ -24,6 +24,9 @@ function ITEM:OnUse(player, itemEntity)
 end
 
 if SERVER then
+  --- Feeds the ration to the player being looked at with "Give", curing their gastritis and healing them.
+  --
+  -- Fires `PlayerHealed` with the giver as the healer. Returns `false` when no player is looked at.
   function ITEM:OnCustomFunction(player, name)
     if name == 'Give' then
       local lookingPly = player:GetEyeTrace().Entity
@@ -47,5 +50,5 @@ if SERVER then
   end
 end
 
--- Called when a player drops the item.
+--- Lets the item be dropped, with no extra effect.
 function ITEM:OnDrop(player, position) end

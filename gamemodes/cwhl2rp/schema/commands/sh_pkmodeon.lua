@@ -12,7 +12,7 @@ COMMAND.text = '#Command_Pkmodeon_Syntax'
 COMMAND.access = 'o'
 COMMAND.arguments = 1
 
--- Called when the command has been run.
+--- Turns on PK mode for the number of minutes given as the first argument.
 function COMMAND:OnRun(player, arguments)
   local minutes = tonumber(arguments[1])
 

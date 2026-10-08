@@ -11,7 +11,7 @@ include('shared.lua')
 AddCSLuaFile('cl_init.lua')
 AddCSLuaFile('shared.lua')
 
--- Called when the entity initializes.
+--- Picks a random garbage model and sets up the node's physics, colliding only with the world.
 function ENT:Initialize()
   local garbageModels = {
     'models/props_junk/garbage128_composite001a.mdl',
@@ -36,16 +36,23 @@ function ENT:Initialize()
   self:SetSpawnType(1)
 end
 
+--- Stores the node's type in the networked int 1, for `TYPE_WATERCAN` or `TYPE_SUPPLIES` only.
+--
+-- @param entType [Number `TYPE_WATERCAN` or `TYPE_SUPPLIES`]
 function ENT:SetSpawnType(entType)
   if entType == TYPE_WATERCAN or entType == TYPE_SUPPLIES then
     self:SetDTInt(1, entType)
   end
 end
 
+--- Returns `TRANSMIT_ALWAYS`, so the node is networked to every client.
+--
+-- @return [Number `TRANSMIT_ALWAYS`]
 function ENT:UpdateTransmitState()
   return TRANSMIT_ALWAYS
 end
 
+--- Stops the node from moving unless a player holds it or it is constrained.
 function ENT:PhysicsUpdate(physicsObject)
   if !self:IsPlayerHolding() and !self:IsConstrained() then
     physicsObject:SetVelocity(Vector(0, 0, 0))
@@ -53,6 +60,10 @@ function ENT:PhysicsUpdate(physicsObject)
   end
 end
 
+--- Starts searching the node when a crouching, untied player uses it, like a garbage pile.
+--
+-- The search takes `GetGarbageTime` seconds within 192 units and runs `PlayerTakeGarbage`
+-- before removing the node.
 function ENT:Use(activator, caller)
   if activator:IsPlayer() and activator:GetEyeTraceNoCursor().Entity == self then
     if activator:GetNetVar('tied') == 0 and activator:Crouching() then
@@ -79,6 +90,9 @@ function ENT:Use(activator, caller)
   end
 end
 
+--- Blocks every tool on the node.
+--
+-- @return [Boolean Always `false`]
 function ENT:CanTool(player, trace, tool)
   return false
 end

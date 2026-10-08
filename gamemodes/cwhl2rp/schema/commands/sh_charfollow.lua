@@ -9,7 +9,7 @@
 local COMMAND = cw.command:New('CharFollow')
 COMMAND.tip = '#Command_Charfollow_Description'
 
--- Called when the command has been run.
+--- Makes a scanner player's scanner follow the closest visible character; takes no arguments.
 function COMMAND:OnRun(player, arguments)
   if Schema.scanners[player] then
     local scanner = Schema.scanners[player][1]

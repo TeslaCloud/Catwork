@@ -14,7 +14,7 @@ COMMAND.access = 'o'
 COMMAND.arguments = 1
 COMMAND.alias = { 'LocalEvent', 'EL' }
 
--- Called when the command has been run.
+--- Prints an event message in the chat of players near the caller; the arguments are the event text.
 function COMMAND:OnRun(player, arguments)
   local text = table.concat(arguments, ' ')
 

@@ -13,7 +13,7 @@ COMMAND.arguments = 2
 COMMAND.access = 'o'
 COMMAND.alias = { 'PlyHealth', 'Health', 'SetHealth' }
 
--- Called when the command has been run.
+--- Sets the target player's health; arguments are the player name and the health value.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
   local health = tonumber(arguments[2])

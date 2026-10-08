@@ -11,7 +11,7 @@ COMMAND.access = 'a'
 COMMAND.arguments = 1
 COMMAND.alias = { 'ResetHP', 'ResetHealth', 'PlyResetHP' }
 
--- Called when the command has been run.
+--- Restores the target player's health to their maximum health.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
 

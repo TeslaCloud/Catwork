@@ -1,6 +1,9 @@
 local PLUGIN = PLUGIN
 
--- A function to load the union light.
+--- Spawns the union lights saved for the current map.
+--
+-- Restores each light's owner, position and angles, and freezes the ones that were frozen
+-- when saved.
 function PLUGIN:LoadUnionLights()
   local unionLights = cw.core:RestoreSchemaData('plugins/unionlights/'..game.GetMap())
 
@@ -23,7 +26,10 @@ function PLUGIN:LoadUnionLights()
   end
 end
 
--- A function to save the union light.
+--- Saves every `cw_unionlight` on the map to the schema data.
+--
+-- Writes `plugins/unionlights/<map>` with each light's owner, position, angles and whether it
+-- can move.
 function PLUGIN:SaveUnionLights()
   local unionLights = {}
 

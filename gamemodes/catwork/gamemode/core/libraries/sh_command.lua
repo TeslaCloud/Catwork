@@ -28,29 +28,66 @@ CMD_ALL = bit.bor(CMD_DEAD, CMD_VEHICLE, CMD_RAGDOLLED)
 --[[ Set the __index meta function of the class. --]]
 local CLASS_TABLE = { __index = CLASS_TABLE }
 
--- A function to register a new command.
+--- Registers the command with `cw.command:Register` under its `name`.
+--
+-- @return [Command The registered command table]
 function CLASS_TABLE:Register()
   return cw.command:Register(self, self.name)
 end
 
--- A function to get all stored commands.
+--- Returns every registered, visible command keyed by unique ID.
+--
+-- @return [Map<Command> Commands keyed by their lowercased, space-less name]
 function cw.command:GetAll()
   return stored
 end
 
--- A function to get a new command.
+--- Creates a new, unregistered command object.
+--
+-- Set its fields and call `CLASS_TABLE:Register` on it. `text` is the syntax, `tip` the
+-- description, `flags` a combination of `CMD_*` flags that block the command in some states,
+-- `access` the flags a player needs, `arguments` the minimum argument count, and `alias`,
+-- `cooldown` and `faction` are optional. `COMMAND:OnRun(player, arguments)` runs the command.
+--
+-- ```
+-- local COMMAND = cw.command:New('SetCash')
+-- COMMAND.tip = '#Command_Setcash_Description'
+-- COMMAND.text = '#Command_Setcash_Syntax'
+-- COMMAND.flags = CMD_DEFAULT
+-- COMMAND.access = 's'
+-- COMMAND.arguments = 2
+--
+-- function COMMAND:OnRun(player, arguments)
+-- end
+--
+-- COMMAND:Register()
+-- ```
+--
+-- @param name='Unknown' [String Name of the command, as typed after the command prefix]
+-- @return [Command The new command object]
 function cw.command:New(name)
   local object = cw.core:NewMetaTable(CLASS_TABLE)
     object.name = name or 'Unknown'
   return object
 end
 
--- A function to remove a command.
+--- Removes a registered command.
+--
+-- Its aliases and help entry are left in place.
+--
+-- @param identifier [String Command name; case and whitespace are ignored]
 function cw.command:RemoveByID(identifier)
   stored[string.lower(string.gsub(identifier, '%s', ''))] = nil
 end
 
--- A function to set whether a command is hidden.
+--- Hides a command from the command list, or shows a hidden one again.
+--
+-- Hidden commands are moved out of the stored commands, so they cannot be found or run. On the
+-- server the change is sent to every client; on the client the command's help entry is removed
+-- or added.
+--
+-- @param name [String Command name; case and whitespace are ignored]
+-- @param bHidden [Boolean Whether the command should be hidden]
 function cw.command:SetHidden(name, bHidden)
   local uniqueID = string.lower(string.gsub(name, '%s', ''))
 
@@ -73,7 +110,15 @@ function cw.command:SetHidden(name, bHidden)
   end
 end
 
--- A function to register a new command.
+--- Registers a command and its aliases.
+--
+-- Fills in defaults: `text` becomes `#Command_NoSyntax`, `flags` 0, `access` `'b'` and
+-- `arguments` 0. The unique ID is the name lowercased with whitespace removed. On the client the
+-- command's help entry is (re)created.
+--
+-- @param data [Command The command object or table]
+-- @param name [String Command name]
+-- @return [Command The registered command table]
 function cw.command:Register(data, name)
   local realName = string.gsub(name, '%s', '')
   local uniqueID = string.lower(realName)
@@ -109,31 +154,47 @@ function cw.command:Register(data, name)
   return stored[uniqueID]
 end
 
--- A function to find a command by an identifier.
+--- Finds a command by its name, ignoring aliases.
+--
+-- @param identifier [String Command name; case and whitespace are ignored]
+-- @return [Command The command, or `nil` if none matches]
+-- @see cw.command:FindByAlias
 function cw.command:FindByID(identifier)
   return stored[string.lower(string.gsub(identifier, '%s', ''))]
 end
 
---[[
-   @codebase Shared
-   @details Returns command's table by alias or unique id.
-  @param ID Identifier of the command to find. Can be alias or original command name.
---]]
-
+--- Finds a command by its name or one of its aliases.
+--
+-- @param identifier [String Command name or alias; case and whitespace are ignored]
+-- @return [Command The command, or `nil` if none matches]
+-- @see cw.command:FindByID
 function cw.command:FindByAlias(identifier)
   return stored[alias[string.lower(string.gsub(identifier, '%s', ''))]]
 end
 
---[[
-  @codebase Shared
-  @details Returns table of all command alias indexed by alias' names.
---]]
-
+--- Returns the alias lookup table.
+--
+-- Every command's own unique ID is included as an alias of itself.
+--
+-- @return [Map<String> Command unique IDs keyed by lowercased alias]
 function cw.command:GetAlias()
   return alias
 end
 
 if SERVER then
+  --- Runs a command for a player, as typed through the `cwCmd` console command.
+  --
+  -- Checks, in order: the player has initialized, the command exists, the command's cooldown
+  -- (skipped for admins), the `PlayerCanUseCommand` hook, the argument count, the player's access
+  -- flags, faction or permission, and the command's `CMD_*` state flags. Then calls
+  -- `COMMAND:OnRun` in protected mode, prints errors to the console and logs successful use. The
+  -- player is notified when a check fails.
+  --
+  -- @param player [Player The player running the command]
+  -- @param command [String Name of the console command, unused]
+  -- @param arguments [List<String> The command name followed by its arguments; the name is removed
+  -- from the list]
+  -- @return [Any The value returned by `OnRun`, or `false` while the command is on cooldown]
   function cw.command:ConsoleCommand(player, command, arguments)
     if IsValid(player) and player:HasInitialized() then
       if arguments and arguments[1] then
@@ -273,6 +334,12 @@ if SERVER then
     netstream.Start(player, 'HiddenCommands', hiddenCommands)
   end)
 else
+  --- Adds a command's syntax and tip to the Commands page of the directory.
+  --
+  -- Does nothing once the client has finished booting (so Lua refreshes add nothing) or when the
+  -- command already has a help entry. The syntax and tip are translated when the page is shown.
+  --
+  -- @param commandTable [Command The command to add]
   function cw.command:AddHelp(commandTable)
     if _G['ClockworkClientsideBooted'] then return end
 
@@ -299,7 +366,9 @@ else
     end
   end
 
-  -- A function to remove a command's help.
+  --- Removes a command's entry from the Commands page of the directory.
+  --
+  -- @param commandTable [Command The command to remove]
   function cw.command:RemoveHelp(commandTable)
     if commandTable.helpID then
       cw.directory:RemoveCode('Commands', commandTable.helpID)

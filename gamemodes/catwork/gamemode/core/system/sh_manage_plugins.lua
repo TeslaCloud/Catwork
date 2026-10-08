@@ -11,7 +11,8 @@ if CLIENT then
   SYSTEM.toolTip = '#System_ManagePlugins_ToolTip'
   SYSTEM.doesCreateForm = false
 
-  -- Called to get whether the local player has access to the system.
+  --- Shows the Manage Plugins system to players who may use `PluginLoad` or `PluginUnload`.
+  -- @return [Boolean Whether the player has either command's access flags]
   function SYSTEM:HasAccess()
     local unloadTable = cw.command:FindByID('PluginUnload')
     local loadTable = cw.command:FindByID('PluginLoad')
@@ -26,7 +27,12 @@ if CLIENT then
     return false
   end
 
-  -- Called when the system should be displayed.
+  --- Lists every plugin except the schema, grouped by author, colored by state, as buttons that toggle loading.
+  --
+  -- Asks the server for the unloaded plugins with the `SystemPluginGet` netstream; clicking a plugin that is not
+  -- disabled sends `SystemPluginSet` to load or unload it.
+  -- @param systemPanel [Panel The system panel to add the plugin lists to]
+  -- @param systemForm [Panel The system's form (unused, the system does not create one)]
   function SYSTEM:OnDisplay(systemPanel, systemForm)
     pluginButtons = {}
 
@@ -115,7 +121,9 @@ if CLIENT then
     end
   end
 
-  -- A function to update the plugin buttons.
+  --- Recolors the plugin buttons to match each plugin's current state.
+  --
+  -- Disabled plugins turn orange and stop being clickable, unloaded ones red and loaded ones green.
   function SYSTEM:UpdatePluginButtons()
     for k, v in pairs(pluginButtons) do
       if plugin.IsDisabled(k) then

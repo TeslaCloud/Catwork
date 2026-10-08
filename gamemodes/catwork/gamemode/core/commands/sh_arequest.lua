@@ -14,7 +14,9 @@ COMMAND.arguments = 1
 COMMAND.alias = { 'AR' }
 COMMAND.cooldown = 2
 
--- Called when the command has been run.
+--- Sends a help request to all online staff; the arguments are the request text.
+--
+-- Staff members are told to use `/A` instead.
 function COMMAND:OnRun(player, arguments)
   if !cw.player:IsAdmin(player) then
     cw.player:NotifyAdmins('o', L('Command_Arequest_From', player:Name())..' '..table.concat(arguments, ' '), nil)

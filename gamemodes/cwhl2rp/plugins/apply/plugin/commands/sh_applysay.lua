@@ -8,7 +8,10 @@ local COMMAND = cw.command:New('ApplySay')
 COMMAND.tip = '#Command_Applysay_Description'
 COMMAND.flags = CMD_DEFAULT
 
--- Called when the command has been run.
+--- Says a full Russian sentence with the player's name and citizen ID and makes nearby players recognise them.
+--
+-- Combine are told they have no citizen ID instead. Recognition only happens when
+-- `apply_recognise_enable` is on, for players within `talk_radius`.
 function COMMAND:OnRun(player)
   local citizenID = player:GetNetVar('citizenID')
   local name = player:Name()

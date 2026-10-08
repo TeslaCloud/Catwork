@@ -12,7 +12,12 @@ local GetDoorState = cw.entity.GetDoorState
 config.Add('default_doors_hidden', true, nil, nil, nil, nil, true)
 config.Add('doors_save_state', true, nil, nil, nil, nil, true)
 
--- A function to load the parent data.
+--- Restores the door parents saved for the current map.
+--
+-- Reads `plugins/parents/<map>` from the schema data, matches the saved positions to the map's doors,
+-- parents each child with `cw.entity:SetDoorParent` and records it in `cwDoorCmds.parentData`
+-- (child door mapped to parent door). Doors already in `parentData` are skipped.
+-- @see cwDoorCmds:SaveParentData
 function cwDoorCmds:LoadParentData()
   self.parentData = self.parentData or {}
 
@@ -43,7 +48,13 @@ function cwDoorCmds:LoadParentData()
   end
 end
 
--- A function to load the door data.
+--- Restores the door names, texts and ownability saved for the current map.
+--
+-- Reads `plugins/doors/<map>` from the schema data and matches the saved positions to the map's doors.
+-- Entries saved with `customName` (ownable doors) only get their name back; the others are made
+-- unownable with their name and text. The entries are kept in `cwDoorCmds.doorData`, keyed by door.
+-- When the `default_doors_hidden` config is on, every door without saved data is hidden.
+-- @see cwDoorCmds:SaveDoorData
 function cwDoorCmds:LoadDoorData()
   self.doorData = self.doorData or {}
 
@@ -95,7 +106,7 @@ function cwDoorCmds:LoadDoorData()
   end
 end
 
--- A function to save the parent data.
+--- Saves `cwDoorCmds.parentData` to the schema data file `plugins/parents/<map>` as door positions.
 function cwDoorCmds:SaveParentData()
   local parentData = {}
 
@@ -111,7 +122,9 @@ function cwDoorCmds:SaveParentData()
   cw.core:SaveSchemaData('plugins/parents/'..game.GetMap(), parentData)
 end
 
--- A function to save the door data.
+--- Saves `cwDoorCmds.doorData` to the schema data file `plugins/doors/<map>`.
+--
+-- Each entry keeps the door's `position`, `name`, `text` and `customName` flag.
 function cwDoorCmds:SaveDoorData()
   local doorData = {}
 
@@ -129,6 +142,9 @@ function cwDoorCmds:SaveDoorData()
   cw.core:SaveSchemaData('plugins/doors/'..game.GetMap(), doorData)
 end
 
+--- Saves the position, locked state and open state of every door to the schema data file
+-- `plugins/doorstates/<map>`.
+-- @see cwDoorCmds:LoadDoorStates
 function cwDoorCmds:SaveDoorStates()
   local doorTable = {}
 
@@ -145,6 +161,9 @@ function cwDoorCmds:SaveDoorStates()
   cw.core:SaveSchemaData('plugins/doorstates/'..game.GetMap(), doorTable)
 end
 
+--- Restores the door states saved by `cwDoorCmds:SaveDoorStates`.
+--
+-- Doors saved while opening or open are opened, and doors saved locked are locked.
 function cwDoorCmds:LoadDoorStates()
   local doorTable = cw.core:RestoreSchemaData('plugins/doorstates/'..game.GetMap())
   local positions = {}

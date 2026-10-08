@@ -10,7 +10,7 @@ COMMAND.text = '#Command_Doorsetplayer_Syntax'
 COMMAND.access = 'D'
 COMMAND.arguments = 2
 
--- Called when the command has been run.
+--- Gives the door the player is looking at to the target character as a permanent door with the given name.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
   local doorName = arguments[2]

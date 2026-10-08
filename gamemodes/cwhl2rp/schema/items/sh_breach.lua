@@ -18,7 +18,10 @@ ITEM.business = true
 ITEM.blacklist = { CLASS_MPR }
 ITEM.description = '#ITEM_Breach_Desc'
 
--- Called when a player uses the item.
+--- Attaches a `cw_breach` charge to the entity the player is looking at within 192 units.
+--
+-- Keeps the item, with a notification, when there is no valid entity, it is too far, it already has a
+-- breach or the `PlayerCanBreachEntity` hook does not allow it.
 function ITEM:OnUse(player, itemEntity)
   local trace = player:GetEyeTraceNoCursor()
   local entity = trace.Entity
@@ -52,5 +55,5 @@ function ITEM:OnUse(player, itemEntity)
   end
 end
 
--- Called when a player drops the item.
+--- Lets the item be dropped; nothing else happens.
 function ITEM:OnDrop(player, position) end

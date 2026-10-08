@@ -8,7 +8,8 @@
 
 library.New('storage', cw)
 
--- A function to get whether storage is open.
+--- Returns whether the storage window is open and visible.
+-- @return [Boolean `true` if it is open, `nil` otherwise]
 function cw.storage:IsStorageOpen()
   local panel = self:GetPanel()
 
@@ -17,7 +18,14 @@ function cw.storage:IsStorageOpen()
   end
 end
 
--- A function to get whether the local player can give to storage.
+--- Returns whether the local player may put an item into the open storage.
+--
+-- Checks the item's `allowStorage`, `allowGive` and the player or entity variants
+-- (`allowPlayerStorage`, `allowPlayerGive`, `allowEntityStorage`, `allowEntityGive`)
+-- depending on whether the storage belongs to a player. Shipments accept every item.
+-- @param itemTable [Item The item to give]
+-- @return [Boolean `true` if the item may be given, `nil` otherwise]
+-- @see cw.storage:CanTakeFrom
 function cw.storage:CanGiveTo(itemTable)
   local entity = cw.storage:GetEntity()
   local isPlayer = (entity and entity:IsPlayer())
@@ -39,7 +47,14 @@ function cw.storage:CanGiveTo(itemTable)
   end
 end
 
--- A function to get whether the local player can take from storage.
+--- Returns whether the local player may take an item out of the open storage.
+--
+-- Checks the item's `allowStorage`, `allowTake` and the player or entity variants
+-- (`allowPlayerStorage`, `allowPlayerTake`, `allowEntityStorage`, `allowEntityTake`)
+-- depending on whether the storage belongs to a player. Every item can be taken from shipments.
+-- @param itemTable [Item The item to take]
+-- @return [Boolean `true` if the item may be taken, `nil` otherwise]
+-- @see cw.storage:CanGiveTo
 function cw.storage:CanTakeFrom(itemTable)
   local entity = cw.storage:GetEntity()
   local isPlayer = (entity and entity:IsPlayer())
@@ -61,27 +76,32 @@ function cw.storage:CanTakeFrom(itemTable)
   end
 end
 
--- A function to get whether there is no cash weight.
+--- Returns whether cash adds no weight to the open storage.
+-- @return [Boolean The `noCashWeight` option the storage was opened with]
 function cw.storage:GetNoCashWeight()
   return self.noCashWeight
 end
 
--- A function to get whether there is no cash space.
+--- Returns whether cash takes no space in the open storage.
+-- @return [Boolean The `noCashSpace` option the storage was opened with]
 function cw.storage:GetNoCashSpace()
   return self.noCashSpace
 end
 
--- A function to get whether the storage is one sided.
+--- Returns whether the open storage hides the local player's inventory side.
+-- @return [Boolean The `isOneSided` option the storage was opened with]
 function cw.storage:GetIsOneSided()
   return self.isOneSided
 end
 
--- A function to get the storage inventory.
+--- Returns the inventory of the open storage.
+-- @return [Inventory The storage inventory, or `nil` if no storage is open]
 function cw.storage:GetInventory()
   return self.inventory
 end
 
--- A function to get the storage cash.
+--- Returns the cash in the open storage.
+-- @return [Number The cash, or `0` when the `cash_enabled` config is off]
 function cw.storage:GetCash()
   if config.GetVal('cash_enabled') then
     return self.cash
@@ -90,27 +110,32 @@ function cw.storage:GetCash()
   end
 end
 
--- A function to get the storage panel.
+--- Returns the storage window.
+-- @return [Panel The panel, or `nil` if it has not been created]
 function cw.storage:GetPanel()
   return self.panel
 end
 
--- A function to get the storage weight.
+--- Returns the maximum weight of the open storage.
+-- @return [Number Weight limit, or `nil` if no storage is open]
 function cw.storage:GetWeight()
   return self.weight
 end
 
--- A function to get the storage space.
+--- Returns the maximum space of the open storage.
+-- @return [Number Space limit, or `nil` if no storage is open]
 function cw.storage:GetSpace()
   return self.space
 end
 
--- A function to get the storage entity.
+--- Returns the entity the open storage belongs to.
+-- @return [Entity The storage entity, which may be a player, or `nil` if no storage is open]
 function cw.storage:GetEntity()
   return self.entity
 end
 
--- A function to get the storage name.
+--- Returns the name of the open storage.
+-- @return [String The name shown in the storage window]
 function cw.storage:GetName()
   return self.name
 end

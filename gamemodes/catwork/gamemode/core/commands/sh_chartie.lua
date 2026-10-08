@@ -14,7 +14,9 @@ COMMAND.arguments = 1
 COMMAND.optionalArguments = 1
 COMMAND.alias = { 'Tie' }
 
--- Called when the command has been run.
+--- Ties or unties the target player through `Schema:TiePlayer`; the argument is the player name.
+--
+-- Only works when the schema provides the `InvZipTie` command.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
 

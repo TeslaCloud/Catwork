@@ -8,7 +8,7 @@
 
 local PANEL = {}
 
--- Called when the panel is initialized.
+--- Sizes the system menu tab to the menu, registers itself as `cw.system.panel` and builds it.
 function PANEL:Init()
   self:SetSize(cw.menu:GetWidth(), cw.menu:GetHeight())
 
@@ -21,7 +21,11 @@ function PANEL:Init()
   self:Rebuild()
 end
 
--- A function to rebuild the panel.
+--- Rebuilds the tab: the list of systems, or the open system's page with a button back to the list.
+--
+-- Each system in the list gets an Open button, enabled when its `HasAccess` method allows it. An open
+-- system's page gets its own form when the system sets `doesCreateForm`, and is filled by the system's
+-- `OnDisplay` method, called with this panel and that form.
 function PANEL:Rebuild()
   self.panelList:Clear()
 
@@ -108,7 +112,8 @@ function PANEL:Rebuild()
   self.panelList:InvalidateLayout(true)
 end
 
--- A function to get whether the button is visible.
+--- Returns whether the system tab should be shown in the menu.
+-- @return [Boolean `true` when the player has access to at least one system, otherwise `nil`]
 function PANEL:IsButtonVisible()
   for k, v in pairs(cw.system:GetAll()) do
     if v:HasAccess() then
@@ -117,16 +122,16 @@ function PANEL:IsButtonVisible()
   end
 end
 
--- Called when the panel is selected.
+--- Rebuilds the tab when it is selected in the menu.
 function PANEL:OnSelected() self:Rebuild() end
 
--- Called when the layout should be performed.
+--- Does nothing; the list lays itself out.
 function PANEL:PerformLayout(w, h)
   -- self.panelList:StretchToParent(4, 4, 4, 4)
   -- self:SetSize(w, math.min(self.panelList.pnlCanvas:GetTall() + 32, ScrH() * 0.75))
 end
 
--- Called when the panel is painted.
+--- Draws nothing.
 function PANEL:Paint(w, h)
   -- DERMA_SLICED_BG:Draw(0, 0, w, h, 8, COLOR_WHITE)
   return true

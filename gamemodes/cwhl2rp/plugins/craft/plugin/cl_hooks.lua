@@ -6,6 +6,13 @@
   with contributions from Cloud Sixteen community.
 --]]
 
+--- Checks whether the local player may see a blueprint in the craft menu.
+--
+-- Attribute requirements are bucketed at 25, 50 and 75: a blueprint is hidden while the player's
+-- attribute is below the highest of those thresholds its requirement reaches.
+--
+-- @param bpTable [Map The blueprint; its `reqatt` list holds `{ attributeID, minimum }` pairs]
+-- @return [Boolean Whether the blueprint is listed]
 function cwCraft:PlayerCanSeeCraft(bpTable)
   local flags = bpTable['flag']
   local atts = bpTable['reqatt']

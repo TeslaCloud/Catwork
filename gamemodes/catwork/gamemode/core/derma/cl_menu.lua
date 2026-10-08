@@ -9,6 +9,7 @@
 local GRADIENT = surface.GetTextureID('gui/gradient')
 local PANEL = {}
 
+--- Toggles the Close, Characters and every tab button between showing and hiding their text.
 function PANEL:ToggleAllButtons()
   self.closeMenu:Toggle()
   self.characterMenu:Toggle()
@@ -20,7 +21,11 @@ function PANEL:ToggleAllButtons()
   end
 end
 
--- Called when the panel is initialized.
+--- Builds the main menu with its collapse bar, which shows or hides the button text when clicked, and
+-- builds the tab buttons.
+--
+-- Skipped when the theme's `PreMainMenuInit` hook returns `true`; `PostMainMenuInit` runs before the
+-- buttons are built.
 function PANEL:Init()
   if !cw.theme:Call('PreMainMenuInit', self) then
     self:SetSize(scrW, scrH)
@@ -69,7 +74,8 @@ function PANEL:Init()
   end
 end
 
--- A function to return to the main menu.
+--- Fades out the open tab and slides the menu back to its resting position.
+-- @param bPerformCheck=nil [Boolean `true` to only bring the open tab to the front, without closing it]
 function PANEL:ReturnToMainMenu(bPerformCheck)
   if bPerformCheck then
     if IsValid(self.activePanel) and self.activePanel:IsVisible() then
@@ -91,7 +97,15 @@ function PANEL:ReturnToMainMenu(bPerformCheck)
   self:MoveTo(self.tabX, self.tabY, 0.4, 0, 4)
 end
 
--- A function to rebuild the panel.
+--- Rebuilds the Close and Characters buttons and a button for each menu item.
+--
+-- Menu items are collected through the `MenuItemsAdd` and `MenuItemsDestroy` hooks, sorted by text and
+-- stored in `cw.menu.stored`. Tab panels are created once and reused, except in debug mode. A tab gets a
+-- button unless its `IsButtonVisible` method returns `false`. The open tab is closed when it no longer
+-- has a button. Skipped when the theme's `PreMainMenuRebuild` hook returns `true`;
+-- `PostMainMenuRebuild` runs afterwards.
+--
+-- @param change=nil [Boolean `true` to place the menu at once instead of sliding it in]
 function PANEL:Rebuild(change)
   if !cw.theme:Call('PreMainMenuRebuild', self) then
     self.tabX = 24 -- hardcoding this for now
@@ -226,7 +240,13 @@ function PANEL:Rebuild(change)
   end
 end
 
--- A function to open a panel.
+--- Opens a tab panel, closing the open one first.
+--
+-- The panel is sized to the menu width or to its `GetMenuWidth` method, placed on the right of the
+-- screen and faded in; its `OnSelected` method is called once it is visible. Skipped when the theme's
+-- `PreMainMenuOpenPanel` hook returns `true`; `PostMainMenuOpenPanel` runs afterwards.
+--
+-- @param panelToOpen [Panel The tab panel to open]
 function PANEL:OpenPanel(panelToOpen)
   if !cw.theme:Call('PreMainMenuOpenPanel', self, panelToOpen) then
     local height = cw.menu:GetHeight()
@@ -272,7 +292,13 @@ function PANEL:OpenPanel(panelToOpen)
   end
 end
 
--- A function to make a panel fade out.
+--- Fades a tab panel out and hides it, playing the rollover sound.
+--
+-- When the panel is already transparent or another fade out is running, it is hidden at once.
+--
+-- @param speed [Number Length of the fade in seconds]
+-- @param panel [Panel The panel to fade out]
+-- @param Callback=nil [Function Called once the panel is hidden]
 function PANEL:FadeOut(speed, panel, Callback)
   local height = cw.menu:GetHeight()
   local width = cw.menu:GetWidth()
@@ -308,7 +334,13 @@ function PANEL:FadeOut(speed, panel, Callback)
   end
 end
 
--- A function to make a panel fade in.
+--- Shows a tab panel and fades it in, playing the click sound.
+--
+-- When the panel is already visible or another fade in is running, it is made fully visible at once.
+--
+-- @param speed [Number Length of the fade in seconds]
+-- @param panel [Panel The panel to fade in]
+-- @param Callback=nil [Function Called once the panel is fully visible]
 function PANEL:FadeIn(speed, panel, Callback)
   if panel:GetAlpha() == 0 and (!self.fadeInAnimation or !self.fadeInAnimation:Active()) then
     self.fadeInAnimation = Derma_Anim('Fade Panel', panel, function(panel, animation, delta, data)
@@ -344,7 +376,7 @@ function PANEL:FadeIn(speed, panel, Callback)
   end
 end
 
--- Called when the panel is painted.
+--- Draws the skin's panel background unless the theme's `PreMainMenuPaint` hook returns `true`.
 function PANEL:Paint(w, h)
   if !cw.theme:Call('PreMainMenuPaint', self) then
     derma.SkinHook('Paint', 'Panel', self)
@@ -373,7 +405,11 @@ function PANEL:Paint(w, h)
   return true
 end
 
--- Called every fame.
+--- Keeps the menu full-screen, updates the menu size, runs the fade animations and highlights the open
+-- tab's button.
+--
+-- Skipped when the theme's `PreMainMenuThink` hook returns `true`; `PostMainMenuThink` runs before the
+-- buttons are highlighted.
 function PANEL:Think()
   if !cw.theme:Call('PreMainMenuThink', self) then
     self:SetVisible(cw.menu:GetOpen())
@@ -424,7 +460,11 @@ function PANEL:Think()
   end
 end
 
--- A function to set whether the panel is open.
+--- Opens or closes the menu and the screen clicker.
+--
+-- Opening rebuilds the menu and runs the `MenuOpened` hook; closing runs `MenuClosed`.
+--
+-- @param bIsOpen [Boolean `true` to open the menu]
 function PANEL:SetOpen(bIsOpen)
   self:SetVisible(bIsOpen)
   self:ReturnToMainMenu(true)

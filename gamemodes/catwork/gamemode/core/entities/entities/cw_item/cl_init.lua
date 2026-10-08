@@ -8,7 +8,10 @@
 
 include('shared.lua')
 
--- Called when the target ID HUD should be painted.
+--- Draws the item name, weight and space when the item entity is looked at.
+--
+-- `PaintItemTargetID` must return `true` for anything to be drawn. The item's `OnHUDPaintTargetID` can draw
+-- extra lines and returns the new `y`, or `false` to stop drawing.
 function ENT:HUDPaintTargetID(x, y, alpha)
   if cw.entity:HasFetchedItemData(self) then
     local itemTable = cw.entity:FetchItemTable(self)
@@ -43,7 +46,8 @@ function ENT:HUDPaintTargetID(x, y, alpha)
   end
 end
 
--- Called each frame.
+--- Requests the item data from the server until it arrives, then runs the item's `OnEntityThink` and the
+-- `ItemEntityThink` hook.
 function ENT:Think()
   if !cw.entity:HasFetchedItemData(self) then
     cw.entity:FetchItemData(self)
@@ -63,7 +67,7 @@ function ENT:Think()
   hook.Run('ItemEntityThink', itemTable, self)
 end
 
--- Called when the entity should draw.
+--- Draws the item model unless the `ItemEntityDraw` hook or the item's `OnDrawModel` returns `false`.
 function ENT:Draw()
   if !cw.entity:HasFetchedItemData(self) then
     return

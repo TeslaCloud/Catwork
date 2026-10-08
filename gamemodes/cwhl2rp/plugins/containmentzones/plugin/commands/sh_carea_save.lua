@@ -5,6 +5,7 @@ COMMAND.flags = CMD_DEFAULT
 COMMAND.access = 's'
 COMMAND.arguments = 0
 
+--- Saves the containment zones of the current map with `cwRadSystem:SaveAreas`.
 function COMMAND:OnRun(player, arguments)
   cwRadSystem:SaveAreas()
 

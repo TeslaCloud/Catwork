@@ -19,6 +19,17 @@ do
     ':', '.', ';', '&', ',', '%'
   }
 
+  --- Turns a string into an identifier.
+  --
+  -- Lowercases it (UTF-8 aware), replaces spaces with underscores and strips quotes, slashes and
+  -- the characters `^ : . ; & , %`.
+  --
+  -- ```
+  -- string.MakeID('Civil Protection') -- 'civil_protection'
+  -- ```
+  --
+  -- @param str [String Text to convert]
+  -- @return [String The identifier]
   function string.MakeID(str)
     str = str:utf8lower()
     str = str:gsub(' ', '_')
@@ -31,6 +42,9 @@ do
   end
 end
 
+--- Returns whether every argument is a valid object.
+-- @param ... [Any Objects to check with `IsValid`]
+-- @return [Boolean `true` if at least one argument was passed and all of them are valid]
 function util.Validate(...)
   local args = { ... }
 
@@ -45,7 +59,13 @@ function util.Validate(...)
   return true
 end
 
--- A function to convert a single hexadecimal digit to decimal.
+--- Converts a single hexadecimal digit to a number.
+--
+-- A leading `-` makes the result negative. Prints an error and returns `0` when the character
+-- is not a hexadecimal digit.
+-- @param hex [String One hexadecimal digit, case-insensitive]
+-- @return [Number The digit's value, 0 to 15]
+-- @see util.HexToDecimal
 function util.HexToDec(hex)
   hex = hex:lower()
 
@@ -71,6 +91,10 @@ function util.HexToDec(hex)
   return 0
 end
 
+--- Converts a hexadecimal number string to a number.
+-- @param hex [String Hexadecimal digits without a prefix, such as `'ff'`]
+-- @return [Number The decimal value]
+-- @see util.HexToDec
 function util.HexToDecimal(hex)
   local sum = 0
   local chars = table.Reverse(string.Explode('', hex))
@@ -84,7 +108,16 @@ function util.HexToDecimal(hex)
   return sum
 end
 
--- A function to convert hexadecimal color to a color structure.
+--- Converts a hexadecimal color string to a color.
+--
+-- Accepts `RRGGBB` or `RRGGBBAA`, with or without a leading `#`. Any other length returns white.
+--
+-- ```
+-- local red = util.HexToColor('#ff0000')
+-- ```
+--
+-- @param hex [String The hexadecimal color]
+-- @return [Color The color; alpha is 255 unless given]
 function util.HexToColor(hex)
   if hex:StartsWith('#') then
     hex = hex:sub(2, hex:len())
@@ -121,7 +154,9 @@ function util.HexToColor(hex)
   return Color(color[1], color[2], color[3], (color[4] or 255))
 end
 
--- A helper function to get lowercase name of the data type.
+--- Returns the lowercase name of a value's type.
+-- @param obj [Any The value to check]
+-- @return [String The result of `type` in lowercase, such as `'player'` or `'string'`]
 function typeof(obj)
   return string.lower(type(obj))
 end
@@ -278,6 +313,23 @@ local colors = {
 
 cw.oldColor = cw.oldColor or Color
 
+--- Creates a color from components, a hexadecimal string or a CSS color name.
+--
+-- Replaces the engine `Color`, which is kept as `cw.oldColor`. A string starting with `#` is
+-- passed to `util.HexToColor`, a known CSS color name (such as `'tomato'`, case-insensitive)
+-- returns that color, and any other string returns white.
+--
+-- ```
+-- Color(255, 0, 0)
+-- Color('#ff000080')
+-- Color('steelblue')
+-- ```
+--
+-- @param r [Number Red component 0 to 255, or a color string]
+-- @param g [Number Green component; ignored for strings]
+-- @param b [Number Blue component; ignored for strings]
+-- @param a=255 [Number Alpha component; ignored for strings]
+-- @return [Color The color]
 function Color(r, g, b, a)
   if isstring(r) then
     if r:StartsWith('#') then
@@ -292,8 +344,14 @@ function Color(r, g, b, a)
   end
 end
 
--- A function to determine whether vector from A to B intersects with a
--- vector from C to D.
+--- Returns whether the line segment from A to B intersects the segment from C to D.
+--
+-- Only the `x` and `y` components are used. Collinear segments count as intersecting.
+-- @param vFrom [Vector Start of the first segment]
+-- @param vTo [Vector End of the first segment]
+-- @param vFrom2 [Vector Start of the second segment]
+-- @param vTo2 [Vector End of the second segment]
+-- @return [Boolean Whether the segments intersect]
 function util.VectorsIntersect(vFrom, vTo, vFrom2, vTo2)
   local d1, d2, a1, a2, b1, b2, c1, c2
 
@@ -322,7 +380,14 @@ function util.VectorsIntersect(vFrom, vTo, vFrom2, vTo2)
   return true
 end
 
--- A function to determine whether a 2D point is inside of a 2D polygon.
+--- Returns whether a 2D point lies inside a 2D polygon.
+--
+-- Casts a ray from the point and counts how many polygon edges it crosses, using only the `x`
+-- and `y` components. Returns `nil` when the point is not a vector or the vertex list is empty.
+-- @param point [Vector The point to test]
+-- @param polyVertices [List<Vector> Polygon vertices in order; the last connects back to the first]
+-- @return [Boolean Whether the point is inside the polygon]
+-- @see util.VectorsIntersect
 function util.VectorIsInPoly(point, polyVertices)
   if !isvector(point) or !istable(polyVertices) or !isvector(polyVertices[1]) then
     return
@@ -356,6 +421,10 @@ end
 do
   local colorMeta = FindMetaTable('Color')
 
+  --- Returns a darker copy of the color.
+  -- @param amt [Number Amount subtracted from each of the red, green and blue components]
+  -- @return [Color The new color, clamped to 0 to 255, with the same alpha]
+  -- @see Color:Lighten
   function colorMeta:Darken(amt)
     return Color(
       math.Clamp(self.r - amt, 0, 255),
@@ -365,6 +434,10 @@ do
     )
   end
 
+  --- Returns a lighter copy of the color.
+  -- @param amt [Number Amount added to each of the red, green and blue components]
+  -- @return [Color The new color, clamped to 0 to 255, with the same alpha]
+  -- @see Color:Darken
   function colorMeta:Lighten(amt)
     return Color(
       math.Clamp(self.r + amt, 0, 255),
@@ -375,17 +448,21 @@ do
   end
 end
 
--- A function to do C-style formatted prints.
+--- Prints a C-style formatted string.
+-- @param str [String Format string for `Format`]
+-- @param ... [Any Values for the format string]
 function printf(str, ...)
   print(Format(str, ...))
 end
 
--- Let's face it. When you develop for C++ you kinda want to do this in Lua.
+--- Prints its arguments; an alias of `print`.
+-- @param ... [Any Values to print]
 function cout(...)
   print(...)
 end
 
--- A function to select a random player.
+--- Returns a random connected player.
+-- @return [Player A random player, or `nil` when the server is empty]
 function player.Random()
   local allPly = player.GetAll()
 
@@ -394,6 +471,13 @@ function player.Random()
   end
 end
 
+--- Finds every match of a pattern in a string.
+--
+-- Each hit is a list of `{ match, startPos, endPos }`. Returns `nil` when either argument is
+-- missing.
+-- @param str [String The string to search]
+-- @param pattern [String Lua pattern to look for]
+-- @return [List<List> The hits in order]
 function string.FindAll(str, pattern)
   if !str or !pattern then return end
 
@@ -415,7 +499,12 @@ function string.FindAll(str, pattern)
   return hits
 end
 
--- A function to throw an awesome colored print.
+--- Prints a message to the console with a green `[Catwork]` prefix.
+--
+-- A table is joined with spaces first. Empty or non-string messages print nothing.
+-- @param message [String The message, or a list of strings]
+-- @param color=Color(255, 255, 255) [Color Color of the message text]
+-- @see cw.core:Error
 function cw.core:Print(message, color)
   color = color or Color(255, 255, 255)
 
@@ -433,48 +522,53 @@ function cw.core:Print(message, color)
   MsgC(color, message..'\n')
 end
 
--- A function to print red 'error' print.
+--- Prints a red error message when `cw.LogLevel` is 1 or higher.
+-- @param message [String The message]
 function cw.core:Error(message)
   if cw.LogLevel >= 1 then
     self:Print(message, Color(255, 0, 0))
   end
 end
 
--- A function to print yellow 'warning' print.
+--- Prints a yellow warning message when `cw.LogLevel` is 2 or higher.
+-- @param message [String The message]
 function cw.core:Warning(message)
   if cw.LogLevel >= 2 then
     self:Print(message, Color(255, 255, 0))
   end
 end
 
--- A function to print green 'good' print.
+--- Prints a green success message when `cw.LogLevel` is 3 or higher.
+-- @param message [String The message]
 function cw.core:Good(message)
   if cw.LogLevel >= 3 then
     self:Print(message, Color(0, 255, 0))
   end
 end
 
--- A function to print pink developer print.
+--- Prints a pink debug message when `cw.LogLevel` is 4 or higher.
+-- @param message [String The message]
 function cw.core:Debug(message)
   if cw.LogLevel >= 4 then
     self:Print(message, Color(255, 0, 255))
   end
 end
 
+--- Prints a pink verbose message when `cw.LogLevel` is 5 or higher.
+-- @param message [String The message]
 function cw.core:Spam(message)
   if cw.LogLevel >= 5 then
     self:Print(message, Color(255, 0, 255))
   end
 end
 
---[[
-  @codebase Shared
-  @details A function to get whether two tables are equal.
-  @param Table The first unique table to compare.
-  @param Table The second unique table to compare.
-  @returns Bool Whether or not the tables are equal.
---]]
-
+--- Returns whether two tables have the same contents.
+--
+-- Compares the array length and then every key of `tableA` against `tableB`, recursing into
+-- nested tables. Returns `false` when either argument is not a table.
+-- @param tableA [Map The first table]
+-- @param tableB [Map The second table]
+-- @return [Boolean Whether the tables are equal]
 function cw.core:AreTablesEqual(tableA, tableB)
   if istable(tableA) and istable(tableB) then
     if #tableA != #tableB then
@@ -497,13 +591,9 @@ function cw.core:AreTablesEqual(tableA, tableB)
   return false
 end
 
---[[
-  @codebase Shared
-  @details A function to get whether a weapon is a default weapon.
-  @param Entity The weapon entity.
-  @returns Bool Whether or not the weapon is a default weapon.
---]]
-
+--- Returns whether a weapon is a sandbox tool (physgun, gravity gun or toolgun).
+-- @param weapon [Weapon The weapon to check]
+-- @return [Boolean Whether the weapon is a default weapon; `false` for invalid entities]
 function cw.core:IsDefaultWeapon(weapon)
   if IsValid(weapon) then
     local class = string.lower(weapon:GetClass())
@@ -517,7 +607,14 @@ function cw.core:IsDefaultWeapon(weapon)
   return false
 end
 
--- A function to format cash.
+--- Formats an amount of money with the schema's cash name.
+--
+-- Uses the `format_cash` or `format_singular_cash` option, replacing `%n` with the
+-- `name_cash` option and `%a` with the rounded amount. On the client the cash name is translated.
+-- @param amount [Number The amount of cash]
+-- @param singular=false [Boolean Use the singular format]
+-- @param lowerName=false [Boolean Lowercase the cash name; client only]
+-- @return [String The formatted amount]
 function cw.core:FormatCash(amount, singular, lowerName)
   local formatSingular = cw.option:GetKey('format_singular_cash')
   local formatCash = cw.option:GetKey('format_cash')
@@ -540,6 +637,11 @@ function cw.core:FormatCash(amount, singular, lowerName)
   end
 end
 
+--- Merges one table into another without copying or following their `__index` fields.
+--
+-- Both tables keep their own `__index`.
+-- @param to [Map The table to merge into]
+-- @param from [Map The table to copy from]
 function table.SafeMerge(to, from)
   local oldIndex, oldIndex2 = to.__index, from.__index
 
@@ -552,7 +654,16 @@ function table.SafeMerge(to, from)
   from.__index = oldIndex2
 end
 
--- A function to create a new library.
+--- Creates a library table, or returns it if it already exists.
+--
+-- ```
+-- library.New('door', cw) -- creates cw.door
+-- ```
+--
+-- @param strName [String Name of the library]
+-- @param tParent=_G [Map Table the library is stored in]
+-- @return [Map The library table]
+-- @see library.Get
 function library.New(strName, tParent)
   tParent = tParent or _G
 
@@ -561,7 +672,13 @@ function library.New(strName, tParent)
   return tParent[strName]
 end
 
--- A function to get an existing library.
+--- Returns a library table, creating it if it does not exist.
+--
+-- `library` itself can be called as a shortcut: `library('door', cw)`.
+-- @param strName [String Name of the library]
+-- @param tParent=_G [Map Table the library is stored in]
+-- @return [Map The library table]
+-- @see library.New
 function library.Get(strName, tParent)
   tParent = tParent or _G
 
@@ -571,7 +688,28 @@ end
 -- Set library table's Metatable so that we can call it like a function.
 setmetatable(library, { __call = function(tab, strName, tParent) return tab.Get(strName, tParent) end })
 
--- A function to create a new class. Supports constructors and inheritance.
+--- Creates a class table that can be called to create instances.
+--
+-- Calling the class creates a new object with the class as its metatable and a copy of its
+-- fields, runs the base class (if any) and then the constructor, which is the method named after
+-- the class. Constructor errors are printed instead of raised. The class gets `ClassName` and
+-- `BaseClass` fields.
+--
+-- ```
+-- library.NewClass('CItem', _G)
+--
+-- function CItem:CItem(name)
+--   self.name = name
+-- end
+--
+-- local item = CItem('Crowbar')
+-- ```
+--
+-- @param strName [String Name of the class and of its constructor method]
+-- @param tParent=_G [Map Table the class is stored in]
+-- @param CExtends=nil [Map Base class whose fields are copied into the class metatable]
+-- @return [Map The class table]
+-- @see Class
 function library.NewClass(strName, tParent, CExtends)
   local class = {
     -- Same as "new ClassName" in C++
@@ -615,6 +753,18 @@ function library.NewClass(strName, tParent, CExtends)
   return setmetatable((tParent or _G)[strName], class)
 end
 
+--- Creates a global class; the short form of `library.NewClass`.
+--
+-- ```
+-- class 'CItem'
+-- ```
+--
+-- @param strName [String Name of the class]
+-- @param CExtends=nil [Map Base class to inherit from]
+-- @param tParent=_G [Map Table the class is stored in]
+-- @return [Map The class table]
+-- @alias [class]
+-- @alias [Meta]
 function Class(strName, CExtends, tParent)
   return library.NewClass(strName, tParent, CExtends)
 end
@@ -625,7 +775,11 @@ Meta = Class
 -- Also make an alias that looks like other programming languages.
 class = Class
 
--- A function to convert a string to a color.
+--- Parses a color from a comma-separated string.
+--
+-- Missing or invalid components default to 255.
+-- @param text [String Components as `'r, g, b[, a]'`]
+-- @return [Color The color]
 function cw.core:StringToColor(text)
   local explodedData = string.Explode(',', text)
   local color = Color(255, 255, 255, 255)
@@ -649,7 +803,9 @@ function cw.core:StringToColor(text)
   return color
 end
 
--- A function to get a log type color.
+--- Returns the color used for a log type.
+-- @param logType [Number Log type 1 to 5; anything else uses the color of type 5]
+-- @return [Color The color]
 function cw.core:GetLogTypeColor(logType)
   local logTypes = {
     Color(255, 50, 50, 255),
@@ -662,32 +818,23 @@ function cw.core:GetLogTypeColor(logType)
   return logTypes[logType] or logTypes[5]
 end
 
---[[
-  @codebase Shared
-  @details A function to get the kernel version.
-  @returns String The kernel version.
---]]
-
+--- Returns the kernel version.
+-- @return [String The value of `cw.KernelVersion`]
 function cw.core:GetVersion()
   return cw.KernelVersion
 end
 
---[[
-  @codebase Shared
-  @details A function to get the kernel version and build.
-  @returns String The kernel version and build concatenated.
---]]
-
+--- Returns the kernel version and build.
+--
+-- Currently the same as `cw.core:GetVersion`.
+-- @return [String The value of `cw.KernelVersion`]
 function cw.core:GetVersionBuild()
   return cw.KernelVersion
 end
 
---[[
-  @codebase Shared
-  @details A function to get the schema folder.
-  @returns String The schema folder.
---]]
-
+--- Returns the schema folder, or a subfolder of its `schema` directory.
+-- @param sFolderName=nil [String Subfolder inside `<schema>/schema/`]
+-- @return [String The folder name or path]
 function cw.core:GetSchemaFolder(sFolderName)
   if sFolderName then
     return cw.Schema..'/schema/'..sFolderNane
@@ -696,42 +843,33 @@ function cw.core:GetSchemaFolder(sFolderName)
   end
 end
 
---[[
-  @codebase Shared
-  @details A function to get the schema gamemode path.
-  @returns String The schema gamemode path.
---]]
-
+--- Returns the schema gamemode folder name.
+-- @return [String The value of `cw.Schema`]
 function cw.core:GetSchemaGamemodePath()
   return cw.Schema
 end
 
---[[
-  @codebase Shared
-  @details A function to get the Clockwork folder.
-  @returns String The Clockwork folder.
---]]
-
+--- Returns the framework gamemode folder without the `gamemodes/` prefix.
+-- @return [String The folder name, such as `'catwork'`]
 function cw.core:GetClockworkFolder()
   return (string.gsub(cw.ClockworkFolder, 'gamemodes/', ''))
 end
 
---[[
-  @codebase Shared
-  @details A function to get the Clockwork path.
-  @returns String The Clockwork path.
---]]
-
+--- Returns the Lua path of the framework's `gamemode/core` directory.
+-- @return [String The path, such as `'catwork/gamemode/core'`]
 function cw.core:GetClockworkPath()
   return (string.gsub(cw.ClockworkFolder, 'gamemodes/', '')..'/gamemode/core')
 end
 
--- A function to get the path to GMod.
+--- Returns the absolute path of the game's root directory.
+-- @return [String The full path without a trailing separator]
 function cw.core:GetPathToGMod()
   return util.RelativePathToFull('.'):sub(1, -2)
 end
 
--- A function to convert a string to a boolean.
+--- Converts a string to a boolean.
+-- @param text [String The text to convert]
+-- @return [Boolean `true` for `'true'`, `'yes'` or `'1'`, otherwise `false`]
 function cw.core:ToBool(text)
   if text == 'true' or text == 'yes' or text == '1' then
     return true
@@ -740,7 +878,10 @@ function cw.core:ToBool(text)
   end
 end
 
--- A function to remove text from the end of a string.
+--- Removes a suffix from a string if it is present.
+-- @param text [String The string to trim]
+-- @param toRemove [String The suffix to remove]
+-- @return [String The string without the suffix, or unchanged]
 function cw.core:RemoveTextFromEnd(text, toRemove)
   local toRemoveLen = string.utf8len(toRemove)
 
@@ -751,7 +892,10 @@ function cw.core:RemoveTextFromEnd(text, toRemove)
   end
 end
 
--- A function to split a string.
+--- Splits a string into chunks of equal length.
+-- @param text [String The string to split; UTF-8 aware]
+-- @param interval [Number Characters per chunk]
+-- @return [List<String> The chunks; the last one may be shorter]
 function cw.core:SplitString(text, interval)
   local length = string.utf8len(text)
   local baseTable = {}
@@ -765,19 +909,32 @@ function cw.core:SplitString(text, interval)
   return baseTable
 end
 
--- A function to get whether a letter is a vowel.
+--- Returns whether a letter is an English vowel.
+-- @param letter [String A single letter, case-insensitive]
+-- @return [Boolean Whether it is a, e, i, o or u]
 function cw.core:IsVowel(letter)
   letter = string.lower(letter)
   return (letter == 'a' or letter == 'e' or letter == 'i'
   or letter == 'o' or letter == 'u')
 end
 
--- A function to pluralize some text.
+--- Returns the plural of some text.
+--
+-- Currently returns the text unchanged.
+-- @param text [String The text]
+-- @return [String The text]
 function cw.core:Pluralize(text)
   return text
 end
 
--- A function to serialize a table.
+--- Serializes a table to a string.
+--
+-- Uses pON unless `bForceJSON` is set or pON fails, then falls back to JSON. Prints an error
+-- and returns an empty string when the table cannot be serialized or is not a table.
+-- @param tTable [Map The table to serialize]
+-- @param bForceJSON=false [Boolean Always use JSON]
+-- @return [String The serialized data]
+-- @see cw.core:Deserialize
 function cw.core:Serialize(tTable, bForceJSON)
   if istable(tTable) then
     local bSuccess, value
@@ -806,7 +963,14 @@ function cw.core:Serialize(tTable, bForceJSON)
   end
 end
 
--- A function to deserialize a string.
+--- Deserializes a string created by `cw.core:Serialize`.
+--
+-- Tries pON unless `bForceJSON` is set, then falls back to JSON. Prints an error and returns an
+-- empty table when the data cannot be decoded or is not a string.
+-- @param strData [String The serialized data]
+-- @param bForceJSON=false [Boolean Always use JSON]
+-- @return [Map The decoded table]
+-- @see cw.core:Serialize
 function cw.core:Deserialize(strData, bForceJSON)
   if isstring(strData) then
     local bSuccess, value
@@ -835,7 +999,14 @@ function cw.core:Deserialize(strData, bForceJSON)
   end
 end
 
--- A function to get ammo information from a weapon.
+--- Returns ammo information for a scripted weapon.
+--
+-- The table is cached on the weapon as `weapon.AmmoInfo` and refreshed on every call. It has
+-- `primary` and `secondary` subtables with `ammoType`, `clipSize`, `ownerAmmo`, `clipBullets`,
+-- `doesNotShoot` and `ownerClips`. Returns `nil` for invalid or ownerless weapons and weapons
+-- without `Primary` and `Secondary` tables.
+-- @param weapon [Weapon The weapon]
+-- @return [Map The ammo information]
 function cw.core:GetAmmoInformation(weapon)
   if IsValid(weapon) and IsValid(weapon.Owner) and weapon.Primary and weapon.Secondary then
     if !weapon.AmmoInfo then
@@ -876,6 +1047,20 @@ function cw.core:GetAmmoInformation(weapon)
   end
 end
 
+--- Runs a callback once an entity index becomes valid.
+--
+-- Calls it straight away when the entity already exists, otherwise polls with a timer.
+--
+-- ```
+-- util.WaitForEntity(index, function(entity)
+--   print(entity:GetModel())
+-- end)
+-- ```
+--
+-- @param entIndex [Number Entity index to wait for]
+-- @param callback [Function Called with the entity]
+-- @param delay=0 [Number Seconds between checks]
+-- @param waitTime=100 [Number Maximum number of checks]
 function util.WaitForEntity(entIndex, callback, delay, waitTime)
   local entity = Entity(entIndex)
 
@@ -905,6 +1090,13 @@ if CLIENT then
   end)
 end
 
+--- Loads the active schema and its plugins.
+--
+-- Creates `Schema`, merges the schema's gamemode info into it (sent to clients through
+-- `CW_SCRIPT_SHARED.schemaData`), includes `sh_schema.lua` and the schema's extra folders,
+-- caches its hooks and then includes the schema's plugins. Prints timings with
+-- `cw.core:Debug`.
+-- @warning [Internal] Called by the kernel while the gamemode loads.
 function cw.core:LoadSchema()
   cw.core.schemaStartTime = cw.startTime or os.clock()
   local startTime = cw.core.schemaStartTime
@@ -954,7 +1146,18 @@ function cw.core:LoadSchema()
   self:Debug('Finished loading at '..math.Round(os.clock() - startTime, 3)..'.')
 end
 
--- A function to explode a string by tags.
+--- Splits a string by a separator, keeping text between open and close tags together.
+--
+-- ```
+-- cw.core:ExplodeByTags('say "hello there"', ' ', '"', '"', true) -- { 'say', 'hello there' }
+-- ```
+--
+-- @param text [String The text to split]
+-- @param seperator [String Single character to split on]
+-- @param open [String Single character that opens a tag]
+-- @param close [String Single character that closes a tag]
+-- @param hide=false [Boolean Remove the tag characters from the results]
+-- @return [List<String> The parts]
 function cw.core:ExplodeByTags(text, seperator, open, close, hide)
   local results = {}
   local current = ''
@@ -995,7 +1198,12 @@ function cw.core:ExplodeByTags(text, seperator, open, close, hide)
   return results
 end
 
--- A function to modify a physical description.
+--- Clamps and punctuates a physical description.
+--
+-- Descriptions with Cyrillic letters are cut to 256 characters, others to 1024, ending in
+-- `...`. A period is added when the description does not end with punctuation.
+-- @param description [String The description]
+-- @return [String The modified description]
 function cw.core:ModifyPhysDesc(description)
   -- Clamp russian physDesc length to 256.
   if string.find(description, '[абвгдеёжзийклмнопрстуфхцчшщъьыэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЬЫЭЮЯ]') != nil then
@@ -1018,13 +1226,21 @@ end
 do
   local MAGIC_CHARACTERS = '([%(%)%.%%%+%-%*%?%[%^%$])'
 
-  -- A function to replace something in text without pattern matching.
+  --- Replaces every occurrence of a plain string, without pattern matching.
+  -- @param text [String The text to search]
+  -- @param find [String The literal text to find]
+  -- @param replace [String The replacement; `%` is still special here]
+  -- @return [String The new text]
   function cw.core:Replace(text, find, replace)
     return (text:gsub(find:gsub(MAGIC_CHARACTERS, '%%%1'), replace))
   end
 end
 
--- A function to create a new meta table.
+--- Creates an object that inherits from a table.
+--
+-- Sets `baseTable.__index` to itself and returns an empty table with it as the metatable.
+-- @param baseTable [Map The table to inherit from]
+-- @return [Map The new object]
 function cw.core:NewMetaTable(baseTable)
   local object = {}
     setmetatable(object, baseTable)
@@ -1032,7 +1248,14 @@ function cw.core:NewMetaTable(baseTable)
   return object
 end
 
--- A function to make a proxy meta table.
+--- Turns a table into a proxy table that stores non-function values in a subtable.
+--
+-- Existing non-function fields are moved into `baseTable[proxy]`, and `__index`/`__newindex`
+-- are set so that reads and writes of non-function keys go there. If the object has a
+-- `__proxy` method, reads of missing keys call it instead.
+-- @param baseTable [Map The table to convert]
+-- @param baseClass [Map Metatable to set on `baseTable`]
+-- @param proxy [String Key of the subtable that holds the values]
 function cw.core:MakeProxyTable(baseTable, baseClass, proxy)
   baseTable[proxy] = {}
 
@@ -1067,7 +1290,10 @@ function cw.core:MakeProxyTable(baseTable, baseClass, proxy)
   setmetatable(baseTable, baseClass)
 end
 
--- A function to set whether a string should be in camel case.
+--- Changes the case of the first character of a string.
+-- @param text [String The text]
+-- @param bCamelCase [Boolean `true` to lowercase the first character, `false` to uppercase it]
+-- @return [String The new text, Number The number of replacements made]
 function cw.core:SetCamelCase(text, bCamelCase)
   if bCamelCase then
     return string.gsub(text, '^.', string.lower)
@@ -1076,7 +1302,12 @@ function cw.core:SetCamelCase(text, bCamelCase)
   end
 end
 
--- A function to add files to the content download.
+--- Adds the files in a directory to the client content download.
+--
+-- A path ending in `/` adds every file in it; otherwise the path is used as a search pattern.
+-- @param directory [String Path relative to the game folder, such as `'materials/catwork/'`]
+-- @param bRecursive=false [Boolean Also add subdirectories]
+-- @see cw.core:AddFile
 function cw.core:AddDirectory(directory, bRecursive)
   if string.utf8sub(directory, -1) == '/' then
     directory = directory..'*.*'
@@ -1098,12 +1329,19 @@ function cw.core:AddDirectory(directory, bRecursive)
   end
 end
 
--- A function to add a file to the content download.
+--- Adds a file to the client content download with `resource.AddFile`.
+-- @param fileName [String Path relative to the game folder]
 function cw.core:AddFile(fileName)
   resource.AddFile(fileName)
 end
 
--- A function to include a file based on it's prefix.
+--- Includes a Lua file in the realm its prefix says.
+--
+-- On the server, `cl_` files are sent to clients, `sv_` and `init.lua` files are included and
+-- anything else is both sent and included. On the client every file except `sv_` and
+-- `init.lua` files is included.
+-- @param strFile [String Path of the file]
+-- @return [Any What the file returns, when it is included]
 function util.Include(strFile)
   if SERVER then
     if string.find(strFile, 'cl_') then
@@ -1122,7 +1360,10 @@ function util.Include(strFile)
   end
 end
 
--- A function to add a file to clientside downloads list based on it's prefix.
+--- Sends a Lua file to clients when its name marks it as client or shared.
+--
+-- Matches `sh_`, `cl_` and `shared.lua`. Does nothing on the client.
+-- @param strFile [String Path of the file]
 function util.AddCSLuaFile(strFile)
   if SERVER then
     if string.find(strFile, 'sh_') or string.find(strFile, 'cl_') or string.find(strFile, 'shared.lua') then
@@ -1131,7 +1372,15 @@ function util.AddCSLuaFile(strFile)
   end
 end
 
--- A function to include all files in a directory.
+--- Includes every Lua file in a directory with `util.Include`.
+--
+-- ```
+-- util.IncludeDirectory('libraries', true) -- catwork/gamemode/core/libraries/
+-- ```
+--
+-- @param strDirectory [String The directory]
+-- @param strBase=nil [String Prefix for `strDirectory`; `true` uses `'catwork/gamemode/core/'`]
+-- @param bIsRecursive=false [Boolean Also include subdirectories, files first]
 function util.IncludeDirectory(strDirectory, strBase, bIsRecursive)
   if strBase then
     if isbool(strBase) then
@@ -1170,17 +1419,27 @@ function util.IncludeDirectory(strDirectory, strBase, bIsRecursive)
   end
 end
 
--- A function to include files in a directory.
+--- Includes every Lua file in a directory; see `util.IncludeDirectory`.
+-- @param directory [String The directory]
+-- @param bFromBase=nil [String Prefix for the directory; `true` uses `'catwork/gamemode/core/'`]
 function cw.core:IncludeDirectory(directory, bFromBase)
   return util.IncludeDirectory(directory, bFromBase)
 end
 
--- A function to include a prefixed _file.
+--- Includes a file in the realm its prefix says; see `util.Include`.
+-- @param fileName [String Path of the file]
+-- @return [Any What the file returns, when it is included]
 function cw.core:IncludePrefixed(fileName)
   return util.Include(fileName)
 end
 
--- A function to include plugins in a directory.
+--- Includes every plugin in a directory.
+--
+-- Single-file plugins (`*.lua`) and plugin folders (`<name>/plugin`) are loaded with
+-- `plugin.Include`.
+-- @param directory [String The plugins directory]
+-- @param bFromBase=false [Boolean Prefix the directory with `'catwork/'`]
+-- @return [Boolean Always `true`]
 function cw.core:IncludePlugins(directory, bFromBase)
   if bFromBase then
     directory = 'catwork/'..directory
@@ -1207,12 +1466,22 @@ function cw.core:IncludePlugins(directory, bFromBase)
   return true
 end
 
--- A function to run a function on the next frame.
+--- Runs a function on the next frame.
+-- @param name [String Unique timer name; reusing it replaces the pending call]
+-- @param Callback [Function The function to run]
 function cw.core:OnNextFrame(name, Callback)
   return timer.Create(name, FrameTime(), 1, Callback)
 end
 
--- A function to get whether a player has access to an object.
+--- Returns whether a player may use an object such as an item, class or attribute.
+--
+-- Access is granted when the player has any of the object's `access` flags, belongs to one of
+-- its `factions` or `classes` (by team index or class name), or when none of those fields are
+-- set. A matching faction, class or flag in `blacklist` denies access. An
+-- `object:HasObjectAccess(player, hasAccess)` method, if present, has the final say.
+-- @param player [Player The player]
+-- @param object [Map Table with optional `access`, `factions`, `classes` and `blacklist` fields]
+-- @return [Boolean Whether the player has access]
 function cw.core:HasObjectAccess(player, object)
   local hasAccess = false
 
@@ -1279,7 +1548,8 @@ function cw.core:HasObjectAccess(player, object)
   return hasAccess
 end
 
--- A function to get the sorted commands.
+--- Returns the names of all registered commands in alphabetical order.
+-- @return [List<String> The command names]
 function cw.core:GetSortedCommands()
   local commands = {}
   local source = cw.command:GetAll()
@@ -1295,17 +1565,23 @@ function cw.core:GetSortedCommands()
   return commands
 end
 
--- A function to zero a number to an amount of digits.
+--- Pads a number with leading zeros.
+-- @param number [Number The number]
+-- @param digits [Number Minimum length of the result]
+-- @return [String The padded number]
 function cw.core:ZeroNumberToDigits(number, digits)
   return string.rep('0', math.Clamp(digits - string.utf8len(tostring(number)), 0, digits))..tostring(number)
 end
 
--- A function to get a short CRC from a value.
+--- Returns a short checksum of a string.
+-- @param value [String The value to hash]
+-- @return [Number The CRC divided by 100000, rounded up]
 function cw.core:GetShortCRC(value)
   return math.ceil(util.CRC(value) / 100000)
 end
 
--- A function to validate a table's keys.
+--- Removes falsy entries from the array part of a table, in place.
+-- @param baseTable [List The table to clean]
 function cw.core:ValidateTableKeys(baseTable)
   for i = 1, #baseTable do
     if !baseTable[i] then
@@ -1314,7 +1590,8 @@ function cw.core:ValidateTableKeys(baseTable)
   end
 end
 
--- A function to get the map's physics entities.
+--- Returns every `prop_physics` and `prop_physics_multiplayer` entity.
+-- @return [List<Entity> The entities]
 function cw.core:GetPhysicsEntities()
   local entities = {}
 
@@ -1333,7 +1610,18 @@ function cw.core:GetPhysicsEntities()
   return entities
 end
 
--- A function to create a multicall table (by Deco Da Man).
+--- Makes a table forward method calls to each of its values.
+--
+-- Calling `baseTable:Method(...)` calls `object.Method(value, ...)` for every value in the table.
+--
+-- ```
+-- local players = cw.core:CreateMulticallTable(player.GetAll(), FindMetaTable('Player'))
+-- players:Freeze(true)
+-- ```
+--
+-- @param baseTable [List The values to call methods on]
+-- @param object [Map Table the methods are looked up in]
+-- @return [List The same table, with its metatable set]
 function cw.core:CreateMulticallTable(baseTable, object)
   local metaTable = getmetatable(baseTable) or {}
 
@@ -1350,7 +1638,14 @@ function cw.core:CreateMulticallTable(baseTable, object)
   return baseTable
 end
 
--- A function to create fake damage info.
+--- Creates a damage info object.
+-- @param damage [Number Damage amount; rounded up and clamped to 0 or more]
+-- @param inflictor [Entity The inflictor]
+-- @param attacker [Entity The attacker]
+-- @param position [Vector Damage position]
+-- @param damageType [Number A `DMG_*` damage type]
+-- @param damageForce [Number Scale of the damage force]
+-- @return [CTakeDamageInfo The damage info]
 function cw.core:FakeDamageInfo(damage, inflictor, attacker, position, damageType, damageForce)
   local damageInfo = DamageInfo()
   local realDamage = math.ceil(math.max(damage, 0))
@@ -1365,12 +1660,26 @@ function cw.core:FakeDamageInfo(damage, inflictor, attacker, position, damageTyp
   return damageInfo
 end
 
--- A function to unpack a color.
+--- Returns the components of a color.
+-- @param color [Color The color]
+-- @return [Number Red, Number Green, Number Blue, Number Alpha]
 function cw.core:UnpackColor(color)
   return color.r, color.g, color.b, color.a
 end
 
--- A function to parse data in text.
+--- Expands the placeholders in a text.
+--
+-- `^amount^` becomes formatted cash and `!amount!` singular cash (with `(amount)` for a
+-- lowercase cash name), `*key*` the value of an option (`*(key)*` passes `true` to
+-- `cw.option:GetKey`) and, on the client, `:command:` the key bound to a command. Finally
+-- `config.Parse` replaces `$key$` with config values.
+--
+-- ```
+-- cw.core:ParseData('It costs ^50^. Press :+use: to buy.')
+-- ```
+--
+-- @param text [String The text to parse]
+-- @return [String The parsed text]
 function cw.core:ParseData(text)
   local classes = { '%^', '%!' }
 
@@ -1417,10 +1726,22 @@ function cw.core:ParseData(text)
   return config.Parse(text)
 end
 
+--- Sets a global networked variable; see `netvars.SetNetVar`.
+--
+-- Only works on the server.
+-- @param key [String Name of the variable]
+-- @param val [Any The new value]
+-- @param sendTo=nil [Player Player or recipients to send it to; `nil` sends to everyone]
+-- @see cw.core:GetSharedVar
 function cw.core:SetSharedVar(key, val, sendTo)
   return netvars.SetNetVar(key, val, sendTo)
 end
 
+--- Returns a global networked variable; see `netvars.GetNetVar`.
+-- @param key [String Name of the variable]
+-- @param default=nil [Any Value returned when the variable is not set]
+-- @return [Any The value]
+-- @see cw.core:SetSharedVar
 function cw.core:GetSharedVar(key, default)
   return netvars.GetNetVar(key, default)
 end

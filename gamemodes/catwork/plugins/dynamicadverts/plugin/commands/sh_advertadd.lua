@@ -15,7 +15,7 @@ COMMAND.access = 'a'
 COMMAND.arguments = 3
 COMMAND.optionalArguments = 1
 
--- Called when the command has been run.
+--- Adds an image advert from a URL where the player is looking, sends it to every client and saves it.
 function COMMAND:OnRun(player, arguments)
   local trace = player:GetEyeTraceNoCursor()
   local scale = tonumber(arguments[4])

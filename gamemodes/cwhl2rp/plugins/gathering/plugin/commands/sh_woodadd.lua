@@ -11,7 +11,7 @@ COMMAND.tip = '#Command_Woodadd_Description'
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = 's'
 
--- Called when the command has been run.
+--- Adds a wood node spawn point where the player is looking, spawns a node there and saves the points.
 function COMMAND:OnRun(player, arguments)
   local class = 'prop_physics'
   local entity = ents.Create(class)

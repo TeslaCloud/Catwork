@@ -12,6 +12,7 @@ COMMAND.flags = CMD_DEFAULT
 COMMAND.access = 's'
 COMMAND.alias = { 'GarbagePointRemove', 'GarbageSpawnRemove' }
 
+--- Removes the garbage spawn points within 50 units of where the player is looking and saves the points.
 function COMMAND:OnRun(player, arguments)
   local position = player:GetEyeTraceNoCursor().HitPos + Vector(0, 0, 32)
   local pointsCount = 0

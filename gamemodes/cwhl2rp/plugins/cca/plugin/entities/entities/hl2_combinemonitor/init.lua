@@ -2,6 +2,7 @@ AddCSLuaFile('cl_init.lua')
 AddCSLuaFile('shared.lua')
 include('shared.lua')
 
+--- Sets up the monitor's frozen physics and starts it switched off.
 function ENT:Initialize()
   self:SetModel(self.Model)
   self:SetMoveType(MOVETYPE_VPHYSICS)
@@ -22,6 +23,8 @@ function ENT:Initialize()
   end
 end
 
+--- Spawns the monitor from the spawn menu where the player looks, facing out of the surface.
+-- @return [Entity The new monitor]
 function ENT:SpawnFunction(client, trace)
   local entity = ents.Create(self.ClassName)
   entity:SetPos(trace.HitPos)
@@ -32,11 +35,14 @@ function ENT:SpawnFunction(client, trace)
   return entity
 end
 
+--- Switches the monitor's screen off with a blip.
 function ENT:TurnOff()
   self:SetNetVar('monitor_activated', false)
   self:EmitSound('buttons/blip1.wav')
 end
 
+--- Switches the monitor's screen on with a blip for six seconds.
+-- @param player [Player The player who activated the monitor]
 function ENT:TurnOn(player)
   if player:GetCharacterData('cit_cid', 0) then
     self:SetNetVar('monitor_activated', true)
@@ -45,6 +51,7 @@ function ENT:TurnOn(player)
   end
 end
 
+--- Switches the monitor off once its six seconds are up, checking once a second.
 function ENT:Think()
   local curTime = CurTime()
 
@@ -62,6 +69,12 @@ end
 
 -- (c) [s]AleXXX_007[/s] ИДИ НАХУЙ СУКА СО СВОИМ ГОВНОКОДОМ БЛЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯ
 -- ~mew
+--- Networks a player's civil record to clients for the monitor to display.
+--
+-- The record holds the name, citizen ID, loyalty, crime and work points, a work level from 1 to
+-- 10 derived from the work points, citizen status, residence and job.
+--
+-- @param player [Player The player whose record is shown]
 function ENT:SetPlayer(player)
   local data = {}
   local workPoints = Schema:GetWorkPoints(player)
@@ -104,6 +117,7 @@ function ENT:SetPlayer(player)
   self:SetNetVar('userData', data)
 end
 
+--- Shows a non-Combine player's civil record on the monitor when it is switched off.
 function ENT:Use(player)
   if !self:GetNetVar('monitor_activated') and !player:IsCombine() then
     self.activator = player

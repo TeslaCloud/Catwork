@@ -6,7 +6,10 @@
   with contributions from Cloud Sixteen community.
 --]]
 
--- A function to load the cash.
+--- Spawns the cash entities saved for the current map.
+--
+-- Restores each entity's amount, position, angles, owner key and unique ID, and freezes the ones that
+-- were frozen when saved.
 function cwSaveCash:LoadCash()
   local cash = cw.core:RestoreSchemaData('plugins/cash/'..game.GetMap())
 
@@ -23,7 +26,9 @@ function cwSaveCash:LoadCash()
   end
 end
 
--- A function to save the cash.
+--- Saves every `cw_cash` entity on the map to the schema data.
+--
+-- Stores the amount, position, angles, whether it can move, and the `key` and `uniqueID` properties.
 function cwSaveCash:SaveCash()
   local cash = {}
 

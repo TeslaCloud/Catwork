@@ -10,7 +10,9 @@ local COMMAND = cw.command:New('CharGetUp')
 COMMAND.tip = '#Command_Chargetup_Description'
 COMMAND.flags = CMD_DEFAULT
 
--- Called when the command has been run.
+--- Makes the caller get up after five seconds if they fell over with `/CharFallOver`; takes no arguments.
+--
+-- Runs the `PlayerCanGetUp` hook first.
 function COMMAND:OnRun(player, arguments)
   if player:GetRagdollState() == RAGDOLL_FALLENOVER and player:GetDTBool(BOOL_FALLENOVER)
   and cw.player:GetAction(player) != 'unragdoll' then

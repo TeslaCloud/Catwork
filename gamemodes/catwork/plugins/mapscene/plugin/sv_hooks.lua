@@ -6,7 +6,9 @@
   with contributions from Cloud Sixteen community.
 --]]
 
--- Called when a player's data stream info should be sent.
+--- Called when a player's data stream info should be sent; picks a random map scene for them and sends it.
+--
+-- @param player [Player The player receiving the data]
 function cwMapScene:PlayerSendDataStreamInfo(player)
   if #self.storedList > 0 then
     player.cwMapScene = self.storedList[math.random(1, #self.storedList)]
@@ -17,14 +19,16 @@ function cwMapScene:PlayerSendDataStreamInfo(player)
   end
 end
 
--- Called when a player's visibility should be set up.
+--- Called when a player's visibility is set up; adds their map scene's position to their PVS.
+--
+-- @param player [Player The player whose PVS is built]
 function cwMapScene:SetupPlayerVisibility(player)
   if player.cwMapScene then
     AddOriginToPVS(player.cwMapScene.position)
   end
 end
 
--- Called when Clockwork has loaded all of the entities.
+--- Called after Catwork has loaded all of its entities; loads the saved map scenes.
 function cwMapScene:ClockworkInitPostEntity()
   cwMapScene:LoadMapScenes()
 end

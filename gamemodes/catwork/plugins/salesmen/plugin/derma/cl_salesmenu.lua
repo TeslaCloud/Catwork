@@ -8,7 +8,9 @@
 
 local PANEL = {}
 
--- Called when the panel is initialized.
+--- Builds the trade menu with a sells tab and a buys tab for whichever lists the salesman has.
+--
+-- Closing the frame sends `SalesmanDone` to the server and clears `cw.salesmenu`.
 function PANEL:Init()
   local salesmenuName = cw.salesmenu:GetName()
 
@@ -78,7 +80,14 @@ function PANEL:Init()
   cw.core:SetNoticePanel(self)
 end
 
--- A function to rebuild a panel.
+--- Refills one tab of the trade menu with item icons grouped by category.
+--
+-- The sells tab lists the salesman's items; the buys tab lists the matching items in the local
+-- player's inventory. Both are sorted by cost, most expensive first, and the salesman's cash is shown
+-- when it is limited.
+-- @param typeName [String Which tab this is: `'Sells'` or `'Buys'`]
+-- @param panelList [Panel The `cwPanelList` of the tab]
+-- @param inventory [Map The salesman's sells or buys list, keyed by item unique ID]
 function PANEL:RebuildPanel(typeName, panelList, inventory)
   panelList:Clear(true)
   panelList.inventory = inventory
@@ -201,7 +210,7 @@ function PANEL:RebuildPanel(typeName, panelList, inventory)
   end
 end
 
--- A function to rebuild the panel.
+--- Refills the sells and buys tabs from `cw.salesmenu`.
 function PANEL:Rebuild()
   if IsValid(self.sellsPanel) then
     self:RebuildPanel('Sells', self.sellsPanel, cw.salesmenu:GetSells())
@@ -212,7 +221,7 @@ function PANEL:Rebuild()
   end
 end
 
--- Called each frame.
+--- Keeps the trade menu centred at half the screen width and three quarters of its height.
 function PANEL:Think()
   local scrW = ScrW()
   local scrH = ScrH()
@@ -221,7 +230,7 @@ function PANEL:Think()
   self:SetPos((scrW / 2) - (self:GetWide() / 2), (scrH / 2) - (self:GetTall() / 2))
 end
 
--- Called when the layout should be performed.
+--- Stretches the property sheet to fill the frame.
 function PANEL:PerformLayout(w, h)
   DFrame.PerformLayout(self)
 
@@ -232,7 +241,7 @@ vgui.Register('cwSalesmenu', PANEL, 'DFrame')
 
 local PANEL = {}
 
--- Called when the panel is initialized.
+--- Creates the item's spawn icon; clicking it asks the server to buy or sell the item.
 function PANEL:Init()
   local itemData = self:GetParent().itemData or CURRENT_ITEM_DATA
 
@@ -262,7 +271,7 @@ function PANEL:Init()
   self.spawnIcon:SetSize(40, 40)
 end
 
--- Called each frame.
+--- Updates the icon's tooltip with the item's price, shipment size and remaining stock.
 function PANEL:Think()
   local function DisplayCallback(displayInfo)
     local priceScale = 1

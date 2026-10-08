@@ -11,6 +11,9 @@ COMMAND.tip = '#Command_Woodremove_Description'
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = 's'
 
+--- Removes wood node spawn points and saves the points.
+--
+-- The distance limit is 50000000 units, so every point on the map is removed.
 function COMMAND:OnRun(player, arguments)
   local position = player:GetEyeTraceNoCursor().HitPos + Vector(0, 0, 32)
   local pointsCount = 0

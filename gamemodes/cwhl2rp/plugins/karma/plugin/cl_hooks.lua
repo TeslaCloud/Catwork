@@ -6,13 +6,16 @@
   with contributions from Cloud Sixteen community.
 --]]
 
--- Called when the player info text is needed.
+--- Called when the local player's info text is built; adds the karma level line.
+-- @param playerInfoText [Map The info text object; lines are added with `:Add(id, text)`]
 function cwKarma:GetPlayerInfoText(playerInfoText)
   playerInfoText:Add('KARMA', L('#Karma')..': '..L(cw.client:GetKarmaLevel()))
 end
 
 local mat_karma = Material('materials/catwork/karma_bar.png')
 
+--- Called while the info menu is painted; draws the karma bar with a slider at the local player's karma.
+-- @param info [Map Drawing area with `x`, `y`, `width` and `height`; `info:Adjust(n)` moves it down by `n`]
 function cwKarma:PaintInfoMenuExtras(info)
   local x, y, w, h = info.x, info.y, info.width, info.height
   local adjust = 0
@@ -43,6 +46,12 @@ function cwKarma:PaintInfoMenuExtras(info)
   info:Adjust(adjust)
 end
 
+--- Called when a targeted player's status is drawn; shows the karma level of recognised non-Combine players.
+-- @param entity [Entity The targeted entity]
+-- @param alpha [Number Opacity of the target text]
+-- @param x [Number Horizontal centre of the text]
+-- @param y [Number Vertical position to draw at]
+-- @return [Number The `y` position below the drawn text, or `nil` when nothing was drawn]
 function cwKarma:DrawPlayerStatusExtra(entity, alpha, x, y)
   if entity:IsPlayer() and !entity:IsCombine() and cw.player:DoesRecognise(entity) then
     local font = cw.option:GetFont('target_id_text')

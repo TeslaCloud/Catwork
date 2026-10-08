@@ -11,7 +11,7 @@ COMMAND.tip = '#Command_Doorresetparent_Description'
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = 'a'
 
--- Called when the command has been run.
+--- Clears the player's active door parent and the parenting outlines.
 function COMMAND:OnRun(player, arguments)
   cwDoorCmds.infoTable = cwDoorCmds.infoTable or {}
 

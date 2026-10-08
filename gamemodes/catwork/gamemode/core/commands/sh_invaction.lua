@@ -14,7 +14,10 @@ COMMAND.arguments = 2
 COMMAND.optionalArguments = 1
 COMMAND.cooldown = 1
 
--- Called when the command has been run.
+--- Runs an action on an item in the caller's inventory; arguments are the action, item ID and instance ID.
+--
+-- The action is `destroy`, `drop`, `use` or one of the item's `customFunctions`; any other action fires
+-- `PlayerUseUnknownItemFunction`.
 function COMMAND:OnRun(player, arguments)
   local itemAction = string.lower(arguments[1])
   itemAction = itemAction:Replace('#', '')

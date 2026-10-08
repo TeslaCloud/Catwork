@@ -6,7 +6,11 @@
   with contributions from Cloud Sixteen community.
 --]]
 
--- Called when the bars are needed.
+--- Called to collect the HUD bars; adds the stamina bar, with fatigue as its limit, while stamina is below 95.
+--
+-- The displayed value eases towards the `Stamina` net var by one point per call.
+--
+-- @param bars [Map The bar list; entries are added with `bars:Add`]
 function cwStamina:GetBars(bars)
   local stamina = cw.client:GetNetVar('Stamina') or 100
   local fatigue = cw.client:GetNetVar('Fatigue') or 0

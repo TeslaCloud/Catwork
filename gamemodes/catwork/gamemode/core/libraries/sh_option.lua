@@ -14,12 +14,28 @@ cw.option.keys = keys
 local sounds = cw.option.sounds or {}
 cw.option.sounds = sounds
 
--- A function to set a schema key.
+--- Sets a schema option.
+--
+-- Options hold schema-level settings such as menu names, cash formats, models and icons.
+--
+-- ```
+-- cw.option:SetKey('name_cash', '#HL2RP_CashName')
+-- cw.option:SetKey('model_cash', 'models/props_lab/box01a.mdl')
+-- ```
+--
+-- @param key [String Option name]
+-- @param value [Any New value]
+-- @see cw.option:GetKey
 function cw.option:SetKey(key, value)
   keys[key] = value
 end
 
--- A function to get a schema key.
+--- Returns a schema option.
+--
+-- @param key [String Option name]
+-- @param lowerValue=nil [Boolean Lowercase the value when it is a String]
+-- @return [Any The option's value, or `nil` if it is not set]
+-- @see cw.option:SetKey
 function cw.option:GetKey(key, lowerValue)
   local value = keys[key]
 
@@ -30,17 +46,28 @@ function cw.option:GetKey(key, lowerValue)
   end
 end
 
--- A function to set a schema sound.
+--- Sets a schema sound, such as the menu `click` or `rollover` sound.
+--
+-- @param name [String Sound name]
+-- @param sound [String Sound file path]
 function cw.option:SetSound(name, sound)
   sounds[name] = sound
 end
 
--- A function to get a schema sound.
+--- Returns the file path of a schema sound.
+--
+-- @param name [String Sound name]
+-- @return [String The sound file path, or `nil` if it is not set]
 function cw.option:GetSound(name)
   return sounds[name]
 end
 
--- A function to play a schema sound.
+--- Plays a schema sound.
+--
+-- On the client the sound plays for the local player; on the server it is sent to every player.
+-- Does nothing if the sound is not set.
+--
+-- @param name [String Sound name]
 function cw.option:PlaySound(name)
   local sound = self:GetSound(name)
 
@@ -98,22 +125,34 @@ if CLIENT then
   cw.option.fonts = cw.option.fonts or {}
   cw.option.colors = cw.option.colors or {}
 
-  -- A function to set a schema color.
+  --- Sets a schema interface color.
+  --
+  -- @param name [String Color name, such as `'panel_background'`]
+  -- @param color [Color The color]
   function cw.option:SetColor(name, color)
     self.colors[name] = color
   end
 
-  -- A function to get a schema color.
+  --- Returns a schema interface color.
+  --
+  -- @param name [String Color name]
+  -- @return [Color The color, or `nil` if it is not set]
   function cw.option:GetColor(name)
     return self.colors[name]
   end
 
-  -- A function to set a schema font.
+  --- Sets the font used for a part of the interface.
+  --
+  -- @param name [String Font slot name, such as `'main_text'`]
+  -- @param font [String Name of a font created with `surface.CreateFont`]
   function cw.option:SetFont(name, font)
     self.fonts[name] = font
   end
 
-  -- A function to get a schema font.
+  --- Returns the font used for a part of the interface.
+  --
+  -- @param name [String Font slot name]
+  -- @return [String The font name, or `nil` if it is not set]
   function cw.option:GetFont(name)
     return self.fonts[name]
   end

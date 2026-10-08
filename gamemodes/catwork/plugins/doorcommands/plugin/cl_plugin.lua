@@ -14,7 +14,9 @@ netstream.Hook('doorParentESP', function(data)
   cwDoorCmds.doorHalos = data
 end)
 
--- Called before halos need to be rendered.
+--- Called before halos are drawn; outlines the door parent being edited in orange and its children in cyan.
+--
+-- The doors come from the `doorParentESP` netstream message sent by the door parenting commands.
 function cwDoorCmds:PreDrawHalos()
   self.doorHalos = self.doorHalos or {}
 

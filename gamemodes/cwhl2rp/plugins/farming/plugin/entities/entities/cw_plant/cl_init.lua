@@ -6,6 +6,7 @@
   with contributions from Cloud Sixteen community.
 --]]
 
+--- Draws the plant's name and, for players with over 25 farming, its maturity percentage.
 function ENT:HUDPaintTargetID(x, y, alpha)
   local colorTargetID = cw.option:GetColor('target_id')
   local colorWhite = cw.option:GetColor('white')
@@ -26,12 +27,15 @@ end
 
 include('shared.lua')
 
+--- Draws the plant's model.
 function ENT:Draw()
   self:DrawModel()
 end
 
+--- Does nothing on the client.
 function ENT:Initialize()
 end
 
+--- Does nothing on the client.
 function ENT:Think()
 end

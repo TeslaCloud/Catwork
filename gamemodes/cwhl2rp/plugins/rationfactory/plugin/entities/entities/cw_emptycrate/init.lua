@@ -8,7 +8,7 @@ include('shared.lua')
 AddCSLuaFile('cl_init.lua')
 AddCSLuaFile('shared.lua')
 
--- Called when the entity initializes.
+--- Sets up the empty crate with 50 health and no rations inside.
 function ENT:Initialize()
   self:SetModel('models/Items/item_item_crate.mdl')
 
@@ -32,6 +32,7 @@ function ENT:Initialize()
   end
 end
 
+--- Plays the effect and sound of the crate breaking apart.
 function ENT:Explode()
   local effectData = EffectData()
 
@@ -44,10 +45,12 @@ function ENT:Explode()
   self:EmitSound('physics/body/body_medium_impact_soft'..math.random(1, 7)..'.wav')
 end
 
+--- Makes the crate always transmit to clients.
 function ENT:UpdateTransmitState()
   return TRANSMIT_ALWAYS
 end
 
+--- Takes damage off the crate's health and breaks it when the health runs out.
 function ENT:OnTakeDamage(damageInfo)
   self:SetHealth(math.max(self:Health() - damageInfo:GetDamage(), 0))
 
@@ -56,6 +59,9 @@ function ENT:OnTakeDamage(damageInfo)
   end
 end
 
+--- Packs a touching full `cw_emptyration` into the crate, at most one per second.
+--
+-- At ten rations the crate turns into a shipment of ten `ration_standard` items.
 function ENT:Touch(ent)
   if IsValid(ent) and ent:GetClass() == 'cw_emptyration' and (self.nextadd or 0) <= CurTime() then
     if ent:GetDTBool(3) then
@@ -72,6 +78,7 @@ function ENT:Touch(ent)
   end
 end
 
+--- Flags the crate full once it holds ten rations.
 function ENT:CheckFull()
   if self:GetDTInt(1) >= 10 then
     self:SetDTBool(2, true)

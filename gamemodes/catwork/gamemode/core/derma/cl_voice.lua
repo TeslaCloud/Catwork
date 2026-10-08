@@ -12,12 +12,18 @@ Derma_Hook(PANEL, 'Paint', 'Paint', 'VoiceNotify')
 Derma_Hook(PANEL, 'PerformLayout', 'Layout', 'VoiceNotify')
 Derma_Hook(PANEL, 'ApplySchemeSettings', 'Scheme', 'VoiceNotify')
 
--- Called when the panel is initialized.
+--- Creates the voice notice's name label.
 function PANEL:Init()
   self.LabelName = vgui.Create('DLabel', self)
 end
 
--- A function to set up the panel.
+--- Sets the voice notice up for a speaking player.
+--
+-- Players the local player does not fully recognise are shown with their unrecognised name in brackets,
+-- cut to 24 characters when it is a physical description, and an unknown avatar. Recognised players are
+-- shown with their name and Steam avatar. The background uses the player's team color.
+--
+-- @param player [Player The speaking player]
 function PANEL:Setup(player)
   if !cw.player:DoesRecognise(player, RECOGNISE_TOTAL) then
     local unrecognisedName, usedPhysDesc = cw.player:GetUnrecognisedName(player)
@@ -55,14 +61,14 @@ function PANEL:Setup(player)
   end
 end
 
--- Called every frame.
+--- Removes the voice notice once its player stops speaking or leaves.
 function PANEL:Think()
   if self.Initialized and (!IsValid(self.Player) or !self.Player:IsSpeaking()) then
     self:Remove()
   end
 end
 
--- Called when the panel should be painted.
+--- Draws the voice notice's background in the team color, brighter with the player's voice volume.
 function PANEL:Paint(w, h)
   if IsValid(self.Player) then
     local r, g, b = self.Color.r, self.Color.g, self.Color.b
@@ -76,7 +82,7 @@ function PANEL:Paint(w, h)
   end
 end
 
--- Called when the layout should be performed.
+--- Places the voice notice's avatar and name in a 200 by 40 pixel box.
 function PANEL:PerformLayout()
   self:SetSize(200, 40)
   self.Avatar:SetPos(4, 4)

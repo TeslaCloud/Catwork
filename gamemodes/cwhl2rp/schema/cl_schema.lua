@@ -133,6 +133,12 @@ netstream.Hook('Flashed', function(data)
   Schema:AddFlashEffect()
 end)
 
+--- Downloads a file over HTTP into the data folder, unless it already exists there.
+--
+-- The download is asynchronous and the response body is written as is. Used for scoreboard icons, which
+-- are then referenced as `data/<path>`.
+-- @param url [String The URL to download]
+-- @param path [String The destination, relative to the `DATA` folder]
 function Schema:DownloadMaterial(url, path)
   if !file.Exists(path, 'DATA') then
     http.Fetch(url, function(result)
@@ -143,7 +149,11 @@ function Schema:DownloadMaterial(url, path)
   end
 end
 
--- A function to add a flash effect.
+--- Starts a flash effect on the local player.
+--
+-- Adds a ten second white-out (see `Schema:HUDPaintForeground`), a twenty second colour shift and motion
+-- blur (see `Schema:RenderScreenspaceEffects`) and plays a flatline sound. Triggered by the `Flashed`
+-- netstream message.
 function Schema:AddFlashEffect()
   local curTime = CurTime()
 
@@ -153,7 +163,11 @@ function Schema:AddFlashEffect()
   surface.PlaySound('hl1/fvox/flatline.wav')
 end
 
--- A function to add a stun effect.
+--- Starts a stun effect on the local player.
+--
+-- Adds a white-out lasting `duration` seconds and a flash blur lasting twice as long. Triggered by the
+-- `Stunned` netstream message.
+-- @param duration=1 [Number Length of the white-out in seconds; `0` also means one second]
 function Schema:AddStunEffect(duration)
   local curTime = CurTime()
 
@@ -174,7 +188,9 @@ netstream.Hook('CombineDisplayLine', function(data)
   Schema:AddCombineDisplayLine(data[1], data[2])
 end)
 
--- A function to get a player's scanner entity.
+--- Returns the scanner a player controls, from their `scanner` net var.
+-- @param player [Player The player]
+-- @return [Entity The scanner, or `nil` when the player controls no valid scanner]
 function Schema:GetScannerEntity(player)
   if player:GetNetVar('scanner') == nil then return end
 
@@ -185,7 +201,10 @@ function Schema:GetScannerEntity(player)
   end
 end
 
--- A function to get whether a text entry is being used.
+--- Returns whether a text entry has focus and is visible.
+--
+-- The entry is tracked by `Schema:OnTextEntryGetFocus` and `Schema:OnTextEntryLoseFocus`.
+-- @return [Boolean `true` when one is in use, otherwise `nil`]
 function Schema:IsTextEntryBeingUsed()
   if self.textEntryFocused then
     if self.textEntryFocused:IsValid() and self.textEntryFocused:IsVisible() then
@@ -194,7 +213,13 @@ function Schema:IsTextEntryBeingUsed()
   end
 end
 
--- A function to add a Combine display line.
+--- Adds a line to the local player's Combine display; does nothing for non-Combine players.
+--
+-- The text is translated and shown for eight seconds by `Schema:HUDPaintTopScreen`. Uncoloured lines are
+-- suppressed while the player's biosignal is gone, and also refresh the biosignal locations of the
+-- `cwCTO` plugin. Sent from the server with the `CombineDisplayLine` netstream message.
+-- @param text [String The text or language key to show]
+-- @param color=nil [Color Colour of the line; white when `nil`]
 function Schema:AddCombineDisplayLine(text, color)
   if self:PlayerIsCombine(cw.client) then
     if !self.combineDisplayLines then
@@ -211,7 +236,10 @@ function Schema:AddCombineDisplayLine(text, color)
   end
 end
 
--- A function to get whether a player is Combine.
+--- Returns whether a player is Combine, using `Player:IsCombine`.
+-- @param player [Player The player to check]
+-- @param bHuman=nil [Boolean Unused]
+-- @return [Boolean Whether the player is Combine, or `nil` for an invalid player]
 function Schema:PlayerIsCombine(player, bHuman)
   if IsValid(player) then
     return player:IsCombine()

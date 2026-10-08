@@ -40,6 +40,10 @@ do
     return
   end
 
+  --- Returns how long the server has been loading Catwork, in seconds.
+  --
+  -- Measured with `os.clock` from the start of `init.lua`, which resets the start time on every Lua refresh.
+  -- @return [Number Seconds since the framework started booting, rounded to three decimals]
   function GetTimeSinceBoot()
     return math.Round(os.clock() - startTime, 3)
   end

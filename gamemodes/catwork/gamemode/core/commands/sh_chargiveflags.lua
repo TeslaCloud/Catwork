@@ -13,7 +13,9 @@ COMMAND.access = 's'
 COMMAND.arguments = 2
 COMMAND.alias = { 'GiveFlags' }
 
--- Called when the command has been run.
+--- Gives flags to the target character; arguments are the character name and the flags.
+--
+-- Admin flags (`a`, `s` and `o`) cannot be given this way.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
 

@@ -29,7 +29,7 @@ local defaultWeapons = {
 ITEM:AddData('ClipOne', 0, true)
 ITEM:AddData('ClipTwo', 0, true)
 
--- Called whent he item entity's menu options are needed.
+--- Adds an `Ammo` option listing the loaded clips to the item entity's menu when the weapon has ammo stored.
 function ITEM:GetEntityMenuOptions(entity, options)
   if self:HasSecondaryClip() or self:HasPrimaryClip() then
     local informationColor = cw.option:GetColor('information')
@@ -55,11 +55,16 @@ function ITEM:GetEntityMenuOptions(entity, options)
   end
 end
 
+--- Returns the weapon class the item gives.
+-- @return [String `weaponClass`, or the item's unique ID when it has none]
 function ITEM:GetWeaponClass()
   return self.weaponClass or self.uniqueID
 end
 
--- Called to get whether a player has the item equipped.
+--- Returns whether the player holds this exact weapon item.
+--
+-- On the client there is no way to check, so it returns `bIsValidWeapon`.
+-- @return [Boolean Whether the item is equipped]
 function ITEM:HasPlayerEquipped(player, bIsValidWeapon)
   local weaponClass = self:GetWeaponClass()
 
@@ -84,12 +89,16 @@ function ITEM:HasPlayerEquipped(player, bIsValidWeapon)
   return false
 end
 
--- Called when a player attempts to holster the weapon.
+--- Allows the weapon to be holstered.
+-- @return [Boolean Always `true`]
 function ITEM:CanHolsterWeapon(player, forceHolster, bNoMsg)
   return true
 end
 
--- Called when the unequip should be handled.
+--- Shows a Holster/Drop menu on the client and calls `Callback` with `nil` or `'drop'` for the choice.
+--
+-- Calls `Callback()` straight away when the item has no `OnDrop`.
+-- @param Callback [Function Called with the unequip mode: `nil` to holster, `'drop'` to drop]
 function ITEM:OnHandleUnequip(Callback)
   if self.OnDrop then
     local menu = DermaMenu()
@@ -108,7 +117,9 @@ function ITEM:OnHandleUnequip(Callback)
   end
 end
 
--- Called when a player has unequipped the item.
+--- Holsters the weapon back into the inventory, or drops it where the player looks when `extraData` is `'drop'`.
+--
+-- Runs `PlayerCanHolsterWeapon`/`PlayerHolsterWeapon` or `PlayerCanDropWeapon`/`PlayerDropWeapon`.
 function ITEM:OnPlayerUnequipped(player, extraData)
   local weapon = player:GetWeapon(self:GetWeaponClass())
 
@@ -148,32 +159,37 @@ function ITEM:OnPlayerUnequipped(player, extraData)
   end
 end
 
--- A function to get whether the item has a secondary clip.
+--- Returns whether the weapon has a secondary clip.
+-- @return [Boolean `false` when `hasNoSecondaryClip` is set]
 function ITEM:HasSecondaryClip()
   return !self.hasNoSecondaryClip
 end
 
--- A function to get whether the item has a primary clip.
+--- Returns whether the weapon has a primary clip.
+-- @return [Boolean `false` when `hasNoPrimaryClip` is set]
 function ITEM:HasPrimaryClip()
   return !self.hasNoPrimaryClip
 end
 
--- A function to get whether the item is a throwable weapon.
+--- Returns whether the item is a throwable weapon.
+-- @return [Boolean The `isThrowableWeapon` field]
 function ITEM:IsThrowableWeapon()
   return self.isThrowableWeapon
 end
 
--- A function to get whether the item is a fake weapon.
+--- Returns whether the item is a fake weapon.
+-- @return [Boolean The `isFakeWeapon` field]
 function ITEM:IsFakeWeapon()
   return self.isFakeWeapon
 end
 
--- A function to get whether the item is a melee weapon.
+--- Returns whether the item is a melee weapon.
+-- @return [Boolean The `isMeleeWeapon` field]
 function ITEM:IsMeleeWeapon()
   return self.isMeleeWeapon
 end
 
--- Called when the item is given to a player as a weapon.
+--- Strips the weapon's default ammo and loads the clips stored in the item's `ClipOne`/`ClipTwo` data.
 function ITEM:OnWeaponGiven(player, weapon)
   cw.player:StripDefaultAmmo(
     player, weapon, self
@@ -193,7 +209,10 @@ function ITEM:OnWeaponGiven(player, weapon)
   end
 end
 
--- Called when a player uses the item.
+--- Gives the player the weapon and calls `OnEquip`; the item leaves the inventory while the weapon is out.
+--
+-- If the player already has the weapon, it calls `OnAlreadyHas` instead.
+-- @return [Boolean `false` (keeping the item) when the weapon could not be given or is already held]
 function ITEM:OnUse(player, itemEntity)
   local weaponClass = self:GetVar('weaponClass')
 
@@ -234,10 +253,13 @@ function ITEM:OnUse(player, itemEntity)
   end
 end
 
--- Called when a player drops the item.
+--- Called when a player drops the weapon item; does nothing, so dropping is allowed.
 function ITEM:OnDrop(player, position) end
 
--- Called when the item should be setup.
+--- Lowercases `weaponClass` and, two seconds later, fills in the ammo classes and default ammo from the weapon.
+--
+-- Values come from the stored SWEP table, or from a built-in list for the HL2 weapons; fields already set on
+-- the item are kept.
 function ITEM:OnSetup()
   if !self.weaponClass then
     self.weaponClass = self.uniqueID
@@ -307,10 +329,12 @@ function ITEM:OnSetup()
   end)
 end
 
--- Called when a player holsters the item.
+--- Called when a player holsters the weapon; does nothing in the base.
 function ITEM:OnHolster(player, bForced) end
 
 if CLIENT then
+  --- Returns tooltip lines showing the ammo stored in the weapon's clips.
+  -- @return [String Markup lines, or `false` when both clips are empty]
   function ITEM:GetClientSideInfo()
     if !self:IsInstance() then
       return

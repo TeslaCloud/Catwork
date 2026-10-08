@@ -43,10 +43,17 @@ local function ApplyNPCRelations(player, bHostile)
   end
 end
 
+--- Called when a player spawns; clears the player's NPC faction variable.
+-- @param player [Player The player who spawned]
 function PLUGIN:PlayerSpawn(player)
   player:SetVar('faction', nil)
 end
 
+--- Called after a player spawns an NPC; makes a new Combine NPC hate non-Combine players.
+--
+-- The NPC also likes Combine players unless the `combine_attack_combine` config is enabled.
+-- @param player [Player The player who spawned the NPC]
+-- @param npc [NPC The NPC that was spawned]
 function PLUGIN:PlayerSpawnedNPC(player, npc)
   local class = npc:GetClass()
 
@@ -59,10 +66,20 @@ function PLUGIN:PlayerSpawnedNPC(player, npc)
   end
 end
 
+--- Called when a player is ragdolled; makes Combine NPCs treat the player as friendly while down.
+-- @param player [Player The player who was ragdolled]
+-- @param state [Number The new ragdoll state, a `RAGDOLL_*` value]
+-- @param ragTab [Map The player's ragdoll data]
 function PLUGIN:PlayerRagdolled(player, state, ragTab)
   ApplyNPCRelations(player, false)
 end
 
+--- Called after a player gets up; makes Combine NPCs hostile again towards non-Combine players.
+--
+-- Combine, the admin faction and players carrying a Combine security card stay friendly.
+-- @param player [Player The player who was unragdolled]
+-- @param state [Number The ragdoll state being set, a `RAGDOLL_*` value]
+-- @param ragdollTable [Map The player's ragdoll data]
 function PLUGIN:PlayerUnragdolled(player, state, ragdollTable)
   if !player:IsCombine() and player:GetFaction(player) != FACTION_ADMIN
   and !player:HasItemByID('combine_security_card') then
@@ -70,6 +87,11 @@ function PLUGIN:PlayerUnragdolled(player, state, ragdollTable)
   end
 end
 
+--- Called after a player's character has loaded; sets whether Combine NPCs are friendly towards them.
+--
+-- MPF, OTA, the admin faction and players carrying a Combine security card are friendly; everyone
+-- else is hostile.
+-- @param player [Player The player whose character loaded]
 function PLUGIN:PlayerCharacterLoaded(player)
   local faction = player:GetFaction(player)
 
@@ -81,18 +103,36 @@ function PLUGIN:PlayerCharacterLoaded(player)
   end
 end
 
+--- Called when an item is taken from a player; losing a Combine security card makes Combine NPCs hostile.
+--
+-- The hook runs before the card is removed, so this applies when it is the player's last card.
+-- @param player [Player The player who lost the item]
+-- @param itemTable [Item The item that was taken]
 function PLUGIN:PlayerItemTaken(player, itemTable)
   if itemTable.uniqueID == 'combine_security_card' and player:GetItemCountByID('combine_security_card') < 2 then
     ApplyNPCRelations(player, true)
   end
 end
 
+--- Called when a player is given an item; a Combine security card makes Combine NPCs friendly.
+-- @param player [Player The player who received the item]
+-- @param itemTable [Item The item that was given]
+-- @param bForce [Boolean Whether the item was given regardless of inventory limits]
 function PLUGIN:PlayerItemGiven(player, itemTable, bForce)
   if itemTable.uniqueID == 'combine_security_card' then
     ApplyNPCRelations(player, false)
   end
 end
 
+--- Called when a player takes damage; scales damage dealt by Combine NPCs.
+--
+-- Combine and security card holders take none, fallen-over players take 20 percent, and
+-- turrets deal five times their normal damage to everyone else.
+-- @param victim [Player The player taking damage]
+-- @param inflictor [Entity The entity that dealt the damage]
+-- @param attacker [Entity The entity responsible for the damage]
+-- @param hitGroup [Number The `HITGROUP_*` that was hit]
+-- @param damageInfo [CTakeDamageInfo The damage being dealt; scaled in place]
 function PLUGIN:PlayerTakeDamage(victim, inflictor, attacker, hitGroup, damageInfo)
   if IsValid(attacker) and IsValid(victim) and attacker:IsNPC() then
     local class = attacker:GetClass()

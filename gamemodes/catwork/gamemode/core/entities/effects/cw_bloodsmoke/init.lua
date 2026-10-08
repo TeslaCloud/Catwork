@@ -10,7 +10,9 @@ local function ParticleCollides(particle, position, normal)
   util.Decal('Blood', position + normal, position - normal)
 end
 
--- Called when the effect has initialized.
+--- Emits red smoke particles at the effect origin that leave blood decals where they collide.
+--
+-- `data:GetScale()` (2 by default) scales the particle count and size; `data:GetNormal()` sets their direction.
 function EFFECT:Init(data)
   local particleEmitter = ParticleEmitter(data:GetOrigin())
   local scale = data:GetScale() or 2
@@ -44,10 +46,10 @@ function EFFECT:Init(data)
   particleEmitter:Finish()
 end
 
--- Called when the effect should be rendered.
+--- Draws nothing; the particles render themselves.
 function EFFECT:Render() end
 
--- Called each frame.
+--- Returns `false` so the effect is removed after the first frame; the emitted particles live on.
 function EFFECT:Think()
   return false
 end

@@ -14,6 +14,10 @@ ENT.AdminOnly = true
 ENT.UsableInVehicle = false
 ENT.PhysgunDisabled = false
 
+--- Sets up the networked strings 0 to 2 (the three text lines), 3 (the access level) and int 4 (`status`).
+--
+-- The status is read and written as int 5 everywhere else: 0 is normal, 1 destroyed and
+-- 2 error.
 function ENT:SetupDataTables()
   self:DTVar('String', 0, 'text1')
   self:DTVar('String', 1, 'text2')

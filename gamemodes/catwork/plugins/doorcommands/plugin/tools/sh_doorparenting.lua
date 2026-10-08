@@ -19,6 +19,8 @@ TOOL.reloadFire = false
 
 TOOL.ClientConVar['description'] = ''
 
+--- Makes the door being looked at the active parent with `DoorSetParent`, or a child of the active
+-- parent with `DoorSetChild` when the player already has one.
 function TOOL:LeftClick(tr)
   if CLIENT then return true end
 
@@ -36,6 +38,7 @@ function TOOL:LeftClick(tr)
   end
 end
 
+--- Builds the tool menu with the tool's description and usage help.
 function TOOL.BuildCPanel(CPanel)
   -- HEADER
   CPanel:AddControl('Header', { Text = '#tool.doorparent.header', Description = '#tool.doorparent.desc' })

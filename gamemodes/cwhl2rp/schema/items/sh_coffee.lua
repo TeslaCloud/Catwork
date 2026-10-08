@@ -15,7 +15,7 @@ ITEM.description = '#Item_Coffee_Description'
 ITEM.fatigue = 40
 ITEM.thirst = 45
 
--- Called when a player uses the item.
+--- Heals 5 health (up to 100) and boosts endurance and strength by 1 for two minutes.
 function ITEM:OnUse(player, itemEntity)
   player:SetHealth(math.Clamp(player:Health() + 5, 0, 100))
 
@@ -23,5 +23,5 @@ function ITEM:OnUse(player, itemEntity)
   player:BoostAttribute(self.name, ATB_STRENGTH, 1, 120)
 end
 
--- Called when a player drops the item.
+--- Lets the item be dropped; nothing else happens.
 function ITEM:OnDrop(player, position) end

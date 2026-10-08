@@ -11,7 +11,7 @@ COMMAND.tip = '#Command_Textremove_Description'
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = 'a'
 
--- Called when the command has been run.
+--- Removes the surface text the player is looking at with `cwSurfaceTexts:Remove`.
 function COMMAND:OnRun(player, arguments)
   cwSurfaceTexts:Remove(player)
 end

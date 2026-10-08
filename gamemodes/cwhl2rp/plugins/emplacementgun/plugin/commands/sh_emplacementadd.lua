@@ -8,7 +8,7 @@ COMMAND.tip = '#Command_Emplacementadd_Description'
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = 's'
 
--- Called when the command has been run.
+--- Spawns an emplacement gun where the player is looking, creating a barricade under it if needed.
 function COMMAND:OnRun(player, arguments)
   local trace = player:GetEyeTraceNoCursor()
   if !trace.Hit then return end

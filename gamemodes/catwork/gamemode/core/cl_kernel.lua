@@ -35,6 +35,15 @@ do
   local ClockworkAddWorldTip = cw.AddWorldTip or AddWorldTip
   cw.AddWorldTip = ClockworkAddWorldTip
 
+  --- Shows a world tip only to the player who owns the entity, and only while they hold the toolgun.
+  --
+  -- Replaces the engine `AddWorldTip`, which is kept as `cw.AddWorldTip`. The entity must have a
+  -- `GetPlayerName` method whose result matches the local player's name.
+  -- @param entIndex [Number Index of the entity the tip belongs to]
+  -- @param text [String Text of the tip]
+  -- @param dieTime [Number Time the tip disappears]
+  -- @param position [Vector Position of the tip]
+  -- @param entity [Entity The entity the tip belongs to]
   function AddWorldTip(entIndex, text, dieTime, position, entity)
     local weapon = cw.client:GetActiveWeapon()
 
@@ -54,11 +63,20 @@ timer.Remove('HintSystem_Annoy2')
 
 base64 = base64 or {}
 
--- Thin wrappers over the engine implementation (binary safe, output is never line-wrapped).
+--- Encodes data as base64.
+--
+-- A thin wrapper over `util.Base64Encode`; it is binary safe and the output is never line-wrapped.
+-- @param data [String The data to encode; other values are converted with `tostring`]
+-- @return [String The base64 text]
+-- @see base64.decode
 function base64.encode(data)
   return util.Base64Encode(tostring(data), true)
 end
 
+--- Decodes base64 text with `util.Base64Decode`.
+-- @param data [String The base64 text]
+-- @return [String The decoded data, or `nil` when the text is not valid base64]
+-- @see base64.encode
 function base64.decode(data)
   return util.Base64Decode(data)
 end
@@ -66,6 +84,11 @@ end
 do
   local cwOldRunConsoleCommand = RunConsoleCommand
 
+  --- Runs a console command, ignoring calls without a command name.
+  --
+  -- Wraps the engine `RunConsoleCommand` so that a `nil` first argument does nothing instead of
+  -- raising an error.
+  -- @param ... [Any The command name followed by its arguments]
   function RunConsoleCommand(...)
     local arguments = { ... }
 
@@ -77,6 +100,14 @@ do
   end
 end
 
+--- Draws text scaled around its top-left corner.
+-- @param text [String The text]
+-- @param font [String Font name]
+-- @param x [Number X position]
+-- @param y [Number Y position]
+-- @param scale [Number Scale factor]
+-- @param color [Color Text color]
+-- @see surface.DrawScaled
 function surface.DrawScaledText(text, font, x, y, scale, color)
   local matrix = Matrix()
   local pos = Vector(x, y)
@@ -93,6 +124,14 @@ function surface.DrawScaledText(text, font, x, y, scale, color)
   cam.PopModelMatrix()
 end
 
+--- Draws text rotated around its top-left corner.
+-- @param text [String The text]
+-- @param font [String Font name]
+-- @param x [Number X position]
+-- @param y [Number Y position]
+-- @param angle [Number Rotation in degrees]
+-- @param color [Color Text color]
+-- @see surface.DrawRotated
 function surface.DrawRotatedText(text, font, x, y, angle, color)
   local matrix = Matrix()
   local pos = Vector(x, y)
@@ -109,6 +148,20 @@ function surface.DrawRotatedText(text, font, x, y, angle, color)
   cam.PopModelMatrix()
 end
 
+--- Runs a drawing callback with everything scaled around a point.
+--
+-- The callback is run through `Try`, so its errors are caught.
+--
+-- ```
+-- surface.DrawScaled(x, y, 2, function(x, y, scale)
+--   draw.SimpleText('Big', 'DermaDefault', x, y)
+-- end)
+-- ```
+--
+-- @param x [Number X position of the scaling origin]
+-- @param y [Number Y position of the scaling origin]
+-- @param scale [Number Scale factor]
+-- @param callback [Function Called with `x`, `y` and `scale` while the scaling is active]
 function surface.DrawScaled(x, y, scale, callback)
   local matrix = Matrix()
   local pos = Vector(x, y)
@@ -127,6 +180,13 @@ function surface.DrawScaled(x, y, scale, callback)
   cam.PopModelMatrix()
 end
 
+--- Runs a drawing callback with everything rotated around a point.
+--
+-- The callback is run through `Try`, so its errors are caught.
+-- @param x [Number X position of the rotation origin]
+-- @param y [Number Y position of the rotation origin]
+-- @param angle [Number Rotation in degrees]
+-- @param callback [Function Called with `x`, `y` and `angle` while the rotation is active]
 function surface.DrawRotated(x, y, angle, callback)
   local matrix = Matrix()
   local pos = Vector(x, y)
@@ -174,7 +234,20 @@ cw.core.CenterHints = cw.core.CenterHints or {}
 cw.core.ESPInfo = cw.core.ESPInfo or {}
 cw.core.Hints = cw.core.Hints or {}
 
--- A function to register a network proxy.
+--- Registers a callback that runs when a networked variable of an entity changes.
+--
+-- The value is polled by the kernel; pass `game.GetWorld()` to watch a global networked variable.
+-- Replaces any proxy already registered for the same entity and name.
+--
+-- ```
+-- cw.core:RegisterNetworkProxy(cw.client, 'Cash', function(entity, name, oldValue, newValue)
+--   print('Cash changed to '..newValue)
+-- end)
+-- ```
+--
+-- @param entity [Entity The entity to watch]
+-- @param name [String Name of the networked variable]
+-- @param Callback [Function Called with the entity, name, old value and new value]
 function cw.core:RegisterNetworkProxy(entity, name, Callback)
   if !cw.NetworkProxies[entity] then
     cw.NetworkProxies[entity] = {}
@@ -186,12 +259,21 @@ function cw.core:RegisterNetworkProxy(entity, name, Callback)
   }
 end
 
--- A function to get whether the info menu is open.
+--- Returns whether the info menu is open.
+-- @return [Boolean Whether the info menu is open]
 function cw.core:IsInfoMenuOpen()
   return cw.InfoMenuOpen
 end
 
--- A function to create a client ConVar.
+--- Creates a client ConVar and watches it for changes.
+--
+-- Every change runs the `ClockworkConVarChanged` hook and then the optional callback.
+-- @param name [String Name of the ConVar]
+-- @param value [String Default value]
+-- @param save [Boolean Save the value between sessions]
+-- @param userData [Boolean Send the value to the server]
+-- @param Callback=nil [Function Called with the ConVar name, old value and new value]
+-- @return [ConVar The ConVar]
 function cw.core:CreateClientConVar(name, value, save, userData, Callback)
   local conVar = CreateClientConVar(name, value, save, userData)
 
@@ -209,12 +291,23 @@ end
 do
   local aspect = ScrW() / ScrH()
 
+  --- Returns whether the screen has the given aspect ratio.
+  --
+  -- The aspect ratio is measured once when the file loads.
+  -- @param w [Number Width part of the ratio, such as `16`]
+  -- @param h [Number Height part of the ratio, such as `9`]
+  -- @return [Boolean Whether the ratio matches exactly]
   function ScreenIsRatio(w, h)
     return (aspect == w / h)
   end
 end
 
--- A function to scale a font size to the screen.
+--- Scales a font size to the screen height, tripling it first.
+--
+-- The reference height is 1200 on 16:10 screens, 1024 on 4:3 screens and 1080 otherwise.
+-- @param size [Number Font size]
+-- @return [Number The scaled size]
+-- @see cw.core:HDFontScreenScale
 function cw.core:FontScreenScale(size)
   size = size * 3
 
@@ -227,7 +320,11 @@ function cw.core:FontScreenScale(size)
   return size * (ScrH() / 1080)
 end
 
--- A function to scale a font size to the screen without multiplying.
+--- Scales a font size to the screen height without tripling it.
+--
+-- Uses the same reference heights as `cw.core:FontScreenScale`.
+-- @param size [Number Font size]
+-- @return [Number The scaled size]
 function cw.core:HDFontScreenScale(size)
   if ScreenIsRatio(16, 10) then
     return size * (ScrH() / 1200)
@@ -238,7 +335,10 @@ function cw.core:HDFontScreenScale(size)
   return size * (ScrH() / 1080)
 end
 
--- A function to get a material.
+--- Returns a material, creating and caching it on first use.
+-- @param materialPath [String Material path; any other value is returned unchanged]
+-- @param pngParameters=nil [String Parameters for `Material`, such as `'smooth'`]
+-- @return [IMaterial The material]
 function cw.core:GetMaterial(materialPath, pngParameters)
   if typeof(materialPath) != 'string' then
     return materialPath
@@ -253,12 +353,19 @@ function cw.core:GetMaterial(materialPath, pngParameters)
   return self.CachedMaterial[materialPath]
 end
 
--- A function to get the 3D font size.
+--- Returns the font size used for 3D2D text.
+-- @return [Number Always `128`]
 function cw.core:GetFontSize3D()
   return 128
 end
 
--- A function to get the size of text.
+--- Returns the size of a text, measured character by character.
+--
+-- Characters that measure zero width count as wide as `U`.
+-- @param font [String Font name]
+-- @param text [String The text]
+-- @return [Number Width in pixels, Number Height in pixels]
+-- @see cw.core:GetCachedTextSize
 function cw.core:GetTextSize(font, text)
   local defaultWidth, defaultHeight = self:GetCachedTextSize(font, 'U')
   local height = defaultHeight
@@ -284,7 +391,11 @@ function cw.core:GetTextSize(font, text)
   return width, height
 end
 
--- A function to calculate alpha from a distance.
+--- Returns an alpha value that fades from 255 to 0 with distance.
+-- @param maximum [Number Distance at which the alpha reaches 0]
+-- @param start [Vector Start position; a player uses its shoot position, an entity its position]
+-- @param finish [Vector End position; a player uses its shoot position, an entity its position]
+-- @return [Number The alpha, 0 to 255]
 function cw.core:CalculateAlphaFromDistance(maximum, start, finish)
   if type(start) == 'Player' then
     start = start:GetShootPos()
@@ -301,7 +412,14 @@ function cw.core:CalculateAlphaFromDistance(maximum, start, finish)
   return math.Clamp(255 - ((255 / maximum) * (start:Distance(finish))), 0, 255)
 end
 
--- A function to wrap text into a table.
+--- Wraps text into lines that fit a width.
+--
+-- Lines are appended to `baseTable`. Breaks happen at any character, not only at spaces.
+-- Does nothing when the width is not positive or the text is empty.
+-- @param text [String The text to wrap]
+-- @param font [String Font name]
+-- @param maximumWidth [Number Maximum line width in pixels]
+-- @param baseTable [List<String> Table the lines are added to]
 function cw.core:WrapText(text, font, maximumWidth, baseTable)
   if maximumWidth <= 0 or !text or text == '' then
     return
@@ -336,7 +454,15 @@ function cw.core:WrapText(text, font, maximumWidth, baseTable)
   end
 end
 
--- A function to handle an entity's menu.
+--- Opens the context menu for an entity.
+--
+-- Options come from the `GetEntityMenuOptions` hook and, for `cw_item` entities, from the item's
+-- `GetOptions`. Item options are handled by the item's `HandleOptions` and sent to the server
+-- with the `MenuOption` netstream; other options are sent with `cw.entity:ForceMenuOption`.
+-- Option tables may set `isOrdered` (show first) and `toolTip`. Does nothing when there are no
+-- options.
+-- @param entity [Entity The entity the menu is for]
+-- @return [Panel The menu, or `nil` when no menu was opened]
 function cw.core:HandleEntityMenu(entity)
   local options = {}
   local itemTable = nil
@@ -432,6 +558,15 @@ function cw.core:HandleEntityMenu(entity)
   end
 end
 
+--- Draws a textured rectangle.
+--
+-- Does nothing when no material is given.
+-- @param x [Number X position]
+-- @param y [Number Y position]
+-- @param w [Number Width]
+-- @param h [Number Height]
+-- @param material [IMaterial The material]
+-- @param color=Color(255, 255, 255) [Color Draw color]
 function draw.TexturedRect(x, y, w, h, material, color)
   if !material then return end
 
@@ -442,17 +577,40 @@ function draw.TexturedRect(x, y, w, h, material, color)
   surface.DrawTexturedRect(x, y, w, h)
 end
 
--- A function to get what type of entity menu to use.
+--- Returns whether entity menus are shown as a Derma menu.
+--
+-- `cw.core:HandleEntityMenu` only opens a menu when this is `true`.
+-- @return [Boolean Always `true`]
 function cw.core:GetEntityMenuType()
   return true
 end
 
--- A function to get the gradient texture.
+--- Returns the gradient texture.
+-- @return [IMaterial The material stored in `cw.GradientTexture`, made from the `gradient` option]
 function cw.core:GetGradientTexture()
   return cw.GradientTexture
 end
 
--- A function to add a menu from data.
+--- Fills a Derma menu from a table of options.
+--
+-- Keys are option names, sorted alphabetically. A function value becomes an option that runs
+-- it, a table becomes a submenu (unless it has `isArgTable` set), and anything else is passed to
+-- the callback, which adds the option itself. When `menuPanel` is `nil` a new menu is created and
+-- opened, or removed if it has no options.
+--
+-- ```
+-- cw.core:AddMenuFromData(nil, {
+--   ['Say hello'] = function() RunConsoleCommand('say', 'Hello') end,
+--   ['More'] = { ['Wave'] = function() RunConsoleCommand('act', 'wave') end }
+-- })
+-- ```
+--
+-- @param menuPanel=nil [Panel Menu to add to; `nil` creates one]
+-- @param data [Map Options keyed by name]
+-- @param Callback=nil [Function Called with the menu, name and value for other values]
+-- @param iMinimumWidth=nil [Number Minimum width of a new menu]
+-- @param bManualOpen=false [Boolean Do not open a new menu automatically]
+-- @return [Panel The new menu, or `nil` when an existing menu was passed]
 function cw.core:AddMenuFromData(menuPanel, data, Callback, iMinimumWidth, bManualOpen)
   local bCreated = false
   local options = {}
@@ -498,7 +656,15 @@ function cw.core:AddMenuFromData(menuPanel, data, Callback, iMinimumWidth, bManu
   return menuPanel
 end
 
--- A function to adjust the width of text.
+--- Widens a width so that a text fits in it.
+--
+-- `&` characters are measured as `U`.
+-- @param font [String Font name]
+-- @param text [String The text]
+-- @param width [Number Current width]
+-- @param addition=0 [Number Padding added when the width has to grow]
+-- @param extra=0 [Number Extra width added to the text measurement]
+-- @return [Number The text width plus `addition` if it is wider, else `width`]
 function cw.core:AdjustMaximumWidth(font, text, width, addition, extra)
   local textString = tostring(self:Replace(text, '&', 'U'))
   local textWidth = self:GetCachedTextSize(font, textString) + (extra or 0)
@@ -510,12 +676,16 @@ function cw.core:AdjustMaximumWidth(font, text, width, addition, extra)
   return width
 end
 
---[[
-  A function to add a center hint. If bNoSound is false then no
-  sound will play, otherwise if it is a string then it will
-  play that sound.
---]]
-
+--- Shows a hint in the middle of the screen.
+--
+-- At most 10 center hints are shown; identical hints already on screen are skipped unless
+-- `showDuplicated` is set.
+-- @param text [String The hint text]
+-- @param delay [Number Seconds the hint stays before fading]
+-- @param color=nil [Color Text color, or the name of a color option; defaults to white]
+-- @param bNoSound=nil [String Sound to play; `nil` plays a blip and `false` plays nothing]
+-- @param showDuplicated=false [Boolean Show the hint even when the same text is on screen]
+-- @see cw.core:AddTopHint
 function cw.core:AddCenterHint(text, delay, color, bNoSound, showDuplicated)
   local colorWhite = cw.option:GetColor('white')
 
@@ -611,12 +781,16 @@ local function UpdateCenterHint(index, hintInfo, iCount)
   return (timeLeft < 0.1)
 end
 
---[[
-  A function to add a top hint. If bNoSound is false then no
-  sound will play, otherwise if it is a string then it will
-  play that sound.
---]]
-
+--- Shows a hint in the top right corner of the screen.
+--
+-- At most 10 top hints are shown; identical hints already on screen are skipped unless
+-- `showDuplicated` is set.
+-- @param text [String The hint text]
+-- @param delay [Number Seconds the hint stays before fading]
+-- @param color=nil [Color Text color, or the name of a color option; defaults to white]
+-- @param bNoSound=nil [String Sound to play; `nil` plays a blip and `false` plays nothing]
+-- @param showDuplicated=false [Boolean Show the hint even when the same text is on screen]
+-- @see cw.core:AddCenterHint
 function cw.core:AddTopHint(text, delay, color, bNoSound, showDuplicated)
   local colorWhite = cw.option:GetColor('white')
 
@@ -712,7 +886,8 @@ local function UpdateHint(index, hintInfo, iCount)
   return (timeLeft < 0.1)
 end
 
--- A function to calculate the hints.
+--- Animates the top and center hints and removes the ones that have expired.
+-- @warning [Internal] Called every frame by the kernel.
 function cw.core:CalculateHints()
   for k, v in pairs(self.Hints) do
     if UpdateHint(k, v, #self.Hints) then
@@ -764,6 +939,8 @@ do
   local colorWhite = Color(255, 255, 255)
   local colorInfo = Color(255, 255, 255)
 
+  --- Caches the limb textures and names and the colors and font used by the HUD.
+  -- @warning [Internal] Called by the kernel once the options are available.
   function cw.core:CacheLimbs()
     texInfo = {
       textures = {
@@ -793,7 +970,12 @@ do
     colorInfo = cw.option:GetColor('information')
   end
 
-  -- A function to draw the date and time.
+  --- Draws the tab menu's date and time box, bars, player info and limb damage diagram.
+  --
+  -- While the info menu is open it also draws and positions the quick menu panel. Runs the
+  -- `PlayerCanSeeDateTime`, `PaintInfoMenuExtras`, `PostDrawDateTimeBox` and
+  -- `PlayerCanSeeLimbDamage` hooks and stores the box layout in `cw.LastDateTimeInfo`.
+  -- @warning [Internal] Called by the kernel while the tab menu is drawn.
   function cw.core:DrawDateTime()
     local scrW = ScrW()
     local scrH = ScrH()
@@ -957,7 +1139,10 @@ do
   end
 end
 
--- A function to draw the top hints.
+--- Draws the top and center hints.
+--
+-- Each kind is only drawn when `PlayerCanSeeHints` or `PlayerCanSeeCenterHints` returns `true`.
+-- @warning [Internal] Called by the kernel while the HUD is drawn.
 function cw.core:DrawHints()
   if hook.Run('PlayerCanSeeHints') and #self.Hints > 0 then
     local hintsFont = cw.option:GetFont('hints_text')
@@ -978,7 +1163,11 @@ function cw.core:DrawHints()
   end
 end
 
--- A function to draw the top bars.
+--- Draws every registered top bar from `cw.bars.stored` below a position.
+--
+-- Only draws when the `PlayerCanSeeBars` hook returns `true`. Moves `info.y` below the last bar.
+-- @param info [Map Layout table with `x`, `y` and `width` fields; `y` is updated]
+-- @param class [String Where the bars are drawn; `'tab'` centers them on `info.x`]
 function cw.core:DrawBars(info, class)
   if hook.Run('PlayerCanSeeBars', class) then
     local barTextFont = cw.option:GetFont('bar_text')
@@ -1017,7 +1206,8 @@ function cw.core:DrawBars(info, class)
   end
 end
 
--- A function to get the ESP info.
+--- Returns the table admin ESP entries are collected in.
+-- @return [List The ESP info table]
 function cw.core:GetESPInfo()
   return self.ESPInfo
 end
@@ -1034,7 +1224,11 @@ do
   local color_lightblue = Color(200, 200, 255)
   local vector_salesman_offset = Vector(0, 0, 80)
 
-  -- A function to draw the admin ESP.
+  --- Draws the admin ESP when the `CW_CONVAR_ADMINESP` ConVar is on.
+  --
+  -- Shows every other player's name, Steam name, weapon, status, bounding box and health and armor
+  -- bars, plus persistent props, items and salesmen when their ESP ConVars are on.
+  -- @warning [Internal] Called by the kernel while the HUD is drawn.
   function cw.core:DrawAdminESP()
     if CW_CONVAR_ADMINESP:GetInt() == 1 then
       if IsValid(cw.client) and cw.client:Alive() then
@@ -1162,7 +1356,23 @@ do
   end
 end
 
--- A function to draw a bar with a value and a maximum.
+--- Draws a progress bar with a value and a maximum.
+--
+-- The bar's fields are copied into `barInfo` where it has none, and that table is passed to the
+-- `PreDrawBar`, `PostDrawBar` and `DrawBarLimit` hooks; return `true` from one to replace that
+-- part of the drawing. When `barInfo.maxValue` is more than 5 below the maximum, the part above
+-- it is shaded, with `barInfo.limitText` drawn on it.
+-- @param x [Number X position]
+-- @param y [Number Y position]
+-- @param width [Number Width]
+-- @param height [Number Height]
+-- @param color [Color Color of the filled part]
+-- @param text [String Text drawn in the middle of the bar]
+-- @param value [Number Current value]
+-- @param maximum [Number Maximum value]
+-- @param flash [Boolean Make the bar pulse]
+-- @param barInfo [Map Extra bar options, such as `maxValue`, `limitText` or `drawBackground`]
+-- @return [Number The bar's y position]
 function cw.core:DrawBar(x, y, width, height, color, text, value, maximum, flash, barInfo)
   local backgroundColor = cw.option:GetColor('background')
   local foregroundColor = cw.option:GetColor('foreground')
@@ -1263,18 +1473,32 @@ function cw.core:DrawBar(x, y, width, height, color, text, value, maximum, flash
   return barInfo.y
 end
 
--- A function to set the recognise menu.
+--- Stores the recognise menu and gives it its title.
+-- @param menuPanel [Panel The menu]
+-- @see cw.core:GetRecogniseMenu
 function cw.core:SetRecogniseMenu(menuPanel)
   cw.RecogniseMenu = menuPanel
   self:SetTitledMenu(menuPanel, '#RecogniseMenu')
 end
 
--- A function to get the recognise menu.
+--- Returns the recognise menu.
+-- @param menuPanel [Panel Unused]
+-- @return [Panel The menu set with `cw.core:SetRecogniseMenu`, or `nil`]
 function cw.core:GetRecogniseMenu(menuPanel)
   return cw.RecogniseMenu
 end
 
--- A function to override the main font.
+--- Temporarily replaces the `main_text` font, or restores it.
+--
+-- Text drawn with `cw.core:DrawInfo` and `cw.core:DrawSimpleText` uses this font.
+--
+-- ```
+-- cw.core:OverrideMainFont(cw.option:GetFont('hints_text'))
+--   cw.core:DrawInfo('Hello', x, y, color)
+-- cw.core:OverrideMainFont(false)
+-- ```
+--
+-- @param font [String Font to use, or `false` to restore the original font]
 function cw.core:OverrideMainFont(font)
   if font then
     if !cw.PreviousMainFont then
@@ -1287,12 +1511,23 @@ function cw.core:OverrideMainFont(font)
   end
 end
 
--- A function to get the screen's center.
+--- Returns the point HUD elements are centered on, slightly below the middle of the screen.
+-- @return [Number X position, Number Y position]
 function cw.core:GetScreenCenter()
   return ScrW() / 2, (ScrH() / 2) + 32
 end
 
--- A function to draw some simple text.
+--- Draws text in the `main_text` font with a dark outline.
+-- @param text [String The text]
+-- @param x [Number X position, rounded]
+-- @param y [Number Y position, rounded]
+-- @param color [Color Text color]
+-- @param alignX=nil [Number A `TEXT_ALIGN_*` horizontal alignment]
+-- @param alignY=nil [Number A `TEXT_ALIGN_*` vertical alignment]
+-- @param shadowless=false [Boolean Skip the outline]
+-- @param shadowDepth=1 [Number Thickness of the outline in pixels]
+-- @return [Number Y position below the text, Number Width of the text]
+-- @see cw.core:OverrideMainFont
 function cw.core:DrawSimpleText(text, x, y, color, alignX, alignY, shadowless, shadowDepth)
   local mainTextFont = cw.option:GetFont('main_text')
   local realX = math.Round(x)
@@ -1315,21 +1550,28 @@ function cw.core:DrawSimpleText(text, x, y, color, alignX, alignY, shadowless, s
   return realY + height + 2, width
 end
 
--- A function to get the black fade alpha.
+--- Returns the alpha of the black screen fade.
+-- @return [Number The alpha of the fade in or out, or `0` when there is none]
 function cw.core:GetBlackFadeAlpha()
   return cw.BlackFadeIn or cw.BlackFadeOut or 0
 end
 
--- A function to get whether the screen is faded black.
+--- Returns whether the screen has completely faded to black.
+-- @return [Boolean Whether the black fade in is at full alpha]
 function cw.core:IsScreenFadedBlack()
   return (cw.BlackFadeIn == 255)
 end
 
---[[
-  A function to print colored text to the console.
-  Sure, it's hacky, but Garry is being a douche.
---]]
-
+--- Prints colored text to the chat and console with the engine `chat.AddText`.
+--
+-- A player argument adds their name in their team color; a color applies to the next argument;
+-- other values without a color before them are white.
+--
+-- ```
+-- cw.core:PrintColoredText(player, Color(255, 0, 0), ' was arrested.')
+-- ```
+--
+-- @param ... [Any Players, colors and text]
 function cw.core:PrintColoredText(...)
   local currentColor = nil
   local colorWhite = cw.option:GetColor('white')
@@ -1354,12 +1596,16 @@ function cw.core:PrintColoredText(...)
   chatbox.oldAddText(unpack(text))
 end
 
--- A function to get whether a custom crosshair is used.
+--- Returns whether a custom crosshair is in use.
+-- @return [Boolean The value of `cw.CustomCrosshair`]
 function cw.core:UsingCustomCrosshair()
   return cw.CustomCrosshair
 end
 
--- A function to get a cached text size.
+--- Returns the size of a text, caching it per font.
+-- @param font [String Font name]
+-- @param text [String The text]
+-- @return [Number Width in pixels, Number Height in pixels]
 function cw.core:GetCachedTextSize(font, text)
   if !cw.CachedTextSizes then
     cw.CachedTextSizes = {}
@@ -1378,7 +1624,17 @@ function cw.core:GetCachedTextSize(font, text)
   return cw.CachedTextSizes[font][text][1], cw.CachedTextSizes[font][text][2]
 end
 
--- A function to draw scaled information at a position.
+--- Draws information text with the main font scaled; see `cw.core:DrawInfo`.
+-- @param scale [Number Font size multiplier for `cwMainText`]
+-- @param text [String The text, translated before drawing]
+-- @param x [Number X position]
+-- @param y [Number Y position]
+-- @param color [Color Text color]
+-- @param alpha=nil [Number Alpha; defaults to the color's alpha]
+-- @param bAlignLeft=false [Boolean Draw from `x` instead of centering on it]
+-- @param Callback=nil [Function Called with `x, y, width, height`; returns the new `x, y`]
+-- @param shadowDepth=1 [Number Thickness of the outline in pixels]
+-- @return [Number Y position below the text]
 function cw.core:DrawInfoScaled(scale, text, x, y, color, alpha, bAlignLeft, Callback, shadowDepth)
   local newFont = cw.fonts:GetMultiplied('cwMainText', scale)
   local returnY = 0
@@ -1392,7 +1648,26 @@ function cw.core:DrawInfoScaled(scale, text, x, y, color, alpha, bAlignLeft, Cal
   return returnY
 end
 
--- A function to draw information at a position.
+--- Draws outlined information text in the `main_text` font.
+--
+-- The text is translated first and centered on `x` unless `bAlignLeft` is set.
+--
+-- ```
+-- y = cw.core:DrawInfo('#Hint_Example', x, y, Color(255, 255, 255), 200, true, function(x, y, w, h)
+--   return x, y - h
+-- end)
+-- ```
+--
+-- @param text [String The text, or a language phrase]
+-- @param x [Number X position]
+-- @param y [Number Y position]
+-- @param color [Color Text color]
+-- @param alpha=nil [Number Alpha; defaults to the color's alpha]
+-- @param bAlignLeft=false [Boolean Draw from `x` instead of centering on it]
+-- @param Callback=nil [Function Called with `x, y, width, height`; returns the new `x, y`]
+-- @param shadowDepth=1 [Number Thickness of the outline in pixels]
+-- @return [Number Y position below the text, Number Width of the text]
+-- @see cw.core:OverrideMainFont
 function cw.core:DrawInfo(text, x, y, color, alpha, bAlignLeft, Callback, shadowDepth)
   text = cw.lang:TranslateText(text)
 
@@ -1420,12 +1695,19 @@ function cw.core:DrawInfo(text, x, y, color, alpha, bAlignLeft, Callback, shadow
   end
 end
 
--- A function to get the player info box.
+--- Returns the layout of the player info box from the last time it was drawn.
+-- @return [Map The box info returned by `cw.core:DrawPlayerInfo`, or `nil`]
 function cw.core:GetPlayerInfoBox()
   return cw.PlayerInfoBox
 end
 
--- A function to draw the local player's information.
+--- Draws the local player's information box from `cw.PlayerInfoText`.
+--
+-- Only draws when the `PlayerCanSeePlayerInfo` hook returns `true` and there is text to show.
+-- The `PreDrawPlayerInfo` hook can return `true` to replace the drawing; `PostDrawPlayerInfo`
+-- runs afterwards. Moves `info.y` below the box.
+-- @param info [Map Layout table with `x`, `y` and `width` fields; `y` is updated]
+-- @return [Map The box layout (`x`, `y`, `width`, `height`, `information`, `subInformation`...)]
 function cw.core:DrawPlayerInfo(info)
   if !hook.Run('PlayerCanSeePlayerInfo') then
     return
@@ -1504,12 +1786,19 @@ function cw.core:DrawPlayerInfo(info)
   return boxInfo
 end
 
--- A function to get whether the info menu panel can be created.
+--- Returns whether there are quick menu entries to show in the info menu.
+-- @return [Boolean Whether `cw.quickmenu` has any entries or categories]
 function cw.core:CanCreateInfoMenuPanel()
   return (table.Count(cw.quickmenu.stored) > 0 or table.Count(cw.quickmenu.categories) > 0)
 end
 
--- A function to create the info menu panel.
+--- Creates the info menu panel from the quick menu entries.
+--
+-- Each entry's `GetInfo` returns its option table (`name`, `Callback`, `options`, `toolTip`).
+-- The panel is stored in `cw.InfoMenuPanel` and starts hidden. Does nothing if it already exists.
+-- @param x [Number X position]
+-- @param y [Number Y position]
+-- @param iMinimumWidth [Number Width of the panel]
 function cw.core:CreateInfoMenuPanel(x, y, iMinimumWidth)
   if IsValid(cw.InfoMenuPanel) then return end
 
@@ -1597,7 +1886,10 @@ function cw.core:CreateInfoMenuPanel(x, y, iMinimumWidth)
   end
 end
 
--- A function to get the ragdoll eye angles.
+--- Returns the eye angles used while the local player's view follows their ragdoll.
+--
+-- Creates the angle the first time it is needed.
+-- @return [Angle The angle stored in `cw.RagdollEyeAngles`]
 function cw.core:GetRagdollEyeAngles()
   if !cw.RagdollEyeAngles then
     cw.RagdollEyeAngles = Angle(0, 0, 0)
@@ -1606,7 +1898,15 @@ function cw.core:GetRagdollEyeAngles()
   return cw.RagdollEyeAngles
 end
 
--- A function to draw a gradient.
+--- Draws a gradient rectangle.
+--
+-- Does nothing when the gradient type has no texture in `cw.Gradients`.
+-- @param gradientType [Number A `GRADIENT_*` constant, such as `GRADIENT_RIGHT`]
+-- @param x [Number X position]
+-- @param y [Number Y position]
+-- @param width [Number Width]
+-- @param height [Number Height]
+-- @param color [Color Draw color]
 function cw.core:DrawGradient(gradientType, x, y, width, height, color)
   if !cw.Gradients or !cw.Gradients[gradientType] then
     return
@@ -1617,7 +1917,17 @@ function cw.core:DrawGradient(gradientType, x, y, width, height, color)
   surface.DrawTexturedRect(x, y, width, height)
 end
 
--- A function to draw a simple gradient box.
+--- Draws a rounded box at three quarters of the color's alpha.
+--
+-- Despite the name, no gradient is drawn on top.
+-- @param cornerSize [Number Corner radius]
+-- @param x [Number X position]
+-- @param y [Number Y position]
+-- @param width [Number Width]
+-- @param height [Number Height]
+-- @param color [Color Box color]
+-- @param maxAlpha=100 [Number Unused]
+-- @see cw.core:DrawTexturedGradientBox
 function cw.core:DrawSimpleGradientBox(cornerSize, x, y, width, height, color, maxAlpha)
   local gradientAlpha = math.min(color.a, maxAlpha or 100)
 
@@ -1631,7 +1941,15 @@ function cw.core:DrawSimpleGradientBox(cornerSize, x, y, width, height, color, m
   end*/
 end
 
--- A function to draw a textured gradient.
+--- Draws a rounded box at three quarters of the color's alpha with the gradient texture over it.
+-- @param cornerSize [Number Corner radius; the gradient is inset by this much]
+-- @param x [Number X position]
+-- @param y [Number Y position]
+-- @param width [Number Width]
+-- @param height [Number Height]
+-- @param color [Color Box color]
+-- @param maxAlpha=100 [Number Maximum alpha of the gradient]
+-- @see cw.core:GetGradientTexture
 function cw.core:DrawTexturedGradientBox(cornerSize, x, y, width, height, color, maxAlpha)
   local gradientAlpha = math.min(color.a, maxAlpha or 100)
 
@@ -1644,7 +1962,13 @@ function cw.core:DrawTexturedGradientBox(cornerSize, x, y, width, height, color,
   end
 end
 
--- A function to draw a player information sub box.
+--- Draws one sub box of the player info box.
+-- @param text [String Text of the box]
+-- @param x [Number X position]
+-- @param y [Number Y position]
+-- @param width [Number Width]
+-- @param boxInfo [Map Layout from `cw.core:DrawPlayerInfo`; uses `textHeight` and `drawBackground`]
+-- @return [Number X position, Number Y position for the next box]
 function cw.core:DrawPlayerInfoSubBox(text, x, y, width, boxInfo)
   local foregroundColor = cw.option:GetColor('foreground')
   local colorInfo = cw.option:GetColor('information')
@@ -1663,7 +1987,16 @@ function cw.core:DrawPlayerInfoSubBox(text, x, y, width, boxInfo)
   return x, y + boxHeight + 4
 end
 
--- A function to handle an item's spawn icon click.
+--- Opens the action menu for an item's spawn icon.
+--
+-- Collects the item's use, drop and destroy actions, `customFunctions` and `GetOptions`, lets
+-- the item (`OnEditFunctions`) and the `PlayerAdjustItemFunctions` and `PlayerAdjustItemMenu`
+-- hooks change them, and runs the chosen action with the `InvAction` command. Does nothing when
+-- the item has no actions and no callback is given.
+-- @param itemTable [Item The item]
+-- @param spawnIcon [Panel The clicked spawn icon; unused]
+-- @param Callback=nil [Function Called with the menu before the actions are added]
+-- @see cw.core:HandleItemSpawnIconRightClick
 function cw.core:HandleItemSpawnIconClick(itemTable, spawnIcon, Callback)
   local customFunctions = itemTable.customFunctions
   local itemFunctions = {}
@@ -1827,7 +2160,12 @@ function cw.core:HandleItemSpawnIconClick(itemTable, spawnIcon, Callback)
   itemMenu:Open()
 end
 
--- A function to handle an item's spawn icon right click.
+--- Runs an item's default action when its spawn icon is right-clicked.
+--
+-- If the item's `OnHandleRightClick` returns an action name other than `'Use'`, that action is
+-- run; otherwise the item is used when it has `OnUse`. `OnHandleUse` can delay the use.
+-- @param itemTable [Item The item]
+-- @param spawnIcon [Panel The clicked spawn icon; unused]
 function cw.core:HandleItemSpawnIconRightClick(itemTable, spawnIcon)
   if itemTable.OnHandleRightClick then
     local functionName = itemTable:OnHandleRightClick()
@@ -1859,7 +2197,12 @@ function cw.core:HandleItemSpawnIconRightClick(itemTable, spawnIcon)
   end
 end
 
--- A function to set a panel's perform layout callback.
+--- Runs a callback after a panel's `PerformLayout`.
+--
+-- The original method is kept as `OldPerformLayout`. Does nothing when the panel has no
+-- `PerformLayout`.
+-- @param target [Panel The panel]
+-- @param Callback [Function Called with the panel after each layout]
 function cw.core:SetOnLayoutCallback(target, Callback)
   if target.PerformLayout then
     target.OldPerformLayout = target.PerformLayout
@@ -1871,7 +2214,9 @@ function cw.core:SetOnLayoutCallback(target, Callback)
   end
 end
 
--- A function to set the active titled DMenu.
+--- Sets the menu that gets a title drawn above it.
+-- @param menuPanel [Panel The menu]
+-- @param title [String The title, or a language phrase]
 function cw.core:SetTitledMenu(menuPanel, title)
   cw.TitledMenu = {
     menuPanel = menuPanel,
@@ -1879,7 +2224,12 @@ function cw.core:SetTitledMenu(menuPanel, title)
   }
 end
 
--- A function to add a markup line.
+--- Appends a colored line to markup text.
+-- @param markupText [String Existing markup; a newline is added when it is not empty]
+-- @param text [String Text of the new line]
+-- @param color=nil [Color Color of the line]
+-- @return [String The new markup]
+-- @see cw.core:MarkupTextWithColor
 function cw.core:AddMarkupLine(markupText, text, color)
   if markupText != '' then
     markupText = markupText..'\n'
@@ -1888,7 +2238,11 @@ function cw.core:AddMarkupLine(markupText, text, color)
   return markupText..self:MarkupTextWithColor(text, color)
 end
 
--- A function to draw a markup tool tip.
+--- Draws a markup tool tip near a position, keeping it on the screen.
+-- @param markupObject [Map A markup object from `markup.Parse`]
+-- @param x [Number X position]
+-- @param y [Number Y position]
+-- @param alpha [Number Alpha of the tool tip]
 function cw.core:DrawMarkupToolTip(markupObject, x, y, alpha)
   local height = markupObject:GetHeight()
   local width = markupObject:GetWidth()
@@ -1909,7 +2263,11 @@ function cw.core:DrawMarkupToolTip(markupObject, x, y, alpha)
   markupObject:Draw(x, y, nil, nil, alpha)
 end
 
--- A function to override a markup object's draw function.
+--- Replaces a markup object's `Draw` method so that it draws outlined text.
+--
+-- The new method takes an extra `alphaOverride` argument after the alignment arguments.
+-- @param markupObject [Map A markup object from `markup.Parse`]
+-- @param sCustomFont=nil [String Font for every block; defaults to each block's own font]
 function cw.core:OverrideMarkupDraw(markupObject, sCustomFont)
   function markupObject:Draw(xOffset, yOffset, hAlign, vAlign, alphaOverride)
     for k, v in pairs(self.blocks) do
@@ -1947,17 +2305,24 @@ function cw.core:OverrideMarkupDraw(markupObject, sCustomFont)
   end
 end
 
--- A function to get the active markup tool tip.
+--- Returns the panel whose markup tool tip is shown.
+-- @return [Panel The panel under the cursor, or `nil`]
 function cw.core:GetActiveMarkupToolTip()
   return cw.MarkupToolTip
 end
 
--- A function to get markup from a color.
+--- Returns an opening markup color tag for a color.
+-- @param color [Color The color; alpha is ignored]
+-- @return [String The tag, such as `'<color=255,0,0>'`]
 function cw.core:ColorToMarkup(color)
   return '<color='..math.ceil(color.r)..','..math.ceil(color.g)..','..math.ceil(color.b)..'>'
 end
 
--- A function to markup text with a color.
+--- Wraps text in markup font and color tags.
+-- @param text [String The text]
+-- @param color=nil [Color Color of the text]
+-- @param scale=1 [Number Size multiplier for the `cwTooltip` font]
+-- @return [String The markup]
 function cw.core:MarkupTextWithColor(text, color, scale)
   local fontName = cw.fonts:GetMultiplied('cwTooltip', scale or 1)
   local finalText = text
@@ -1971,7 +2336,18 @@ function cw.core:MarkupTextWithColor(text, color, scale)
   return finalText
 end
 
--- A function to create a markup tool tip.
+--- Gives a panel a markup tool tip.
+--
+-- Adds `SetMarkupToolTip`, `GetMarkupToolTip` and `SetToolTip` methods and wraps
+-- `OnCursorEntered`/`OnCursorExited` so the tip shows while the cursor is over the panel.
+--
+-- ```
+-- cw.core:CreateMarkupToolTip(button)
+-- button:SetMarkupToolTip(cw.core:MarkupTextWithColor('Sells for ^50^', Color(0, 255, 0)))
+-- ```
+--
+-- @param panel [Panel The panel]
+-- @return [Panel The same panel]
 function cw.core:CreateMarkupToolTip(panel)
   panel.OldCursorExited = panel.OnCursorExited
   panel.OldCursorEntered = panel.OnCursorEntered
@@ -2027,7 +2403,12 @@ function cw.core:CreateMarkupToolTip(panel)
   return panel
 end
 
--- A function to create a custom category panel.
+--- Creates an expanded collapsible category in a panel.
+--
+-- The category is added to `parent.CategoryList`.
+-- @param categoryName [String Label of the category]
+-- @param parent [Panel The parent panel]
+-- @return [Panel The `DCollapsibleCategory`]
 function cw.core:CreateCustomCategoryPanel(categoryName, parent)
   if !parent.CategoryList then
     parent.CategoryList = {}
@@ -2042,7 +2423,10 @@ function cw.core:CreateCustomCategoryPanel(categoryName, parent)
   return collapsibleCategory
 end
 
--- A function to draw the armor bar.
+--- Adds the local player's armor bar to the top bars when they have armor.
+--
+-- The displayed value moves towards the real one by one point per call.
+-- @warning [Internal] Called by the kernel while the top bars are built.
 function cw.core:DrawArmorBar()
   local armor = math.Clamp(cw.client:Armor(), 0, cw.client:GetMaxArmor())
 
@@ -2057,7 +2441,11 @@ function cw.core:DrawArmorBar()
   end
 end
 
--- A function to draw the health bar.
+--- Adds the local player's health bar to the top bars while they are alive.
+--
+-- The displayed value moves towards the real one by one point per call, and the bar flashes
+-- below 10 health.
+-- @warning [Internal] Called by the kernel while the top bars are built.
 function cw.core:DrawHealthBar()
   local health = math.Clamp(cw.client:Health(), 0, cw.client:GetMaxHealth())
 
@@ -2072,27 +2460,34 @@ function cw.core:DrawHealthBar()
   end
 end
 
--- A function to remove the active tool tip.
+--- Hides the active Derma tool tip.
 function cw.core:RemoveActiveToolTip()
   ChangeTooltip()
 end
 
--- A function to close active Derma menus.
+--- Closes every open Derma menu.
 function cw.core:CloseActiveDermaMenus()
   CloseDermaMenus()
 end
 
--- A function to register a background blur.
+--- Blurs the screen behind a panel while it is visible.
+--
+-- The blur fades in over one second from the creation time.
+-- @param panel [Panel The panel, or a string key for a blur not tied to a panel]
+-- @param fCreateTime=SysTime() [Number Time the blur starts fading in]
+-- @see cw.core:RemoveBackgroundBlur
 function cw.core:RegisterBackgroundBlur(panel, fCreateTime)
   cw.BackgroundBlurs[panel] = fCreateTime or SysTime()
 end
 
--- A function to remove a background blur.
+--- Removes a background blur registered with `cw.core:RegisterBackgroundBlur`.
+-- @param panel [Panel The panel or string key of the blur]
 function cw.core:RemoveBackgroundBlur(panel)
   cw.BackgroundBlurs[panel] = nil
 end
 
--- A function to draw the background blurs.
+--- Draws the registered background blurs.
+-- @warning [Internal] Called by the kernel while the HUD is drawn.
 function cw.core:DrawBackgroundBlurs()
   local scrH, scrW = ScrH(), ScrW()
   local sysTime = SysTime()
@@ -2124,19 +2519,27 @@ function cw.core:DrawBackgroundBlurs()
   end
 end
 
--- A function to get the notice panel.
+--- Returns the notice panel when it is visible.
+-- @return [Panel The panel, or `nil`]
 function cw.core:GetNoticePanel()
   if IsValid(cw.NoticePanel) and cw.NoticePanel:IsVisible() then
     return cw.NoticePanel
   end
 end
 
--- A function to set the notice panel.
+--- Sets the notice panel.
+-- @param noticePanel [Panel The panel]
 function cw.core:SetNoticePanel(noticePanel)
   cw.NoticePanel = noticePanel
 end
 
--- A function to add some cinematic text.
+--- Queues cinematic text, shown between black bars at the top and bottom of the screen.
+-- @param text [String The text]
+-- @param color=nil [Color Text color; defaults to white]
+-- @param barLength=ScrH() * 8 [Number Height of the bars in pixels]
+-- @param hangTime=3 [Number Seconds the text stays once the bars are in]
+-- @param font=nil [String Font; defaults to the `cinematic_text` font]
+-- @param bThisOnly=false [Boolean Replace the current cinematic instead of queueing]
 function cw.core:AddCinematicText(text, color, barLength, hangTime, font, bThisOnly)
   local colorWhite = cw.option:GetColor('white')
   local cinematicTable = {
@@ -2155,7 +2558,8 @@ function cw.core:AddCinematicText(text, color, barLength, hangTime, font, bThisO
   end
 end
 
--- A function to get whether the local player is using the tool gun.
+--- Returns whether the local player is holding the toolgun.
+-- @return [Boolean Whether the active weapon is `gmod_tool`]
 function cw.core:IsUsingTool()
   if IsValid(cw.client:GetActiveWeapon())
   and cw.client:GetActiveWeapon():GetClass() == 'gmod_tool' then
@@ -2165,7 +2569,8 @@ function cw.core:IsUsingTool()
   end
 end
 
--- A function to get whether the local player is using the camera.
+--- Returns whether the local player is holding the camera.
+-- @return [Boolean Whether the active weapon is `gmod_camera`]
 function cw.core:IsUsingCamera()
   if IsValid(cw.client:GetActiveWeapon())
   and cw.client:GetActiveWeapon():GetClass() == 'gmod_camera' then
@@ -2175,12 +2580,16 @@ function cw.core:IsUsingCamera()
   end
 end
 
--- A function to get the target ID data.
+--- Returns the target ID data of the entity the local player is looking at.
+-- @return [Map The value of `cw.TargetIDData`]
 function cw.core:GetTargetIDData()
   return cw.TargetIDData
 end
 
--- A function to calculate the screen fading.
+--- Fades the screen to black while the `ShouldPlayerScreenFadeBlack` hook returns `true`.
+--
+-- Fades back out afterwards; see `cw.core:GetBlackFadeAlpha`.
+-- @warning [Internal] Called by the kernel while the HUD is drawn.
 function cw.core:CalculateScreenFading()
   if hook.Run('ShouldPlayerScreenFadeBlack') then
     if !cw.BlackFadeIn then
@@ -2212,7 +2621,12 @@ function cw.core:CalculateScreenFading()
   end
 end
 
--- A function to draw a cinematic.
+--- Draws one frame of a cinematic text and advances its animation.
+--
+-- Removes the cinematic from `cw.Cinematics` once its bars have slid back out.
+-- @param cinematicTable [Map The cinematic, as added by `cw.core:AddCinematicText`]
+-- @param curTime [Number The current time]
+-- @warning [Internal] Called by the kernel for the first queued cinematic.
 function cw.core:DrawCinematic(cinematicTable, curTime)
   local maxBarLength = cinematicTable.barLength or (ScrH() / 13)
   local font = cinematicTable.font or cw.option:GetFont('cinematic_text')
@@ -2247,7 +2661,11 @@ function cw.core:DrawCinematic(cinematicTable, curTime)
   end
 end
 
--- A function to draw the cinematic introduction.
+--- Draws the credits part of the character intro and fades it in and out.
+--
+-- Uses the table from the `GetCinematicIntroInfo` hook.
+-- @param curTime [Number The current time]
+-- @warning [Internal] Called by the kernel after a character is loaded.
 function cw.core:DrawCinematicIntro(curTime)
   local cinematicInfo = hook.Run('GetCinematicIntroInfo')
   local colorWhite = cw.option:GetColor('white')
@@ -2293,7 +2711,8 @@ function cw.core:DrawCinematicIntro(curTime)
   end
 end
 
--- A function to draw the cinematic introduction bars.
+--- Draws the black bars of the character intro when the `draw_intro_bars` config is on.
+-- @warning [Internal] Called by the kernel after a character is loaded.
 function cw.core:DrawCinematicIntroBars()
   if config.GetVal('draw_intro_bars') then
     local maxBarLength = ScrH() / 8
@@ -2338,7 +2757,11 @@ function cw.core:DrawCinematicIntroBars()
   end
 end
 
--- A function to draw the cinematic info.
+--- Draws the title and text of the character intro.
+--
+-- Uses the `title` and `text` from the `GetCinematicIntroInfo` hook and fades them out once the
+-- intro screen starts.
+-- @warning [Internal] Called by the kernel after a character is loaded.
 function cw.core:DrawCinematicInfo()
   if !cw.CinematicInfoAlpha and !cw.CinematicInfoSlide then
     cw.CinematicInfoAlpha = 255
@@ -2434,7 +2857,16 @@ function cw.core:DrawCinematicInfo()
   end
 end
 
--- A function to draw some door text.
+--- Draws a door's name and text on both sides of the door.
+--
+-- The text comes from the `GetDoorInfo` hook. Nothing is drawn for invisible doors, doors whose
+-- text position hits the world, or when the door is more than 256 units away.
+-- @param entity [Entity The door]
+-- @param eyePos [Vector Position of the viewer's eyes]
+-- @param eyeAngles [Angle Angles of the viewer's eyes; unused]
+-- @param font [String Font of the text]
+-- @param nameColor [Color Color of the door name]
+-- @param textColor [Color Color of the door text]
 function cw.core:DrawDoorText(entity, eyePos, eyeAngles, font, nameColor, textColor)
   local entityColor = entity:GetColor()
 
@@ -2523,7 +2955,9 @@ function cw.core:DrawDoorText(entity, eyePos, eyeAngles, font, nameColor, textCo
   end
 end
 
--- A function to get whether the local player's character screen is open.
+--- Returns whether the character menu is open.
+-- @param isVisible=false [Boolean Also require the panel to be visible]
+-- @return [Boolean Whether the menu is open, or `nil` when it is not]
 function cw.core:IsCharacterScreenOpen(isVisible)
   if cw.character:IsPanelOpen() then
     local panel = cw.character:GetPanel()
@@ -2538,7 +2972,12 @@ function cw.core:IsCharacterScreenOpen(isVisible)
   end
 end
 
--- A function to save schema data.
+--- Saves a table to `data/clockwork/schemas/<schema>/<fileName>.txt`.
+--
+-- Prints an error and saves nothing when the data is not a table.
+-- @param fileName [String File name without extension; may contain folders]
+-- @param data [Map The data to save]
+-- @see cw.core:RestoreSchemaData
 function cw.core:SaveSchemaData(fileName, data)
   if type(data) != 'table' then
     MsgC(
@@ -2557,22 +2996,32 @@ function cw.core:SaveSchemaData(fileName, data)
   _file.Write(path, self:Serialize(data))
 end
 
--- A function to delete schema data.
+--- Deletes a schema data file.
+-- @param fileName [String File name without extension]
 function cw.core:DeleteSchemaData(fileName)
   _file.Delete('clockwork/schemas/'..self:GetSchemaFolder()..'/'..fileName..'.txt')
 end
 
--- A function to check if schema data exists.
+--- Returns whether a schema data file exists.
+-- @param fileName [String File name without extension]
+-- @return [Boolean Whether the file exists]
 function cw.core:SchemaDataExists(fileName)
   return _file.Exists('clockwork/schemas/'..self:GetSchemaFolder()..'/'..fileName..'.txt', 'DATA')
 end
 
--- A function to find schema data in a directory.
+--- Finds files in the schema data folder.
+-- @param directory [String Search pattern inside the schema data folder, such as `'logs/*'`]
+-- @return [List<String> File names, List<String> Folder names]
 function cw.core:FindSchemaDataInDir(directory)
   return _file.Find('clockwork/schemas/'..self:GetSchemaFolder()..'/'..directory, 'LUA', 'namedesc')
 end
 
--- A function to restore schema data.
+--- Loads a table saved with `cw.core:SaveSchemaData`.
+--
+-- A file that cannot be read is deleted.
+-- @param fileName [String File name without extension]
+-- @param failSafe=nil [Any Value returned when there is no data; defaults to an empty table]
+-- @return [Map The data]
 function cw.core:RestoreSchemaData(fileName, failSafe)
   if !fileName then return failSafe end
 
@@ -2604,7 +3053,12 @@ function cw.core:RestoreSchemaData(fileName, failSafe)
   end
 end
 
--- A function to restore Clockwork data.
+--- Loads a table saved with `cw.core:SaveClockworkData`.
+--
+-- A file that cannot be read is deleted.
+-- @param fileName [String File name without extension]
+-- @param failSafe=nil [Any Value returned when there is no data; defaults to an empty table]
+-- @return [Map The data]
 function cw.core:RestoreClockworkData(fileName, failSafe)
   if self:ClockworkDataExists(fileName) then
     local data = _file.Read('clockwork/'..fileName..'.txt', 'DATA')
@@ -2632,7 +3086,12 @@ function cw.core:RestoreClockworkData(fileName, failSafe)
   end
 end
 
--- A function to save Clockwork data.
+--- Saves a table to `data/clockwork/<fileName>.txt`.
+--
+-- Prints an error and saves nothing when the data is not a table.
+-- @param fileName [String File name without extension; may contain folders]
+-- @param data [Map The data to save]
+-- @see cw.core:RestoreClockworkData
 function cw.core:SaveClockworkData(fileName, data)
   if type(data) != 'table' then
     MsgC(
@@ -2651,22 +3110,33 @@ function cw.core:SaveClockworkData(fileName, data)
   _file.Write(path, self:Serialize(data))
 end
 
--- A function to check if Clockwork data exists.
+--- Returns whether a framework data file exists.
+-- @param fileName [String File name without extension]
+-- @return [Boolean Whether the file exists]
 function cw.core:ClockworkDataExists(fileName)
   return _file.Exists('clockwork/'..fileName..'.txt', 'DATA')
 end
 
--- A function to delete Clockwork data.
+--- Deletes a framework data file.
+-- @param fileName [String File name without extension]
 function cw.core:DeleteClockworkData(fileName)
   _file.Delete('clockwork/'..fileName..'.txt')
 end
 
--- A function to run a Clockwork command.
+--- Runs a framework command through the `cwCmd` console command.
+--
+-- ```
+-- cw.core:RunCommand('InvAction', 'use', itemTable.uniqueID, itemTable.itemID)
+-- ```
+--
+-- @param command [String Name of the command]
+-- @param ... [Any Arguments of the command]
 function cw.core:RunCommand(command, ...)
   RunConsoleCommand('cwCmd', command, ...)
 end
 
--- A function to get whether the local player is choosing a character.
+--- Returns whether the local player is in the character menu.
+-- @return [Boolean `true` while the menu is open or has not been created yet]
 function cw.core:IsChoosingCharacter()
   if cw.character:GetPanel() then
     return cw.character:IsPanelOpen()
@@ -2675,7 +3145,8 @@ function cw.core:IsChoosingCharacter()
   end
 end
 
--- A function to include the schema.
+--- Loads the schema with `cw.core:LoadSchema` when a schema folder is set.
+-- @warning [Internal] Called by the kernel while the gamemode loads.
 function cw.core:IncludeSchema()
   local schemaFolder = self:GetSchemaFolder()
 
@@ -2684,6 +3155,25 @@ function cw.core:IncludeSchema()
   end
 end
 
+--- Opens a modal dialog that asks for a number with a slider.
+--
+-- ```
+-- Derma_NumRequest('Volume', 'Choose a volume.', 50, 0, 100, 0, function(value)
+--   RunConsoleCommand('volume', value / 100)
+-- end)
+-- ```
+--
+-- @param strTitle [String Window title]
+-- @param strText [String Message above the slider]
+-- @param nDefaultValue=0 [Number Initial value]
+-- @param min=0 [Number Minimum value]
+-- @param max=256 [Number Maximum value]
+-- @param dec=0 [Number Number of decimals]
+-- @param fnEnter [Function Called with the value when the player confirms]
+-- @param fnCancel=nil [Function Called with the value when the player cancels]
+-- @param strButtonText='#DermaRequest_OK' [String Text of the confirm button]
+-- @param strButtonCancelText='#DermaRequest_confirmQuery_Cancel' [String Text of the cancel button]
+-- @return [Panel The dialog window]
 function Derma_NumRequest(
   strTitle,
   strText,
@@ -2771,7 +3261,12 @@ entityMeta.ClockworkFireBullets = entityMeta.ClockworkFireBullets or entityMeta.
 weaponMeta.OldGetPrintName = weaponMeta.OldGetPrintName or weaponMeta.GetPrintName
 playerMeta.SteamName = playerMeta.SteamName or playerMeta.Name
 
--- A function to make a player fire bullets.
+--- Fires bullets from the entity after letting hooks adjust them.
+--
+-- Runs `PlayerAdjustBulletInfo` for players and `EntityFireBullets` for every entity, then calls
+-- the engine method, kept as `Entity:ClockworkFireBullets`.
+-- @param bulletInfo [Map The bullet table, which hooks may change]
+-- @param ... [Any Extra arguments for the engine method]
 function entityMeta:FireBullets(bulletInfo, ...)
   if self:IsPlayer() then
     hook.Run('PlayerAdjustBulletInfo', self, bulletInfo)
@@ -2781,7 +3276,10 @@ function entityMeta:FireBullets(bulletInfo, ...)
   return self:ClockworkFireBullets(bulletInfo, ...)
 end
 
--- A function to get a weapon's print name.
+--- Returns the weapon's print name, using its item's name when it belongs to an item.
+--
+-- Weapons without an item use the engine method, kept as `Weapon:OldGetPrintName`.
+-- @return [String The print name]
 function weaponMeta:GetPrintName()
   local itemTable = item.GetByWeapon(self)
 
@@ -2792,7 +3290,14 @@ function weaponMeta:GetPrintName()
   end
 end
 
--- A function to get a player's name.
+--- Returns the player's character name.
+--
+-- Uses the `NameOverride` net variable unless `bRealName` is set, then the character name, and
+-- falls back to the Steam name (`Player:SteamName`) when there is no character.
+-- @param bRealName=false [Boolean Ignore the name override]
+-- @return [String The name]
+-- @alias [Player.GetName]
+-- @alias [Player.Nick]
 function playerMeta:Name(bRealName)
   local name = (!bRealName and self:GetNetVar('NameOverride', nil)) or self:GetDTString(STRING_NAME)
 
@@ -2803,17 +3308,24 @@ function playerMeta:Name(bRealName)
   end
 end
 
--- A function to get a player's playback rate.
+--- Returns the player's animation playback rate.
+-- @return [Number The rate, `1` by default]
 function playerMeta:GetPlaybackRate()
   return self.cwPlaybackRate or 1
 end
 
--- A function to get whether a player is noclipping.
+--- Returns whether the player is in noclip outside a vehicle.
+-- @return [Boolean Whether the player is noclipping]
 function playerMeta:IsNoClipping()
   return cw.player:IsNoClipping(self)
 end
 
--- A function to get whether a player is running.
+--- Returns whether the player is running.
+--
+-- The player must be alive, standing, out of a vehicle, not ragdolled, and flagged as running
+-- by the server.
+-- @param bNoWalkSpeed=false [Boolean Do not require moving at least at walk speed]
+-- @return [Boolean Whether the player is running]
 function playerMeta:IsRunning(bNoWalkSpeed)
   if self:Alive() and !self:IsRagdolled() and !self:InVehicle() and !self:Crouching()
   and self:GetDTBool(BOOL_ISRUNNING) then
@@ -2826,7 +3338,8 @@ function playerMeta:IsRunning(bNoWalkSpeed)
   return false
 end
 
--- A function to get a player's forced animation.
+--- Returns the player's forced animation.
+-- @return [Map Table with the `animation` field, or `nil` when no animation is forced]
 function playerMeta:GetForcedAnimation()
   local forcedAnimation = self:GetNetVar('ForceAnim')
 
@@ -2837,28 +3350,37 @@ function playerMeta:GetForcedAnimation()
   end
 end
 
--- A function to get whether a player is ragdolled.
+--- Returns whether the player is ragdolled; see `cw.player:IsRagdolled`.
+-- @param exception=nil [Number A `RAGDOLL_*` state that does not count]
+-- @param entityless=false [Boolean Check the state even when there is no ragdoll entity]
+-- @return [Boolean Whether the player is ragdolled]
 function playerMeta:IsRagdolled(exception, entityless)
   return cw.player:IsRagdolled(self, exception, entityless)
 end
 
--- A function to set a shared variable for a player.
--- Can't set them on client at all.
+--- Does nothing; shared variables can only be set on the server.
+-- @param key [String Name of the variable]
+-- @param value [Any The value]
 function playerMeta:SetSharedVar(key, value) end
 
--- A function to get a player's shared variable.
+--- Returns a networked variable of the player.
+-- @param key [String Name of the variable]
+-- @param default=nil [Any Value returned when the variable is not set]
+-- @return [Any The value]
 function playerMeta:GetSharedVar(key, default)
   return self:GetNetVar(key, default)
 end
 
--- A function to get whether a player has initialized.
+--- Returns whether the player has fully loaded and has a character.
+-- @return [Boolean The `Initialized` net variable, or `nil` for invalid players]
 function playerMeta:HasInitialized()
   if IsValid(self) then
     return self:GetNetVar('Initialized')
   end
 end
 
--- A function to get a player's gender.
+--- Returns the gender of the player's character.
+-- @return [String `GENDER_FEMALE` or `GENDER_MALE`]
 function playerMeta:GetGender()
   if self:GetNetVar('Gender') == nil then return GENDER_MALE end
 
@@ -2869,7 +3391,8 @@ function playerMeta:GetGender()
   end
 end
 
--- A function to get a player's faction.
+--- Returns the name of the player's faction.
+-- @return [String The faction name, or `'Unknown'`]
 function playerMeta:GetFaction()
   local index = self:GetNetVar('Faction')
 
@@ -2880,12 +3403,20 @@ function playerMeta:GetFaction()
   end
 end
 
--- A function to get a player's wages name.
+--- Returns what the player's class calls its wages.
+-- @return [String The wages name]
 function playerMeta:GetWagesName()
   return cw.player:GetWagesName(self)
 end
 
--- A function to get a player's data.
+--- Returns a networked player data value.
+--
+-- The default is returned when the key is not registered player data, or is player-only and
+-- the player is not the local player.
+-- @param key [String The data key]
+-- @param default=nil [Any Fallback value]
+-- @return [Any The value]
+-- @see Player:GetCharacterData
 function playerMeta:GetData(key, default)
   local playerData = cw.player:GetPlayerData(key)
 
@@ -2896,7 +3427,13 @@ function playerMeta:GetData(key, default)
   return default
 end
 
--- A function to get a player's character data.
+--- Returns a networked character data value.
+--
+-- The default is returned when the key is not registered character data (see
+-- `cw.player:AddCharacterData`), or is player-only and the player is not the local player.
+-- @param key [String The data key]
+-- @param default=nil [Any Fallback value]
+-- @return [Any The value]
 function playerMeta:GetCharacterData(key, default)
   local characterData = cw.player:GetCharacterData(key)
 
@@ -2907,7 +3444,9 @@ function playerMeta:GetCharacterData(key, default)
   return default
 end
 
--- A function to get a player's maximum armor.
+--- Returns the player's maximum armor.
+-- @param armor [Number Unused]
+-- @return [Number The `MaxAP` net variable, or `100` when it is not positive]
 function playerMeta:GetMaxArmor(armor)
   local maxArmor = self:GetNetVar('MaxAP') or 100
 
@@ -2918,7 +3457,9 @@ function playerMeta:GetMaxArmor(armor)
   end
 end
 
--- A function to get a player's maximum health.
+--- Returns the player's maximum health.
+-- @param health [Number Unused]
+-- @return [Number The `MaxHP` net variable, or `100` when it is not positive]
 function playerMeta:GetMaxHealth(health)
   local maxHealth = self:GetNetVar('MaxHP') or 100
 
@@ -2929,22 +3470,27 @@ function playerMeta:GetMaxHealth(health)
   end
 end
 
--- A function to get a player's ragdoll state.
+--- Returns the player's ragdoll state.
+-- @return [Number A `RAGDOLL_*` constant]
 function playerMeta:GetRagdollState()
   return self:GetDTInt(INT_RAGDOLLSTATE)
 end
 
--- A function to get a player's ragdoll entity.
+--- Returns the player's ragdoll entity.
+-- @return [Entity The ragdoll, or `nil` when the player is not ragdolled]
 function playerMeta:GetRagdollEntity()
   return cw.player:GetRagdollEntity(self)
 end
 
--- A function to get a player's rank within their faction.
+--- Returns the player's rank within their faction; see `cw.player:GetFactionRank`.
+-- @param character=nil [Character Character to check instead of the current one]
+-- @return [String The rank name, or `nil` when the faction has no ranks, Map The rank table]
 function playerMeta:GetFactionRank(character)
   return cw.player:GetFactionRank(self, character)
 end
 
--- A function to get a player's chat icon.
+--- Returns the icon shown next to the player in chat.
+-- @return [String Path of the icon material]
 function playerMeta:GetChatIcon()
   return cw.player:GetChatIcon(self)
 end

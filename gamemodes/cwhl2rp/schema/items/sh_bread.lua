@@ -15,11 +15,11 @@ ITEM.category = 'Consumables'
 ITEM.description = '#Item_Bread_Description'
 ITEM.hunger = 35
 
--- Called when a player uses the item.
+--- Boosts strength and endurance by 2 for two minutes.
 function ITEM:OnUse(player, itemEntity)
   player:BoostAttribute(self.name, ATB_STRENGHT, 2, 120)
   player:BoostAttribute(self.name, ATB_ENDURANCE, 2, 120)
 end
 
--- Called when a player drops the item.
+--- Lets the item be dropped; nothing else happens.
 function ITEM:OnDrop(player, position) end

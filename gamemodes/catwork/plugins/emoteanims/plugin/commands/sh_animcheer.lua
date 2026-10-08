@@ -10,7 +10,7 @@ local COMMAND = cw.command:New('AnimCheer')
 COMMAND.tip = '#Command_Animcheer_Description'
 COMMAND.flags = CMD_DEFAULT
 
--- Called when the command has been run.
+--- Plays a two second cheer on a human player who is not in a stance emote.
 function COMMAND:OnRun(player, arguments)
   local curTime = CurTime()
 

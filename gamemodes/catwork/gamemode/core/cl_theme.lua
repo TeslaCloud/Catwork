@@ -8,7 +8,7 @@
 
 local THEME = cw.theme:New('Clockwork')
 
--- Called when fonts should be created.
+--- Creates the fonts of the default theme, scaled to the screen with `cw.core:FontScreenScale`.
 function THEME:CreateFonts()
   cw.fonts:Add('cwMainText', {
     font		= 'Arial',
@@ -147,7 +147,8 @@ function THEME:CreateFonts()
   })
 end
 
--- Called when the theme is initialized.
+--- Sets the default theme's icons, option names and descriptions, colors, fonts, sounds and top
+-- bar size.
 function THEME:Initialize()
   --[[ Set Default Options --]]
   -- cw.option:SetKey("schema_logo", "test.png")
@@ -245,38 +246,48 @@ function THEME:Initialize()
   cw.bars.padding = 17
 end
 
--- Called when the menu is closed.
+--- Called when the main menu is closed; removes the main menu's background blur.
 function THEME.module:MenuClosed()
   if cw.client:HasInitialized() then
     cw.core:RemoveBackgroundBlur('MainMenu')
   end
 end
 
--- Called after the character menu has initialized.
+--- Called after the character menu has initialized; does nothing in the default theme.
+-- @param panel [Panel The character menu]
 function THEME.hooks:PostCharacterMenuInit(panel) end
 
--- Called every frame that the character menu is open.
+--- Called every frame while the character menu is open; does nothing in the default theme.
+-- @param panel [Panel The character menu]
 function THEME.hooks:PostCharacterMenuThink(panel) end
 
--- Called after the character menu is painted.
+--- Called after the character menu is painted; does nothing in the default theme.
+-- @param panel [Panel The character menu]
 function THEME.hooks:PostCharacterMenuPaint(panel) end
 
--- Called after a character menu panel is opened.
+--- Called after a character menu panel is opened; does nothing in the default theme.
+-- @param panel [Panel The character menu]
 function THEME.hooks:PostCharacterMenuOpenPanel(panel) end
 
--- Called after the main menu has initialized.
+--- Called after the main menu has initialized; does nothing in the default theme.
+-- @param panel [Panel The main menu]
 function THEME.hooks:PostMainMenuInit(panel) end
 
--- Called after the main menu is rebuilt.
+--- Called after the main menu is rebuilt; does nothing in the default theme.
+-- @param panel [Panel The main menu]
 function THEME.hooks:PostMainMenuRebuild(panel) end
 
--- Called after a main menu panel is opened.
+--- Called after a main menu panel is opened; does nothing in the default theme.
+-- @param panel [Panel The main menu]
+-- @param panelToOpen [Panel The panel that was opened]
 function THEME.hooks:PostMainMenuOpenPanel(panel, panelToOpen) end
 
--- Called after the main menu is painted.
+--- Called after the main menu is painted; does nothing in the default theme.
+-- @param panel [Panel The main menu]
 function THEME.hooks:PostMainMenuPaint(panel) end
 
--- Called every frame that the main menu is open.
+--- Called every frame while the main menu is open; does nothing in the default theme.
+-- @param panel [Panel The main menu]
 function THEME.hooks:PostMainMenuThink(panel) end
 
 THEME.skin = {}
@@ -593,6 +604,7 @@ THEME.skin.Colours.TooltipText = GWEN.TextureColor(4 + 8 * 26, 500)
   Panel
 -----------------------------------------------------------]]
 
+--- Paints a panel's background in its background color, if the panel has a background.
 function THEME.skin:PaintPanel(panel, w, h)
   if !panel.m_bBackground then return end
 
@@ -603,6 +615,7 @@ end
   Panel
 -----------------------------------------------------------]]
 
+--- Paints a drop shadow over the panel's area.
 function THEME.skin:PaintShadow(panel, w, h)
   THEME.skin.tex.Shadow(0, 0, w, h)
 end
@@ -611,6 +624,7 @@ end
   Frame
 -----------------------------------------------------------]]
 
+--- Paints a frame, with its shadow if enabled, using the inactive texture while it lacks focus.
 function THEME.skin:PaintFrame(panel, w, h)
   if panel.m_bPaintShadow then
     DisableClipping(true)
@@ -629,6 +643,7 @@ end
   Button
 -----------------------------------------------------------]]
 
+--- Paints a button in its pressed, disabled, hovered or normal state.
 function THEME.skin:PaintButton(panel, w, h)
   if !panel.m_bBackground then return end
 
@@ -651,6 +666,7 @@ end
   Tree
 -----------------------------------------------------------]]
 
+--- Paints a tree's background, if it has one.
 function THEME.skin:PaintTree(panel, w, h)
   if !panel.m_bBackground then return end
 
@@ -661,6 +677,7 @@ end
   CheckBox
 -----------------------------------------------------------]]
 
+--- Paints a check box as checked or unchecked, greyed out when disabled.
 function THEME.skin:PaintCheckBox(panel, w, h)
   if panel:GetChecked() then
     if panel:GetDisabled() then
@@ -681,6 +698,7 @@ end
   ExpandButton
 -----------------------------------------------------------]]
 
+--- Paints a tree expand button as a plus when collapsed and a minus when expanded.
 function THEME.skin:PaintExpandButton(panel, w, h)
   if !panel:GetExpanded() then
     self.tex.TreePlus(0, 0, w, h)
@@ -693,6 +711,7 @@ end
   TextEntry
 -----------------------------------------------------------]]
 
+--- Paints a text entry's background (disabled, focused or normal) and its text.
 function THEME.skin:PaintTextEntry(panel, w, h)
   if panel.m_bBackground then
     if panel:GetDisabled() then
@@ -711,6 +730,7 @@ end
   Menu
 -----------------------------------------------------------]]
 
+--- Paints a menu's background, with the icon column if the menu draws one.
 function THEME.skin:PaintMenu(panel, w, h)
   if panel:GetDrawColumn() then
     self.tex.MenuBG_Column(0, 0, w, h)
@@ -723,6 +743,7 @@ end
   Menu
 -----------------------------------------------------------]]
 
+--- Paints a menu spacer as a dark translucent line.
 function THEME.skin:PaintMenuSpacer(panel, w, h)
   surface.SetDrawColor(Color(0, 0, 0, 100))
   surface.DrawRect(0, 0, w, h)
@@ -732,6 +753,7 @@ end
   MenuOption
 -----------------------------------------------------------]]
 
+--- Paints a menu option's hover highlight and its check mark when checked.
 function THEME.skin:PaintMenuOption(panel, w, h)
   if panel.m_bBackground and (panel.Hovered or panel.Highlight) then
     self.tex.MenuBG_Hover(0, 0, w, h)
@@ -746,6 +768,7 @@ end
   MenuRightArrow
 -----------------------------------------------------------]]
 
+--- Paints the arrow that marks a menu option with a submenu.
 function THEME.skin:PaintMenuRightArrow(panel, w, h)
   self.tex.Menu.RightArrow(0, 0, w, h)
 end
@@ -754,6 +777,7 @@ end
   PropertySheet
 -----------------------------------------------------------]]
 
+--- Paints a property sheet's body below its active tab.
 function THEME.skin:PaintPropertySheet(panel, w, h)
   -- TODO: Tabs at bottom, left, right
   local ActiveTab = panel:GetActiveTab()
@@ -768,11 +792,13 @@ end
   Tab
 -----------------------------------------------------------]]
 
+--- Paints an inactive tab as a solid magenta rectangle.
 function THEME.skin:PaintTab(panel, w, h)
   surface.SetDrawColor(255, 0, 255)
   surface.DrawRect(0, 0, w, h)
 end
 
+--- Paints the active tab of a property sheet.
 function THEME.skin:PaintActiveTab(panel, w, h)
   self.tex.TabT_Active(0, 0, w, h - 2)
 end
@@ -781,6 +807,7 @@ end
   Button
 -----------------------------------------------------------]]
 
+--- Paints a frame's close button in its disabled, pressed, hovered or normal state.
 function THEME.skin:PaintWindowCloseButton(panel, w, h)
   if !panel.m_bBackground then return end
 
@@ -799,6 +826,7 @@ function THEME.skin:PaintWindowCloseButton(panel, w, h)
   self.tex.Window.Close(0, 0, w, h)
 end
 
+--- Paints a frame's minimize button in its disabled, pressed, hovered or normal state.
 function THEME.skin:PaintWindowMinimizeButton(panel, w, h)
   if !panel.m_bBackground then return end
 
@@ -817,6 +845,7 @@ function THEME.skin:PaintWindowMinimizeButton(panel, w, h)
   self.tex.Window.Mini(0, 0, w, h)
 end
 
+--- Paints a frame's maximize button in its disabled, pressed, hovered or normal state.
 function THEME.skin:PaintWindowMaximizeButton(panel, w, h)
   if !panel.m_bBackground then return end
 
@@ -839,6 +868,7 @@ end
   VScrollBar
 -----------------------------------------------------------]]
 
+--- Paints the track of a vertical scroll bar.
 function THEME.skin:PaintVScrollBar(panel, w, h)
   self.tex.Scroller.TrackV(0, 0, w, h)
 end
@@ -847,6 +877,7 @@ end
   ScrollBarGrip
 -----------------------------------------------------------]]
 
+--- Paints a scroll bar grip in its disabled, pressed, hovered or normal state.
 function THEME.skin:PaintScrollBarGrip(panel, w, h)
   if panel:GetDisabled() then
     return self.tex.Scroller.ButtonV_Disabled(0, 0, w, h)
@@ -867,6 +898,7 @@ end
   ButtonDown
 -----------------------------------------------------------]]
 
+--- Paints a scroll bar's down button in its pressed, disabled, hovered or normal state.
 function THEME.skin:PaintButtonDown(panel, w, h)
   if !panel.m_bBackground then return end
 
@@ -889,6 +921,7 @@ end
   ButtonUp
 -----------------------------------------------------------]]
 
+--- Paints a scroll bar's up button in its pressed, disabled, hovered or normal state.
 function THEME.skin:PaintButtonUp(panel, w, h)
   if !panel.m_bBackground then return end
 
@@ -911,6 +944,7 @@ end
   ButtonLeft
 -----------------------------------------------------------]]
 
+--- Paints a scroll bar's left button in its pressed, disabled, hovered or normal state.
 function THEME.skin:PaintButtonLeft(panel, w, h)
   if !panel.m_bBackground then return end
 
@@ -933,6 +967,7 @@ end
   ButtonRight
 -----------------------------------------------------------]]
 
+--- Paints a scroll bar's right button in its pressed, disabled, hovered or normal state.
 function THEME.skin:PaintButtonRight(panel, w, h)
   if !panel.m_bBackground then return end
 
@@ -955,6 +990,7 @@ end
   ComboDownArrow
 -----------------------------------------------------------]]
 
+--- Paints a combo box's arrow button, following the state of its combo box.
 function THEME.skin:PaintComboDownArrow(panel, w, h)
   if panel.ComboBox:GetDisabled() then
     return self.tex.Input.ComboBox.Button.Disabled(0, 0, w, h)
@@ -975,6 +1011,7 @@ end
   ComboBox
 -----------------------------------------------------------]]
 
+--- Paints a combo box in its disabled, open or pressed, hovered or normal state.
 function THEME.skin:PaintComboBox(panel, w, h)
   if panel:GetDisabled() then
     return self.tex.Input.ComboBox.Disabled(0, 0, w, h)
@@ -995,6 +1032,7 @@ end
   ComboBox
 -----------------------------------------------------------]]
 
+--- Paints a list box's background.
 function THEME.skin:PaintListBox(panel, w, h)
   self.tex.Input.ListBox.Background(0, 0, w, h)
 end
@@ -1003,6 +1041,7 @@ end
   NumberUp
 -----------------------------------------------------------]]
 
+--- Paints a number wang's up arrow in its disabled, pressed, hovered or normal state.
 function THEME.skin:PaintNumberUp(panel, w, h)
   if panel:GetDisabled() then
     return self.tex.Input.UpDown.Up.Disabled(0, 0, w, h)
@@ -1023,6 +1062,7 @@ end
   NumberDown
 -----------------------------------------------------------]]
 
+--- Paints a number wang's down arrow in its disabled, pressed, hovered or normal state.
 function THEME.skin:PaintNumberDown(panel, w, h)
   if panel:GetDisabled() then
     return self.tex.Input.UpDown.Down.Disabled(0, 0, w, h)
@@ -1039,6 +1079,7 @@ function THEME.skin:PaintNumberDown(panel, w, h)
   self.tex.Input.UpDown.Down.Normal(0, 0, w, h)
 end
 
+--- Paints the connecting lines of a tree node, if the tree draws lines.
 function THEME.skin:PaintTreeNode(panel, w, h)
   if !panel.m_bDrawLines then return end
 
@@ -1053,6 +1094,7 @@ function THEME.skin:PaintTreeNode(panel, w, h)
   end
 end
 
+--- Paints the selection highlight behind a selected tree node's label.
 function THEME.skin:PaintTreeNodeButton(panel, w, h)
   if !panel.m_bSelected then return end
 
@@ -1062,10 +1104,12 @@ function THEME.skin:PaintTreeNodeButton(panel, w, h)
   self.tex.Selection(38, 0, w + 6, h)
 end
 
+--- Paints a selection highlight over the panel's area.
 function THEME.skin:PaintSelection(panel, w, h)
   self.tex.Selection(0, 0, w, h)
 end
 
+--- Paints a slider knob in its disabled, pressed, hovered or normal state.
 function THEME.skin:PaintSliderKnob(panel, w, h)
   if panel:GetDisabled() then
     return self.tex.Input.Slider.H.Disabled(0, 0, w, h)
@@ -1092,17 +1136,20 @@ local function PaintNotches(x, y, w, h, num)
   end
 end
 
+--- Paints a number slider's line and its notches.
 function THEME.skin:PaintNumSlider(panel, w, h)
   surface.SetDrawColor(Color(0, 0, 0, 100))
   surface.DrawRect(8, h / 2 - 1, w - 15, 1)
   PaintNotches(8, h / 2 - 1, w - 16, 1, panel.m_iNotches)
 end
 
+--- Paints a progress bar filled to the panel's fraction.
 function THEME.skin:PaintProgress(panel, w, h)
   self.tex.ProgressBar.Back(0, 0, w, h)
   self.tex.ProgressBar.Front(0, 0, w * panel:GetFraction(), h)
 end
 
+--- Paints a collapsible category, as just its header while it is collapsed.
 function THEME.skin:PaintCollapsibleCategory(panel, w, h)
   if h < 21 then
     return self.tex.CategoryList.Header(0, 0, w, h)
@@ -1111,10 +1158,12 @@ function THEME.skin:PaintCollapsibleCategory(panel, w, h)
   self.tex.CategoryList.Inner(0, 0, w, 63)
 end
 
+--- Paints a category list's outer background.
 function THEME.skin:PaintCategoryList(panel, w, h)
   self.tex.CategoryList.Outer(0, 0, w, h)
 end
 
+--- Paints a category list button, with alternating line colors and selected and hovered states.
 function THEME.skin:PaintCategoryButton(panel, w, h)
   if panel.AltLine then
     if panel.Depressed or panel.m_bSelected then surface.SetDrawColor(self.Colours.Category.LineAlt.Button_Selected)
@@ -1129,6 +1178,7 @@ function THEME.skin:PaintCategoryButton(panel, w, h)
   surface.DrawRect(0, 0, w, h)
 end
 
+--- Paints a list view line when it is selected, hovered or an alternate line.
 function THEME.skin:PaintListViewLine(panel, w, h)
   if panel:IsSelected() then
     self.tex.Input.ListBox.EvenLineSelected(0, 0, w, h)
@@ -1139,16 +1189,19 @@ function THEME.skin:PaintListViewLine(panel, w, h)
   end
 end
 
+--- Paints a list view's background, if it has one.
 function THEME.skin:PaintListView(panel, w, h)
   if !panel.m_bBackground then return end
 
   self.tex.Input.ListBox.Background(0, 0, w, h)
 end
 
+--- Paints a tool tip's background.
 function THEME.skin:PaintTooltip(panel, w, h)
   self.tex.Tooltip(0, 0, w, h)
 end
 
+--- Paints a menu bar's background strip.
 function THEME.skin:PaintMenuBar(panel, w, h)
   self.tex.Menu_Strip(0, 0, w, h)
 end

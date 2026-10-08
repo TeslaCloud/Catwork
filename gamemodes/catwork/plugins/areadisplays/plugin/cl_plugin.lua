@@ -37,7 +37,12 @@ netstream.Hook('AreaRemove', function(data)
   end
 end)
 
--- A function to add an area name display.
+--- Starts showing an area's name.
+--
+-- `%t` in the name is replaced with the current in-game time. `Cinematic` areas are shown as cinematic
+-- text; `Scrolling` (the default) and `3D` areas are added to `cwAreaDisplays.activeDisplays`, keyed by
+-- position, unless that position is already showing.
+-- @param areaTable [Map The area, with `name`, `class`, `position` and, for 3D displays, `angles` and `scale`]
 function cwAreaDisplays:AddAreaDisplayDisplay(areaTable)
   areaTable.name = string.Replace(
     areaTable.name, '%t', cw.time:GetString()
@@ -66,7 +71,10 @@ function cwAreaDisplays:AddAreaDisplayDisplay(areaTable)
   end
 end
 
--- A function to calculate the alpha of a display.
+--- Fades an active display in over 4 seconds, holds it for 6 and fades it out over 2, then removes it
+-- from `cwAreaDisplays.activeDisplays`.
+-- @param displayInfo [Map The active display; `alpha`, `targetAlpha`, `fadeTime` and `goBackTime` are updated]
+-- @param index [String The display's key in `cwAreaDisplays.activeDisplays`]
 function cwAreaDisplays:CalculateDisplayAlpha(displayInfo, index)
   if displayInfo.targetAlpha == 255 then
     displayInfo.alpha = math.Clamp(1 - ((displayInfo.fadeTime - CurTime()) / 4), 0, 1) * 255
@@ -89,7 +97,14 @@ function cwAreaDisplays:CalculateDisplayAlpha(displayInfo, index)
   end
 end
 
--- A function to handle an area table.
+--- Handles the local player entering an area.
+--
+-- For areas that do not expire, records the area as current and runs the `PlayerEnteredArea` hook. The
+-- name is shown when the `cwShowAreas` setting is on or the area expires, and an expiring area is then
+-- marked as seen with `cwAreaDisplays:SetExpired`.
+-- @param areaTable [Map The area that was entered]
+-- @param index [Number The area's index in `cwAreaDisplays.storedList`]
+-- @return [Boolean `true` when the hook was run, otherwise `nil`]
 function cwAreaDisplays:HandleAreaTable(areaTable, index)
   local bCalledHooks = false
 
@@ -114,7 +129,8 @@ function cwAreaDisplays:HandleAreaTable(areaTable, index)
   end
 end
 
--- A function to draw a 3D display.
+--- Draws a 3D display's name in the world at its position and angles, using the large 3D2D font.
+-- @param displayInfo [Map The active display, with `areaTable` and `alpha`]
 function cwAreaDisplays:DrawDisplay3D(displayInfo)
   local large3D2DFont = cw.option:GetFont('large_3d_2d')
   local colorWhite = cw.option:GetColor('white')
@@ -139,7 +155,10 @@ function cwAreaDisplays:DrawDisplay3D(displayInfo)
   cw.core:OverrideMainFont(false)
 end
 
--- A function to draw a scrolling display.
+--- Draws a scrolling display's name, typing it out one character every 0.1 seconds with a sound and
+-- erasing it the same way once it starts fading out.
+-- @param displayInfo [Map The active display, with `areaTable` and `alpha`; its scroll state is stored in it]
+-- @param info [Map Drawing position with `x` and `y`; `y` is moved below the drawn text]
 function cwAreaDisplays:DrawDisplayScrolling(displayInfo, info)
   local introTinyTextFont = cw.option:GetFont('intro_text_tiny')
   cw.core:OverrideMainFont(introTinyTextFont)
@@ -223,7 +242,9 @@ function cwAreaDisplays:DrawDisplayScrolling(displayInfo, info)
   info.y = newY
 end
 
--- A function to get whether an area display has expired.
+--- Returns whether an expiring area has already been shown to this client.
+-- @param areaDisplay [Map The area]
+-- @return [Boolean `true` when the area expires and its name is recorded at its position as seen]
 function cwAreaDisplays:HasExpired(areaDisplay)
   if areaDisplay and areaDisplay.doesExpire then
     local position = tostring(areaDisplay.position)
@@ -236,7 +257,11 @@ function cwAreaDisplays:HasExpired(areaDisplay)
   return false
 end
 
--- A function to set an area display as expired.
+--- Marks an expiring area as seen and removes it from `cwAreaDisplays.storedList`.
+--
+-- The seen areas are saved to the schema data file `plugins/displays/<map>` on the client, so they are
+-- not shown again. Areas that do not expire are left alone.
+-- @param index [Number The area's index in `cwAreaDisplays.storedList`]
 function cwAreaDisplays:SetExpired(index)
   local areaDisplay = self.storedList[index]
 

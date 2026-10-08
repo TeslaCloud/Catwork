@@ -13,7 +13,10 @@ COMMAND.flags = CMD_DEFAULT
 COMMAND.arguments = 0
 COMMAND.alias = { 'PhysDesc', 'ChangeDesc', 'ChangeDescription' }
 
--- Called when the command has been run.
+--- Sets the caller's physical description; the arguments are the new description.
+--
+-- Without arguments it opens a text request on the caller's client and runs the command again with the answer.
+-- The text must be at least `minimum_physdesc` characters long.
 function COMMAND:OnRun(player, arguments)
   local minimumPhysDesc = config.GetVal('minimum_physdesc')
 

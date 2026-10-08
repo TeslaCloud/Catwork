@@ -6,7 +6,14 @@
   with contributions from Cloud Sixteen community.
 --]]
 
--- Called when the salesman's target ID is painted.
+--- Called when a salesman's target ID is painted; does nothing here.
+--
+-- The salesman draws its name and physical description only when a hook returns a true value.
+-- @param entity [Entity The `cw_salesman` entity]
+-- @param x [Number Horizontal position of the target ID]
+-- @param y [Number Vertical position of the target ID]
+-- @param alpha [Number Opacity of the target ID, from 0 to 255]
+-- @return [Boolean Return `true` to draw the salesman's name and description]
 function cwSalesmen:SalesmanTargetID(entity, x, y, alpha) end
 
 netstream.Hook('Salesmenu', function(data)

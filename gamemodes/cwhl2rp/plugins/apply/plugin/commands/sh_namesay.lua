@@ -8,7 +8,10 @@ local COMMAND = cw.command:New('NameSay')
 COMMAND.tip = '#Command_Namesay_Description'
 COMMAND.flags = CMD_DEFAULT
 
--- Called when the command has been run.
+--- Introduces the player by name in a full Russian sentence and makes nearby players recognise them.
+--
+-- Combine introduce themselves as a unit. Recognition only happens when `apply_recognise_enable`
+-- is on, for players within `talk_radius`.
 function COMMAND:OnRun(player)
   local name = player:Name()
   local radius = config.Get('talk_radius'):Get()

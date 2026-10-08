@@ -11,7 +11,7 @@ include('shared.lua')
 AddCSLuaFile('cl_init.lua')
 AddCSLuaFile('shared.lua')
 
--- Called when the entity initializes.
+--- Sets up the plant's default pot model and physics.
 function ENT:Initialize()
   self:SetModel('models/props/de_inferno/claypot03_damage_01.mdl')
   self:SetMoveType(MOVETYPE_VPHYSICS)
@@ -29,6 +29,7 @@ function ENT:Initialize()
   end
 end
 
+--- Scales the plant up from a quarter of its size as it grows.
 function ENT:Think()
   if self:GetSpawnTime() and self:GetGrowTime() and self:GetGrowTime() > CurTime() then
     local GrowthPercent = (CurTime() - self:GetSpawnTime()) / (self:GetGrowTime() - self:GetSpawnTime())
@@ -39,12 +40,18 @@ function ENT:Think()
   end
 end
 
+--- Destroys the plant when a player damages it.
 function ENT:OnTakeDamage(dmg)
   local player = dmg:GetAttacker()
 
   if player:IsPlayer() then self:Remove() end
 end
 
+--- Starts harvesting the ripe plant for a crouching, untied player.
+--
+-- The harvest takes 11 to 25 seconds, less with the farming attribute, during which the player
+-- must stay crouched and near the plant. On success it fires `PlayerHarvest` and removes the
+-- plant.
 function ENT:Use(activator)
   if self:GetGrowTime() <= CurTime() and !self.isGathering then
     if activator:GetNetVar('tied') == 0 and activator:Crouching() then
@@ -79,14 +86,20 @@ function ENT:Use(activator)
   end
 end
 
+--- Sets when the plant was planted.
+-- @param time [Number The `CurTime` the seeds were planted at]
 function ENT:SetSpawnTime(time)
   self:SetNWFloat(0, time)
 end
 
+--- Sets when the plant is ripe.
+-- @param time [Number The `CurTime` the plant ripens at]
 function ENT:SetGrowTime(time)
   self:SetNWFloat(1, time)
 end
 
+--- Sets the seed item the plant grew from, which decides its name and harvest.
+-- @param uniqueID [String The seed item's unique ID]
 function ENT:SetItem(uniqueID)
   self:SetNWString(0, uniqueID)
 end

@@ -1,5 +1,14 @@
 local PLUGIN = PLUGIN
 
+--- Returns whether a player can open a Combine lock.
+--
+-- Combine players have access unless their rank is one the lock is restricted for. Other
+-- players need the `combine_lock_access_<access>` card or the `combine_lock_access_x` card.
+--
+-- @param client [Player The player to check]
+-- @param access [Number The lock's access level, 1 to 4]
+-- @param rank=nil [List<String> Combine ranks the lock is closed to, as set with `/SetCombineLockRank`]
+-- @return [Boolean Whether the player has access]
 function Schema:PlayerHasCombineLockAccess(client, access, rank)
   if Schema:PlayerIsCombine(client) then
     if rank then
@@ -16,6 +25,20 @@ function Schema:PlayerHasCombineLockAccess(client, access, rank)
   return false
 end
 
+--- Spawns a frozen `cw_combinelock` parented to a door.
+--
+-- ```
+-- local lock = Schema:ApplyCombineLock(door, trace, trace.HitNormal:Angle(), 2)
+-- ```
+--
+-- @param entity [Entity The door]
+-- @param position=nil [Vector The lock's position; a trace `Map` instead places it at the standard
+-- offset on a `prop_door_rotating`, pushed 4 units out along `HitNormal`]
+-- @param angles=nil [Angle The lock's angles]
+-- @param access=nil [Number The lock's access level, 1 to 4]
+-- @param rank=nil [List<String> Combine ranks the lock is closed to]
+-- @param color=nil [Color The lock's light colour]
+-- @return [Entity The new lock, or `nil` when it could not be created]
 function Schema:ApplyCombineLock(entity, position, angles, access, rank, color)
   local combineLock = ents.Create('cw_combinelock')
   combineLock:SetVelocity(Vector())
@@ -53,6 +76,10 @@ function Schema:ApplyCombineLock(entity, position, angles, access, rank, color)
   end
 end
 
+--- Saves every Combine lock on a door to the schema data.
+--
+-- Writes `plugins/combinelocks/<map>` with each lock's door, local position and angles,
+-- locked state, access level, restricted ranks, colour and owner.
 function PLUGIN:SaveCombineLocks()
   local cmbLocks = {}
 
@@ -76,6 +103,10 @@ function PLUGIN:SaveCombineLocks()
   cw.core:SaveSchemaData('plugins/combinelocks/'..game.GetMap(), cmbLocks)
 end
 
+--- Puts the Combine locks saved for the current map back on their doors.
+--
+-- Restores each lock's position, angles, access level, restricted ranks, colour and locked
+-- state, and gives the door back to its saved owner.
 function PLUGIN:LoadCombineLocks()
   local cmbLocks = cw.core:RestoreSchemaData('plugins/combinelocks/'..game.GetMap())
 

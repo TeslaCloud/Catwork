@@ -6,6 +6,8 @@
   with contributions from Cloud Sixteen community.
 --]]
 
+--- Emits a burst of `32 * scale` long-lived smoke grenade particles at the effect origin.
+-- @param data [CEffectData Effect data; the origin and scale (default 2) are used]
 function EFFECT:Init(data)
   local particleEmitter = ParticleEmitter(data:GetOrigin())
   local scale = data:GetScale() or 2
@@ -37,10 +39,11 @@ function EFFECT:Init(data)
   particleEmitter:Finish()
 end
 
--- Called when the effect should be rendered.
+--- Draws nothing; the particles render themselves.
 function EFFECT:Render() end
 
--- Called each frame.
+--- Ends the effect straight away, leaving the emitted particles to live out their die time.
+-- @return [Boolean Always `false`]
 function EFFECT:Think()
   return false
 end

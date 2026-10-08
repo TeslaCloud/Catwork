@@ -18,6 +18,14 @@ local whitelistedEntities = {
   'gmod_'
 }
 
+--- Called to make the entity a player is looking at static (persistent) or not.
+--
+-- Run by the `Static` and `UnStatic` commands and the static tool. Only admins may use it, and only on
+-- props, ragdolls and `edit_`/`gmod_` entities; the player is notified of the result or of why it
+-- failed.
+--
+-- @param player [Player The player making the change]
+-- @param bIsStatic [Boolean True to make the entity static, false to make it normal again]
 function cwStaticEnts:PlayerMakeStatic(player, bIsStatic)
   if !IsValid(player) then return end
 
@@ -69,10 +77,12 @@ function cwStaticEnts:PlayerMakeStatic(player, bIsStatic)
   cw.player:Notify(player, (bIsStatic and '#Static_Added') or '#Static_Removed')
 end
 
+--- Called when the server shuts down; runs the `PersistenceSave` hook to save static entities.
 function cwStaticEnts:ShutDown()
   hook.Run('PersistenceSave')
 end
 
+--- Called to save persistent entities; copies every static entity with the duplicator into the schema data.
 function cwStaticEnts:PersistenceSave()
   local entities = {}
 
@@ -89,6 +99,9 @@ function cwStaticEnts:PersistenceSave()
   cw.core:SaveSchemaData('static', toSave, true)
 end
 
+--- Called to load persistent entities; pastes the saved static entities back and marks them persistent.
+--
+-- Custom fields saved with each entity are merged back into its table.
 function cwStaticEnts:PersistenceLoad()
   local loaded = cw.core:RestoreSchemaData('static', {}, true)
 
@@ -112,6 +125,7 @@ function cwStaticEnts:PersistenceLoad()
   end
 end
 
+--- Called after the map has loaded all of its entities; runs the `PersistenceLoad` hook.
 function cwStaticEnts:InitPostEntity()
   hook.Run('PersistenceLoad')
 end

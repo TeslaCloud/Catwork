@@ -12,7 +12,10 @@ COMMAND.text = '#Command_Permitbuy_Syntax'
 COMMAND.flags = CMD_DEFAULT
 COMMAND.arguments = 1
 
--- Called when the command has been run.
+--- Buys the permit named in the first argument for a citizen while permits are enabled.
+--
+-- `business` buys the business flag `x`; with it, `generalgoods` or a `Schema.customPermits` key buys that
+-- permit's flag for the summed cost of the items it unlocks.
 function COMMAND:OnRun(player, arguments)
   if config.Get('permits'):Get() then
     if player:GetFaction() == FACTION_CITIZEN then

@@ -14,7 +14,7 @@ COMMAND.access = 'o'
 COMMAND.arguments = 1
 COMMAND.alias = { 'VoiceUnban', 'PlyUnbanVoice' }
 
--- Called when the command has been run.
+--- Lifts the target player's voice chat ban; the argument is the player name.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
 

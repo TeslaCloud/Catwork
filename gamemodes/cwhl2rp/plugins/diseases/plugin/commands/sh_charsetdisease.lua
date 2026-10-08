@@ -5,7 +5,9 @@ COMMAND.flags = CMD_DEFAULT
 COMMAND.access = 'a'
 COMMAND.arguments = 2
 
--- Called when the command has been run.
+--- Sets the target character's disease to the given name and notifies both players.
+--
+-- The name is stored as is; `none` cures the character.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
   local disease = arguments[2]

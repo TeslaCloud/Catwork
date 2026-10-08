@@ -14,7 +14,7 @@ COMMAND.access = 'o'
 COMMAND.arguments = 1
 COMMAND.alias = { 'Unban' }
 
--- Called when the command has been run.
+--- Lifts a ban; the argument is the banned Steam ID or IP address as stored in `cw.bans`.
 function COMMAND:OnRun(player, arguments)
   local playersTable = config.GetVal('mysql_players_table')
   local schemaFolder = cw.core:GetSchemaFolder()

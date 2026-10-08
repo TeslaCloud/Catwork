@@ -14,7 +14,8 @@ COMMAND.access = 'a'
 COMMAND.arguments = 1
 COMMAND.optionalArguments = true
 
--- Called when the command has been run.
+--- Makes the door the player is looking at unownable with the given name and optional text, and saves
+-- the door data.
 function COMMAND:OnRun(player, arguments)
   local door = player:GetEyeTraceNoCursor().Entity
 

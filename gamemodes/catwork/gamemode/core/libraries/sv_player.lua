@@ -17,6 +17,14 @@ local cwDatabase = cw.database
 local plyProperty = cw.player.property or {}
 cw.player.property = plyProperty
 
+--- Networks a player's loaded player data and fills in defaults for missing keys.
+--
+-- Every key in `data` is sent through `cw.player:UpdatePlayerData`; keys
+-- registered with `cw.player:AddPlayerData` that are missing from `data` are
+-- set to their default with `Player:SetData`.
+-- @param player [Player The player whose data was loaded]
+-- @param data [Map The player's data, keyed by name]
+-- @warning [Internal] Called by `GM:PlayerRestoreData`.
 function cw.player:RestoreData(player, data)
   for k, v in pairs(data) do
     self:UpdatePlayerData(player, k, v)
@@ -29,6 +37,14 @@ function cw.player:RestoreData(player, data)
   end
 end
 
+--- Networks a character's loaded data and fills in defaults for missing keys.
+--
+-- Every key in `data` is sent through `cw.player:UpdateCharacterData`; keys
+-- registered with `cw.player:AddCharacterData` that are missing from `data`
+-- are set to their default with `Player:SetCharacterData`.
+-- @param player [Player The player whose character was loaded]
+-- @param data [Map The character's data, keyed by name]
+-- @warning [Internal] Called by `GM:PlayerRestoreCharacterData`.
 function cw.player:RestoreCharacterData(player, data)
   for k, v in pairs(data) do
     self:UpdateCharacterData(player, k, v)
@@ -41,6 +57,15 @@ function cw.player:RestoreCharacterData(player, data)
   end
 end
 
+--- Networks a character data value registered with `cw.player:AddCharacterData`.
+--
+-- The value is passed through the registered callback first. `PhysDesc` is
+-- sent as a DT string; every other key becomes a net var on the player. Keys
+-- that are not registered are not networked.
+-- @param player [Player The player the data belongs to]
+-- @param key [String Name of the character data]
+-- @param value [Any The new value]
+-- @warning [Internal] Called by `Player:SetCharacterData`.
 function cw.player:UpdateCharacterData(player, key, value)
   local characterData = self.characterData
 
@@ -59,6 +84,14 @@ function cw.player:UpdateCharacterData(player, key, value)
   end
 end
 
+--- Networks a player data value registered with `cw.player:AddPlayerData`.
+--
+-- The value is passed through the registered callback first and set as a net
+-- var on the player. Keys that are not registered are not networked.
+-- @param player [Player The player the data belongs to]
+-- @param key [String Name of the player data]
+-- @param value [Any The new value]
+-- @warning [Internal] Called by `Player:SetData`.
 function cw.player:UpdatePlayerData(player, key, value)
   local playerData = self.playerData
 
@@ -71,19 +104,43 @@ function cw.player:UpdatePlayerData(player, key, value)
   end
 end
 
--- A function to run an inventory action for a player.
+--- Runs an inventory action, such as using or dropping an item, as if the player had requested it.
+--
+-- Runs the `InvAction` command on behalf of the player.
+-- @param player [Player The player performing the action]
+-- @param itemTable [Item The item instance to act on]
+-- @param action [String Name of the action, such as `'use'` or `'drop'`]
+-- @return [Any The result of `cw.command:ConsoleCommand`]
 function cw.player:InventoryAction(player, itemTable, action)
   return self:RunClockworkCommand(player, 'InvAction', action, itemTable.uniqueID, tostring(itemTable.itemID))
 end
 
--- A function to get a player's gear.
+--- Returns one of the player's gear entities.
+-- @param player [Player The player]
+-- @param gearClass [String The gear slot, as passed to `cw.player:CreateGear`]
+-- @return [Entity The `cw_gear` entity, or `nil` if there is none in that slot]
 function cw.player:GetGear(player, gearClass)
   if player.cwGearTab and IsValid(player.cwGearTab[gearClass]) then
     return player.cwGearTab[gearClass]
   end
 end
 
--- A function to create a character from data.
+--- Validates a character creation request and creates the character.
+--
+-- Checks the faction, class, attributes, name, physical description, model,
+-- gender, whitelist, faction limit and free character slots, and calls the
+-- faction's `GetName`, `GetModel` and `OnCreation` and the
+-- `PlayerAdjustCharacterCreationInfo` hook (returning `false` or a string
+-- there rejects the character). The name must also be unused in the
+-- database. Any failure is sent to the client with
+-- `cw.player:SetCreateFault`. On success the character is created with
+-- `cw.player:LoadCharacter` and used right away if it is the player's only
+-- one.
+-- @param player [Player The player creating the character]
+-- @param data [Map The creation request from the client: `faction`, `gender`, `model`, `class`, `attributes`,
+-- `forename` and `surname` or `fullName`, `physDesc` and `plugin` (extra character data)]
+-- @return [Nil Nothing; the result is sent to the client]
+-- @warning [Internal] Called by the `CreateCharacter` netstream receiver.
 function cw.player:CreateCharacterFromData(player, data)
   if player.cwIsCreatingChar then
     return
@@ -367,7 +424,10 @@ function cw.player:CreateCharacterFromData(player, data)
   end
 end
 
--- A function to open the character menu.
+--- Opens the character menu for a player who has initialized.
+-- @param player [Player The player]
+-- @param bReset=false [Boolean Also kill the player silently and mark the menu as reset, so they respawn when
+-- they pick a character]
 function cw.player:SetCharacterMenuOpen(player, bReset)
   if player:HasInitialized() then
     netstream.Start(player, 'CharacterOpen', (bReset == true))
@@ -379,7 +439,14 @@ function cw.player:SetCharacterMenuOpen(player, bReset)
   end
 end
 
--- A function to start a sound for a player.
+--- Starts playing a sound on the player's client under an identifier.
+--
+-- Does nothing if the same sound is already playing under that identifier.
+-- @param player [Player The player]
+-- @param uniqueID [String Identifier used to stop the sound later]
+-- @param sound [String Path of the sound file]
+-- @param fVolume=0.75 [Number Volume from `0` to `1`]
+-- @see cw.player:StopSound
 function cw.player:StartSound(player, uniqueID, sound, fVolume)
   if !player.cwSoundsPlaying then
     player.cwSoundsPlaying = {}
@@ -395,7 +462,10 @@ function cw.player:StartSound(player, uniqueID, sound, fVolume)
   end
 end
 
--- A function to stop a sound for a player.
+--- Stops a sound started with `cw.player:StartSound`.
+-- @param player [Player The player]
+-- @param uniqueID [String Identifier the sound was started under]
+-- @param iFadeOut=0 [Number Fade-out time in seconds]
 function cw.player:StopSound(player, uniqueID, iFadeOut)
   if !player.cwSoundsPlaying then
     player.cwSoundsPlaying = {}
@@ -410,7 +480,9 @@ function cw.player:StopSound(player, uniqueID, iFadeOut)
   end
 end
 
--- A function to remove a player's gear.
+--- Removes the gear entity in one of the player's gear slots.
+-- @param player [Player The player]
+-- @param gearClass [String The gear slot]
 function cw.player:RemoveGear(player, gearClass)
   if player.cwGearTab and IsValid(player.cwGearTab[gearClass]) then
     player.cwGearTab[gearClass]:Remove()
@@ -418,7 +490,8 @@ function cw.player:RemoveGear(player, gearClass)
   end
 end
 
--- A function to strip all of a player's gear.
+--- Removes all of the player's gear entities.
+-- @param player [Player The player]
 function cw.player:StripGear(player)
   if !player.cwGearTab then return end
 
@@ -429,7 +502,16 @@ function cw.player:StripGear(player)
   player.cwGearTab = {}
 end
 
--- A function to create a player's gear.
+--- Attaches an item's model to the player as a `cw_gear` entity.
+--
+-- Replaces any gear in the same slot. Does nothing unless the item has
+-- `isAttachment` set. Uses the item's `attachmentModel` (or `model`),
+-- `attachmentMaterial` and `attachmentColor`.
+-- @param player [Player The player to attach the gear to]
+-- @param gearClass [String The gear slot, usually the item's unique ID]
+-- @param itemTable [Item The item the gear represents]
+-- @param bMustHave=nil [Boolean Remove the gear when the player no longer has the item]
+-- @see cw.player:RemoveGear
 function cw.player:CreateGear(player, gearClass, itemTable, bMustHave)
   if !player.cwGearTab then
     player.cwGearTab = {}
@@ -471,7 +553,9 @@ function cw.player:CreateGear(player, gearClass, itemTable, bMustHave)
   end
 end
 
--- A function to get whether a player is noclipping.
+--- Returns whether the player is noclipping outside a vehicle.
+-- @param player [Player The player]
+-- @return [Boolean `true` if noclipping, otherwise `nil`]
 function cw.player:IsNoClipping(player)
   if player:GetMoveType() == MOVETYPE_NOCLIP
   and !player:InVehicle() then
@@ -479,14 +563,24 @@ function cw.player:IsNoClipping(player)
   end
 end
 
--- A function to get whether a player is an admin.
+--- Returns whether the player has the `o` (operator) flag.
+-- @param player [Player The player]
+-- @return [Boolean `true` if they have the flag, otherwise `nil`]
+-- @see cw.player:HasFlags
 function cw.player:IsAdmin(player)
   if self:HasFlags(player, 'o') then
     return true
   end
 end
 
--- A function to get whether a player can hear another player.
+--- Returns whether a player can hear another player.
+--
+-- Always `true` unless the `messages_must_see_player` config is on, in which
+-- case the player must be able to see the target.
+-- @param player [Player The listening player]
+-- @param target [Player The speaking player]
+-- @param iAllowance=0.5 [Number Trace fraction that counts as visible, see `cw.player:CanSeePosition`]
+-- @return [Boolean Whether the player can hear the target]
 function cw.player:CanHearPlayer(player, target, iAllowance)
   if config.Get('messages_must_see_player'):Get() then
     return self:CanSeePlayer(player, target, (iAllowance or 0.5), true)
@@ -495,7 +589,8 @@ function cw.player:CanHearPlayer(player, target, iAllowance)
   end
 end
 
--- A functon to get all property.
+--- Returns every entity owned as property, removing entries that are no longer valid.
+-- @return [Map<Entity> Owned entities keyed by entity index]
 function cw.player:GetAllProperty()
   for k, v in pairs(plyProperty) do
     if !IsValid(v) then
@@ -506,7 +601,29 @@ function cw.player:GetAllProperty()
   return plyProperty
 end
 
--- A function to set a player's action.
+--- Starts a timed action on the player, shown as a progress bar.
+--
+-- An action only replaces a running one with a priority if its own priority
+-- is higher, or if it has the same name. Passing an empty or non-string
+-- `action` clears the current action; passing a `duration` of `false` or `0`
+-- clears it only if `action` is the current one. The action is networked
+-- through the `StartActTime`, `ActDuration` and `ActName` net vars.
+--
+-- ```
+-- cw.player:SetAction(player, 'lockpick', 5, 3, function()
+--   if IsValid(door) then
+--     door:Fire('unlock', '', 0)
+--   end
+-- end)
+-- ```
+--
+-- @param player [Player The player]
+-- @param action [String Name of the action, or a non-string to clear it]
+-- @param duration [Number Duration in seconds; `false` or `0` stops `action` if it is running]
+-- @param priority=nil [Number Priority of the action against other actions]
+-- @param Callback=nil [Function Called without arguments when the duration has passed]
+-- @return [Boolean `false` if asked to stop an action that is not running, otherwise `nil`]
+-- @see cw.player:GetAction
 function cw.player:SetAction(player, action, duration, priority, Callback)
   local currentAction = self:GetAction(player)
 
@@ -554,12 +671,24 @@ function cw.player:SetAction(player, action, duration, priority, Callback)
   end
 end
 
--- A function to set the player's character menu state.
+--- Sends a character menu state to the player's client.
+-- @param player [Player The player]
+-- @param state [Number One of the `CHARACTER_MENU_*` values]
 function cw.player:SetCharacterMenuState(player, state)
   netstream.Start(player, 'CharacterMenu', state)
 end
 
--- A function to get a player's action.
+--- Returns the player's current action.
+--
+-- Without `percentage`, returns the action name, its duration in seconds and
+-- the `CurTime` it started at. With `percentage`, returns the action name and
+-- how far it has progressed, from `0` to `100`. Returns `''`, `0`, `0` when no
+-- action is running.
+-- @param player [Player The player]
+-- @param percentage=nil [Boolean Return the progress instead of the duration and start time]
+-- @return [String The action, or `''` if there is none, Number The duration, or the progress with `percentage`,
+-- Number The start time; not returned with `percentage`]
+-- @see cw.player:SetAction
 function cw.player:GetAction(player, percentage)
   local startActionTime = player:GetNetVar('StartActTime') or 0
   local actionDuration = player:GetNetVar('ActDuration') or 0
@@ -577,17 +706,38 @@ function cw.player:GetAction(player, percentage)
   end
 end
 
--- A function to run a Clockwork command on a player.
+--- Runs a Catwork command as if the player had typed it.
+--
+-- ```
+-- cw.player:RunClockworkCommand(player, 'CharFallOver')
+-- ```
+--
+-- @param player [Player The player running the command]
+-- @param command [String Name of the command]
+-- @param ... [Any The command's arguments]
+-- @return [Any The result of `cw.command:ConsoleCommand`]
 function cw.player:RunClockworkCommand(player, command, ...)
   return cw.command:ConsoleCommand(player, 'cwCmd', { command, ... })
 end
 
--- A function to get a player's wages name.
+--- Returns what the player's wages are called, from their class or the `wages_name` config.
+-- @param player [Player The player]
+-- @return [String The wages name]
 function cw.player:GetWagesName(player)
   return cw.class:Query(player:Team(), 'wagesName', config.Get('wages_name'):Get())
 end
 
--- A function to get whether a player can see an entity.
+--- Returns whether the player can see an entity.
+--
+-- The entity is visible when the player is looking straight at it, or when
+-- `cw.player:CanSeePosition` succeeds for its center.
+-- @param player [Player The player]
+-- @param target [Entity The entity to check]
+-- @param iAllowance=0.75 [Number Trace fraction that counts as visible]
+-- @param tIgnoreEnts=nil [List<Entity> Entities the trace ignores, or `true` to ignore every entity]
+-- @return [Boolean `true` if the entity is visible, otherwise `nil`]
+-- @alias [cw.player.CanSeePlayer]
+-- @alias [cw.player.CanSeeNPC]
 function cw.player:CanSeeEntity(player, target, iAllowance, tIgnoreEnts)
   if player:GetEyeTraceNoCursor().Entity != target then
     return self:CanSeePosition(player, target:LocalToWorld(target:OBBCenter()), iAllowance, tIgnoreEnts, target)
@@ -602,7 +752,16 @@ end
 cw.player.CanSeePlayer = cw.player.CanSeeEntity
 cw.player.CanSeeNPC = cw.player.CanSeeEntity
 
--- A function to get whether a player can see a position.
+--- Returns whether the player can see a position.
+--
+-- Traces from the player's shoot position and succeeds when the trace gets
+-- at least `iAllowance` of the way there.
+-- @param player [Player The player]
+-- @param position [Vector The position to check]
+-- @param iAllowance=0.75 [Number Trace fraction that counts as visible]
+-- @param tIgnoreEnts=nil [List<Entity> Entities the trace ignores, or `true` to ignore every entity]
+-- @param targetEnt=nil [Entity An entity the trace also ignores, usually the one being looked for]
+-- @return [Boolean `true` if the position is visible, otherwise `nil`]
 function cw.player:CanSeePosition(player, position, iAllowance, tIgnoreEnts, targetEnt)
   local trace = {}
 
@@ -627,22 +786,32 @@ function cw.player:CanSeePosition(player, position, iAllowance, tIgnoreEnts, tar
   end
 end
 
--- A function to get whether a player's weapon is raised.
+--- Returns whether the player's weapon is raised.
+-- @param player [Player The player]
+-- @param bIsCached=nil [Boolean Unused]
+-- @return [Boolean Whether the weapon is raised]
+-- @see Player:IsWeaponRaised
 function cw.player:GetWeaponRaised(player, bIsCached)
   return player:IsWeaponRaised()
 end
 
--- A function to toggle whether a player's weapon is raised.
+--- Raises the player's weapon if it is lowered, and lowers it otherwise.
+-- @param player [Player The player]
 function cw.player:ToggleWeaponRaised(player)
   player:ToggleWeaponRaised()
 end
 
--- A function to set whether a player's weapon is raised.
+--- Raises or lowers the player's weapon.
+-- @param player [Player The player]
+-- @param bIsRaised [Boolean Whether the weapon should be raised]
+-- @return [Any The result of `Player:SetWeaponRaised`]
 function cw.player:SetWeaponRaised(player, bIsRaised)
   return player:SetWeaponRaised(bIsRaised)
 end
 
--- A function to setup a player's remove property delays.
+--- Starts the removal timers of the player's property that has a remove delay.
+-- @param player [Player The player whose property should be removed]
+-- @param bAllCharacters=nil [Boolean Include property of all the player's characters, not just the current one]
 function cw.player:SetupRemovePropertyDelays(player, bAllCharacters)
   local uniqueID = player:UniqueID()
   local key = player:GetCharacterKey()
@@ -663,7 +832,12 @@ function cw.player:SetupRemovePropertyDelays(player, bAllCharacters)
   end
 end
 
--- A function to disable a player's property.
+--- Clears the owner of the player's property while keeping it registered to them.
+--
+-- The entities lose their owner entity and owned state, but keep the owner's
+-- unique ID and character key, so `cw.player:ReturnProperty` can give them back.
+-- @param player [Player The player whose property is disabled]
+-- @param bCharacterOnly=nil [Boolean Only disable property of the player's current character]
 function cw.player:DisableProperty(player, bCharacterOnly)
   local uniqueID = player:UniqueID()
   local key = player:GetCharacterKey()
@@ -690,7 +864,15 @@ function cw.player:DisableProperty(player, bCharacterOnly)
   end
 end
 
--- A function to give property to a player.
+--- Makes an entity the property of the player's current character.
+--
+-- Clears any previous ownership and cancels a pending remove delay. Fires
+-- `PlayerPropertyGiven`.
+-- @param player [Player The new owner]
+-- @param entity [Entity The entity]
+-- @param networked=nil [Boolean Also set the `Owner` networked entity for clients]
+-- @param removeDelay=nil [Number Seconds after the owner leaves before the entity is removed]
+-- @see cw.player:TakeProperty
 function cw.player:GiveProperty(player, entity, networked, removeDelay)
   timer.Remove('RemoveDelay'..entity:EntIndex())
   cw.entity:ClearProperty(entity)
@@ -723,7 +905,17 @@ function cw.player:GiveProperty(player, entity, networked, removeDelay)
   hook.Run('PlayerPropertyGiven', player, entity, networked, removeDelay)
 end
 
--- A function to give property to an offline player.
+--- Makes an entity the property of a character, whether or not its player is online.
+--
+-- If the player is online with that character, this calls
+-- `cw.player:GiveProperty`. Otherwise the entity is registered to the key and
+-- unique ID and `PlayerPropertyGivenOffline` fires. Does nothing without a key
+-- and unique ID.
+-- @param key [Number The character key]
+-- @param uniqueID [String The owner's `Player:UniqueID`]
+-- @param entity [Entity The entity]
+-- @param networked=nil [Boolean Also set the `Owner` networked entity for clients]
+-- @param removeDelay=nil [Number Seconds after the owner leaves before the entity is removed]
 function cw.player:GivePropertyOffline(key, uniqueID, entity, networked, removeDelay)
   cw.entity:ClearProperty(entity)
 
@@ -770,7 +962,15 @@ function cw.player:GivePropertyOffline(key, uniqueID, entity, networked, removeD
   end
 end
 
--- A function to take property from an offline player.
+--- Removes an entity from a character's property, whether or not its player is online.
+--
+-- If the player is online with that character, this calls
+-- `cw.player:TakeProperty`. Otherwise ownership is only cleared if the entity
+-- belongs to that key and unique ID, and `PlayerPropertyTakenOffline` fires.
+-- @param key [Number The character key]
+-- @param uniqueID [String The owner's `Player:UniqueID`]
+-- @param entity [Entity The entity]
+-- @param bAnyCharacter=nil [Boolean Unused]
 function cw.player:TakePropertyOffline(key, uniqueID, entity, bAnyCharacter)
   if key and uniqueID then
     local owner = player.GetByUniqueID(uniqueID)
@@ -800,7 +1000,12 @@ function cw.player:TakePropertyOffline(key, uniqueID, entity, bAnyCharacter)
   end
 end
 
--- A function to take property from a player.
+--- Removes an entity from the player's property.
+--
+-- Does nothing unless the player owns the entity. Fires `PlayerPropertyTaken`.
+-- @param player [Player The owner]
+-- @param entity [Entity The entity]
+-- @see cw.player:GiveProperty
 function cw.player:TakeProperty(player, entity)
   if cw.entity:GetOwner(entity) == player then
     entity.cwPropertyTab = nil
@@ -821,32 +1026,45 @@ function cw.player:TakeProperty(player, entity)
   end
 end
 
--- A function to set a player to their default skin.
+--- Sets the player's skin to the one returned by `cw.player:GetDefaultSkin`.
+-- @param player [Player The player]
 function cw.player:SetDefaultSkin(player)
   player:SetSkin(self:GetDefaultSkin(player))
 end
 
--- A function to get a player's default skin.
+--- Returns the player's default skin from the `GetPlayerDefaultSkin` hook.
+-- @param player [Player The player]
+-- @return [Number The skin index]
 function cw.player:GetDefaultSkin(player)
   return hook.Run('GetPlayerDefaultSkin', player)
 end
 
--- A function to set a player to their default model.
+--- Sets the player's model to the one returned by `cw.player:GetDefaultModel`.
+-- @param player [Player The player]
 function cw.player:SetDefaultModel(player)
   player:SetModel(self:GetDefaultModel(player))
 end
 
--- A function to get a player's default model.
+--- Returns the player's default model from the `GetPlayerDefaultModel` hook.
+-- @param player [Player The player]
+-- @return [String The model path]
 function cw.player:GetDefaultModel(player)
   return hook.Run('GetPlayerDefaultModel', player)
 end
 
--- A function to get whether a player is drunk.
+--- Returns how drunk the player is.
+-- @param player [Player The player]
+-- @return [Number The number of drinks still in effect, or `nil` if the player is sober]
 function cw.player:GetDrunk(player)
   if player.cwDrunkTab then return #player.cwDrunkTab end
 end
 
--- A function to set whether a player is drunk.
+--- Adds a drink to the player, or sobers them up.
+--
+-- The level is networked through the `IsDrunk` net var.
+-- @param player [Player The player]
+-- @param expire [Number Seconds until the new drink wears off, or `false` to clear all drinks]
+-- @see cw.player:GetDrunk
 function cw.player:SetDrunk(player, expire)
   local curTime = CurTime()
 
@@ -861,7 +1079,13 @@ function cw.player:SetDrunk(player, expire)
   player:SetNetVar('IsDrunk', self:GetDrunk(player) or 0)
 end
 
--- A function to strip a player's default ammo.
+--- Removes the ammo a weapon came with when it was given.
+--
+-- Empties the weapon's clips and takes the item's `primaryDefaultAmmo` and
+-- `secondaryDefaultAmmo` amounts from the player's reserve ammo.
+-- @param player [Player The player holding the weapon]
+-- @param weapon [Weapon The weapon]
+-- @param itemTable=nil [Item The weapon's item; looked up from the weapon if not given]
 function cw.player:StripDefaultAmmo(player, weapon, itemTable)
   if !itemTable then
     itemTable = item.GetByWeapon(weapon)
@@ -901,12 +1125,21 @@ function cw.player:StripDefaultAmmo(player, weapon, itemTable)
   end
 end
 
--- A function to check if a player is whitelisted for a faction.
+--- Returns whether the player is whitelisted for a faction.
+-- @param player [Player The player]
+-- @param faction [String Name of the faction]
+-- @return [Boolean Whether the player is whitelisted]
 function cw.player:IsWhitelisted(player, faction)
   return table.HasValue(player:GetData('Whitelisted'), faction)
 end
 
--- A function to set whether a player is whitelisted for a faction.
+--- Adds the player to a faction's whitelist or removes them from it.
+--
+-- Changes the player's `Whitelisted` data, which is saved with the player, and
+-- tells their client.
+-- @param player [Player The player]
+-- @param faction [String Name of the faction]
+-- @param isWhitelisted [Boolean Whether the player should be whitelisted]
 function cw.player:SetWhitelisted(player, faction, isWhitelisted)
   local whitelisted = player:GetData('Whitelisted')
 
@@ -927,7 +1160,29 @@ function cw.player:SetWhitelisted(player, faction, isWhitelisted)
   )
 end
 
--- A function to create a Condition timer.
+--- Calls back after a delay, as long as a condition stays true the whole time.
+--
+-- The condition is checked every tick. If it fails or the player leaves, the
+-- callback is called with `false`. Starting a new condition timer cancels the
+-- previous one the same way.
+--
+-- ```
+-- local position = player:GetPos()
+--
+-- cw.player:ConditionTimer(player, 5, function()
+--   return player:Alive() and player:GetPos() == position
+-- end, function(bSuccess)
+--   if bSuccess then
+--     player:SetHealth(player:GetMaxHealth())
+--   end
+-- end)
+-- ```
+--
+-- @param player [Player The player the timer belongs to]
+-- @param delay [Number Seconds the condition must hold]
+-- @param Condition [Function Called without arguments; return `true` while the timer should go on]
+-- @param Callback [Function Called as `Callback(bSuccess)`]
+-- @see cw.player:EntityConditionTimer
 function cw.player:ConditionTimer(player, delay, Condition, Callback)
   local realDelay = CurTime() + delay
   local uniqueID = player:UniqueID()
@@ -962,7 +1217,17 @@ function cw.player:ConditionTimer(player, delay, Condition, Callback)
   end)
 end
 
--- A function to create an entity Condition timer.
+--- Calls back after a delay, as long as the player keeps looking at an entity within range.
+--
+-- Fails like `cw.player:ConditionTimer` if the player looks away, moves out
+-- of range, the target or entity becomes invalid, or the condition fails.
+-- @param player [Player The player the timer belongs to]
+-- @param target [Entity The target, which must stay valid]
+-- @param entity=nil [Entity The entity the player must look at; defaults to `target`]
+-- @param delay [Number Seconds the condition must hold]
+-- @param distance [Number Maximum distance from the player's shoot position to the entity]
+-- @param Condition [Function Called without arguments; return `true` while the timer should go on]
+-- @param Callback [Function Called as `Callback(bSuccess)`]
 function cw.player:EntityConditionTimer(player, target, entity, delay, distance, Condition, Callback)
   local realEntity = entity or target
   local realDelay = CurTime() + delay
@@ -1002,7 +1267,10 @@ function cw.player:EntityConditionTimer(player, target, entity, delay, distance,
   end)
 end
 
--- A function to get a player's spawn ammo.
+--- Returns the ammo the player was given on spawn.
+-- @param player [Player The player]
+-- @param ammo=nil [String An ammo type; `nil` returns the whole table]
+-- @return [Number The amount of that ammo type, or a `Map` of amounts by ammo type when `ammo` is `nil`]
 function cw.player:GetSpawnAmmo(player, ammo)
   if ammo then
     return player.cwSpawnAmmo[ammo]
@@ -1011,14 +1279,23 @@ function cw.player:GetSpawnAmmo(player, ammo)
   end
 end
 
--- A function to get a player's spawn weapon.
+--- Returns whether a weapon was given to the player on spawn.
+-- @param player [Player The player]
+-- @param weapon [String The weapon class]
+-- @return [Boolean `true` if it is a spawn weapon, otherwise `nil`]
 function cw.player:GetSpawnWeapon(player, weapon)
   if weapon then
     return player.cwSpawnWeps[weapon]
   end
 end
 
--- A function to take spawn ammo from a player.
+--- Takes ammo that was given on spawn from the player.
+--
+-- Does nothing if the player has no spawn ammo of that type, and takes at most
+-- the spawn amount.
+-- @param player [Player The player]
+-- @param ammo [String The ammo type]
+-- @param amount [Number How much to take]
 function cw.player:TakeSpawnAmmo(player, ammo, amount)
   if player.cwSpawnAmmo[ammo] then
     if player.cwSpawnAmmo[ammo] < amount then
@@ -1033,7 +1310,12 @@ function cw.player:TakeSpawnAmmo(player, ammo, amount)
   end
 end
 
--- A function to give the player spawn ammo.
+--- Gives the player ammo and records it as spawn ammo.
+--
+-- Spawn ammo is not saved with the character.
+-- @param player [Player The player]
+-- @param ammo [String The ammo type]
+-- @param amount [Number How much to give]
 function cw.player:GiveSpawnAmmo(player, ammo, amount)
   if player.cwSpawnAmmo[ammo] then
     player.cwSpawnAmmo[ammo] = player.cwSpawnAmmo[ammo] + amount
@@ -1044,19 +1326,28 @@ function cw.player:GiveSpawnAmmo(player, ammo, amount)
   player:GiveAmmo(amount, ammo)
 end
 
--- A function to take a player's spawn weapon.
+--- Strips a spawn weapon from the player.
+-- @param player [Player The player]
+-- @param class [String The weapon class]
 function cw.player:TakeSpawnWeapon(player, class)
   player.cwSpawnWeps[class] = nil
   player:StripWeapon(class)
 end
 
--- A function to give a player a spawn weapon.
+--- Gives the player a weapon and records it as a spawn weapon.
+--
+-- Spawn weapons are not saved with the character.
+-- @param player [Player The player]
+-- @param class [String The weapon class]
 function cw.player:GiveSpawnWeapon(player, class)
   player.cwSpawnWeps[class] = true
   player:Give(class)
 end
 
--- A function to give a player an item weapon.
+--- Gives the player the weapon of a weapon item.
+-- @param player [Player The player]
+-- @param itemTable [Item The weapon item]
+-- @return [Boolean `true` if the item is a weapon, otherwise `nil`]
 function cw.player:GiveItemWeapon(player, itemTable)
   if item.IsWeapon(itemTable) then
     player:Give(itemTable:GetWeaponClass(), itemTable)
@@ -1064,7 +1355,10 @@ function cw.player:GiveItemWeapon(player, itemTable)
   end
 end
 
--- A function to give a player a spawn item weapon.
+--- Gives the player the weapon of a weapon item and records it as a spawn weapon.
+-- @param player [Player The player]
+-- @param itemTable [Item The weapon item]
+-- @return [Boolean `true` if the item is a weapon, otherwise `nil`]
 function cw.player:GiveSpawnItemWeapon(player, itemTable)
   if item.IsWeapon(itemTable) then
     player.cwSpawnWeps[itemTable:GetWeaponClass()] = true
@@ -1074,7 +1368,13 @@ function cw.player:GiveSpawnItemWeapon(player, itemTable)
   end
 end
 
--- A function to give flags to a character.
+--- Gives flags to the player's current character.
+--
+-- Fires `PlayerFlagsGiven` for each flag the character did not have.
+-- @param player [Player The player]
+-- @param flags [String The flags, one character each]
+-- @see cw.player:TakeFlags
+-- @see cw.player:GivePlayerFlags
 function cw.player:GiveFlags(player, flags)
   for i = 1, #flags do
     local flag = string.utf8sub(flags, i, i)
@@ -1087,7 +1387,13 @@ function cw.player:GiveFlags(player, flags)
   end
 end
 
--- A function to give flags to a player.
+--- Gives flags to the player across all of their characters.
+--
+-- Stored in the player's `Flags` data. Fires `PlayerFlagsGiven` for each flag
+-- the player did not have.
+-- @param player [Player The player]
+-- @param flags [String The flags, one character each]
+-- @see cw.player:TakePlayerFlags
 function cw.player:GivePlayerFlags(player, flags)
   for i = 1, #flags do
     local flag = string.utf8sub(flags, i, i)
@@ -1100,12 +1406,19 @@ function cw.player:GivePlayerFlags(player, flags)
   end
 end
 
--- A function to play a sound to a player.
+--- Plays a sound on the player's client.
+-- @param player [Player The player, a list of players, or `nil` for everyone]
+-- @param sound [String Path of the sound file]
 function cw.player:PlaySound(player, sound)
   netstream.Start(player, 'PlaySound', sound)
 end
 
--- A function to get a player's maximum characters.
+--- Returns how many characters the player may have.
+--
+-- One per faction that is not whitelisted or that the player is whitelisted
+-- for, plus the `additional_characters` config.
+-- @param player [Player The player]
+-- @return [Number The maximum number of characters]
 function cw.player:GetMaximumCharacters(player)
   local maximum = config.Get('additional_characters'):Get()
 
@@ -1118,7 +1431,14 @@ function cw.player:GetMaximumCharacters(player)
   return maximum
 end
 
--- A function to query a player's character.
+--- Returns a field of the player's current character table.
+--
+-- The key is converted to camel case, so `'Name'` and `'name'` both read
+-- `character.name`.
+-- @param player [Player The player]
+-- @param key [String The field, such as `'Name'`, `'Cash'` or `'Faction'`]
+-- @param default=nil [Any Value to return if there is no character or the field is `nil`]
+-- @return [Any The value, or `default`]
 function cw.player:Query(player, key, default)
   local character = player:GetCharacter()
 
@@ -1133,7 +1453,11 @@ function cw.player:Query(player, key, default)
   return default
 end
 
--- A function to set a player to a safe position.
+--- Moves the player to a position, nudging them to a nearby free spot if they would be stuck.
+-- @param player [Player The player]
+-- @param position [Vector The position]
+-- @param filter=nil [Entity An entity, list of entities or trace filter function that does not count as blocking]
+-- @see cw.player:GetSafePosition
 function cw.player:SetSafePosition(player, position, filter)
   player:SetPos(position + Vector(0, 0, 16))
 
@@ -1169,7 +1493,15 @@ function cw.player:SetSafePosition(player, position, filter)
   end
 end
 
--- A function to get the safest position near a position.
+--- Returns free spots on a grid around a position, sorted from nearest to farthest.
+--
+-- A spot is free if traces through a player-sized box there and from
+-- `position` to it hit nothing.
+-- @param player [Player The player, ignored by the traces unless `filter` is given]
+-- @param position [Vector The center position]
+-- @param filter=nil [Any Trace filter; defaults to the player]
+-- @param margin=3 [Number Grid radius in steps; the step size is `margin * 10` units]
+-- @return [List<Vector> The free positions]
 function cw.player:GetSafePosition(player, position, filter, margin)
   margin = margin or 3
 
@@ -1216,7 +1548,10 @@ function cw.player:GetSafePosition(player, position, filter, margin)
   return positions
 end
 
--- Called to convert a player's data to a string.
+--- Decodes a JSON data string.
+-- @param player [Player Unused]
+-- @param data [String The JSON string]
+-- @return [Map The decoded table, or an empty table if it cannot be decoded]
 function cw.player:ConvertDataString(player, data)
   local bSuccess, value = pcall(util.JSONToTable, data)
 
@@ -1227,7 +1562,11 @@ function cw.player:ConvertDataString(player, data)
   end
 end
 
--- A function to return a player's property.
+--- Gives the player back the property of their current character that is still registered to them.
+--
+-- Fires `PlayerReturnProperty`.
+-- @param player [Player The player]
+-- @see cw.player:DisableProperty
 function cw.player:ReturnProperty(player)
   local uniqueID = player:UniqueID()
   local key = player:GetCharacterKey()
@@ -1245,7 +1584,12 @@ function cw.player:ReturnProperty(player)
   hook.Run('PlayerReturnProperty', player)
 end
 
--- A function to take flags from a character.
+--- Takes flags from the player's current character.
+--
+-- Fires `PlayerFlagsTaken` for each flag the character had.
+-- @param player [Player The player]
+-- @param flags [String The flags, one character each]
+-- @see cw.player:GiveFlags
 function cw.player:TakeFlags(player, flags)
   for i = 1, #flags do
     local flag = string.utf8sub(flags, i, i)
@@ -1258,7 +1602,12 @@ function cw.player:TakeFlags(player, flags)
   end
 end
 
--- A function to take flags from a player.
+--- Takes flags from the player's player-wide flags.
+--
+-- Fires `PlayerFlagsTaken` for each flag the player had.
+-- @param player [Player The player]
+-- @param flags [String The flags, one character each]
+-- @see cw.player:GivePlayerFlags
 function cw.player:TakePlayerFlags(player, flags)
   for i = 1, #flags do
     local flag = string.utf8sub(flags, i, i)
@@ -1271,17 +1620,31 @@ function cw.player:TakePlayerFlags(player, flags)
   end
 end
 
--- A function to set whether a player's menu is open.
+--- Opens or closes the main menu on the player's client.
+-- @param player [Player The player]
+-- @param isOpen [Boolean Whether the menu should be open]
 function cw.player:SetMenuOpen(player, isOpen)
   netstream.Start(player, 'MenuOpen', isOpen)
 end
 
--- A function to set whether a player has intialized.
+--- Sets whether the player has initialized, through the `Initialized` net var.
+-- @param player [Player The player]
+-- @param initialized [Boolean Whether the player has initialized]
 function cw.player:SetInitialized(player, initialized)
   player:SetNetVar('Initialized', initialized)
 end
 
--- A function to check if a player has any flags.
+--- Returns whether the player's character has at least one of the given flags.
+--
+-- The `s`, `a` and `o` flags are granted by the superadmin, admin and
+-- operator user groups. Unless `bByDefault` is set, the player's class flags
+-- and the `PlayerDoesHaveFlag` hook also count; the hook returning `false`
+-- denies a flag.
+-- @param player [Player The player]
+-- @param flags [String The flags, one character each]
+-- @param bByDefault=nil [Boolean Only check the character's own flags and user group]
+-- @return [Boolean `true` if the player has any of the flags, otherwise `nil`]
+-- @see cw.player:HasFlags
 function cw.player:HasAnyFlags(player, flags, bByDefault)
   if player:GetCharacter() then
     local playerFlags = player:GetFlags()
@@ -1329,7 +1692,19 @@ function cw.player:HasAnyFlags(player, flags, bByDefault)
   end
 end
 
--- A function to check if a player has flags.
+--- Returns whether the player's character has the given flags.
+--
+-- The `s`, `a` and `o` flags are granted by the superadmin, admin and
+-- operator user groups. Unless `bByDefault` is set, the player's class flags
+-- and the `PlayerDoesHaveFlag` hook also count. Without `bIsStrict`, having
+-- any one of the flags is enough; with it, all of them are required and the
+-- hook returning `false` denies a flag.
+-- @param player [Player The player]
+-- @param flags [String The flags, one character each]
+-- @param bByDefault=nil [Boolean Only check the character's own flags and user group]
+-- @param bIsStrict=nil [Boolean Require every flag]
+-- @return [Boolean `true` if the check passes, otherwise `nil`]
+-- @see cw.player:HasAnyFlags
 function cw.player:HasFlags(player, flags, bByDefault, bIsStrict)
   if player:GetCharacter() then
     local playerFlags = player:GetFlags()
@@ -1409,27 +1784,40 @@ function cw.player:HasFlags(player, flags, bByDefault, bIsStrict)
   end
 end
 
--- A function to use a player's death code.
+--- Uses up the player's death code after they act while knocked out.
+--
+-- Fires `PlayerDeathCodeUsed` and takes the code.
+-- @param player [Player The player]
+-- @param commandTable=nil [Command The command the code was used for, or `nil` for chat]
+-- @param arguments [List<String> The command arguments or the chat text]
+-- @see cw.player:GiveDeathCode
 function cw.player:UseDeathCode(player, commandTable, arguments)
   hook.Run('PlayerDeathCodeUsed', player, commandTable, arguments)
 
   self:TakeDeathCode(player)
 end
 
--- A function to get whether a player has a death code.
+--- Returns the player's death code.
+-- @param player [Player The player]
+-- @param authenticated=nil [Boolean Only return the code if the player has authenticated it]
+-- @return [Number The code, or `nil` if there is none]
 function cw.player:GetDeathCode(player, authenticated)
   if player.cwDeathCodeIdx and (!authenticated or player.cwDeathCodeAuth) then
     return player.cwDeathCodeIdx
   end
 end
 
--- A function to take a player's death code.
+--- Removes the player's death code.
+-- @param player [Player The player]
 function cw.player:TakeDeathCode(player)
   player.cwDeathCodeAuth = nil
   player.cwDeathCodeIdx = nil
 end
 
--- A function to give a player their death code.
+--- Gives the player a new random death code and sends it to their client.
+--
+-- Called when the player is knocked out.
+-- @param player [Player The player]
 function cw.player:GiveDeathCode(player)
   player.cwDeathCodeIdx = math.random(0, 99999)
   player.cwDeathCodeAuth = nil
@@ -1437,7 +1825,18 @@ function cw.player:GiveDeathCode(player)
   netstream.Start(player, 'ChatBoxDeathCode', player.cwDeathCodeIdx)
 end
 
--- A function to take a door from a player.
+--- Takes a door from the player and refunds half the `door_cost` config.
+--
+-- Parent and child doors are taken with it unless `bThisDoorOnly` is set. The
+-- door is unlocked if `PlayerCanUnlockEntity` allows it, its text is cleared,
+-- and `PlayerDoorTaken` fires. Non-map `prop_dynamic` doors are removed.
+-- @param player [Player The owner]
+-- @param door [Entity The door]
+-- @param bForce=nil [Boolean Meant to skip the refund]
+-- @param bThisDoorOnly=nil [Boolean Do not take the door's parent or children]
+-- @param bChildrenOnly=nil [Boolean Take the children even if the door has a parent, instead of going through the
+-- parent]
+-- @see cw.player:GiveDoor
 function cw.player:TakeDoor(player, door, bForce, bThisDoorOnly, bChildrenOnly)
   local doorCost = config.Get('door_cost'):Get()
 
@@ -1476,7 +1875,16 @@ function cw.player:TakeDoor(player, door, bForce, bThisDoorOnly, bChildrenOnly)
   end
 end
 
--- A function to make a player say text as a radio broadcast.
+--- Broadcasts what a player says over the radio.
+--
+-- `PlayerAdjustRadioInfo(player, info)` fills `info.listeners` with the
+-- players who receive it (as values or keys). Unless `noEavesdrop` is set,
+-- other players within the `talk_radius` config hear it too. With `check`,
+-- `PlayerCanRadio` must return `true`. Fires `PlayerRadioUsed` once sent.
+-- @param player [Player The speaking player]
+-- @param text [String What the player says]
+-- @param check=nil [Boolean Ask `PlayerCanRadio` first]
+-- @param noEavesdrop=nil [Boolean Do not let nearby players hear it]
 function cw.player:SayRadio(player, text, check, noEavesdrop)
   local eavesdroppers = {}
   local listeners = {}
@@ -1534,12 +1942,24 @@ function cw.player:SayRadio(player, text, check, noEavesdrop)
   end
 end
 
--- A function to get a player's faction table.
+--- Returns the faction table of the player's current faction.
+-- @param player [Player The player]
+-- @return [Faction The faction, or `nil` if it does not exist]
 function cw.player:GetFactionTable(player)
   return faction.GetAll()[player:GetFaction()]
 end
 
--- A function to give a door to a player.
+--- Gives a door, and its parent and children, to the player.
+--
+-- Resets the door's access list, sets its text, makes it networked property
+-- of the player and fires `PlayerDoorGiven`. The door is unlocked if
+-- `PlayerCanUnlockEntity` allows it. Does nothing if the entity is not a door.
+-- @param player [Player The new owner]
+-- @param door [Entity The door]
+-- @param name=nil [String Text to show on the door]
+-- @param unsellable=nil [Boolean Prevent the player from selling the door]
+-- @param override=nil [Boolean Give this door directly instead of going through its parent]
+-- @see cw.player:TakeDoor
 function cw.player:GiveDoor(player, door, name, unsellable, override)
   if cw.entity:IsDoor(door) then
     local doorParent = cw.entity:GetDoorParent(door)
@@ -1569,7 +1989,13 @@ function cw.player:GiveDoor(player, door, name, unsellable, override)
   end
 end
 
--- A function to get a player's real trace.
+--- Returns a trace of what the player is looking at, seeing through vehicles and non-solid entities.
+--
+-- Uses a 4096 unit trace with a solid and hitbox mask when it hits an entity
+-- that the normal eye trace misses or hits a vehicle instead.
+-- @param player [Player The player]
+-- @param useFilterTrace=nil [Boolean Always use the masked trace]
+-- @return [Map The trace result]
 function cw.player:GetRealTrace(player, useFilterTrace)
   local eyePos = player:EyePos()
   local trace = player:GetEyeTraceNoCursor()
@@ -1589,7 +2015,17 @@ function cw.player:GetRealTrace(player, useFilterTrace)
   return trace
 end
 
--- A function to check if a player recognises another player.
+--- Returns whether a player recognises another player's character.
+--
+-- Always `true` when the `recognise_system` config is off. Otherwise the
+-- result of the `PlayerDoesRecognisePlayer` hook, which receives the stored
+-- status.
+-- @param player [Player The player who would recognise]
+-- @param target [Player The player to be recognised]
+-- @param status=RECOGNISE_PARTIAL [Number The minimum `RECOGNISE_*` level]
+-- @param isAccurate=nil [Boolean Require exactly `status` instead of at least it]
+-- @return [Boolean Whether the player recognises the target]
+-- @see cw.player:SetRecognises
 function cw.player:DoesRecognise(player, target, status, isAccurate)
   if !status then
     return self:DoesRecognise(player, target, RECOGNISE_PARTIAL)
@@ -1612,6 +2048,10 @@ function cw.player:DoesRecognise(player, target, status, isAccurate)
   end
 end
 
+--- Returns the name a player knows another player by.
+-- @param player [Player The player looking]
+-- @param target [Player The player being named]
+-- @return [String The target's name if recognised, otherwise their unrecognised name]
 function cw.player:GetName(player, target)
   if self:DoesRecognise(player, target) then
     return target:Name()
@@ -1620,7 +2060,9 @@ function cw.player:GetName(player, target)
   end
 end
 
--- A function to send a player a creation fault.
+--- Tells the player's client that character creation failed.
+-- @param player [Player The player]
+-- @param fault=nil [String The reason; defaults to the `CharFault_Unknown` phrase]
 function cw.player:SetCreateFault(player, fault)
   if !fault then
     fault = L('CharFault_Unknown')
@@ -1629,7 +2071,14 @@ function cw.player:SetCreateFault(player, fault)
   netstream.Start(player, 'CharacterFinish', { bSuccess = false, fault = fault })
 end
 
--- A function to force a player to delete a character.
+--- Deletes one of the player's characters without asking any hooks first.
+--
+-- Deletes the row from the characters table, removes the character from the
+-- player's list and their client, and fires `PlayerDeleteCharacter`, which
+-- can return `true` to skip the log message.
+-- @param player [Player The player]
+-- @param characterID [Number The character slot]
+-- @see cw.player:DeleteCharacter
 function cw.player:ForceDeleteCharacter(player, characterID)
   local charactersTable = config.Get('mysql_characters_table'):Get()
   local schemaFolder = cw.core:GetSchemaFolder()
@@ -1652,7 +2101,14 @@ function cw.player:ForceDeleteCharacter(player, characterID)
   end
 end
 
--- A function to delete a player's character.
+--- Deletes one of the player's characters if they are allowed to.
+--
+-- The active character cannot be deleted. `PlayerCanDeleteCharacter` may
+-- return `false` or a reason string to block it.
+-- @param player [Player The player]
+-- @param characterID [Number The character slot]
+-- @return [Boolean Whether the character was deleted, String The reason if it was not]
+-- @see cw.player:ForceDeleteCharacter
 function cw.player:DeleteCharacter(player, characterID)
   local character = player.cwCharacterList[characterID]
 
@@ -1677,7 +2133,15 @@ function cw.player:DeleteCharacter(player, characterID)
   end
 end
 
--- A function to use a player's character.
+--- Switches the player to one of their characters if they are allowed to.
+--
+-- Checks `PlayerCanUseCharacter`, the faction limit (unless
+-- `PlayerCanBypassFactionLimit` returns `true`) and `PlayerCanSwitchCharacter`,
+-- then loads the character with `cw.player:LoadCharacter`. If the character
+-- menu was reset, the current character is respawned instead.
+-- @param player [Player The player]
+-- @param characterID [Number The character slot]
+-- @return [Boolean Whether the character is being used, String The reason if it is not]
 function cw.player:UseCharacter(player, characterID)
   local isCharacterMenuReset = player:IsCharacterMenuReset()
   local currentCharacter = player:GetCharacter()
@@ -1733,12 +2197,20 @@ function cw.player:UseCharacter(player, characterID)
   end
 end
 
--- A function to get a player's character.
+--- Returns the player's current character.
+-- @param player [Player The player]
+-- @return [Character The character table, or `nil` if they have none loaded]
 function cw.player:GetCharacter(player)
   return player.cwCharacter
 end
 
--- A function to get a player's unrecognised name.
+--- Returns what players who do not recognise the player see instead of their name.
+--
+-- This is the player's physical description, or the `unrecognised_name`
+-- config if it is empty.
+-- @param player [Player The player]
+-- @param bFormatted=nil [Boolean Shorten it to 24 characters and wrap it in square brackets]
+-- @return [String The unrecognised name, Boolean Whether the physical description was used]
 function cw.player:GetUnrecognisedName(player, bFormatted)
   local unrecognisedPhysDesc = self:GetPhysDesc(player)
   local unrecognisedName = config.Get('unrecognised_name'):Get()
@@ -1760,7 +2232,16 @@ function cw.player:GetUnrecognisedName(player, bFormatted)
   return unrecognisedName, usedPhysDesc
 end
 
--- A function to format text based on a relationship.
+--- Replaces each `%s` in a text with the name a player knows each given player by.
+--
+-- ```
+-- local text = cw.player:FormatRecognisedText(listener, '%s hands %s a crowbar.', giver, receiver)
+-- ```
+--
+-- @param player [Player The player who reads the text]
+-- @param text [String The text with one `%s` per player]
+-- @param ... [Player The players to name, in order]
+-- @return [String The formatted text]
 function cw.player:FormatRecognisedText(player, text, ...)
   local arguments = { ... }
 
@@ -1779,7 +2260,9 @@ function cw.player:FormatRecognisedText(player, text, ...)
   return text
 end
 
--- A function to restore a recognised name.
+--- Re-sends a saved recognition of a player, or forgets it if `PlayerCanRestoreRecognisedName` refuses.
+-- @param player [Player The player who recognises]
+-- @param target [Player The player who is recognised]
 function cw.player:RestoreRecognisedName(player, target)
   local recognisedNames = player:GetRecognisedNames()
   local key = target:GetCharacterKey()
@@ -1793,7 +2276,10 @@ function cw.player:RestoreRecognisedName(player, target)
   end
 end
 
--- A function to restore a player's recognised names.
+--- Clears the player's recognised names on their client and restores the saved ones in both directions.
+--
+-- Restoring only happens when the `save_recognised_names` config is on.
+-- @param player [Player The player]
 function cw.player:RestoreRecognisedNames(player)
   netstream.Start(player, 'ClearRecognisedNames', true)
 
@@ -1807,7 +2293,17 @@ function cw.player:RestoreRecognisedNames(player)
   end
 end
 
--- A function to set whether a player recognises a player.
+--- Sets how well a player recognises another player's character and tells their client.
+--
+-- `RECOGNISE_SAVE` is only kept if the `save_recognised_names` config is on
+-- and `PlayerCanSaveRecognisedName` returns `true`; it becomes
+-- `RECOGNISE_TOTAL` otherwise. Does nothing if the player already recognises
+-- the target at that level, unless `bForce` is set.
+-- @param player [Player The player who recognises]
+-- @param target [Player The player who is recognised]
+-- @param status [Number A `RECOGNISE_*` level, or `false` to forget the target]
+-- @param bForce=nil [Boolean Set it even if the player already recognises the target at that level]
+-- @see cw.player:DoesRecognise
 function cw.player:SetRecognises(player, target, status, bForce)
   local recognisedNames = player:GetRecognisedNames()
   local name = target:Name()
@@ -1835,7 +2331,13 @@ function cw.player:SetRecognises(player, target, status, bForce)
   end
 end
 
--- A function to get a player's physical description.
+--- Returns the player's physical description.
+--
+-- Falls back to the class's `defaultPhysDesc`, then the `default_physdesc`
+-- config, then a built-in text. `GetPlayerPhysDescOverride` may replace the
+-- result.
+-- @param player [Player The player]
+-- @return [String The physical description]
 function cw.player:GetPhysDesc(player)
   local physDesc = player:GetDTString(STRING_PHYSDESC)
   local team = player:Team()
@@ -1863,7 +2365,13 @@ function cw.player:GetPhysDesc(player)
   return physDesc
 end
 
--- A function to clear a player's recognised names list.
+--- Makes the player forget the characters they recognise.
+--
+-- Fires `PlayerRecognisedNamesCleared`.
+-- @param player [Player The player]
+-- @param status=nil [Number Only forget players recognised at this `RECOGNISE_*` level; `nil` forgets everyone]
+-- @param isAccurate=nil [Boolean Match `status` exactly instead of at least]
+-- @see cw.player:ClearName
 function cw.player:ClearRecognisedNames(player, status, isAccurate)
   if !status then
     local character = player:GetCharacter()
@@ -1886,7 +2394,13 @@ function cw.player:ClearRecognisedNames(player, status, isAccurate)
   hook.Run('PlayerRecognisedNamesCleared', player, status, isAccurate)
 end
 
--- A function to clear a player's name from being recognised.
+--- Makes every player forget the player's character.
+--
+-- Fires `PlayerNameCleared`.
+-- @param player [Player The player to be forgotten]
+-- @param status=nil [Number Only affect players who recognise them at this `RECOGNISE_*` level]
+-- @param isAccurate=nil [Boolean Match `status` exactly instead of at least]
+-- @see cw.player:ClearRecognisedNames
 function cw.player:ClearName(player, status, isAccurate)
   for k, v in ipairs(_player.GetAll()) do
     if v:HasInitialized() then
@@ -1899,7 +2413,11 @@ function cw.player:ClearName(player, status, isAccurate)
   hook.Run('PlayerNameCleared', player, status, isAccurate)
 end
 
--- A function to holsters all of a player's weapons.
+--- Puts all of the player's item weapons back into their inventory and selects their hands.
+--
+-- Each weapon must pass `PlayerCanHolsterWeapon`; `PlayerHolsterWeapon` fires
+-- for each.
+-- @param player [Player The player]
 function cw.player:HolsterAll(player)
   for k, v in pairs(player:GetWeapons()) do
     local class = v:GetClass()
@@ -1915,14 +2433,21 @@ function cw.player:HolsterAll(player)
   player:SelectWeapon('cw_hands')
 end
 
--- A function to set whether a player's character is banned.
+--- Bans or unbans the player's current character and saves it.
+-- @param player [Player The player]
+-- @param banned [Boolean Whether the character is banned]
 function cw.player:SetBanned(player, banned)
   player:SetCharacterData('CharBanned', banned)
   player:SaveCharacter()
   player:SetNetVar('CharBanned', banned)
 end
 
--- A function to set a player's name.
+--- Changes the name of the player's current character.
+--
+-- Fires `PlayerNameChanged` unless this happens during the first spawn.
+-- @param player [Player The player]
+-- @param name [String The new name]
+-- @param saveless=nil [Boolean Do not save the character afterwards]
 function cw.player:SetName(player, name, saveless)
   local previousName = player:Name()
   local newName = name
@@ -1939,7 +2464,10 @@ function cw.player:SetName(player, name, saveless)
   end
 end
 
--- A function to get a player's property entities.
+--- Returns the property of the player's current character.
+-- @param player [Player The player]
+-- @param class=nil [String Only return entities of this class]
+-- @return [List<Entity> The owned entities]
 function cw.player:GetPropertyEntities(player, class)
   local uniqueID = player:UniqueID()
   local entities = {}
@@ -1958,7 +2486,10 @@ function cw.player:GetPropertyEntities(player, class)
   return entities
 end
 
--- A function to get a player's property count.
+--- Returns how many entities the player's current character owns.
+-- @param player [Player The player]
+-- @param class=nil [String Only count entities of this class]
+-- @return [Number The number of entities]
 function cw.player:GetPropertyCount(player, class)
   local uniqueID = player:UniqueID()
   local count = 0
@@ -1977,7 +2508,9 @@ function cw.player:GetPropertyCount(player, class)
   return count
 end
 
--- A function to get a player's door count.
+--- Returns how many doors the player's current character owns, not counting child doors.
+-- @param player [Player The player]
+-- @return [Number The number of doors]
 function cw.player:GetDoorCount(player)
   local uniqueID = player:UniqueID()
   local count = 0
@@ -1996,14 +2529,20 @@ function cw.player:GetDoorCount(player)
   return count
 end
 
--- A function to take a player's door access.
+--- Removes the player's current character from a door's access list.
+-- @param player [Player The player]
+-- @param door [Entity The door]
 function cw.player:TakeDoorAccess(player, door)
   if door.accessList then
     door.accessList[player:GetCharacterKey()] = false
   end
 end
 
--- A function to give a player door access.
+--- Gives the player's current character access to a door.
+-- @param player [Player The player]
+-- @param door [Entity The door]
+-- @param access [Number `DOOR_ACCESS_BASIC` or `DOOR_ACCESS_COMPLETE`]
+-- @see cw.player:HasDoorAccess
 function cw.player:GiveDoorAccess(player, door, access)
   local key = player:GetCharacterKey()
 
@@ -2016,7 +2555,16 @@ function cw.player:GiveDoorAccess(player, door, access)
   end
 end
 
--- A function to check if a player has door access.
+--- Returns whether the player has access to a door.
+--
+-- Players with the `D` flag always do. Otherwise the result comes from the
+-- `PlayerDoesHaveDoorAccess` hook, asked about the parent door if the door
+-- shares its parent's access and has no entry of its own.
+-- @param player [Player The player]
+-- @param door [Entity The door]
+-- @param access=DOOR_ACCESS_BASIC [Number The access level required]
+-- @param isAccurate=nil [Boolean Require exactly that level]
+-- @return [Boolean Whether the player has access]
 function cw.player:HasDoorAccess(player, door, access, isAccurate)
   if self:HasFlags(player, 'D') then
     return true
@@ -2037,7 +2585,12 @@ function cw.player:HasDoorAccess(player, door, access, isAccurate)
   end
 end
 
--- A function to check if a player can afford an amount.
+--- Returns whether the player has at least an amount of cash.
+--
+-- Always `true` when cash is disabled.
+-- @param player [Player The player]
+-- @param amount [Number The amount]
+-- @return [Boolean Whether the player can afford it]
 function cw.player:CanAfford(player, amount)
   if config.Get('cash_enabled'):Get() then
     return (player:GetCash() >= amount)
@@ -2046,7 +2599,21 @@ function cw.player:CanAfford(player, amount)
   end
 end
 
--- A function to give a player an amount of cash.
+--- Gives cash to the player's character, or takes it with a negative amount.
+--
+-- The amount is rounded and the balance cannot drop below zero. Shows a hint
+-- with the change and fires `PlayerCashUpdated`. Does nothing when cash is
+-- disabled.
+--
+-- ```
+-- cw.player:GiveCash(player, -50, 'buying a crowbar')
+-- ```
+--
+-- @param player [Player The player]
+-- @param amount [Number Cash to give; negative takes it]
+-- @param reason=nil [String Shown in the hint after the amount]
+-- @param bNoMsg=nil [Boolean Do not show a hint]
+-- @see Player:GiveCash
 function cw.player:GiveCash(player, amount, reason, bNoMsg)
   if config.Get('cash_enabled'):Get() then
     local positiveHintColor = 'positive_hint'
@@ -2090,7 +2657,12 @@ function cw.player:GiveCash(player, amount, reason, bNoMsg)
   end
 end
 
--- A function to show cinematic text to a player.
+--- Shows cinematic text with black bars to the player.
+-- @param player [Player The player, a list of players, or `nil` for everyone]
+-- @param text [String The text]
+-- @param color=nil [Color The text color; defaults to white]
+-- @param barLength=nil [Number Length of the black bars, as used by `cw.core:AddCinematicText`]
+-- @param hangTime=nil [Number Seconds the text stays on screen; defaults to 3]
 function cw.player:CinematicText(player, text, color, barLength, hangTime)
   netstream.Start(player, 'CinematicText', {
     text = text,
@@ -2100,7 +2672,10 @@ function cw.player:CinematicText(player, text, color, barLength, hangTime)
   })
 end
 
--- A function to show cinematic text to each player.
+--- Shows cinematic text to every player who has initialized.
+-- @param text [String The text]
+-- @param color=nil [Color The text color; defaults to white]
+-- @param hangTime=nil [Number Passed on as the bar length of `cw.player:CinematicText`, not the hang time]
 function cw.player:CinematicTextAll(text, color, hangTime)
   for k, v in ipairs(_player.GetAll()) do
     if v:HasInitialized() then
@@ -2109,7 +2684,13 @@ function cw.player:CinematicTextAll(text, color, hangTime)
   end
 end
 
--- A function to get if a player is protected.
+--- Returns whether a player is the server owner and protected from admin actions.
+--
+-- The owner is set by the `owner_steamid` config, which may hold several
+-- comma-separated Steam IDs. Developers recognised by the developer plugin
+-- count as protected.
+-- @param identifier [Player The player, or a name or Steam ID passed to `player.Find`]
+-- @return [Boolean Whether the player is protected]
 function cw.player:IsProtected(identifier)
   local steamID = nil
   local ownerSteamID = config.Get('owner_steamid'):Get()
@@ -2147,7 +2728,11 @@ function cw.player:IsProtected(identifier)
   return false
 end
 
--- A function to notify each player in a radius.
+--- Notifies every player who has initialized within a radius of a position.
+-- @param text [String The text]
+-- @param class [Any The notification class, see `cw.player:Notify`]
+-- @param position [Vector The center position]
+-- @param radius [Number The radius]
 function cw.player:NotifyInRadius(text, class, position, radius)
   local listeners = {}
 
@@ -2162,19 +2747,21 @@ function cw.player:NotifyInRadius(text, class, position, radius)
   self:Notify(listeners, text, class)
 end
 
--- A function to notify each player.
+--- Sends a chat notification to every player.
+-- @param text [String The text]
+-- @param icon=nil [String Path of the icon shown next to the message]
 function cw.player:NotifyAll(text, icon)
   self:Notify(nil, text, true, icon)
 end
 
---[[
-  @codebase Server
-  @details A function to notify admins by rank.
-  @param String The rank and up that will be notified.
-  @param String The text that will be sent to each admin.
-  @param String The name of the icon that will be used in the message, can be nil.
---]]
-
+--- Sends a chat notification to admins of a given rank.
+--
+-- `'operator'` or `'o'` notifies all admins, `'admin'` or `'a'` notifies
+-- admins who are not operators, and `'superadmin'` or `'s'` notifies
+-- superadmins.
+-- @param adminLevel [String The rank to notify]
+-- @param text [String The text]
+-- @param icon=nil [String Path of the icon shown next to the message]
 function cw.player:NotifyAdmins(adminLevel, text, icon)
   for k, v in pairs(player.GetAll()) do
     if adminLevel == 'operator' or adminLevel == 'o' then
@@ -2193,7 +2780,15 @@ function cw.player:NotifyAdmins(adminLevel, text, icon)
   end
 end
 
--- A function to notify a player.
+--- Notifies a player in chat or with a notification popup.
+--
+-- With `class` set to `true` or `nil` the text goes to chat through
+-- `chatbox.AddText`. Otherwise it is a popup of that `NOTIFY_*` class.
+-- @param player [Player The player, a list of players, or `nil` for everyone]
+-- @param text [String The text]
+-- @param class=nil [Any `true` or `nil` for chat, or a `NOTIFY_*` number for a popup]
+-- @param icon=nil [String Path of the chat icon; not used for lists of players]
+-- @see Player:Notify
 function cw.player:Notify(player, text, class, icon)
   if type(player) == 'table' then
     for k, v in pairs(player) do
@@ -2218,7 +2813,13 @@ function cw.player:Notify(player, text, class, icon)
   end
 end
 
--- A function to set a player's weapons list from a table.
+--- Gives the player back a list of weapons made by `cw.player:GetWeapons`.
+--
+-- Skips weapons the player already has, and spawn weapons that belonged to a
+-- different team.
+-- @param player [Player The player]
+-- @param weapons [List<Map> The weapons, as returned by `cw.player:GetWeapons`]
+-- @param bForceReturn=nil [Boolean Passed on to `Player:Give`]
 function cw.player:SetWeapons(player, weapons, bForceReturn)
   for k, v in pairs(weapons) do
     if !player:HasWeapon(v.weaponData['class']) then
@@ -2231,17 +2832,27 @@ function cw.player:SetWeapons(player, weapons, bForceReturn)
   end
 end
 
--- A function to give ammo to a player from a table.
+--- Gives the player ammo from a table of amounts.
+-- @param player [Player The player]
+-- @param ammo [Map Amounts keyed by ammo type]
 function cw.player:GiveAmmo(player, ammo)
   for k, v in pairs(ammo) do player:GiveAmmo(v, k) end
 end
 
--- A function to set a player's ammo list from a table.
+--- Sets the player's ammo from a table of amounts.
+-- @param player [Player The player]
+-- @param ammo [Map Amounts keyed by ammo type]
 function cw.player:SetAmmo(player, ammo)
   for k, v in pairs(ammo) do player:SetAmmo(v, k) end
 end
 
--- A function to get a player's ammo list as a table.
+--- Returns the player's reserve ammo of every item ammo type, without their spawn ammo.
+--
+-- The ammo types are the `ammoClass` of every item, adjusted by the
+-- `AdjustAmmoTypes` hook.
+-- @param player [Player The player]
+-- @param bDoStrip=nil [Boolean Also remove all of the player's ammo]
+-- @return [Map Amounts keyed by ammo type]
 function cw.player:GetAmmo(player, bDoStrip)
   local spawnAmmo = self:GetSpawnAmmo(player)
   local ammoTypes = {}
@@ -2278,7 +2889,11 @@ function cw.player:GetAmmo(player, bDoStrip)
   return ammo
 end
 
--- A function to get a player's weapons list as a table.
+--- Returns a list of the player's weapons that `cw.player:SetWeapons` can give back, and strips them.
+-- @param player [Player The player]
+-- @param bDoKeep=nil [Boolean Do not strip the weapons]
+-- @return [List<Map> One entry per weapon with `weaponData` (`class` and `itemTable`) and `teamIndex` (only for
+-- spawn weapons)]
 function cw.player:GetWeapons(player, bDoKeep)
   local weapons = {}
 
@@ -2307,7 +2922,9 @@ function cw.player:GetWeapons(player, bDoKeep)
   return weapons
 end
 
--- A function to get the total weight of a player's equipped weapons.
+--- Returns the total item weight of the player's equipped weapons.
+-- @param player [Player The player]
+-- @return [Number The weight]
 function cw.player:GetEquippedWeight(player)
   local weight = 0
 
@@ -2322,7 +2939,9 @@ function cw.player:GetEquippedWeight(player)
   return weight
 end
 
--- A function to get the total space of a player's equipped weapons.
+--- Returns the total item space of the player's equipped weapons.
+-- @param player [Player The player]
+-- @return [Number The space]
 function cw.player:GetEquippedSpace(player)
   local space = 0
 
@@ -2337,7 +2956,9 @@ function cw.player:GetEquippedSpace(player)
   return space
 end
 
--- A function to get a player's holstered weapon.
+--- Returns the class of an item weapon the player carries but is not holding.
+-- @param player [Player The player]
+-- @return [String The weapon class, or `nil` if there is none]
 function cw.player:GetHolsteredWeapon(player)
   for k, v in pairs(player:GetWeapons()) do
     local itemTable = item.GetByWeapon(v)
@@ -2351,7 +2972,11 @@ function cw.player:GetHolsteredWeapon(player)
   end
 end
 
--- A function to check whether a player is ragdolled.
+--- Returns whether the player is ragdolled.
+-- @param player [Player The player]
+-- @param exception=nil [Number A `RAGDOLL_*` state that does not count as ragdolled]
+-- @param bNoEntity=nil [Boolean Check the ragdoll state even if the player has no ragdoll entity]
+-- @return [Boolean Whether the player is ragdolled; `nil` if they have no ragdoll entity]
 function cw.player:IsRagdolled(player, exception, bNoEntity)
   if player:GetRagdollEntity() or bNoEntity then
     local ragdolled = player:GetDTInt(INT_RAGDOLLSTATE)
@@ -2364,7 +2989,10 @@ function cw.player:IsRagdolled(player, exception, bNoEntity)
   end
 end
 
--- A function to set a player's unragdoll time.
+--- Sets when the player gets up, shown as the `unragdoll` action.
+-- @param player [Player The player]
+-- @param delay [Number Seconds until the player gets up, or `false` to cancel getting up]
+-- @see cw.player:GetUnragdollTime
 function cw.player:SetUnragdollTime(player, delay)
   player.cwRagdollPaused = nil
 
@@ -2379,7 +3007,9 @@ function cw.player:SetUnragdollTime(player, delay)
   end
 end
 
--- A function to pause a player's unragdoll time.
+--- Pauses the countdown until the player gets up.
+-- @param player [Player The player]
+-- @see cw.player:StartUnragdollTime
 function cw.player:PauseUnragdollTime(player)
   if !player.cwRagdollPaused then
     local unragdollTime = self:GetUnragdollTime(player)
@@ -2394,7 +3024,8 @@ function cw.player:PauseUnragdollTime(player)
   end
 end
 
--- A function to start a player's unragdoll time.
+--- Resumes a countdown paused with `cw.player:PauseUnragdollTime`.
+-- @param player [Player The player]
 function cw.player:StartUnragdollTime(player)
   if player.cwRagdollPaused then
     if player:IsRagdolled() then
@@ -2405,7 +3036,9 @@ function cw.player:StartUnragdollTime(player)
   end
 end
 
--- A function to get a player's unragdoll time.
+--- Returns when the player gets up.
+-- @param player [Player The player]
+-- @return [Number The `CurTime` the player gets up at, or `0` if no countdown is running]
 function cw.player:GetUnragdollTime(player)
   local action, actionDuration, startActionTime = self:GetAction(player)
 
@@ -2416,12 +3049,16 @@ function cw.player:GetUnragdollTime(player)
   end
 end
 
--- A function to get a player's ragdoll state.
+--- Returns the player's ragdoll state.
+-- @param player [Player The player]
+-- @return [Number A `RAGDOLL_*` value]
 function cw.player:GetRagdollState(player)
   return player:GetDTInt(INT_RAGDOLLSTATE)
 end
 
--- A function to get a player's ragdoll entity.
+--- Returns the player's ragdoll entity.
+-- @param player [Player The player]
+-- @return [Entity The ragdoll, or `nil` if there is none]
 function cw.player:GetRagdollEntity(player)
   if player.cwRagdollTab then
     if IsValid(player.cwRagdollTab.entity) then
@@ -2430,12 +3067,19 @@ function cw.player:GetRagdollEntity(player)
   end
 end
 
--- A function to get a player's ragdoll table.
+--- Returns the table with the player's state from before they were ragdolled.
+-- @param player [Player The player]
+-- @return [Map The ragdoll table (`entity`, `health`, `armor`, `weapons`, `immunity` and so on), or `nil`]
 function cw.player:GetRagdollTable(player)
   return player.cwRagdollTab
 end
 
--- A function to do a player's ragdoll decay check.
+--- Starts a timer that makes the ragdoll decay once its player has left.
+--
+-- Checked every 60 seconds; the ragdoll decays over the `body_decay_time`
+-- config if `PlayerCanRagdollDecay` returns `true`.
+-- @param player [Player The player]
+-- @param ragdoll [Entity The player's ragdoll]
 function cw.player:DoRagdollDecayCheck(player, ragdoll)
   local index = ragdoll:EntIndex()
 
@@ -2459,7 +3103,9 @@ function cw.player:DoRagdollDecayCheck(player, ragdoll)
   end)
 end
 
--- A function to set a player's ragdoll immunity.
+--- Sets how long the player's ragdoll is immune to damage.
+-- @param player [Player A ragdolled player]
+-- @param delay [Number Seconds of immunity, or `nil` to remove it]
 function cw.player:SetRagdollImmunity(player, delay)
   if delay then
     player:GetRagdollTable().immunity = CurTime() + delay
@@ -2468,7 +3114,28 @@ function cw.player:SetRagdollImmunity(player, delay)
   end
 end
 
--- A function to set a player's ragdoll state.
+--- Knocks the player over into a ragdoll or gets them back up.
+--
+-- `RAGDOLL_KNOCKEDOUT` and `RAGDOLL_FALLENOVER` create a ragdoll (or change
+-- the state of an existing one) if `PlayerCanRagdoll` returns `true`, store
+-- the player's weapons, health and armor, and make the player spectate it.
+-- Being knocked out gives the player a death code. `RAGDOLL_NONE` gets the
+-- player up where the ragdoll lies and restores them, and `RAGDOLL_RESET` only
+-- removes the ragdoll, if `PlayerCanUnragdoll` returns `true`. Fires
+-- `PlayerRagdolled` or `PlayerUnragdolled`.
+--
+-- ```
+-- cw.player:SetRagdollState(player, RAGDOLL_KNOCKEDOUT, 30)
+-- ```
+--
+-- @param player [Player The player]
+-- @param state [Number A `RAGDOLL_*` value]
+-- @param delay=nil [Number Seconds until the player gets up on their own]
+-- @param decay=nil [Number Seconds the ragdoll takes to decay when the player gets up; `nil` removes it]
+-- @param force=nil [Vector Force applied to the ragdoll's bones]
+-- @param multiplier=nil [Number Unused]
+-- @param velocityCallback=nil [Function Called as `velocityCallback(physObj, boneIndex, ragdoll, velocity, force)`
+-- for each bone instead of applying the velocity and force]
 function cw.player:SetRagdollState(player, state, delay, decay, force, multiplier, velocityCallback)
   if state == RAGDOLL_KNOCKEDOUT or state == RAGDOLL_FALLENOVER then
     if player:IsRagdolled() then
@@ -2672,7 +3339,12 @@ function cw.player:SetRagdollState(player, state, delay, decay, force, multiplie
   end
 end
 
--- A function to make a player drop their weapons.
+--- Drops the player's item weapons as item entities, such as when they die.
+--
+-- Uses the ragdoll's stored weapons if the player is ragdolled. Each weapon
+-- must pass `PlayerCanDropWeapon` and `PlayerAdjustDropWeaponInfo`;
+-- `PlayerDropWeapon` fires for each one dropped.
+-- @param player [Player The player]
 function cw.player:DropWeapons(player)
   local ragdollEntity = player:GetRagdollEntity()
 
@@ -2728,7 +3400,14 @@ function cw.player:DropWeapons(player)
   end
 end
 
--- A function to lightly spawn a player.
+--- Respawns the player in place, keeping their position, health, armor, model and look.
+--
+-- Gets the player up first if they are ragdolled, unless `bForceReturn` is
+-- set. Fires `PostPlayerLightSpawn` once the spawn is done.
+-- @param player [Player The player]
+-- @param weapons=nil [List<Map> Weapons to give back; `true` keeps the current ones]
+-- @param ammo=nil [Map Ammo to give back; `true` keeps the current ammo]
+-- @param bForceReturn=nil [Boolean Do not get the player up, and passed on to `cw.player:SetWeapons`]
 function cw.player:LightSpawn(player, weapons, ammo, bForceReturn)
   if player:IsRagdolled() and !bForceReturn then
     self:SetRagdollState(player, RAGDOLL_NONE)
@@ -2802,7 +3481,11 @@ function cw.player:LightSpawn(player, weapons, ammo, bForceReturn)
   player:Spawn()
 end
 
--- A function to convert a table to camel case.
+--- Returns a copy of a database row with its column names converted to camel case.
+--
+-- Underscores are removed, so `_SteamName` becomes `steamName`.
+-- @param baseTable [Map The row]
+-- @return [Map The converted copy]
 function cw.player:ConvertToCamelCase(baseTable)
   local newTable = {}
 
@@ -2817,7 +3500,10 @@ function cw.player:ConvertToCamelCase(baseTable)
   return newTable
 end
 
--- A function to get a player's characters.
+--- Loads the player's characters for the current schema from the database.
+-- @param player [Player The player]
+-- @param Callback [Function Called as `Callback(characters)` with a list of camel case character tables, or with
+-- `nil` if the player has none]
 function cw.player:GetCharacters(player, Callback)
   if !IsValid(player) then return end
 
@@ -2845,7 +3531,12 @@ function cw.player:GetCharacters(player, Callback)
   queryObj:Execute()
 end
 
--- A function to add a character to the character screen.
+--- Adds a character to the player's character selection screen.
+--
+-- `PlayerAdjustCharacterScreenInfo(player, character, info)` can change what
+-- is shown.
+-- @param player [Player The player]
+-- @param character [Character The character]
 function cw.player:CharacterScreenAdd(player, character)
   local info = {
     name = character.name,
@@ -2871,7 +3562,8 @@ function cw.player:CharacterScreenAdd(player, character)
   netstream.Start(player, 'CharacterAdd', info)
 end
 
--- A function to convert a character's MySQL variables to Lua variables.
+--- Decodes the JSON and numeric fields of a character loaded from the database, in place.
+-- @param baseTable [Character The camel case character table]
 function cw.player:ConvertCharacterMySQL(baseTable)
   baseTable.recognisedNames = self:ConvertCharacterRecognisedNamesString(baseTable.recognisedNames)
   baseTable.characterID = tonumber(baseTable.characterID)
@@ -2886,7 +3578,9 @@ function cw.player:ConvertCharacterMySQL(baseTable)
   baseTable.key = tonumber(baseTable.key)
 end
 
--- A function to get a player's character ID.
+--- Returns the slot of the player's current character.
+-- @param player [Player The player]
+-- @return [Number The character slot, or `nil` if they have no character loaded]
 function cw.player:GetCharacterID(player)
   local character = player:GetCharacter()
 
@@ -2899,7 +3593,23 @@ function cw.player:GetCharacterID(player)
   end
 end
 
--- A function to load a player's character.
+--- Loads one of the player's characters, or creates a new one in a slot.
+--
+-- With `tMergeCreate`, a new character with default values is merged with it,
+-- given its default inventory through `GetPlayerDefaultInventory`, checked
+-- with `PlayerCanCreateCharacter` (unless `bForce`), inserted into the
+-- database and added to the character screen; `PlayerCharacterCreated`
+-- fires. Nothing happens if the slot is taken.
+--
+-- Without it, the current character is saved and unloaded
+-- (`PlayerCharacterUnloaded`), the character in the slot becomes current, the
+-- player is killed silently to respawn as it, and `PlayerCharacterLoaded`
+-- fires.
+-- @param player [Player The player]
+-- @param characterID [Number The character slot]
+-- @param tMergeCreate=nil [Map Fields of a new character to create]
+-- @param Callback=nil [Function Called without arguments once a new character is saved]
+-- @param bForce=nil [Boolean Skip `PlayerCanCreateCharacter`]
 function cw.player:LoadCharacter(player, characterID, tMergeCreate, Callback, bForce)
   local character = {}
   local unixTime = os.time()
@@ -2981,7 +3691,9 @@ function cw.player:LoadCharacter(player, characterID, tMergeCreate, Callback, bF
   end
 end
 
--- A function to set a player's basic shared variables.
+--- Networks the flags, model, name, key, faction and gender of the player's current character.
+-- @param player [Player The player]
+-- @return [Boolean Always `true`]
 function cw.player:SetBasicSharedVars(player)
   local gender = player:GetGender()
   local playerFaction = player:GetFaction()
@@ -3004,7 +3716,11 @@ function cw.player:SetBasicSharedVars(player)
   return true
 end
 
--- A function to get the character's ammo as a string.
+--- Returns a character's saved ammo merged with the player's current ammo.
+-- @param player [Player The player]
+-- @param character [Character The character]
+-- @param bRawTable=nil [Boolean Return the table instead of JSON]
+-- @return [String The ammo as JSON, or a `Map` with `bRawTable`]
 function cw.player:GetCharacterAmmoString(player, character, bRawTable)
   local ammo = table.Copy(character.ammo)
 
@@ -3021,7 +3737,11 @@ function cw.player:GetCharacterAmmoString(player, character, bRawTable)
   end
 end
 
--- A function to get the character's data as a string.
+--- Returns a copy of a character's data, adjusted by the `PlayerSaveCharacterData` hook.
+-- @param player [Player The player]
+-- @param character [Character The character]
+-- @param bRawTable=nil [Boolean Return the table instead of JSON]
+-- @return [String The data as JSON, or a `Map` with `bRawTable`]
 function cw.player:GetCharacterDataString(player, character, bRawTable)
   local data = table.Copy(character.data)
   hook.Run('PlayerSaveCharacterData', player, data)
@@ -3033,7 +3753,10 @@ function cw.player:GetCharacterDataString(player, character, bRawTable)
   end
 end
 
--- A function to get the character's recognised names as a string.
+--- Returns the character keys a character recognises at the `RECOGNISE_SAVE` level, as JSON.
+-- @param player [Player The player]
+-- @param character [Character The character]
+-- @return [String A JSON list of character keys]
 function cw.player:GetCharacterRecognisedNamesString(player, character)
   local recognisedNames = {}
 
@@ -3046,7 +3769,11 @@ function cw.player:GetCharacterRecognisedNamesString(player, character)
   return util.TableToJSON(recognisedNames)
 end
 
--- A function to get the character's inventory as a string.
+--- Returns a copy of a character's inventory with the items added by `PlayerAddToSavedInventory`.
+-- @param player [Player The player]
+-- @param character [Character The character]
+-- @param bRawTable=nil [Boolean Return the inventory instead of JSON]
+-- @return [String The saveable inventory as JSON, or an `Inventory` with `bRawTable`]
 function cw.player:GetCharacterInventoryString(player, character, bRawTable)
   local inventory = cw.inventory:CreateDuplicate(character.inventory)
   hook.Run('PlayerAddToSavedInventory', player, character, function(itemTable)
@@ -3060,7 +3787,9 @@ function cw.player:GetCharacterInventoryString(player, character, bRawTable)
   end
 end
 
--- A function to convert a character's recognised names string to a table.
+--- Decodes a saved list of recognised character keys.
+-- @param data [String A JSON list of character keys]
+-- @return [Map `RECOGNISE_SAVE` keyed by character key, or an empty table if it cannot be decoded]
 function cw.player:ConvertCharacterRecognisedNamesString(data)
   local bSuccess, value = pcall(util.JSONToTable, data)
 
@@ -3077,7 +3806,9 @@ function cw.player:ConvertCharacterRecognisedNamesString(data)
   end
 end
 
--- A function to convert a character's data string to a table.
+--- Decodes a JSON data string.
+-- @param data [String The JSON string]
+-- @return [Map The decoded table, or an empty table if it cannot be decoded]
 function cw.player:ConvertCharacterDataString(data)
   local bSuccess, value = pcall(util.JSONToTable, data)
 
@@ -3088,7 +3819,14 @@ function cw.player:ConvertCharacterDataString(data)
   end
 end
 
--- A function to load a player's data.
+--- Loads the player's player data from the database, creating a row for new players.
+--
+-- Sets the player's join time, last played time, user group and data, makes
+-- protected players and developers superadmins, and fires
+-- `PlayerRestoreData`. Retries every 2 seconds until the data has loaded.
+-- @param player [Player The player]
+-- @param Callback=nil [Function Called as `Callback(player)` once the data has loaded]
+-- @see cw.player:SaveData
 function cw.player:LoadData(player, Callback)
   local playersTable = config.Get('mysql_players_table'):Get()
   local schemaFolder = cw.core:GetSchemaFolder()
@@ -3166,7 +3904,13 @@ function cw.player:LoadData(player, Callback)
   end)
 end
 
--- A function to save a players's data.
+--- Saves the player's player data to the database.
+--
+-- `PlayerSaveData(player, data)` can change a copy of the data before it is
+-- saved.
+-- @param player [Player The player]
+-- @param bCreate=nil [Boolean Insert a new row for the player instead of updating theirs]
+-- @return [Map An empty table when `bCreate` is set, otherwise nothing]
 function cw.player:SaveData(player, bCreate)
   if !bCreate then
     local schemaFolder = cw.core:GetSchemaFolder()
@@ -3209,14 +3953,23 @@ function cw.player:SaveData(player, bCreate)
   end
 end
 
--- A function to update a player's character.
+--- Stores the player's current inventory, ammo and data in their character table.
+-- @param player [Player The player]
 function cw.player:UpdateCharacter(player)
   player.cwCharacter.inventory = self:GetCharacterInventoryString(player, player.cwCharacter, true)
   player.cwCharacter.ammo = self:GetCharacterAmmoString(player, player.cwCharacter, true)
   player.cwCharacter.data = self:GetCharacterDataString(player, player.cwCharacter, true)
 end
 
--- A function to save a player's character.
+--- Saves a character to the database.
+--
+-- Without `bCreate`, the character's row is updated (only for players who
+-- have initialized) and the player data is saved too. With `bCreate`, every
+-- field of the character is inserted as a new row.
+-- @param player [Player The player]
+-- @param bCreate=nil [Boolean Insert the character as a new row]
+-- @param character=nil [Character The character to save; defaults to the current one]
+-- @param Callback=nil [Function With `bCreate`, called as `Callback(key)` with the new row's key]
 function cw.player:SaveCharacter(player, bCreate, character, Callback)
   if bCreate then
     local charactersTable = config.Get('mysql_characters_table'):Get()
@@ -3302,7 +4055,10 @@ function cw.player:SaveCharacter(player, bCreate, character, Callback)
   end
 end
 
--- A function to get the class of a player's active weapon.
+--- Returns the class of the player's active weapon.
+-- @param player [Player The player]
+-- @param safe=nil [Any Value to return if the player has no active weapon]
+-- @return [String The weapon class, or `safe`]
 function cw.player:GetWeaponClass(player, safe)
   if IsValid(player:GetActiveWeapon()) then
     return player:GetActiveWeapon():GetClass()
@@ -3311,24 +4067,35 @@ function cw.player:GetWeaponClass(player, safe)
   end
 end
 
--- A function to get a player's wages.
+--- Returns the player's wages from the `Wages` net var.
+-- @param player [Player The player]
+-- @return [Number The wages]
 function cw.player:GetWages(player)
   return player:GetNetVar('Wages')
 end
 
--- A function to set a character's flags.
+--- Replaces all flags of the player's current character.
+-- @param player [Player The player]
+-- @param flags [String The new flags, one character each]
 function cw.player:SetFlags(player, flags)
   self:TakeFlags(player, player:GetFlags())
   self:GiveFlags(player, flags)
 end
 
--- A function to set a player's flags.
+--- Replaces all of the player's player-wide flags.
+-- @param player [Player The player]
+-- @param flags [String The new flags, one character each]
 function cw.player:SetPlayerFlags(player, flags)
   self:TakePlayerFlags(player, player:GetPlayerFlags())
   self:GivePlayerFlags(player, flags)
 end
 
--- A function to set a player's rank within their faction.
+--- Sets the rank of the player's character within their faction.
+--
+-- Also applies the rank's `class`, `model` and `weapons` (given as spawn
+-- weapons). Does nothing if the faction has no rank by that name.
+-- @param player [Player The player]
+-- @param rank [String Name of the rank]
 function cw.player:SetFactionRank(player, rank)
   if rank then
     local faction = faction.FindByID(player:GetFaction())
@@ -3359,17 +4126,31 @@ function cw.player:SetFactionRank(player, rank)
   end
 end
 
--- A function to get a player's global flags.
+--- Returns the player's player-wide flags.
+-- @param player [Player The player]
+-- @return [String The flags, or `''`]
 function cw.player:GetPlayerFlags(player)
   return player:GetData('Flags') or ''
 end
 
 local playerMeta = FindMetaTable('Player')
 
+--- Gives cash to the player's character, or takes it with a negative amount.
+--
+-- Same as `cw.player:GiveCash`.
+-- @param amount [Number Cash to give; negative takes it]
+-- @param reason=nil [String Shown in the hint after the amount]
+-- @param bNoMsg=nil [Boolean Do not show a hint]
 function playerMeta:GiveCash(amount, reason, bNoMsg)
   return cw.player:GiveCash(self, amount, reason, bNoMsg)
 end
 
+--- Notifies the player in chat or with a notification popup.
+--
+-- Same as `cw.player:Notify`.
+-- @param text [String The text]
+-- @param class=nil [Any `true` or `nil` for chat, or a `NOTIFY_*` number for a popup]
+-- @param icon=nil [String Path of the chat icon]
 function playerMeta:Notify(text, class, icon)
   return cw.player:Notify(self, text, class, icon)
 end

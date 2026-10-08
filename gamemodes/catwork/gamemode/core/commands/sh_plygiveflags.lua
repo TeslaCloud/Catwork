@@ -12,7 +12,9 @@ COMMAND.text = '#Command_Plygiveflags_Syntax'
 COMMAND.access = 's'
 COMMAND.arguments = 2
 
--- Called when the command has been run.
+--- Gives player-wide flags to the target player; arguments are the player name and the flags.
+--
+-- Admin flags (`a`, `s` and `o`) cannot be given this way.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
 

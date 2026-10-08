@@ -17,6 +17,15 @@ cw.fonts:Add('cwMenuButtonSmall', {
   extended = true
 })
 
+--- Sets the button up for a menu item: translated upper-case text, icon, tooltip and a click callback that
+-- opens the item's tab.
+--
+-- A `#` is added to the item's `text` when it lacks one, so it is looked up as a language phrase. The
+-- icon comes from `iconData.path` (`bars` when empty), offset by `iconData.size` when set.
+--
+-- @param menuItem [Map Menu item with `text`, `tip` and `iconData` (`path` and `size`), as stored in
+-- `cw.menuitems.stored`]
+-- @param panel [Panel The tab panel the button opens]
 function PANEL:SetupLabel(menuItem, panel)
   self:SetFont('cwMenuButtonSmall')
 
@@ -60,7 +69,7 @@ function PANEL:SetupLabel(menuItem, panel)
   self:UpdatePositioning()
 end
 
--- A function to update the positioning of child items.
+--- Sets the button to its fixed size of 200 by 32 pixels.
 function PANEL:UpdatePositioning()
   self:SetSize(200, 32)
 end

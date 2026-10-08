@@ -20,18 +20,32 @@ item.weapons = weapons
 local instances = item.instances or {}
 item.instances = instances
 
+--- Returns every registered item definition, indexed by unique ID.
+-- @return [Map<Item> Item definitions indexed by unique ID]
+-- @see item.GetAll
 function item.GetStored()
   return stored
 end
 
+--- Returns every registered item definition, indexed by its numeric index.
+--
+-- The index is the short CRC of the unique ID that items are networked by.
+-- @return [Map<Item> Item definitions indexed by numeric index]
 function item.GetBuffer()
   return buffer
 end
 
+--- Returns the weapon item definitions, indexed by weapon class.
+--
+-- Filled by `item.Initialize` with every item based on `weapon_base`, keyed by its `weaponClass`
+-- or, when it has none, its unique ID.
+-- @return [Map<Item> Weapon item definitions indexed by weapon class]
 function item.GetWeapons()
   return weapons
 end
 
+--- Returns every item instance that exists in this realm, indexed by item ID.
+-- @return [Map<Item> Item instances indexed by item ID]
 function item.GetInstances()
   return instances
 end
@@ -40,7 +54,38 @@ end
   Begin defining the item class base for other item's to inherit from.
 --]]
 
---[[ Set the __index meta function of the class. --]]
+--- The base class of every item definition and item instance.
+--
+-- Item files are loaded by `item.IncludeItems`, which creates a `CItem` named `ITEM` with
+-- `item.New`, runs the file and registers it. An item file sets fields on `ITEM` and defines
+-- callbacks:
+--
+-- ```
+-- ITEM.name = 'Ration'
+-- ITEM.model = 'models/weapons/w_package.mdl'
+-- ITEM.weight = 0.5
+-- ITEM.category = 'Consumables'
+-- ITEM.description = 'A small, sealed ration package.'
+-- ITEM:AddData('Opened', false, true)
+--
+-- function ITEM:OnUse(player, itemEntity)
+--   player:SetHealth(math.min(player:Health() + 10, player:GetMaxHealth()))
+-- end
+--
+-- function ITEM:OnDrop(player, position) end
+-- ```
+--
+-- Common fields: `name`, `PrintName`, `description`, `model`, `skin`, `weight`, `space`, `cost`,
+-- `batch` (how many are ordered at once), `business` (whether it can be ordered), `category`,
+-- `baseItem` (unique ID of the item to inherit from), `isBaseItem`, `useSound`, `dropSound` and
+-- `destroySound` (a sound path, a `List` of paths to pick from, or `false` for silence).
+-- Instances additionally have a non-zero `itemID` and per-instance `data`.
+--
+-- Callbacks used by the item library: `OnSetup`, `OnInstantiated`, `OnUse` (return `false` to
+-- cancel, `true` to keep the item), `OnDrop`, `OnCreateDropEntity`, `OnDestroy` (return `false`
+-- to cancel), `OnLoaded` and `OnSaved` (return `false` to skip the item), `HasPlayerEquipped`, and
+-- on the client `GetClientSideModel`, `GetClientSideSkin`, `GetClientSideName`,
+-- `GetClientSideInfo` and `GetClientSideDescription`.
 class 'CItem'
 
 CItem.name = 'Item Base'
@@ -56,15 +101,31 @@ CItem.category = 'Other'
 CItem.description = '#Item_NoDescription'
 CItem.proxies = {}
 
--- Call it in the constructor.
+--- Constructs a new item object; the base class does nothing here.
+--
+-- `item.New` sets up the per-item tables after construction.
 function CItem:CItem()
 end
 
--- Called when the item is converted to a string.
+--- Converts the item to a string of the form `ITEM[itemID]`.
+-- @return [String The string representation]
 function CItem:__tostring()
   return 'ITEM['..self.itemID..']'
 end
 
+--- Returns a variable of the item, preferring the instance's data over the definition's fields.
+--
+-- The lookup order is the item's `data`, then any query proxy added with `CItem:AddQueryProxy`,
+-- then the field on the item itself. On the client, `name` is read from `PrintName` when it is
+-- set, and string values are translated with `cw.lang:TranslateText`.
+--
+-- ```
+-- local weight = itemTable:GetVar('weight', 1)
+-- ```
+--
+-- @param varName [String Name of the variable]
+-- @param failSafe=nil [Any Value returned when the variable is not set]
+-- @return [Any The variable's value, or `failSafe`]
 function CItem:GetVar(varName, failSafe)
   --[[
     Check data first. We may be overriding this value
@@ -99,45 +160,85 @@ function CItem:GetVar(varName, failSafe)
   return (self[varName] != nil and self[varName]) or failSafe
 end
 
+--- Redirects `CItem:GetVar` lookups of one variable to another variable or a function.
+--
+-- ```
+-- ITEM:AddQueryProxy('weight', function(itemTable)
+--   return itemTable:GetData('Rounds') * 0.01
+-- end)
+-- ```
+--
+-- @param var [String Name of the variable to redirect]
+-- @param replacement [Any Name of the variable to read instead, or a function that receives the item and returns
+-- the value]
 function CItem:AddQueryProxy(var, replacement)
   self.proxies[var] = replacement
 end
 
---[[
-  A function to override an item's base data. This is
-  just a nicer way to set a value to go along with
-  the method of querying.
---]]
-
+--- Sets a field on the item.
+--
+-- Equivalent to assigning the field directly; provided to pair with `CItem:GetVar`.
+-- @param varName [String Name of the field]
+-- @param value [Any The new value]
 function CItem:Override(varName, value)
   self[varName] = value
 end
 
--- A function to add data to an item.
+--- Declares a per-instance data field with a default value.
+--
+-- Call it in an item file. The default is used when instances are created, values equal to it are
+-- left out when the inventory is saved, and networked fields are sent to clients when changed with
+-- `CItem:SetData`.
+--
+-- ```
+-- ITEM:AddData('Rounds', -1, true)
+-- ```
+--
+-- @param dataName [String Name of the data field]
+-- @param value [Any Default value]
+-- @param bNetworked=nil [Boolean Send changes of this field to clients]
 function CItem:AddData(dataName, value, bNetworked)
   self.data[dataName] = value
   self.defaultData[dataName] = value
   self.networkData[dataName] = bNetworked
 end
 
--- A function to remove data from an item.
+--- Removes a data field declared with `CItem:AddData`, including its default and network flag.
+-- @param dataName [String Name of the data field]
 function CItem:RemoveData(dataName)
   self.data[dataName] = nil
   self.defaultData[dataName] = nil
   self.networkData[dataName] = nil
 end
 
--- A function to get whether an item has the same data as another.
+--- Returns whether an item's data equals the data stored on the `item` library table.
+--
+-- Declared with `.` on the library instead of as a `CItem` method, so it compares against
+-- `item.data` rather than another item.
+-- @param itemTable [Item The item to compare]
+-- @return [Boolean Whether the data tables are equal]
 function item.HasSameDataAs(itemTable)
   return cw.core:AreTablesEqual(item.data, itemTable.data)
 end
 
--- A function to get whether the item is an instance.
+--- Returns whether the item is an instance rather than a definition.
+-- @return [Boolean Whether the item has a non-zero `itemID`]
 function CItem:IsInstance()
   return (self.itemID != 0)
 end
 
--- A function to get whether the item is based from another.
+--- Returns whether the item is, or inherits from, the item with a unique ID.
+--
+-- Follows the `baseItem` chain through every ancestor.
+--
+-- ```
+-- if itemTable:IsBasedFrom('weapon_base') then
+--   print(itemTable('name')..' is a weapon.')
+-- end
+-- ```
+--
+-- @param uniqueID [String Unique ID of the base item]
+-- @return [Boolean Whether the item is based on that item]
 function CItem:IsBasedFrom(uniqueID)
   local itemTable = self
 
@@ -156,22 +257,42 @@ function CItem:IsBasedFrom(uniqueID)
   return false
 end
 
--- A function to get a base class table from the item.
+--- Returns the definition of an item by unique ID, usually one of this item's bases.
+-- @param uniqueID [String Unique ID of the item]
+-- @return [Item The item definition, or `nil` when not found]
+-- @see item.FindByID
 function CItem:GetBaseClass(uniqueID)
   return item.FindByID(uniqueID)
 end
 
--- A function to get whether the item can be ordered.
+--- Returns whether the item can be ordered from the business menu.
+-- @return [Boolean Whether the item is not a base item and has `business` set]
 function CItem:CanBeOrdered()
   return (!self.isBaseItem and self.business)
 end
 
--- A function to get data from the item.
+--- Returns a data field of the item, falling back to the item field of the same name.
+--
+-- Falsy data values (`false`, `nil`) fall through to the item field and then to `default`.
+-- @param dataName [String Name of the data field]
+-- @param default=nil [Any Value returned when neither the data nor the field is set]
+-- @return [Any The value]
+-- @see CItem:SetData
 function CItem:GetData(dataName, default)
   return self.data[dataName] or self[dataName] or default
 end
 
--- A function to add a new recipe for this item.
+--- Adds a recipe of ingredients that ordering the item consumes.
+--
+-- Arguments alternate between an ingredient's unique ID and the amount needed. When an item has
+-- recipes, ordering it requires the ingredients of a recipe the player has access to.
+--
+-- ```
+-- ITEM:AddRecipe('scrap_metal', 2, 'cloth', 1)
+-- ```
+--
+-- @param ... [Any Pairs of ingredient unique IDs and amounts]
+-- @return [Map The recipe, with an `ingredients` table of amounts indexed by unique ID]
 function CItem:AddRecipe(...)
   local arguments = { ... }
   local currentItem = nil
@@ -192,7 +313,9 @@ function CItem:AddRecipe(...)
   return recipeTable
 end
 
--- A function to get whether two items are the same.
+--- Returns whether another item is the same instance as this one.
+-- @param itemTable [Item The item to compare; may be `nil`]
+-- @return [Boolean Whether both have the same unique ID and item ID]
 function CItem:IsTheSameAs(itemTable)
   if itemTable then
     return (itemTable.uniqueID == self.uniqueID
@@ -202,13 +325,19 @@ function CItem:IsTheSameAs(itemTable)
   end
 end
 
--- A function to get whether data is networked.
+--- Returns whether a data field is sent to clients when it changes.
+-- @param key [String Name of the data field]
+-- @return [Boolean Whether the field was declared networked with `CItem:AddData`]
 function CItem:IsDataNetworked(key)
   return (self.networkData[key] == true)
 end
 
 if SERVER then
-  -- A function to deduct neccessary funds from a plater after ordering.
+  --- Takes the cost of an order from a player.
+  --
+  -- Takes the ingredients of the first recipe the player has access to and owns enough of, then
+  -- takes `cost * batch` cash and logs the order. Call `CItem:CanPlayerAfford` first.
+  -- @param player [Player The player ordering the item]
   function CItem:DeductFunds(player)
     if #self.recipes > 0 then
       for k, v in pairs(self.recipes) do
@@ -250,7 +379,12 @@ if SERVER then
     end
   end
 
-  -- A function to get whether a player can afford to order the item.
+  --- Returns whether a player can afford to order the item.
+  --
+  -- The player must have `cost * batch` cash and, when the item has recipes, every ingredient of a
+  -- recipe they have access to.
+  -- @param player [Player The player ordering the item]
+  -- @return [Boolean Whether the player can afford the order]
   function CItem:CanPlayerAfford(player)
     if !cw.player:CanAfford(player, self.cost * self.batch) then
       return false
@@ -282,12 +416,21 @@ if SERVER then
   end
 end
 
--- A function to register a new item.
+--- Registers the item definition.
+-- @see item.Register
 function CItem:Register()
   return item.Register(self)
 end
 
 if SERVER then
+  --- Sets a data field of an item instance and networks it when the field is networked.
+  --
+  -- Only changes fields declared with `CItem:AddData` (whose current value is not `nil`) on
+  -- instances. Networked changes are queued and sent to observers one second later with
+  -- `item.SendUpdate`.
+  -- @param dataName [String Name of the data field]
+  -- @param value [Any The new value]
+  -- @see CItem:GetData
   function CItem:SetData(dataName, value)
     if self:IsInstance() and self.data[dataName] != nil and self.data[dataName] != value then
       self.data[dataName] = value
@@ -299,7 +442,9 @@ if SERVER then
     end
   end
 
-  -- A function to network the item data.
+  --- Sends the item's queued data changes to its observers after one second.
+  --
+  -- Does nothing when a send is already scheduled; changes made in the meantime are sent with it.
   function CItem:NetworkData()
     local timerName = 'NetworkItem'..self.itemID
 
@@ -315,6 +460,10 @@ if SERVER then
     end)
   end
 else
+  --- Sends a menu option chosen for the item to the server over the `MenuOption` netstream message.
+  -- @param option [String The option chosen]
+  -- @param data [Any Extra data for the option]
+  -- @param entity [Entity The item entity the option was chosen on, if any]
   function CItem:SubmitOption(option, data, entity)
     netstream.Start('MenuOption', { option = option, data = data, item = self.itemID, entity = entity })
   end
@@ -325,17 +474,35 @@ end
   the item utility functions.
 --]]
 
--- A function to get the item buffer.
+--- Returns every registered item definition, indexed by its numeric index.
+--
+-- Redefines the identical function declared at the top of the file.
+-- @return [Map<Item> Item definitions indexed by numeric index]
 function item.GetBuffer()
   return buffer
 end
 
--- A function to get all items.
+--- Returns every registered item definition, indexed by unique ID.
+-- @return [Map<Item> Item definitions indexed by unique ID]
+-- @see item.GetStored
 function item.GetAll()
   return stored
 end
 
--- A function to get a new item.
+--- Creates a new, unregistered item definition.
+--
+-- Item files get one as `ITEM` from `item.IncludeItems`; call it directly to build items in code
+-- and register them with `CItem:Register`.
+--
+-- ```
+-- local ITEM = item.New('gold_bar')
+-- ITEM.name = 'Gold Bar'
+-- ITEM.weight = 2
+-- ITEM:Register()
+-- ```
+--
+-- @param uniqueID [String Unique ID of the item]
+-- @return [Item The new item definition]
 function item.New(uniqueID)
   local object = CItem()
     object.networkQueue = {}
@@ -349,7 +516,12 @@ function item.New(uniqueID)
   return object
 end
 
--- A function to register a new item.
+--- Registers an item definition so it can be found and instantiated.
+--
+-- The unique ID is lowercased and stripped of `'` and `.`, falling back to the name with spaces
+-- replaced by underscores. Sets `index` and `PrintName`, and on the server adds the item's models
+-- to the client downloads during the initial load.
+-- @param itemTable [Item The item definition]
 function item.Register(itemTable)
   itemTable.uniqueID =
     string.lower(string.gsub(itemTable.uniqueID or string.gsub(itemTable.name, '%s', '_'), "['%.]", ''))
@@ -380,7 +552,12 @@ function item.Register(itemTable)
   end
 end
 
--- A function to restore item's functions.
+--- Restores the `CItem` metatable and methods on an item table, such as one received or copied.
+--
+-- Does nothing to tables that already have the methods.
+-- @param itemTable [Item The item table; anything that is not a table is ignored]
+-- @param bShouldMerge=nil [Boolean Return a copy of the registered definition with the table's fields merged into it]
+-- @return [Item The item table or the merged copy, or `nil` when `itemTable` is not a table]
 function item.Validate(itemTable, bShouldMerge)
   if istable(itemTable) then
     if !isfunction(itemTable.Register) then
@@ -409,7 +586,9 @@ function item.Validate(itemTable, bShouldMerge)
   end
 end
 
--- A function to create a copy of an item instance.
+--- Creates a new instance of an item with a copy of another instance's data.
+-- @param itemTable [Item The instance to copy]
+-- @return [Item The new instance]
 function item.CreateCopy(itemTable)
   item.Validate(itemTable)
 
@@ -418,7 +597,9 @@ function item.CreateCopy(itemTable)
   )
 end
 
--- A function to get whether an item is a weapon.
+--- Returns whether an item is based on `weapon_base`.
+-- @param itemTable [Item The item]
+-- @return [Boolean Whether the item is a weapon]
 function item.IsWeapon(itemTable)
   item.Validate(itemTable)
 
@@ -429,7 +610,11 @@ function item.IsWeapon(itemTable)
   return false
 end
 
--- A function to get a weapon instance by its object.
+--- Returns the item instance a weapon entity was created from.
+--
+-- The instance is found through the weapon's `ItemID` networked string.
+-- @param weapon [Weapon The weapon]
+-- @return [Item The item instance, or `nil` when the weapon is invalid or not from an item]
 function item.GetByWeapon(weapon)
   item.Validate(itemTable)
 
@@ -442,7 +627,21 @@ function item.GetByWeapon(weapon)
   end
 end
 
--- A function to create an instance of an item.
+--- Creates an instance of an item, or returns the existing instance with that item ID.
+--
+-- The instance is a copy of the definition stored in `item.GetInstances`. Data and custom fields
+-- are merged into it, and its `OnInstantiated` callback is called. Instances only exist in the
+-- realm they are created in; give them to players to network them.
+--
+-- ```
+-- local itemTable = item.CreateInstance('ration', nil, { Opened = true })
+-- ```
+--
+-- @param uniqueID [Any Unique ID, index or name of the item, as accepted by `item.FindByID`]
+-- @param itemID=nil [Number Item ID of the instance; a new one is generated when `nil`]
+-- @param data=nil [Map Data fields to merge into the instance's `data`]
+-- @param customData=nil [Map Fields to merge into the instance itself]
+-- @return [Item The instance, or `nil` when the item does not exist]
 function item.CreateInstance(uniqueID, itemID, data, customData)
   local itemTable = item.FindByID(uniqueID)
 
@@ -481,19 +680,25 @@ do
   local ITEM_INDEX = item.ITEM_INDEX or 0
   item.ITEM_INDEX = ITEM_INDEX
 
-  -- A function to generate an item ID.
+  --- Generates a new item ID from the current time and an increasing counter.
+  -- @return [Number The new item ID]
   function item.GenerateID()
     ITEM_INDEX = ITEM_INDEX + 1
     return os.time() + ITEM_INDEX
   end
 end
 
--- A function to find an instance of an item.
+--- Returns the item instance with an item ID.
+-- @param itemID [Number The item ID, or a string containing it]
+-- @return [Item The instance, or `nil` when it does not exist]
 function item.FindInstance(itemID)
   return instances[tonumber(itemID)]
 end
 
--- A function to get an item definition.
+--- Returns a minimal table describing an item instance, used to network it.
+-- @param itemTable [Item The instance]
+-- @param bNetworkData=nil [Boolean Include the values of the networked data fields]
+-- @return [Map The definition with `itemID`, `index` and `data`]
 function item.GetDefinition(itemTable, bNetworkData)
   item.Validate(itemTable)
 
@@ -512,14 +717,27 @@ function item.GetDefinition(itemTable, bNetworkData)
   return definition
 end
 
--- A function to get an item signature.
+--- Returns a table that identifies an item instance.
+-- @param itemTable [Item The instance]
+-- @return [Map A table with the item's `uniqueID` and `itemID`]
 function item.GetSignature(itemTable)
   item.Validate(itemTable)
 
   return { uniqueID = itemTable.uniqueID, itemID = itemTable.itemID }
 end
 
--- A function to get an item by its name.
+--- Finds an item definition by index, unique ID, weapon class or name.
+--
+-- When there is no exact match, the shortest item whose name contains the identifier (case
+-- insensitive, as a Lua pattern) is returned, falling back to a match on `PrintName`.
+--
+-- ```
+-- local itemTable = item.FindByID('ration')
+-- ```
+--
+-- @param identifier [Any The index (`Number`), unique ID, weapon class or part of the name (`String`)]
+-- @param bShouldValidate=nil [Boolean Return a merged copy of the definition, as `item.Validate` does]
+-- @return [Item The item definition, or `nil` when none matches]
 function item.FindByID(identifier, bShouldValidate)
   if !isbool(identifier) and identifier and identifier != 0 then
     if buffer[identifier] then
@@ -552,7 +770,13 @@ function item.FindByID(identifier, bShouldValidate)
   end
 end
 
--- A function to merge an item with a base item.
+--- Merges an item over a copy of its base item, resolving the base's own bases first.
+--
+-- Unless temporary, the result is registered in place of the item with `baseClass` set to the base.
+-- @param itemTable [Item The item definition]
+-- @param baseItem [String Unique ID of the base item]
+-- @param bTemporary=nil [Boolean Return the merged table without registering it]
+-- @return [Item The merged item, or `nil` when the base does not exist or is the item itself]
 function item.Merge(itemTable, baseItem, bTemporary)
   item.Validate(itemTable, false)
 
@@ -586,6 +810,11 @@ function item.Merge(itemTable, baseItem, bTemporary)
   end
 end
 
+--- Merges every item with its base, sets up weapon items and fires the item initialization hooks.
+--
+-- Items whose base item does not exist are removed. Calls each item's `OnSetup`, fires
+-- `ClockworkItemInitialized` for every item and `ClockworkPostItemsInitialized` once at the end.
+-- @warning [Internal] Called by the gamemode once items and plugins have loaded.
 function item.Initialize()
   local itemsTable = item.GetAll()
 
@@ -616,7 +845,15 @@ if SERVER then
   local entities = item.entities or {}
   item.entities = entities
 
-  -- A function to use an item for a player.
+  --- Makes a player use an item from their inventory.
+  --
+  -- Calls the item's `OnUse`: a `nil` return takes the item from the player, `false` cancels the use
+  -- and any other value keeps the item. Plays the item's `useSound` and fires `PlayerUseItem`.
+  -- @param player [Player The player using the item]
+  -- @param itemTable [Item The item instance]
+  -- @param bNoSound=nil [Boolean Do not play the use sound]
+  -- @return [Boolean `true` when used, `false` when `OnUse` cancelled it, `nil` when the player does not have the item
+  -- or it cannot be used]
   function item.Use(player, itemTable, bNoSound)
     local itemEntity = player:GetItemEntity()
 
@@ -657,7 +894,18 @@ if SERVER then
     end
   end
 
-  -- A function to drop an item from a player.
+  --- Makes a player drop an item, spawning it as an entity.
+  --
+  -- Calls the item's `OnDrop` (return `false` to cancel), takes the item and creates the entity with
+  -- `OnCreateDropEntity` or `cw.entity:CreateItem`. When no position is given, the item is dropped
+  -- where the player is looking, flush to the ground. Plays the `dropSound` and fires
+  -- `PlayerDropItem`.
+  -- @param player [Player The player dropping the item]
+  -- @param itemTable [Item The item instance]
+  -- @param position=nil [Vector Where to drop the item]
+  -- @param bNoSound=nil [Boolean Do not play the drop sound]
+  -- @param bNoTake=nil [Boolean Do not require or take the item from the player's inventory]
+  -- @return [Boolean `true` when dropped, `false` when `OnDrop` cancelled it, `nil` when the item cannot be dropped]
   function item.Drop(player, itemTable, position, bNoSound, bNoTake)
     item.Validate(itemTable)
 
@@ -714,7 +962,14 @@ if SERVER then
     end
   end
 
-  -- A function to destroy a player's item.
+  --- Makes a player destroy an item from their inventory.
+  --
+  -- Calls the item's `OnDestroy` (return `false` to cancel), takes the item, plays the
+  -- `destroySound` and fires `PlayerDestroyItem`.
+  -- @param player [Player The player destroying the item]
+  -- @param itemTable [Item The item instance]
+  -- @param bNoSound=nil [Boolean Do not play the destroy sound]
+  -- @return [Boolean `true` when destroyed, `false` when cancelled, `nil` when the item cannot be destroyed]
   function item.Destroy(player, itemTable, bNoSound)
     item.Validate(itemTable)
 
@@ -745,7 +1000,8 @@ if SERVER then
     end
   end
 
-  -- A function to remove an item entity.
+  --- Forgets the item entity of an instance, called when the entity is removed.
+  -- @param entity [Entity The item entity]
   function item.RemoveItemEntity(entity)
     local itemTable = entity:GetItemTable()
 
@@ -754,14 +1010,18 @@ if SERVER then
     entities[itemTable.itemID] = nil
   end
 
-  -- A function to add an item entity.
+  --- Records the entity an item instance has been spawned as.
+  -- @param entity [Entity The item entity]
+  -- @param itemTable [Item The item instance]
   function item.AddItemEntity(entity, itemTable)
     item.Validate(itemTable)
 
     entities[itemTable.itemID] = entity
   end
 
-  -- A function to find an entity by an instance.
+  --- Returns the entity an item instance has been spawned as.
+  -- @param itemTable [Item The item instance]
+  -- @return [Entity The item entity, or `nil` when it does not exist]
   function item.FindEntityByInstance(itemTable)
     item.Validate(itemTable)
 
@@ -772,11 +1032,11 @@ if SERVER then
     end
   end
 
-  --[[
-    @codebase Server
-    @details A function to send an item to a player.
-  --]]
-
+  --- Sends an item instance and its networked data to a player over the `ItemData` netstream message.
+  --
+  -- The client creates the instance without adding it to an inventory.
+  -- @param player [Player The player to send to]
+  -- @param itemTable [Item The item instance; nothing is sent when `nil`]
   function item.SendToPlayer(player, itemTable)
     if itemTable then
       netstream.Start(
@@ -785,12 +1045,13 @@ if SERVER then
     end
   end
 
-  --[[
-    @codebase Server
-    @details A function to send an item update to it's observers.
-    @returns Table The table of observers.
-  --]]
-
+  --- Sends changed item data to the item's observers over the `InvNetwork` netstream message.
+  --
+  -- The observers are collected with the `ItemGetNetworkObservers` hook, which fills `info.observers`;
+  -- returning `true` from it or setting `info.sendToAll` sends the update to every player.
+  -- @param itemTable [Item The item instance]
+  -- @param data [Map The changed data fields]
+  -- @return [List<Player> The observers the update was sent to, or `nil` when sent to everyone]
   function item.SendUpdate(itemTable, data)
     item.Validate(itemTable)
 
@@ -811,6 +1072,12 @@ if SERVER then
     return info.observers
   end
 else
+  --- Returns the model and skin to draw an item's icon with.
+  --
+  -- Uses `iconModel`/`iconSkin`, then `model`/`skin`, overridden by the item's
+  -- `GetClientSideModel`/`GetClientSideSkin`, falling back to an oil drum model.
+  -- @param itemTable [Item The item]
+  -- @return [String The model path, Number The skin]
   function item.GetIconInfo(itemTable)
     item.Validate(itemTable)
 
@@ -832,7 +1099,23 @@ else
     return model, skin
   end
 
-  -- A function to get an item's markup tooltip.
+  --- Builds an item's markup tooltip with its name, weight, space, description and category.
+  --
+  -- The item's `GetClientSideName`, `GetClientSideInfo` and `GetClientSideDescription` override
+  -- the defaults. The callback can change the shown values before the markup is built.
+  --
+  -- ```
+  -- local toolTip = item.GetMarkupToolTip(itemTable, false, function(display)
+  --   display.weight = 'Weightless'
+  -- end)
+  -- ```
+  --
+  -- @param itemTable [Item The item]
+  -- @param bBusinessStyle=nil [Boolean Show the batch size and the price, coloured by whether the player can afford
+  -- it]
+  -- @param Callback=nil [Function Called with the display info `Map` (`name`, `weight`, `space`, `toolTip` and
+  -- `itemTitle`, which replaces the title when set)]
+  -- @return [String The markup text]
   function item.GetMarkupToolTip(itemTable, bBusinessStyle, Callback)
     item.Validate(itemTable)
 
@@ -961,6 +1244,11 @@ pipeline.Register('item', function(uniqueID, fileName, pipe)
   ITEM:Register() ITEM = nil
 end)
 
+--- Loads every item file in a directory.
+--
+-- Each file is run with a new item as `ITEM`, named after the file without its realm prefix, and
+-- registered afterwards.
+-- @param directory [String Lua path of the directory]
 function item.IncludeItems(directory)
   pipeline.IncludeDirectory('item', directory)
 end

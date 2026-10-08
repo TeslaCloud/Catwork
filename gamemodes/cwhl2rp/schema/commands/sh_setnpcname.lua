@@ -13,7 +13,7 @@ COMMAND.flags = CMD_DEFAULT
 COMMAND.access = 'o'
 COMMAND.arguments = 2
 
--- Called when the command has been run.
+--- Sets the name (first argument) and title (second argument) of the NPC being looked at.
 function COMMAND:OnRun(player, arguments)
   local trace = player:GetEyeTraceNoCursor()
   local target = trace.Entity

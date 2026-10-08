@@ -8,6 +8,12 @@
 
 CreateFont = CreateFont or surface.CreateFont
 
+--- Creates a font through `cw.fonts:Add`, replacing the engine's `surface.CreateFont`.
+--
+-- Fonts created this way can be resized with `cw.fonts:GetSize`. A font name that
+-- already exists is not created again. The engine function is kept as the global
+-- `CreateFont`.
+-- @param ... [Any The font name and font data `Map`, as for the engine function]
 function surface.CreateFont(...)
   cw.fonts:Add(...)
 end
@@ -17,7 +23,22 @@ library.New('fonts', cw)
 cw.fonts.stored = cw.fonts.stored or {}
 cw.fonts.sizes = cw.fonts.sizes or {}
 
--- A function to add a new font to the system.
+--- Creates a font and stores its data so other sizes of it can be made.
+--
+-- `extended` is always turned on so the font loads every character. Does nothing
+-- if the font already exists, unless `bForce` is set.
+--
+-- ```
+-- cw.fonts:Add('cwMyFont', {
+--   font = 'Roboto',
+--   size = 18,
+--   weight = 500
+-- })
+-- ```
+--
+-- @param name [String Name of the font]
+-- @param fontTable [Map Font data as taken by the engine's `surface.CreateFont`]
+-- @param bForce=nil [Boolean Whether to recreate a font that already exists]
 function cw.fonts:Add(name, fontTable, bForce)
   if self.stored[name] and !bForce then return end
 
@@ -26,12 +47,24 @@ function cw.fonts:Add(name, fontTable, bForce)
   CreateFont(name, self.stored[name])
 end
 
--- A function to find a font by name.
+--- Returns the data of a font added with `cw.fonts:Add`.
+-- @param name [String Name of the font]
+-- @return [Map The font data, or `nil` if the font was not added]
 function cw.fonts:FindByName(name)
   return self.stored[name]
 end
 
--- A function to grab a font by size (creating what doesn't exist.)
+--- Returns a copy of a font at another size, creating it the first time.
+--
+-- ```
+-- draw.SimpleText('Hello', cw.fonts:GetSize('cwMainText', 24), x, y)
+-- ```
+--
+-- @param name [String Name of a font added with `cw.fonts:Add`]
+-- @param size [Number Font size]
+-- @return [String Name of the sized font (`name` followed by `size`), or `name` if the font
+-- was not added]
+-- @see cw.fonts:GetMultiplied
 function cw.fonts:GetSize(name, size)
   local fontKey = name..size
 
@@ -50,7 +83,11 @@ function cw.fonts:GetSize(name, size)
   return fontKey
 end
 
--- A function to grab a font by multiplier.
+--- Returns a copy of a font with its size multiplied, creating it the first time.
+-- @param name [String Name of a font added with `cw.fonts:Add`]
+-- @param multiplier [Number Factor applied to the font's size]
+-- @return [String Name of the sized font, or `name` if the font was not added]
+-- @see cw.fonts:GetSize
 function cw.fonts:GetMultiplied(name, multiplier)
   local fontTable = self:FindByName(name)
   if fontTable == nil then return name end

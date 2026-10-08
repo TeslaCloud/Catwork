@@ -11,7 +11,18 @@ library.New('flag', cw)
 local stored = cw.flag.stored or {}
 cw.flag.stored = stored
 
--- A function to add a new flag.
+--- Registers a player flag.
+--
+-- On the client the flag is also added to the Flags page of the directory, shown in green when
+-- the local player has it. The details are translated when the page is shown.
+--
+-- ```
+-- cw.flag:Add('x', 'Voice Access', '#Flag_VoiceAccess_Details')
+-- ```
+--
+-- @param flag [String The single flag character]
+-- @param name [String Display name of the flag]
+-- @param details [String Description of what the flag allows, can be a language phrase]
 function cw.flag:Add(flag, name, details)
   if CLIENT and !stored[flag] then
     cw.directory:AddCode('Flags', [[
@@ -41,17 +52,26 @@ function cw.flag:Add(flag, name, details)
   }
 end
 
--- A function to get a flag.
+--- Returns a registered flag.
+--
+-- @param flag [String The flag character]
+-- @return [Map The flag's `name` and `details`, or `nil` if it is not registered]
 function cw.flag:Get(flag)
   return stored[flag]
 end
 
--- A function to get the stored flags.
+--- Returns every registered flag.
+--
+-- @return [Map<Map> Flag tables with `name` and `details` keys, keyed by flag character]
 function cw.flag:GetStored()
   return stored
 end
 
--- A function to get a flag's name.
+--- Returns a flag's display name.
+--
+-- @param flag [String The flag character]
+-- @param default=nil [Any Value returned when the flag is not registered]
+-- @return [String The flag's name, or `default`]
 function cw.flag:GetName(flag, default)
   if stored[flag] then
     return stored[flag].name
@@ -60,7 +80,11 @@ function cw.flag:GetName(flag, default)
   end
 end
 
--- A function to get a flag's details.
+--- Returns a flag's details.
+--
+-- @param flag [String The flag character]
+-- @param default=nil [Any Value returned when the flag is not registered]
+-- @return [String The flag's details, or `default`]
 function cw.flag:GetDescription(flag, default)
   if stored[flag] then
     return stored[flag].details
@@ -69,7 +93,11 @@ function cw.flag:GetDescription(flag, default)
   end
 end
 
--- A function to get a flag by it's name.
+--- Finds a flag by its display name, ignoring case.
+--
+-- @param name [String Display name of the flag]
+-- @param default=nil [Any Value returned when no flag has that name]
+-- @return [String The flag character, or `default`]
 function cw.flag:GetFlagByName(name, default)
   local lowerName = string.lower(name)
 

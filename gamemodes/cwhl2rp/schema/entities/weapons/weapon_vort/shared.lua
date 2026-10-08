@@ -63,6 +63,8 @@ SWEP.Secondary.DefaultClip = -1
 SWEP.Secondary.Ammo = false
 SWEP.Secondary.Automatic = false
 
+--- Resets the charge and heal state, sets the shotgun hold type and creates the looping sounds
+-- on the server.
 function SWEP:Initialize()
   self.Charging = false -- we are not charging!
   self.Healing = false -- we are not healing!
@@ -76,12 +78,14 @@ function SWEP:Initialize()
   self:CreateSounds()			-- create the looping sounds
 end
 
+--- Precaches the vortigaunt beam particles and the view model.
 function SWEP:Precache()
   PrecacheParticleSystem('vortigaunt_beam') -- the zap beam
   PrecacheParticleSystem('vortigaunt_beam_charge') -- the glow particles
   util.PrecacheModel(self.ViewModel) -- the... come on,that's obvious
 end
 
+--- Creates the charge and heal loop sounds if they do not exist yet.
 function SWEP:CreateSounds()
   if !self.ChargeSound then
     self.ChargeSound = CreateSound(self, self.AttackLoop)
@@ -92,6 +96,8 @@ function SWEP:CreateSounds()
   end
 end
 
+--- Attaches a particle effect to the view model muzzle, or to the owner's right claw when seen from outside.
+-- @param EFFECTSTR [String Name of the particle system]
 function SWEP:DispatchEffect(EFFECTSTR)
   local pPlayer = self.Owner
 
@@ -112,6 +118,10 @@ function SWEP:DispatchEffect(EFFECTSTR)
   end
 end
 
+--- Draws a particle tracer from the muzzle, or the owner's right claw when seen from outside, to a position.
+-- @param EFFECTSTR [String Name of the particle system]
+-- @param startpos [Vector Start of the tracer when the weapon has no muzzle attachment]
+-- @param endpos [Vector End of the tracer]
 function SWEP:ShootEffect(EFFECTSTR, startpos, endpos)
   local pPlayer = self.Owner
   if !pPlayer then return end
@@ -143,6 +153,8 @@ function SWEP:ShootEffect(EFFECTSTR, startpos, endpos)
   end
 end
 
+--- Plays the zap impact effect and blast rings at a trace hit, and makes hit ragdolls dance on the server.
+-- @param traceHit [Map Trace result of the beam]
 function SWEP:ImpactEffect(traceHit)
   local data = EffectData()
 
@@ -167,6 +179,9 @@ function SWEP:ImpactEffect(traceHit)
   end
 end
 
+--- Spawns a short-lived vortigaunt ring sprite on the server.
+-- @param scale [Number Sprite scale]
+-- @param pos [Vector Where to place the sprite]
 function SWEP:CreateBlast(scale, pos)
   if CLIENT then return end
 
@@ -185,6 +200,13 @@ function SWEP:CreateBlast(scale, pos)
   blastspr:Fire('kill', '', 0.45) -- remove it after 0.45 seconds
 end
 
+--- Fires the vortigaunt beam along the owner's aim, up to `SWEP.Range` units.
+--
+-- On the server, the entity hit takes shock damage with a strong push. The beam tracer, attack sound and
+-- impact effects play in both realms.
+--
+-- @param dmg=nil [Number Damage to deal; defaults to `SWEP.BeamDamage`]
+-- @param effect=nil [String Tracer particle system; defaults to `vortigaunt_beam`]
 function SWEP:Shoot(dmg, effect)
   local pPlayer = self.Owner
 
@@ -211,15 +233,19 @@ function SWEP:Shoot(dmg, effect)
   self:ImpactEffect(traceres)
 end
 
+--- Cancels any charge or heal in progress.
+-- @return [Boolean Always `true` to allow the holster]
 function SWEP:Holster(wep)
   self:StopEveryThing()
   return true
 end
 
+--- Cancels any charge or heal in progress.
 function SWEP:OnRemove()
   self:StopEveryThing()
 end
 
+--- Cancels charging and healing, stops their loop sounds and clears the last owner's particles.
 function SWEP:StopEveryThing()
   self.Charging = false
 
@@ -246,12 +272,18 @@ function SWEP:StopEveryThing()
   pPlayer:StopParticles()
 end
 
+--- Plays the draw animation at normal speed.
+-- @return [Boolean Always `true` to allow the deploy]
 function SWEP:Deploy()
   self:SendWeaponAnim(ACT_VM_DRAW)
   self:SetDeploySpeed(1)
   return true
 end
 
+--- Advances a charge or heal started by an attack and fires the beam or heals once it completes.
+--
+-- Also records the current owner for `SWEP:StopEveryThing`. Without enough ammo the charge or heal is
+-- cancelled with a deny sound.
 function SWEP:Think()
   if self.Owner and IsValid(self.Owner)then self.LastOwner = self.Owner end -- i hate doing this,whatever
 
@@ -320,6 +352,9 @@ function SWEP:Think()
   end
 end
 
+--- Heals the player in front of the owner within 50 units, or the owner, by 12 to 18 health up to 100.
+--
+-- Runs only on the server; does nothing when the target is already at the health limit.
 function SWEP:GiveHealth()
   if CLIENT then return end
 
@@ -344,6 +379,7 @@ function SWEP:GiveHealth()
   end
 end
 
+--- Starts charging the beam, which `SWEP:Think` fires after `SWEP.BeamChargeTime` seconds.
 function SWEP:PrimaryAttack()
   if self.Charging or self.Healing then return end
 
@@ -369,6 +405,9 @@ function SWEP:PrimaryAttack()
   self:SetNextSecondaryFire(CurTime() + 6)
 end
 
+--- Starts a heal, which `SWEP:Think` applies after `SWEP.HealDelay` seconds.
+--
+-- Only starts when the player in front of the owner or the owner is below the health limit.
 function SWEP:SecondaryAttack()
   if self.Charging or self.Healing then
     return
@@ -399,5 +438,6 @@ function SWEP:SecondaryAttack()
   end
 end
 
+--- Does nothing.
 function SWEP:Reload()
 end

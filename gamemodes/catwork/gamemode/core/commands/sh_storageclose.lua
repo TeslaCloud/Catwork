@@ -10,7 +10,7 @@ local COMMAND = cw.command:New('StorageClose')
 COMMAND.tip = '#Command_Storageclose_Description'
 COMMAND.flags = CMD_DEFAULT
 
--- Called when the command has been run.
+--- Closes the caller's open storage; takes no arguments.
 function COMMAND:OnRun(player, arguments)
   local storageTable = player:GetStorageTable()
 

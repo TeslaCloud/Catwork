@@ -14,7 +14,7 @@ ITEM.weight = 1.95
 ITEM.useText = 'Open'
 ITEM.description = '#ITEM_Highest_Tier_Ration_Packet_Desc'
 
--- Called when a player attempts to pick up the item.
+--- Blocks quick-use pickup, with a notification, when the player cannot carry the ration.
 function ITEM:CanPickup(player, quickUse, itemEntity)
   if quickUse then
     if !player:CanHoldWeight(self.weight) then
@@ -25,7 +25,9 @@ function ITEM:CanPickup(player, quickUse, itemEntity)
   end
 end
 
--- Called when a player uses the item.
+--- Pays the player 150 tokens and gives them two premium supplements and two special Breen's waters.
+--
+-- Fires the `PlayerUseRation` hook.
 function ITEM:OnUse(player, itemEntity)
   cw.player:GiveCash(player, 150, L('Item_Ration_CashReason'))
 
@@ -37,5 +39,5 @@ function ITEM:OnUse(player, itemEntity)
   hook.Run('PlayerUseRation', player)
 end
 
--- Called when a player drops the item.
+--- Lets the item be dropped; nothing else happens.
 function ITEM:OnDrop(player, position) end

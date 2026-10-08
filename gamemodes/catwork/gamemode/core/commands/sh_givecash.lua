@@ -16,7 +16,9 @@ COMMAND.arguments = 1
 COMMAND.alias = { 'GiveCash', 'GiveTokens', 'ДатьТокены', 'Заплатить' }
 COMMAND.cooldown = 5
 
--- Called when the command has been run.
+--- Gives some of the caller's cash to the player they are looking at; the argument is the amount.
+--
+-- The target must be within 192 units. Unrecognised players are named by their unrecognised name.
 function COMMAND:OnRun(player, arguments)
   local target = player:GetEyeTraceNoCursor().Entity
   local cash = math.floor(tonumber((arguments[1] or 0)))

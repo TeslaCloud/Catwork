@@ -15,7 +15,9 @@ ENT.AutomaticFrameAdvance = true
 -- Local function defined later.
 local FindAR3At
 
--- Disable all tools but a few.
+--- Allows only the remover, colour, material and no-collide tools on the gun.
+--
+-- @return [Boolean Whether the tool may be used]
 function ENT:CanTool(ply, tr, mode)
   return mode == 'remover' or mode == 'colour' or mode == 'material' or mode == 'nocollide'
 end
@@ -50,7 +52,13 @@ local function AR3Position(clamp)
   return clamp:GetPos() + clamp:GetUp() * 10 - clamp:GetForward() * 4
 end
 
--- Searches the clamp for an AR3, returns if there is one.
+--- Returns the emplacement gun mounted on a barricade.
+--
+-- Searches a small box around the mount position on the barricade. Assigns the file's local
+-- `FindAR3At`, which is passed to `init.lua` and `cl_init.lua` through a temporary global.
+--
+-- @param clamp [Entity The barricade prop]
+-- @return [Entity The mounted `cw_emplacementgun`, or `false` when there is none]
 function FindAR3At(clamp)
     -- Found by playing around - looks pretty neat.
   local pos = AR3Position(clamp)
@@ -75,6 +83,7 @@ properties.Add('zar3_collision_off',
   Order = 1501,
   MenuIcon = 'icon16/collision_off.png',
 
+  --- Shows the "Turn world collision off" property on a mounted gun or its barricade while it collides.
   Filter =
     function(self, ent, ply)
       if !IsValid(ent) or (ent:GetClass() != 'cw_emplacementgun' and !FindAR3At(ent)) then
@@ -99,12 +108,14 @@ properties.Add('zar3_collision_off',
       return true
     end,
 
+  --- Sends the chosen entity to the server to turn its barricade's world collision off.
   Action = function(self, ent)
     self:MsgStart()
       net.WriteEntity(ent)
     self:MsgEnd()
   end,
 
+  --- Freezes the barricade and moves it to the world collision group, after checking `Filter` again.
   Receive = function(self, length, player)
     local ent = net.ReadEntity()
 
@@ -134,6 +145,7 @@ properties.Add('zar3_collision_on',
   Order = -99,
   MenuIcon = 'icon16/collision_on.png',
 
+  --- Shows the "Turn world collision on" property on a mounted gun or its barricade without collisions.
   Filter =
     function(self, ent, ply)
       if !IsValid(ent) or (ent:GetClass() != 'cw_emplacementgun' and !FindAR3At(ent)) then
@@ -158,6 +170,7 @@ properties.Add('zar3_collision_on',
       return true
     end,
 
+  --- Sends the chosen entity to the server to turn its barricade's world collision back on.
   Action =
     function(self, ent)
       self:MsgStart()
@@ -165,6 +178,7 @@ properties.Add('zar3_collision_on',
       self:MsgEnd()
     end,
 
+  --- Unfreezes the barricade and restores its collision group, after checking `Filter` again.
   Receive =
     function(self, length, player)
       local ent = net.ReadEntity()

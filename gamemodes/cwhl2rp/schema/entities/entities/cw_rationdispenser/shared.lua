@@ -16,14 +16,15 @@ ENT.AdminSpawnable = false
 ENT.UsableInVehicle = true
 ENT.PhysgunDisabled = true
 
--- Called when the datatables are setup.
+--- Declares the ration ready time, flash time and locked state data table variables.
 function ENT:SetupDataTables()
   self:DTVar('Float', 0, 'ration')
   self:DTVar('Float', 1, 'flash')
   self:DTVar('Bool', 0, 'locked')
 end
 
--- A function to get whether the entity is locked.
+--- Returns whether the dispenser is locked.
+-- @return [Boolean Whether the dispenser is locked]
 function ENT:IsLocked()
   return self:GetDTBool(0)
 end

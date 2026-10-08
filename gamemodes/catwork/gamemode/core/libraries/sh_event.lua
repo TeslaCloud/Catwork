@@ -11,7 +11,20 @@ library.New('event', cw)
 local stored = cw.event.stored or {}
 cw.event.stored = stored
 
--- A function to hook into an event.
+--- Sets whether an event, or a whole class of events, is allowed to run.
+--
+-- With an `eventName`, the class's entry is replaced by a table holding only that event, so
+-- earlier per-event settings for the same class are lost. Without one, the whole class is set.
+--
+-- ```
+-- cw.event:Hook('limb_damage', 'stumble', false)
+-- cw.event:Hook('blur', nil, false)
+-- ```
+--
+-- @param eventClass [String Event class]
+-- @param eventName [String Event name within the class, or `nil` to set the whole class]
+-- @param isAllowed [Boolean Whether the event may run]
+-- @see cw.event:CanRun
 function cw.event:Hook(eventClass, eventName, isAllowed)
   if eventName then
     stored[eventClass] = {}
@@ -21,7 +34,15 @@ function cw.event:Hook(eventClass, eventName, isAllowed)
   end
 end
 
--- A function to get whether an event can run.
+--- Returns whether an event is allowed to run.
+--
+-- A Boolean set for the whole class takes precedence over per-event settings. Events that were
+-- never hooked are allowed.
+--
+-- @param eventClass [String Event class]
+-- @param eventName [String Event name within the class]
+-- @return [Boolean Whether the event may run]
+-- @see cw.event:Hook
 function cw.event:CanRun(eventClass, eventName)
   local eventTable = stored[eventClass]
 

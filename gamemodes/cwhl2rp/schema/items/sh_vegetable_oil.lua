@@ -20,10 +20,10 @@ ITEM.description = '#ITEM_Vegetable_Oil_Desc'
 ITEM.thirst = 10
 ITEM.hunger = 35
 
--- Called when a player uses the item.
+--- Deals 5 damage to the player who drinks it.
 function ITEM:OnUse(player, itemEntity)
   player:TakeDamage(5, player, player)
 end
 
--- Called when a player drops the item.
+--- Lets the item be dropped; nothing else happens.
 function ITEM:OnDrop(player, position) end

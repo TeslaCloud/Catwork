@@ -17,11 +17,11 @@ ITEM.category = 'Medical'
 ITEM.business = true
 ITEM.description = '#ITEM_Paracetamol_Desc'
 
--- Called when a player uses the item.
+--- Sets stamina to 100 and boosts endurance by 30 for two minutes.
 function ITEM:OnUse(player, itemEntity)
   player:SetCharacterData('stamina', 100)
   player:BoostAttribute(self.name, ATB_ENDURANCE, 30, 120)
 end
 
--- Called when a player drops the item.
+--- Lets the item be dropped; nothing else happens.
 function ITEM:OnDrop(player, position) end

@@ -13,7 +13,9 @@ COMMAND.access = 's'
 COMMAND.arguments = 2
 COMMAND.alias = { 'TakeFlags', 'RemoveFlags' }
 
--- Called when the command has been run.
+--- Takes player-wide flags from the target player; arguments are the player name and the flags.
+--
+-- Admin flags (`a`, `s` and `o`) cannot be taken this way.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
 

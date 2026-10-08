@@ -17,7 +17,12 @@ ITEM.description = '#Item_CombineLock4_Description'
 ITEM.accessLevel = 4
 ITEM.category = '#Item_Category_CardsAndLocks'
 
--- Called when a player uses the item.
+--- Fits a level 4 Combine lock to the unownable door the player looks at, within 192 units.
+--
+-- Destroys a breaching charge already on the door. Fails, keeping the item, when the door
+-- already has a lock or cannot have one.
+--
+-- @return [Boolean `false` when the lock could not be fitted]
 function ITEM:OnUse(player, itemEntity)
   local trace = player:GetEyeTraceNoCursor()
   local entity = trace.Entity
@@ -64,5 +69,5 @@ function ITEM:OnUse(player, itemEntity)
   end
 end
 
--- Called when a player drops the item.
+--- Called when the lock is dropped; does nothing, so it can be dropped freely.
 function ITEM:OnDrop(player, position) end

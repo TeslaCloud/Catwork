@@ -12,7 +12,12 @@ ITEM.weight = 0.4
 ITEM.access = '3'
 ITEM.category = 'Literature'
 
--- Called when a player uses the item.
+--- Places the book as a `cw_book` owned by the player where they are looking, within 192 units.
+--
+-- When used from the ground, the book takes the item entity's place and stays frozen if the
+-- item was.
+--
+-- @return [Boolean `false` when the spot is too far away]
 function ITEM:OnUse(player, itemEntity)
   local trace = player:GetEyeTraceNoCursor()
 
@@ -51,7 +56,9 @@ function ITEM:OnUse(player, itemEntity)
   end
 end
 
--- Called when the item should be setup.
+--- Turns the book's `bookInformation` text into HTML for the book window.
+--
+-- Line breaks become `<br>` and tabs four non-breaking spaces.
 function ITEM:OnSetup()
   if self.bookInformation then
     self.bookInformation = string.gsub(string.gsub(self.bookInformation, '\n', '<br>'), '\t', string.rep('&nbsp;', 4))

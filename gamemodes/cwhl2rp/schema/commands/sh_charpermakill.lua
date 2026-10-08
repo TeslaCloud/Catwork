@@ -12,7 +12,7 @@ COMMAND.text = '#Command_Charpermakill_Syntax'
 COMMAND.access = 'o'
 COMMAND.arguments = 1
 
--- Called when the command has been run.
+--- Permanently kills the character named in the first argument with `Schema:PermaKillPlayer`.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
 

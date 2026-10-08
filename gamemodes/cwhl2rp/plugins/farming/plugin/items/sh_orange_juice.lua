@@ -19,10 +19,10 @@ ITEM.business = true
 ITEM.description = '#Item_OrangeJuice_Description'
 ITEM.thirst = 55
 
--- Called when a player uses the item.
+--- Gives the player back an `empty_soda_can`.
 function ITEM:OnUse(player, itemEntity)
   player:GiveItem('empty_soda_can', true)
 end
 
--- Called when a player drops the item.
+--- Lets the item be dropped, with no extra effect.
 function ITEM:OnDrop(player, position) end

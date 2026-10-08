@@ -1,6 +1,11 @@
 local PLUGIN = PLUGIN
 
--- Called when the local player's motion blurs should be adjusted.
+--- Called when the local player's motion blurs should be adjusted; applies disease screen effects.
+--
+-- Fever and the death injections add motion blur, and colour blindness draws the screen in
+-- greyscale.
+--
+-- @param motionBlurs [Map Motion blur state; entries of its `blurTable` are blur amounts by name]
 function PLUGIN:PlayerAdjustMotionBlurs(motionBlurs)
   if cw.client:HasInitialized() then
     local disease = cw.client:GetNetVar('diseases')

@@ -5,6 +5,9 @@ COMMAND.flags = CMD_DEFAULT
 COMMAND.access = 's'
 COMMAND.arguments = 2
 
+--- Adds a sphere containment zone at the position the player is looking at.
+--
+-- The arguments are the sphere's radius and its radiation level.
 function COMMAND:OnRun(player, arguments)
   local trace = player:GetEyeTraceNoCursor()
 

@@ -12,7 +12,9 @@ COMMAND.text = '#Command_Request_Syntax'
 COMMAND.flags = bit.bor(CMD_DEFAULT, CMD_DEATHCODE)
 COMMAND.arguments = 1
 
--- Called when the command has been run.
+--- Sends the joined arguments with `Schema:SayRequest`.
+--
+-- Needs a request device unless the player is Combine or an administrator, who also skip the 30 second cooldown.
 function COMMAND:OnRun(player, arguments)
   local isCityAdmin = (player:GetFaction() == FACTION_ADMIN)
   local isCombine = player:IsCombine()

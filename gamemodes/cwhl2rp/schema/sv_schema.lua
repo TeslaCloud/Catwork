@@ -73,7 +73,12 @@ config.Get('disable_sprays'):Set(false)
 config.Get('prop_cost'):Set(false)
 config.Get('door_cost'):Set(0)
 
--- A function to add a human hint.
+--- Adds a hint that is only shown to non-Combine players.
+--
+-- Wraps `cw.hint:Add` with a callback that checks `Player:IsCombine`.
+-- @param name [String Unique name of the hint]
+-- @param text [String Hint text or language key]
+-- @param combine=nil [Boolean Unused]
 function cw.hint:AddHumanHint(name, text, combine)
   cw.hint:Add(name, text, function(player)
     if IsValid(player) then
@@ -167,6 +172,12 @@ netstream.Hook('EditData', function(player, data)
   end
 end)
 
+--- Sends custom scoreboard icons over the `PlayerSetCustomIcon` netstream message.
+--
+-- The player's own `CustomIcon` data is sent to everyone; unless `bOneWay` is set, every other player's
+-- icon is then sent to this player, as needed when they have just connected.
+-- @param player [Player The player whose icon is sent]
+-- @param bOneWay=nil [Boolean Only broadcast this player's icon, and make clients re-download it]
 function Schema:SendIconData(player, bOneWay)
   -- First send custom icon data to everybody already on the server.
   local iconData = player:GetData('CustomIcon')
@@ -189,6 +200,9 @@ function Schema:SendIconData(player, bOneWay)
   end
 end
 
+--- Sets a player's loyalty points, rounded, in their character data and `LoyaltyPoints` net var.
+-- @param player [Player The player]
+-- @param amt [Number The new amount; numeric strings are converted]
 function Schema:SetLP(player, amt)
   amt = math.Round(tonumber(amt))
 
@@ -196,6 +210,9 @@ function Schema:SetLP(player, amt)
   player:SetNetVar('LoyaltyPoints', amt)
 end
 
+--- Sets a player's criminal points, rounded, in their character data and `CriminalPoints` net var.
+-- @param player [Player The player]
+-- @param amt [Number The new amount; numeric strings are converted]
 function Schema:SetCP(player, amt)
   amt = math.Round(tonumber(amt))
 
@@ -203,22 +220,37 @@ function Schema:SetCP(player, amt)
   player:SetNetVar('CriminalPoints', amt)
 end
 
+--- Adds to a player's loyalty points with `Schema:SetLP`.
+-- @param player [Player The player]
+-- @param amt [Number The amount to add; may be negative]
 function Schema:AddLP(player, amt)
   self:SetLP(player, self:GetLP(player) + tonumber(amt))
 end
 
+--- Adds to a player's criminal points with `Schema:SetCP`.
+-- @param player [Player The player]
+-- @param amt [Number The amount to add; may be negative]
 function Schema:AddCP(player, amt)
   self:SetCP(player, self:GetCP(player) + tonumber(amt))
 end
 
+--- Subtracts from a player's loyalty points with `Schema:AddLP`.
+-- @param player [Player The player]
+-- @param amt [Number The amount to subtract]
 function Schema:SubstractLP(player, amt)
   self:AddLP(player, -amt)
 end
 
+--- Subtracts from a player's criminal points with `Schema:AddCP`.
+-- @param player [Player The player]
+-- @param amt [Number The amount to subtract]
 function Schema:SubstractCP(player, amt)
   self:AddCP(player, -amt)
 end
 
+--- Sets a player's citizen status in their character data and `CitizenStatus` net var.
+-- @param player [Player The player]
+-- @param status [String A key of `Schema.CitizenStates`; any other value is stored as `'unknown'`]
 function Schema:SetCitizenStatus(player, status)
   status = (self.CitizenStates[status] and status) or 'unknown'
 
@@ -226,11 +258,17 @@ function Schema:SetCitizenStatus(player, status)
   player:SetNetVar('CitizenStatus', status)
 end
 
+--- Sets a player's residence in their character data and `Residence` net var.
+-- @param player [Player The player]
+-- @param value [String The residence]
 function Schema:SetResidence(player, value)
   player:SetCharacterData('Residence', value)
   player:SetNetVar('Residence', value)
 end
 
+--- Sets whether a player is jailed, in their character data and `Jailed` net var.
+-- @param player [Player The player]
+-- @param value [Boolean Whether the player is jailed; converted with `tobool`]
 function Schema:SetJailed(player, value)
   value = tobool(value)
 
@@ -238,11 +276,17 @@ function Schema:SetJailed(player, value)
   player:SetNetVar('Jailed', value)
 end
 
+--- Sets a player's job in their character data and `Job` net var.
+-- @param player [Player The player]
+-- @param value [String The job]
 function Schema:SetJob(player, value)
   player:SetCharacterData('Job', value)
   player:SetNetVar('Job', value)
 end
 
+--- Sets a player's work points, rounded, in their character data and `WorkPoints` net var.
+-- @param player [Player The player]
+-- @param value [Number The new amount; numeric strings are converted]
 function Schema:SetWorkPoints(player, value)
   value = math.Round(tonumber(value))
 
@@ -250,11 +294,19 @@ function Schema:SetWorkPoints(player, value)
   player:SetNetVar('WorkPoints', value)
 end
 
+--- Adds to a player's work points with `Schema:SetWorkPoints`.
+-- @param player [Player The player]
+-- @param amt [Number The amount to add; may be negative]
 function Schema:AddWorkPoints(player, amt)
   self:SetWorkPoints(player, self:GetWorkPoints(player) + tonumber(amt))
 end
 
--- A function to calculate a player's scanner think.
+--- Keeps a scanner player in sync with their scanner; does nothing for other players.
+--
+-- Copies the scanner's health to the player, keeps them in observer movement and plays a random scanner
+-- sound every 8 to 48 seconds.
+-- @param player [Player The player controlling the scanner]
+-- @param curTime [Number The current `CurTime()`]
 function Schema:CalculateScannerThink(player, curTime)
   if !self.scanners[player] then return end
 
@@ -275,7 +327,12 @@ function Schema:CalculateScannerThink(player, curTime)
   end
 end
 
--- A function to reset a player's scanner.
+--- Removes a player's scanner and its follow marker; does nothing when they have none.
+--
+-- Unless `noMessage` is set, the player is also returned to walking, stops spectating and is killed
+-- silently.
+-- @param player [Player The player controlling the scanner]
+-- @param noMessage=nil [Boolean Only remove the entities, leaving the player as they are]
 function Schema:ResetPlayerScanner(player, noMessage)
   if self.scanners[player] then
     local scanner = self.scanners[player][1]
@@ -299,7 +356,15 @@ function Schema:ResetPlayerScanner(player, noMessage)
   end
 end
 
--- A function to make a player a scanner.
+--- Turns a player into a scanner they control.
+--
+-- Replaces any existing scanner (see `Schema:ResetPlayerScanner`), spawns an `npc_cscanner` (or an
+-- `npc_clawscanner` for the `SYNTH` rank) that follows a marker, and makes the player spectate it with
+-- their weapons and armour stripped. The scanner's entity index is stored in the `scanner` net var.
+-- @param player [Player The player]
+-- @param noMessage=nil [Boolean Passed to `Schema:ResetPlayerScanner` for the old scanner]
+-- @param lightSpawn=nil [Boolean Whether this is a light spawn; skips turning off the flashlight,
+-- unducking and the shield scanner's 200 health]
 function Schema:MakePlayerScanner(player, noMessage, lightSpawn)
   self:ResetPlayerScanner(player, noMessage)
 
@@ -364,7 +429,14 @@ function Schema:MakePlayerScanner(player, noMessage, lightSpawn)
   end)
 end
 
--- A function to add a Combine display line.
+--- Adds a line to the Combine display of one or all Combine players.
+--
+-- Sent with the `CombineDisplayLine` netstream message; the client side is
+-- `Schema:AddCombineDisplayLine` in `cl_schema.lua`.
+-- @param text [String The text or language key to show]
+-- @param color=nil [Color Colour of the line; white when `nil`]
+-- @param player=nil [Player Only send the line to this player]
+-- @param exclude=nil [Player A Combine player who does not receive the line]
 function Schema:AddCombineDisplayLine(text, color, player, exclude)
   if player then
     netstream.Start(player, 'CombineDisplayLine', { text, color })
@@ -381,7 +453,7 @@ function Schema:AddCombineDisplayLine(text, color, player, exclude)
   end
 end
 
--- A function to load the objectives.
+--- Loads the Combine objectives from the `objectives` schema data into `Schema.combineObjectives`.
 function Schema:LoadObjectives()
   local combineObjectives = cw.core:RestoreSchemaData('objectives')
 
@@ -392,7 +464,7 @@ function Schema:LoadObjectives()
   end
 end
 
--- A function to load the NPCs.
+--- Spawns the named NPCs saved for the current map by `Schema:SaveNPCs`.
 function Schema:LoadNPCs()
   local npcs = cw.core:RestoreSchemaData('plugins/npcs/'..game.GetMap())
 
@@ -417,7 +489,7 @@ function Schema:LoadNPCs()
   end
 end
 
--- A function to save the NPCs.
+--- Saves every NPC with a name and title (set with the `SetNPCName` command) for the current map.
 function Schema:SaveNPCs()
   local npcs = {}
 
@@ -444,7 +516,9 @@ function Schema:SaveNPCs()
   cw.core:SaveSchemaData('plugins/npcs/'..game.GetMap(), npcs)
 end
 
--- A function to load the radios.
+--- Spawns the stationary radios saved for the current map by `Schema:SaveRadios`.
+--
+-- Restores each radio's owner, frequency and on/off state, and freezes radios that were frozen.
 function Schema:LoadRadios()
   local radios = cw.core:RestoreSchemaData('plugins/radios/'..game.GetMap())
 
@@ -472,7 +546,7 @@ function Schema:LoadRadios()
   end
 end
 
--- A function to load the ration dispensers.
+--- Spawns the ration dispensers saved for the current map by `Schema:SaveRationDispensers`.
 function Schema:LoadRationDispensers()
   local dispensers = cw.core:RestoreSchemaData('plugins/dispensers/'..game.GetMap())
 
@@ -494,7 +568,7 @@ function Schema:LoadRationDispensers()
   end
 end
 
--- A function to save the ration dispensers.
+--- Saves the position, angles and lock state of every ration dispenser for the current map.
 function Schema:SaveRationDispensers()
   local dispensers = {}
 
@@ -509,7 +583,7 @@ function Schema:SaveRationDispensers()
   cw.core:SaveSchemaData('plugins/dispensers/'..game.GetMap(), dispensers)
 end
 
--- A function to load the ration machines.
+--- Spawns the vending machines saved for the current map by `Schema:SaveVendingMachines`.
 function Schema:LoadVendingMachines()
   local machines = cw.core:RestoreSchemaData('plugins/machines/'..game.GetMap())
 
@@ -526,7 +600,7 @@ function Schema:LoadVendingMachines()
   end
 end
 
--- A function to save the ration machines.
+--- Saves the position, angles and stock of every vending machine for the current map.
 function Schema:SaveVendingMachines()
   local machines = {}
 
@@ -542,7 +616,7 @@ function Schema:SaveVendingMachines()
   cw.core:SaveSchemaData('plugins/machines/'..game.GetMap(), machines)
 end
 
--- A function to save the radios.
+--- Saves the position, owner, frequency and state of every stationary radio for the current map.
 function Schema:SaveRadios()
   local radios = {}
 
@@ -568,7 +642,12 @@ function Schema:SaveRadios()
   cw.core:SaveSchemaData('plugins/radios/'..game.GetMap(), radios)
 end
 
--- A function to say a message as a request.
+--- Sends a message through a player's request device.
+--
+-- The request is shown on the Combine display and sent to Combine players, administrators, CWU and
+-- anyone carrying a request device. When a citizen sends it, nearby citizens overhear it.
+-- @param player [Player The player sending the request]
+-- @param text [String The message]
 function Schema:SayRequest(player, text)
   local isCitizen = (player:GetFaction() == FACTION_CITIZEN)
   local listeners = { request = {}, eavesdrop = {} }
@@ -634,7 +713,12 @@ function Schema:SayRequest(player, text)
   end
 end
 
--- A function to get a player's location.
+--- Returns the name of the area a player is in, using the Area Names plugin.
+--
+-- When the player is in no area, the area whose minimum corner is closest is used. A leading "the " is
+-- removed from the name.
+-- @param player [Player The player]
+-- @return [String The area name, or `'#Location_Unknown'` without the plugin or any areas]
 function Schema:PlayerGetLocation(player)
   local areaNames = plugin.FindByID('Area Names')
   local closest
@@ -670,7 +754,9 @@ function Schema:PlayerGetLocation(player)
   return '#Location_Unknown'
 end
 
--- A function to say a message as a broadcast.
+--- Sends a broadcast message from a player to everyone.
+-- @param player [Player The player broadcasting]
+-- @param text [String The message]
 function Schema:SayBroadcast(player, text)
   chatbox.AddText(nil, '"'..text..'"', {
     suffix = ' #Suffix_Broadcast ',
@@ -682,7 +768,9 @@ function Schema:SayBroadcast(player, text)
   })
 end
 
--- A function to say a message as a dispatch.
+--- Sends a message to everyone under the name of Dispatch.
+-- @param player [Player The player sending the message]
+-- @param text [String The message]
 function Schema:SayDispatch(player, text)
   chatbox.AddText(nil, '"'..text..'"', {
     sender = player,
@@ -697,14 +785,18 @@ function Schema:SayDispatch(player, text)
   })
 end
 
--- A function to check if a player is Combine.
+--- Returns whether a player is Combine, using `Player:IsCombine`.
+-- @param player [Player The player to check]
+-- @return [Boolean Whether the player is Combine, or `nil` for an invalid player]
 function Schema:PlayerIsCombine(player)
   if IsValid(player) then
     return player:IsCombine()
   end
 end
 
--- A function to check if a player is Combine.
+--- Returns whether a player's character belongs to the Civil Workers' Union.
+-- @param player [Player The player to check]
+-- @return [Boolean Whether the player is in `FACTION_CWU`, or `nil` without a valid player and character]
 function Schema:PlayerIsCWU(player)
   if IsValid(player) and player:GetCharacter() then
     local faction = player:GetFaction()
@@ -713,7 +805,12 @@ function Schema:PlayerIsCWU(player)
   end
 end
 
--- A function to apply a Combine lock.
+--- Attaches a Combine lock to a door.
+-- @param entity [Entity The door]
+-- @param position=nil [Vector Position of the lock; a trace result places it at the default spot on the
+-- door, moved out along the hit normal]
+-- @param angles=nil [Angle Angles of the lock]
+-- @return [Entity The `cw_combinelock`, or `nil` when it failed to spawn]
 function Schema:ApplyCombineLock(entity, position, angles)
   local combineLock = ents.Create('cw_combinelock')
 
@@ -740,7 +837,13 @@ function Schema:ApplyCombineLock(entity, position, angles)
   end
 end
 
--- A function to make a player wear clothes.
+--- Puts clothes on a player, or takes off the clothes they wear.
+--
+-- Clothes are only put on when the player's class has no model of its own. The worn item is stored in
+-- the `clothes` character data and net var, and the item's `OnChangeClothes` is called.
+-- @param player [Player The player]
+-- @param itemTable=nil [Item The clothes to wear; `nil` takes off the current clothes]
+-- @param noMessage=nil [Boolean Unused]
 function Schema:PlayerWearClothes(player, itemTable, noMessage)
   local clothes = player:GetCharacterData('clothes')
 
@@ -765,7 +868,10 @@ function Schema:PlayerWearClothes(player, itemTable, noMessage)
   end
 end
 
--- A function to get a player's heal amount.
+--- Returns how much health a player heals, based on their Medical attribute.
+-- @param player [Player The player doing the healing]
+-- @param scale=1 [Number Multiplier for the amount]
+-- @return [Number 15 plus up to 35 for the Medical attribute, times `scale`]
 function Schema:GetHealAmount(player, scale)
   local medical = cw.attributes:Fraction(player, ATB_MEDICAL, 35)
   local healAmount = (15 + medical) * (scale or 1)
@@ -773,12 +879,20 @@ function Schema:GetHealAmount(player, scale)
   return healAmount
 end
 
--- A function to get a player's dexterity time.
+--- Returns how long a dexterity action such as tying takes a player, based on their Agility attribute.
+-- @param player [Player The player]
+-- @return [Number The time in seconds, from 7 down to 2 with full Agility]
 function Schema:GetDexterityTime(player)
   return 7 - cw.attributes:Fraction(player, ATB_AGILITY, 5, 5)
 end
 
--- A function to bust down a door.
+--- Knocks down a door for five minutes.
+--
+-- Hides and unlocks the door, destroys its Combine lock, triggers its breach and throws a decaying
+-- physics copy of it, away from the player unless a force is given. The door returns after 300 seconds.
+-- @param player [Player The player busting the door down, or `nil`]
+-- @param door [Entity The door]
+-- @param force=nil [Vector Force applied to the fake door instead of pushing it away from the player]
 function Schema:BustDownDoor(player, door, force)
   door.bustedDown = true
 
@@ -830,7 +944,15 @@ function Schema:BustDownDoor(player, door, force)
   end)
 end
 
--- A function to permanently kill a player.
+--- Permanently kills a player's character.
+--
+-- Kills the player if alive and, unless the character is already permakilled, marks it permakilled
+-- and moves its inventory and cash onto the ragdoll as belongings, or into a `cw_belongings` entity when
+-- there is no ragdoll. Items with `allowStorage = false` are lost. Runs the
+-- `PlayerAdjustPermaKillInfo` hook with the `inventory`, `cash` and `entity` info, and saves the
+-- character.
+-- @param player [Player The player]
+-- @param ragdoll=nil [Entity The player's ragdoll, if they are already dead]
 function Schema:PermaKillPlayer(player, ragdoll)
   if player:Alive() then
     player:Kill()
@@ -882,7 +1004,14 @@ function Schema:PermaKillPlayer(player, ragdoll)
   end
 end
 
--- A function to tie or untie a player.
+--- Ties or unties a player.
+--
+-- Sets the `tied` net var to `0` (untied), `1` (tied) or `2` (tied by the Combine). Tying drops and
+-- strips the player's weapons; untying light-spawns them to give their weapons back. Both are logged.
+-- @param player [Player The player]
+-- @param isTied [Boolean Whether to tie the player]
+-- @param reset=nil [Boolean When untying, skip the light spawn and the log entry]
+-- @param combine=nil [Boolean Whether the Combine tied the player]
 function Schema:TiePlayer(player, isTied, reset, combine)
   if isTied then
     if combine then

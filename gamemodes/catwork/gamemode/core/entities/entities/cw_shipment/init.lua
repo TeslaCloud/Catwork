@@ -11,7 +11,7 @@ include('shared.lua')
 AddCSLuaFile('cl_init.lua')
 AddCSLuaFile('shared.lua')
 
--- Called when the entity initializes.
+--- Sets up physics, simple use and 50 health for the shipment.
 function ENT:Initialize()
   self:SetMoveType(MOVETYPE_VPHYSICS)
   self:PhysicsInit(SOLID_VPHYSICS)
@@ -27,7 +27,7 @@ function ENT:Initialize()
   end
 end
 
--- Called each frame.
+--- Removes the shipment once a second check finds it outside the world.
 function ENT:Think()
   self:NextThink(CurTime() + 1)
 
@@ -36,12 +36,16 @@ function ENT:Think()
   end
 end
 
--- Called when the entity's transmit state should be updated.
+--- Always transmits the shipment to every client.
 function ENT:UpdateTransmitState()
   return TRANSMIT_ALWAYS
 end
 
--- A function to set the item of the entity.
+--- Fills the shipment with new instances of an item and sets its model, weight and space.
+--
+-- Uses the item's `shipmentModel`, or the `model_shipment` option. Does nothing for an unknown item.
+-- @param uniqueID [String The unique ID of the item to ship]
+-- @param batch [Number How many instances to put in the shipment]
 function ENT:SetItemTable(uniqueID, batch)
   local itemTable = item.FindByID(uniqueID)
 
@@ -62,7 +66,8 @@ function ENT:SetItemTable(uniqueID, batch)
   end
 end
 
--- A function to explode the entity.
+--- Plays a glass impact effect and a soft impact sound at the entity's position.
+-- @param scale=nil [Number Unused; the effect scale is always 8]
 function ENT:Explode(scale)
   local effectData = EffectData()
     effectData:SetStart(self:GetPos())
@@ -73,7 +78,7 @@ function ENT:Explode(scale)
   self:EmitSound('physics/body/body_medium_impact_soft'..math.random(1, 7)..'.wav')
 end
 
--- Called when the entity takes damage.
+--- Subtracts the damage from the shipment's health and destroys it at zero health.
 function ENT:OnTakeDamage(damageInfo)
   self:SetHealth(math.max(self:Health() - damageInfo:GetDamage(), 0))
 
@@ -82,7 +87,7 @@ function ENT:OnTakeDamage(damageInfo)
   end
 end
 
--- Called when the entity is removed.
+--- Drops the shipment's items into the world, unless the server is shutting down.
 function ENT:OnRemove()
   if !cw.core:IsShuttingDown() and self.cwInventory then
     cw.entity:DropItemsAndCash(self.cwInventory, nil, self:GetPos(), self)

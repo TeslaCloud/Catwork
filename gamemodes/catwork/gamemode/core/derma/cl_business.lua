@@ -8,7 +8,7 @@
 
 local PANEL = {}
 
--- Called when the panel is initialized.
+--- Sizes the business menu tab to the menu, creates its list and builds it.
 function PANEL:Init()
   self:SetSize(cw.menu:GetWidth(), cw.menu:GetHeight())
 
@@ -21,7 +21,12 @@ function PANEL:Init()
   self:Rebuild()
 end
 
--- A function to rebuild the panel.
+--- Rebuilds the list of items the local player can order.
+--
+-- Items are included when they can be ordered, the player has access to them and the
+-- `PlayerCanSeeBusinessItem` hook allows it. They are grouped by category (sorted by name) and, inside a
+-- category, by cost then name, each shown as a `cwBusinessItem`. Runs the `PlayerBusinessRebuilt` hook with
+-- the panel and the category list, and shows a notice when there is nothing to order.
 function PANEL:Rebuild()
   self.panelList:Clear()
 
@@ -99,20 +104,20 @@ function PANEL:Rebuild()
   self.panelList:InvalidateLayout(true)
 end
 
--- Called when the menu is opened.
+--- Rebuilds the list when the menu is opened while this tab is active.
 function PANEL:OnMenuOpened()
   if cw.menu:IsPanelActive(self) then
     self:Rebuild()
   end
 end
 
--- Called when the panel is selected.
+--- Rebuilds the list when the tab is selected in the menu.
 function PANEL:OnSelected() self:Rebuild() end
 
--- Called when the layout should be performed.
+--- Does nothing; the list lays itself out.
 function PANEL:PerformLayout(w, h) end
 
--- Called when the panel is painted.
+--- Draws the outlined panel background.
 function PANEL:Paint(w, h)
   draw.RoundedBox(0, 0, 0, w, h, cw.option:GetColor('panel_outline'))
   draw.RoundedBox(0, 1, 1, w - 2, h - 2, cw.option:GetColor('panel_background'))
@@ -124,7 +129,11 @@ vgui.Register('cwBusiness', PANEL, 'EditablePanel')
 
 local PANEL = {}
 
--- Called when the panel is initialized.
+--- Builds a custom business entry (`cwBusinessCustom`) from the parent's `customData` table.
+--
+-- `customData` may hold `name`, `information` (a number is formatted as cash, 0 as free), `description`
+-- (the tooltip), `model`, `skin`, `spawnIconColor`, `cooldown` (`expireTime` and `textureID`) and
+-- `Callback`, which runs when the icon is clicked.
 function PANEL:Init()
   self:SetSize(self:GetParent():GetWide(), 40)
 
@@ -180,13 +189,14 @@ function PANEL:Init()
   self.spawnIcon:SetPos(0, 0)
 end
 
+--- Draws the custom entry's translucent white background.
 function PANEL:Paint(width, height)
   cdraw.DrawBox(0, 0, width, height, Color(255, 255, 255, 150))
 
   return true
 end
 
--- Called each frame.
+--- Keeps the custom entry's information label at the bottom of the entry.
 function PANEL:Think()
   self.infoLabel:SetPos(self.infoLabel.x, 34 - self.infoLabel:GetTall())
 end
@@ -195,7 +205,10 @@ vgui.Register('cwBusinessCustom', PANEL, 'DPanel')
 
 local PANEL = {}
 
--- Called when the panel is initialized.
+--- Builds a business item icon (`cwBusinessItem`) for the parent's `itemData.itemTable`.
+--
+-- Runs the `PlayerAdjustBusinessItemTable` hook, scales the item's cost by the class or faction
+-- `costScale`, shows the order cooldown and orders a shipment with the `OrderShipment` command on click.
 function PANEL:Init()
   local FACTION = faction.FindByID(cw.client:GetFaction())
   local CLASS = cw.class:FindByID(cw.client:Team())
@@ -232,7 +245,7 @@ function PANEL:Init()
   self.spawnIcon:SetSize(48, 48)
 end
 
--- Called each frame.
+--- Refreshes the business item's tooltip and color once a second.
 function PANEL:Think()
   if !self.nextUpdateMarkup then
     self.nextUpdateMarkup = 0

@@ -10,15 +10,12 @@ library.New('cooldown', cw)
 
 cw.cooldown.sizes = cw.cooldown.sizes or {}
 
---[[
-  @codebase Client
-  @details Get a cooldown table from the list.
-  @param Int The width of the cooldown box.
-  @param Int The height of the cooldown box.
-  @param Bool Whether or not to add the size if it doesn't exist.
-  @returns Table The cooldown table matching the specified size.
---]]
-
+--- Returns the cached polygon table for a cooldown box size.
+-- @param width [Number Width of the cooldown box]
+-- @param height [Number Height of the cooldown box]
+-- @param bAdd=nil [Boolean Whether to create the table with `cw.cooldown:AddSize` if it does not exist]
+-- @return [Map The cooldown table with `verticies` and `editTable` keys, or `nil` if the size is
+-- not cached and `bAdd` is not set]
 function cw.cooldown:GetTable(width, height, bAdd)
   local cooldownTable = self.sizes[width..' '..height]
 
@@ -29,14 +26,13 @@ function cw.cooldown:GetTable(width, height, bAdd)
   end
 end
 
---[[
-  @codebase Client
-  @details Add a new cooldown size to the list.
-  @param Int The width of the cooldown box.
-  @param Int The height of the cooldown box.
-  @returns Table The newly added cooldown table.
---]]
-
+--- Builds and caches the polygon table for a cooldown box size.
+--
+-- The box is split into eight octants so it can be drawn partially filled.
+-- Sizes 64x64 and 32x32 are added when the file loads.
+-- @param width [Number Width of the cooldown box]
+-- @param height [Number Height of the cooldown box]
+-- @return [Map The new cooldown table with `verticies` and `editTable` keys]
 function cw.cooldown:AddSize(width, height)
   local verticies = {
     {
@@ -99,19 +95,22 @@ function cw.cooldown:AddSize(width, height)
   return self.sizes[width..' '..height]
 end
 
---[[
-  @codebase Client
-  @details Draw a cooldown box at a position.
-  @param Int The horizontal position of the box.
-  @param Int The vertical position of the box.
-  @param Int The width of the cooldown box.
-  @param Int The height of the cooldown box.
-  @param Float The current progress of the cooldown.
-  @param Color The color of the cooldown box.
-  @param Int The texture ID to use when drawing.
-  @param Bool Whether or not to center the box.
---]]
-
+--- Draws a cooldown box that fills clockwise as progress goes from 0 to 100.
+--
+-- Must be called from a 2D rendering hook. The size is cached on first use.
+--
+-- ```
+-- cw.cooldown:DrawBox(x, y, 64, 64, percentage, Color(255, 255, 255, 100), surface.GetTextureID('vgui/white'))
+-- ```
+--
+-- @param x [Number Horizontal position of the box]
+-- @param y [Number Vertical position of the box]
+-- @param width [Number Width of the cooldown box]
+-- @param height [Number Height of the cooldown box]
+-- @param progress [Number Progress of the cooldown, from 0 to 100]
+-- @param color [Color Color of the box]
+-- @param textureID [Number Texture ID to draw with, from `surface.GetTextureID`]
+-- @param bCenter=nil [Boolean Whether `x` and `y` are the center of the box instead of its top left corner]
 function cw.cooldown:DrawBox(x, y, width, height, progress, color, textureID, bCenter)
   local cooldownTable = self:GetTable(width, height, true)
   local octant = math.Clamp((8 / 100) * progress, 0, 8)

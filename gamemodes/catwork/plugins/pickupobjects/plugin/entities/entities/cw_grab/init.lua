@@ -11,7 +11,7 @@ util.Include('shared.lua')
 AddCSLuaFile('cl_init.lua')
 AddCSLuaFile('shared.lua')
 
--- Called when the entity initializes.
+--- Sets up the grab as a heavy, non-solid physics object for the shadow controller.
 function ENT:Initialize()
   self:SetModel('models/weapons/w_bugbait.mdl')
   self:SetSolid(SOLID_NONE)
@@ -29,12 +29,13 @@ function ENT:Initialize()
   end
 end
 
--- Called when the entity is used.
+--- Does nothing; the grab cannot be used.
 function ENT:Use(activator, caller) end
 
 local think_rate = 1 / 20
 
--- Called each frame.
+--- Updates the held entity's position 20 times a second, and drops it or removes the grab once the
+-- player can no longer hold it.
 function ENT:Think()
   if IsValid(self._player) and IsValid(self.cwTargetEnt) and cwPickupObjects then
     if !cwPickupObjects:CalculatePosition(self._player) then
@@ -49,22 +50,25 @@ function ENT:Think()
   return true
 end
 
--- A function to set the entity's compute position.
+--- Sets the position the grab moves towards.
+-- @param position [Vector The target position]
 function ENT:SetComputePosition(position)
   self.cwComputePos = position
 end
 
--- A function to set the entity's player.
+--- Sets the player holding the grab.
+-- @param player [Player The holding player]
 function ENT:SetPlayer(player)
   self._player = player
 end
 
--- A function to set the entity's target.
+--- Sets the entity the grab is carrying.
+-- @param target [Entity The held entity]
 function ENT:SetTarget(target)
   self.cwTargetEnt = target
 end
 
--- Called when the physics should be simulated.
+--- Moves the grab towards its compute position with shadow control and keeps the held entity awake.
 function ENT:PhysicsSimulate(physicsObject, deltaTime)
   if IsValid(self.cwTargetEnt) then
     local targetPhysicsObject = self.cwTargetEnt:GetPhysicsObject()

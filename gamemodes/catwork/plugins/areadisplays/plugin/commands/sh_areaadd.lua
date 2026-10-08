@@ -14,7 +14,12 @@ COMMAND.access = 's'
 COMMAND.arguments = 1
 COMMAND.optionalArguments = 3
 
--- Called when the command has been run.
+--- Adds an area in steps, using the point the player is looking at each time.
+--
+-- The first run with a name sets the box's minimum corner, the second its maximum, and for `3D`
+-- displays a third run places the text. The area is then saved and sent to every client. Optional
+-- arguments are the 3D text scale, whether the area expires after being shown once, and the display
+-- class (`Scrolling`, `3D` or `Cinematic`).
 function COMMAND:OnRun(player, arguments)
   local areaPointData = player.cwAreaData
   local trace = player:GetEyeTraceNoCursor()

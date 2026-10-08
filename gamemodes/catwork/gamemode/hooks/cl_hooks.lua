@@ -6,7 +6,8 @@
   with contributions from Cloud Sixteen community.
 --]]
 
--- Called to determine whether player has lenses or not.
+--- Called to check whether the local player has lenses, an item with the unique ID `lenses` in their inventory.
+-- @return [Boolean Whether the player has lenses]
 function GM:PlayerHasLenses()
   local clientInventory = cw.inventory:GetClient()
 
@@ -17,34 +18,27 @@ function GM:PlayerHasLenses()
   return false
 end
 
--- Called when derma skin's name is needed.
+--- Called when the Derma skin's name is needed; forces the `Clockwork` skin.
+-- @return [String The skin name]
 function GM:ForceDermaSkin()
   return 'Clockwork'
 end
 
---[[
-  @codebase Client
-  @details Called to display a HUD notification when a weapon has been picked up. (Used to override GMOD function)
---]]
+--- Called to display a HUD notification when a weapon has been picked up; overridden to show nothing.
+-- @param ... [Any The engine's arguments, ignored]
 function GM:HUDWeaponPickedUp(...) end
 
---[[
-  @codebase Client
-  @details Called to display a HUD notification when an item has been picked up. (Used to override GMOD function)
---]]
+--- Called to display a HUD notification when an item has been picked up; overridden to show nothing.
+-- @param ... [Any The engine's arguments, ignored]
 function GM:HUDItemPickedUp(...) end
 
---[[
-  @codebase Client
-  @details Called to display a HUD notification when ammo has been picked up. (Used to override GMOD function)
---]]
+--- Called to display a HUD notification when ammo has been picked up; overridden to show nothing.
+-- @param ... [Any The engine's arguments, ignored]
 function GM:HUDAmmoPickedUp(...) end
 
---[[
-  @codebase Client
-  @details Called when the context menu is opened.
---]]
-
+--- Called when the context menu is opened.
+--
+-- Opens the normal context menu while a tool is in use, otherwise only shows the cursor.
 function GM:OnContextMenuOpen()
   if cw.core:IsUsingTool() then
     return self.BaseClass:OnContextMenuOpen(self)
@@ -53,11 +47,9 @@ function GM:OnContextMenuOpen()
   end
 end
 
---[[
-  @codebase Client
-  @details Called when the context menu is close.
---]]
-
+--- Called when the context menu is closed.
+--
+-- Closes the normal context menu while a tool is in use, otherwise only hides the cursor.
 function GM:OnContextMenuClose()
   if cw.core:IsUsingTool() then
     return self.BaseClass:OnContextMenuClose(self)
@@ -66,15 +58,11 @@ function GM:OnContextMenuClose()
   end
 end
 
---[[
-  @codebase Client
-  @details Called to determine if a player can use property.
-  @param Player The player that is trying to use property.
-  @param
-  @param Entity The entity that is being used.
-  @returns Bool Whether or not the player can use property.
---]]
-
+--- Called to check whether a player can use a property on an entity; only living, standing admins can.
+-- @param player [Player The player trying to use the property]
+-- @param property [String The property name]
+-- @param entity [Entity The entity the property is used on]
+-- @return [Boolean Whether the player can use the property]
 function GM:CanProperty(player, property, entity)
   if !IsValid(entity) then
     return false
@@ -89,14 +77,10 @@ function GM:CanProperty(player, property, entity)
   return self.BaseClass:CanProperty(player, property, entity)
 end
 
---[[
-  @codebase Client
-  @details Called to determine if a player can drive.
-  @param Player The player trying to drive.
-  @param Entity The entity that the player is trying to drive.
-  @return Bool Whether or not the player can drive the entity.
---]]
-
+--- Called to check whether a player can drive an entity; only living, standing admins can.
+-- @param player [Player The player trying to drive]
+-- @param entity [Entity The entity the player is trying to drive]
+-- @return [Boolean Whether the player can drive the entity]
 function GM:CanDrive(player, entity)
   if !IsValid(entity) then
     return false
@@ -109,12 +93,8 @@ function GM:CanDrive(player, entity)
   return self.BaseClass:CanDrive(player, entity)
 end
 
---[[
-  @codebase Client
-  @details Called when the directory is rebuilt.
-  @param <DPanel> The directory panel.
---]]
-
+--- Called when the directory is rebuilt; lists help only for the commands the local player has the flags for.
+-- @param panel [Panel The directory panel]
 function GM:ClockworkDirectoryRebuilt(panel)
   for k, v in pairs(cw.command.stored) do
     if !cw.player:HasFlags(cw.client, v.access) then
@@ -125,37 +105,25 @@ function GM:ClockworkDirectoryRebuilt(panel)
   end
 end
 
---[[
-  @codebase Client
-  @details Called when the local player is given an item.
-  @param Table The table of the item that was given.
---]]
-
+--- Called when the local player is given an item; rebuilds the open storage panel.
+-- @param itemTable [Item The item that was given]
 function GM:PlayerItemGiven(itemTable)
   if cw.storage:IsStorageOpen() then
     cw.storage:GetPanel():Rebuild()
   end
 end
 
---[[
-  @codebase Client
-  @details Called when the local player has an item taken from them.
-  @param Table The table of the item that was taken.
---]]
-
+--- Called when the local player has an item taken from them; rebuilds the open storage panel.
+-- @param itemTable [Item The item that was taken]
 function GM:PlayerItemTaken(itemTable)
   if cw.storage:IsStorageOpen() then
     cw.storage:GetPanel():Rebuild()
   end
 end
 
---[[
-  @codebase Client
-  @details Called when clockwork's config is initialized.
-  @param String The name of the config key.
-  @param String The value relating to the key in the table.
---]]
-
+--- Called for each config key once the config has been received; zeroes every item's cost when `cash_enabled` is off.
+-- @param key [String The config key]
+-- @param value [Any The config value]
 function GM:ClockworkConfigInitialized(key, value)
   if key == 'cash_enabled' and !value then
     for k, v in pairs(item.GetAll()) do
@@ -171,14 +139,13 @@ local checkTable = {
   ['cwTextColorA'] = true
 }
 
---[[
-  @codebase Client
-  @details Called when one of the client's console variables have been changed.
-  @param String The name of the convar that was changed.
-  @param String The previous value of the convar.
-  @param String The new value of the convar.
---]]
-
+--- Called when one of the client's Catwork ConVars has changed.
+--
+-- The `cwTextColor` ConVars update the `information` colour unless the theme is fixed, and
+-- `cwActiveTheme` switches the theme when `modify_themes` is enabled.
+-- @param name [String The ConVar name]
+-- @param previousValue [String The previous value]
+-- @param newValue [String The new value]
 function GM:ClockworkConVarChanged(name, previousValue, newValue)
   if checkTable[name] and !cw.theme:IsFixed() then
     cw.option:SetColor(
@@ -201,13 +168,13 @@ function GM:ClockworkConVarChanged(name, previousValue, newValue)
   end
 end
 
---[[
-  @codebase Client
-  @details Called when an entity's menu options are needed.
-  @param Entity The entity that is being checked for menu options.
-  @param Table The table of options for the entity.
---]]
-
+--- Called when an entity's menu options are needed.
+--
+-- Adds use (when the item has `OnUse`), take and examine options for `cw_item` entities plus the
+-- item's own `GetEntityMenuOptions`, open for `cw_belongings` and `cw_shipment`, and take for
+-- `cw_cash`. The values are sent to the server's `GM:EntityHandleMenuOption`.
+-- @param entity [Entity The entity]
+-- @param options [Map Option names mapped to their argument strings, modified in place]
 function GM:GetEntityMenuOptions(entity, options)
   local class = entity:GetClass()
 
@@ -243,11 +210,11 @@ function GM:GetEntityMenuOptions(entity, options)
   end
 end
 
---[[
-  @codebase Client
-  @details Called when the GUI mouse has been released.
---]]
-
+--- Called when the GUI mouse has been released.
+--
+-- Unless `use_opens_entity_menus` is set, clicking an entity within 80 units while the cursor is
+-- visible opens its entity menu at the cursor.
+-- @param code [Number The mouse button (`MOUSE_*`)]
 function GM:GUIMouseReleased(code)
   if !config.Get('use_opens_entity_menus'):Get()
   and vgui.CursorVisible() then
@@ -263,13 +230,12 @@ function GM:GUIMouseReleased(code)
   end
 end
 
---[[
-  @codebase Client
-  @details Called when a key has been released.
-  @param Player The player releasing a key.
-  @param Key The key that is being released.
---]]
-
+--- Called when a key has been released.
+--
+-- With `use_opens_entity_menus` set, releasing use on an entity within 80 units opens its entity
+-- menu, unless the player is holding an object with the physics gun.
+-- @param player [Player The player releasing the key]
+-- @param key [Number The key released (`IN_*`)]
 function GM:KeyRelease(player, key)
   if config.Get('use_opens_entity_menus'):Get() then
     if key == IN_USE then
@@ -295,6 +261,7 @@ function GM:KeyRelease(player, key)
   end
 end
 
+--- Called before halos are drawn; outlines the entity whose entity menu is open.
 function GM:PreDrawHalos()
   if IsValid(cw.client.openedEnt) then
     if IsValid(cw.EntityMenu) then
@@ -305,11 +272,10 @@ function GM:PreDrawHalos()
   end
 end
 
---[[
-  @codebase Client
-  @details Called when the local player has been created.
---]]
-
+--- Called when the local player entity has been created.
+--
+-- Watches the `Clothes` network variable to keep `cw.ClothesData` and the inventory up to date,
+-- and tells the server a second later with the `LocalPlayerCreated` message.
 function GM:LocalPlayerCreated()
   cw.core:RegisterNetworkProxy(cw.client, 'Clothes', function(entity, name, oldValue, newValue)
     if oldValue != newValue then
@@ -331,11 +297,11 @@ function GM:LocalPlayerCreated()
   end)
 end
 
---[[
-  @codebase Client
-  @details Called when the client initializes.
---]]
-
+--- Called when the client initializes.
+--
+-- Creates the client ConVars (clock, headbob, HUD, ESP and theme options), creates the chatbox,
+-- initializes items, runs `ClockworkInitialized`, then initializes the theme, settings and limb
+-- textures.
 function GM:Initialize()
   CW_CONVAR_TWELVEHOURCLOCK = cw.core:CreateClientConVar('cwTwelveHourClock', 0, true, true)
   CW_CONVAR_HEADBOBSCALE = cw.core:CreateClientConVar('cwHeadbobScale', 1, true, true)
@@ -377,11 +343,10 @@ function GM:Initialize()
   hook.Remove('PostDrawEffects', 'RenderWidgets')
 end
 
---[[
-  @codebase Client
-  @details Called when Clockwork has initialized.
---]]
-
+--- Called when Catwork has initialized on the client.
+--
+-- Loads the shared materials and gradient textures, adds the settings and sets up the
+-- directory's categories, icons and tips.
 function GM:ClockworkInitialized()
   local logoFile = 'clockwork/logo/002.png'
 
@@ -419,11 +384,7 @@ function GM:ClockworkInitialized()
   _G['ClockworkClientsideBooted'] = true
 end
 
---[[
-  @codebase Client
-  @details Called when the tool menu needs to be populated.
---]]
-
+--- Called when the tool menu needs to be populated; registers Catwork tools with `gmod_tool` and the spawn menu.
 function GM:PopulateToolMenu()
   local toolGun = weapons.GetStored('gmod_tool')
 
@@ -447,45 +408,55 @@ function GM:PopulateToolMenu()
   end
 end
 
---[[
-  @codebase Client
-  @details Called when a player's door access name is needed.
---]]
-
+--- Called to get the name a player is listed under in the door access menu; uses their name.
+-- @param player [Player The player listed]
+-- @param door [Entity The door]
+-- @param owner [Player The door's owner]
+-- @return [String The name shown]
 function GM:GetPlayerDoorAccessName(player, door, owner)
   return player:Name()
 end
 
---[[
-  @codebase Client
-  @details Called when a player should show on the door access list.
---]]
-
+--- Called to check whether a player appears in the door access menu; always shows them.
+-- @param player [Player The player]
+-- @param door [Entity The door]
+-- @param owner [Player The door's owner]
+-- @return [Boolean Whether the player is listed]
 function GM:PlayerShouldShowOnDoorAccessList(player, door, owner)
   return true
 end
 
---[[
-  @codebase Client
-  @details Called when a player should show on the scoreboard.
---]]
-
+--- Called to check whether a player appears on the scoreboard; always shows them.
+-- @param player [Player The player]
+-- @return [Boolean Whether the player is listed]
 function GM:PlayerShouldShowOnScoreboard(player)
   return true
 end
 
---[[
-  @codebase Client
-  @details Called when the local player attempts to zoom.
---]]
-
+--- Called when the local player attempts to zoom with `+zoom`; always allows it.
+-- @return [Boolean Whether the zoom bind runs]
 function GM:PlayerCanZoom()
   return true
 end
 
--- Called when the local player attempts to see a business item.
+--- Called to check whether an item is listed in the business menu; always lists it.
+-- @param itemTable [Item The item]
+-- @return [Boolean Whether the item is listed]
 function GM:PlayerCanSeeBusinessItem(itemTable) return true end
 
+--- Called when the local player presses a bind.
+--
+-- Jumping while fallen over runs `/CharGetUp`. Blocks `toggle_zoom`, `+zoom` when
+-- `PlayerCanZoom` refuses, jumping without stamina (unless noclipping or with the `B` flag),
+-- attacking while storage is open, and inventory, cash and fall over binds when the matching
+-- `block_*_binds` config is set. Then runs `TopLevelPlayerBindPress` and falls back to the base
+-- gamemode.
+-- @param player [Player The local player]
+-- @param bind [String The bind]
+-- @param bPress [Boolean Whether the bind is pressed rather than released]
+-- @param break_cycle [Any `true` when called back from the base gamemode, to stop recursion; the
+-- engine passes the button code here]
+-- @return [Boolean `true` to block the bind]
 function GM:PlayerBindPress(player, bind, bPress, break_cycle)
   -- The engine passes the button code as the fourth argument, only an explicit `true` breaks the cycle.
   if break_cycle == true then return end
@@ -545,12 +516,17 @@ function GM:PlayerBindPress(player, bind, bPress, break_cycle)
   return override
 end
 
--- Called when the local player attempts to see while unconscious.
+--- Called to check whether the local player can see while unconscious; never by default, so the screen goes black.
+-- @return [Boolean Whether the player can see]
 function GM:PlayerCanSeeUnconscious()
   return false
 end
 
--- Called when the local player's move data is created.
+--- Called when the local player's move data is created; turns mouse movement into ragdoll eye angles while ragdolled.
+--
+-- Sensitivity follows `AdjustMouseSensitivity`, and the look range is clamped to 48 degrees while
+-- ragdolled and 90 otherwise.
+-- @param userCmd [CUserCmd The user command]
 function GM:CreateMove(userCmd)
   local ragdollEyeAngles = cw.core:GetRagdollEyeAngles()
 
@@ -575,7 +551,17 @@ end
 
 local LAST_RAISED_TARGET = 0
 
--- Called when the view should be calculated.
+--- Called when the view should be calculated.
+--
+-- While ragdolled the view is from the ragdoll's eyes (or blacked out at full fade), dead players
+-- see nothing, and with `enable_headbob` the view sways while walking, scaled by
+-- `cwHeadbobScale` and adjustable through `PlayerAdjustHeadbobInfo`. The final view table is
+-- passed to `CalcViewAdjustTable`.
+-- @param player [Player The local player]
+-- @param origin [Vector The view origin]
+-- @param angles [Angle The view angles]
+-- @param fov [Number The field of view]
+-- @return [Map The view table]
 function GM:CalcView(player, origin, angles, fov)
   local scale
 
@@ -683,6 +669,17 @@ end
 local WEAPON_LOWERED_ANGLES = Angle(30, -30, -25)
 local WEAPON_LOWERED_ORIGIN = Vector(0, 0, 0)
 
+--- Called to position the view model; tilts it into the lowered pose while the weapon is lowered.
+--
+-- The lowered offset comes from the item's `loweredAngles`/`loweredOrigin`, then the weapon's
+-- `LoweredAngles`/`LoweredOrigin`, and can be changed through `GetWeaponLoweredViewInfo`.
+-- @param weapon [Weapon The active weapon]
+-- @param viewModel [Entity The view model]
+-- @param oldEyePos [Vector The original eye position]
+-- @param oldEyeAngles [Angle The original eye angles]
+-- @param eyePos [Vector The eye position]
+-- @param eyeAngles [Angle The eye angles]
+-- @return [Vector The view model position, Angle The view model angles]
 function GM:CalcViewModelView(weapon, viewModel, oldEyePos, oldEyeAngles, eyePos, eyeAngles)
   if !IsValid(weapon) then return end
 
@@ -739,19 +736,26 @@ function GM:CalcViewModelView(weapon, viewModel, oldEyePos, oldEyeAngles, eyePos
   return oldEyePos, eyeAngles
 end
 
--- Called when the local player's limb damage is received.
+--- Called when the local player's limb damage is received from the server; does nothing by default.
 function GM:PlayerLimbDamageReceived() end
 
--- Called when the local player's limb damage is reset.
+--- Called when the local player's limb damage is reset; does nothing by default.
 function GM:PlayerLimbDamageReset() end
 
--- Called when the local player's limb damage is bIsHealed.
+--- Called when the local player's limb damage is healed; does nothing by default.
+-- @param hitGroup [Number The hit group (`HITGROUP_*`)]
+-- @param amount [Number The amount healed]
 function GM:PlayerLimbDamageHealed(hitGroup, amount) end
 
--- Called when the local player's limb takes damage.
+--- Called when the local player's limb takes damage; does nothing by default.
+-- @param hitGroup [Number The hit group (`HITGROUP_*`)]
+-- @param damage [Number The damage taken]
 function GM:PlayerLimbTakeDamage(hitGroup, damage) end
 
--- Called when a weapon's lowered view info is needed.
+--- Called to adjust a weapon's lowered view model pose; does nothing by default.
+-- @param itemTable [Item The weapon's item, or `nil`]
+-- @param weapon [Weapon The weapon]
+-- @param viewInfo [Map `origin` (Vector) and `angles` (Angle) of the lowered pose, which can be changed]
 function GM:GetWeaponLoweredViewInfo(itemTable, weapon, viewInfo) end
 
 local blockedElements = {
@@ -765,7 +769,12 @@ local blockedElements = {
   CHudChat = true
 }
 
--- Called when a HUD element should be drawn.
+--- Called to check whether a HUD element should be drawn.
+--
+-- Only `CHudGMod` is drawn before a character is loaded or while choosing one, and the default
+-- health, armor, ammo, crosshair, chat and voice elements are always hidden.
+-- @param name [String The HUD element name]
+-- @return [Boolean Whether the element is drawn]
 function GM:HUDShouldDraw(name)
   if !IsValid(cw.client) or !cw.client:HasInitialized() or cw.core:IsChoosingCharacter() then
     if name != 'CHudGMod' then
@@ -778,7 +787,7 @@ function GM:HUDShouldDraw(name)
   return self.BaseClass:HUDShouldDraw(name)
 end
 
--- Called when the menu is opened.
+--- Called when the main menu is opened; runs `OnMenuOpened` on each menu panel that has it.
 function GM:MenuOpened()
   for k, v in pairs(cw.menu:GetItems()) do
     if v.panel.OnMenuOpened then
@@ -787,7 +796,7 @@ function GM:MenuOpened()
   end
 end
 
--- Called when the menu is closed.
+--- Called when the main menu is closed; runs `OnMenuClosed` on each menu panel and closes tooltips and Derma menus.
 function GM:MenuClosed()
   for k, v in pairs(cw.menu:GetItems()) do
     if v.panel.OnMenuClosed then
@@ -799,12 +808,22 @@ function GM:MenuClosed()
   cw.core:CloseActiveDermaMenus()
 end
 
--- Called when the character screen's faction characters should be sorted.
+--- Called to sort the characters within a faction on the character screen; sorts them by name.
+-- @param faction [String The faction name]
+-- @param a [Map The first character's screen info]
+-- @param b [Map The second character's screen info]
+-- @return [Boolean Whether `a` comes before `b`]
 function GM:CharacterScreenSortFactionCharacters(faction, a, b)
   return a.name < b.name
 end
 
--- Called when the scoreboard's class players should be sorted.
+--- Called to sort the players within a class on the scoreboard.
+--
+-- Players the local player recognises come first, and recognised players are sorted by team.
+-- @param class [String The class name]
+-- @param a [Player The first player]
+-- @param b [Player The second player]
+-- @return [Boolean Whether `a` comes before `b`]
 function GM:ScoreboardSortClassPlayers(class, a, b)
   local recogniseA = cw.player:DoesRecognise(a)
   local recogniseB = cw.player:DoesRecognise(b)
@@ -818,10 +837,15 @@ function GM:ScoreboardSortClassPlayers(class, a, b)
   end
 end
 
--- Called when the scoreboard's player info should be adjusted.
+--- Called to adjust a player's scoreboard entry; does nothing by default.
+-- @param info [Map The entry, with `player`, `text` and the other fields the scoreboard shows]
 function GM:ScoreboardAdjustPlayerInfo(info) end
 
--- Called when the menu's items should be adjusted.
+--- Called when the main menu's items should be added.
+--
+-- Adds the settings, system, scoreboard, inventory, directory and attributes tabs, named by the
+-- schema's `name_*` options.
+-- @param menuItems [Map The `cw.menuitems` library; call its `Add(name, panel, tip, icon)`]
 function GM:MenuItemsAdd(menuItems)
   local attributesName = cw.option:GetKey('name_attributes')
   local systemName = cw.option:GetKey('name_system')
@@ -844,9 +868,11 @@ function GM:MenuItemsAdd(menuItems)
   end
 end
 
--- Called when the menu's items should be destroyed.
+--- Called after the main menu's items are added, so they can be removed; does nothing by default.
+-- @param menuItems [Map The `cw.menuitems` library]
 function GM:MenuItemsDestroy(menuItems) end
 
+--- Called every half second; every 3 seconds it fades timed attribute boosts and removes expired ones.
 function GM:HalfSecond()
   local realCurTime = CurTime()
   local curTime = UnPredictedCurTime()
@@ -876,7 +902,12 @@ function GM:HalfSecond()
   end
 end
 
--- Called each tick.
+--- Called each tick on the client.
+--
+-- Creates the character menu when polling and `ShouldCharacterMenuBeCreated` allows, rebuilds the
+-- HUD bars and player info text through `GetBars`, `DestroyBars`, `GetPlayerInfoText` and
+-- `DestroyPlayerInfoText`, fades dead NPCs, plays the low health heartbeat, closes the info menu
+-- once F1 is released, plays or fades the menu music and runs network proxy callbacks.
 function GM:Tick()
   local font = cw.option:GetFont('player_info_text')
 
@@ -1023,6 +1054,10 @@ function GM:Tick()
   end
 end
 
+--- Called when the map entities are initialized on the client.
+--
+-- Sets `cw.client`, runs `LocalPlayerCreated`, runs `PlayerModelChanged` for every player and
+-- then `ClockworkInitPostEntity`.
 function GM:InitPostEntity()
   cw.client = LocalPlayer()
 
@@ -1037,7 +1072,9 @@ function GM:InitPostEntity()
   hook.Run('ClockworkInitPostEntity')
 end
 
--- Called each frame.
+--- Called each frame; calculates hints and shows or hides the character screen.
+--
+-- The character screen's visibility comes from `GetPlayerCharacterScreenVisible`.
 function GM:Think()
   cw.core:CalculateHints()
 
@@ -1057,18 +1094,16 @@ end
 local SCREEN_DAMAGE_OVERLAY = cw.core:GetMaterial('clockwork/screendamage.png')
 local VIGNETTE_OVERLAY = cw.core:GetMaterial('clockwork/vignette.png')
 
--- Called when the local player's screen damage should be drawn.
+--- Called when the local player's screen damage should be drawn; draws the damage overlay.
+-- @param damageFraction [Number How damaged the player is, from 0 to 1]
 function GM:DrawPlayerScreenDamage(damageFraction)
   surface.SetDrawColor(255, 255, 255, math.Clamp(255 * damageFraction, 0, 150))
   surface.SetMaterial(SCREEN_DAMAGE_OVERLAY)
   surface.DrawTexturedRect(0, 0, ScrW(), ScrH())
 end
 
---[[
-  Called when the entity outlines should be added.
-  The "outlines" parameter is a reference to cw.outline.
---]]
-
+--- Called when entity outlines should be added; outlines the entity whose entity menu is open.
+-- @param outlines [Map The `cw.outline` library; call `outlines:Add(entity, color)`]
 function GM:AddEntityOutlines(outlines)
   if IsValid(cw.EntityMenu) and IsValid(cw.EntityMenu.entity) then
     --[[ Maybe this isn't needed. --]]
@@ -1080,7 +1115,9 @@ function GM:AddEntityOutlines(outlines)
   end
 end
 
--- Called when the local player's vignette should be drawn.
+--- Called when the local player's vignette should be drawn.
+--
+-- The vignette darkens when something is above the player, checked once a second.
 function GM:DrawPlayerVignette()
   local curTime = CurTime()
 
@@ -1115,7 +1152,12 @@ function GM:DrawPlayerVignette()
   surface.DrawTexturedRect(0, 0, ScrW(), ScrH())
 end
 
--- Called when the foreground HUD should be painted.
+--- Called when the foreground HUD should be painted.
+--
+-- Draws the hook error notice, the fallen over and underwater blur, the progress bar from
+-- `GetProgressBarInfo` (or `GetPostProgressBarInfo`), the admin ESP when `PlayerCanSeeAdminESP`
+-- allows, the `GetScreenTextInfo` text, the top bars and the death screen with the respawn
+-- countdown, then runs `HUDPaintTopScreen`.
 function GM:HUDPaintForeground()
   local backgroundColor = cw.option:GetColor('background')
   local colorWhite = cw.option:GetColor('white')
@@ -1239,14 +1281,17 @@ function GM:HUDPaintForeground()
   hook.Run('HUDPaintTopScreen', info)
 end
 
--- Called when an item's network data has been updated.
+--- Called when an item's network data has been updated; runs the item's `OnNetworkDataUpdated`.
+-- @param itemTable [Item The item]
+-- @param newData [Map The updated data fields]
 function GM:ItemNetworkDataUpdated(itemTable, newData)
   if itemTable.OnNetworkDataUpdated then
     itemTable:OnNetworkDataUpdated(newData)
   end
 end
 
--- Called to get the screen text info.
+--- Called to get the text shown in the middle of the screen; shows a notice while the character is banned.
+-- @return [Map `title`, `text` and `alpha` of the text, or `nil` to show nothing]
 function GM:GetScreenTextInfo()
   local blackFadeAlpha = cw.core:GetBlackFadeAlpha()
 
@@ -1259,7 +1304,7 @@ function GM:GetScreenTextInfo()
   end
 end
 
--- Called after the VGUI has been rendered.
+--- Called after the VGUI has been rendered; draws the current cinematic and the active markup tooltip.
 function GM:PostRenderVGUI()
   local cinematic = cw.Cinematics[1]
 
@@ -1280,17 +1325,24 @@ function GM:PostRenderVGUI()
   end
 end
 
--- Called to get whether the local player can see the admin ESP.
+--- Called to check whether an admin local player sees the admin ESP; follows the `cwAdminESP` ConVar.
+-- @return [Boolean Whether the ESP is drawn]
 function GM:PlayerCanSeeAdminESP()
   return (CW_CONVAR_ADMINESP:GetInt() == 1)
 end
 
--- Called when the local player attempts to get up.
+--- Called to check whether the local player can get up while fallen over, to show the get up hint; always allows it.
+-- @return [Boolean Whether the hint is shown]
 function GM:PlayerCanGetUp()
   return true
 end
 
--- Called when the local player attempts to see the top bars.
+--- Called to check whether the local player sees a group of HUD bars.
+--
+-- `tab` bars show in the info menu (when `cwTopBars` is off), `top` bars show while alive (when
+-- `cwTopBars` is on), and other groups always show.
+-- @param class [String The bar group, such as `top` or `tab`]
+-- @return [Boolean Whether the bars are drawn]
 function GM:PlayerCanSeeBars(class)
   if class == 'tab' then
     if CW_CONVAR_TOPBARS then
@@ -1311,37 +1363,48 @@ function GM:PlayerCanSeeBars(class)
   end
 end
 
--- Called when the local player attempts to see the top hints.
+--- Called to check whether the local player sees the top hints; always shows them.
+-- @return [Boolean Whether the hints are drawn]
 function GM:PlayerCanSeeHints()
   return true
 end
 
--- Called when the local player attempts to see the center hints.
+--- Called to check whether the local player sees the center hints; always shows them.
+-- @return [Boolean Whether the hints are drawn]
 function GM:PlayerCanSeeCenterHints()
   return true
 end
 
--- Called when the local player attempts to see their limb damage.
+--- Called to check whether the local player sees their limb damage.
+--
+-- It is shown in the info menu when `limb_damage_system` is enabled.
+-- @return [Boolean Whether the limb damage is drawn]
 function GM:PlayerCanSeeLimbDamage()
   return (cw.core:IsInfoMenuOpen() and config.Get('limb_damage_system'):Get())
 end
 
--- Called when the local player attempts to see the date and time.
+--- Called to check whether the local player sees the date and time; shown in the info menu.
+-- @return [Boolean Whether the date and time are drawn]
 function GM:PlayerCanSeeDateTime()
   return cw.core:IsInfoMenuOpen()
 end
 
--- Called when the local player attempts to see a class.
+--- Called to check whether a class is listed in the classes menu; always lists it.
+-- @param class [Class The class]
+-- @return [Boolean Whether the class is listed]
 function GM:PlayerCanSeeClass(class)
   return true
 end
 
--- Called when the local player attempts to see the player info.
+--- Called to check whether the local player sees their player info text; shown in the info menu.
+-- @return [Boolean Whether the player info is drawn]
 function GM:PlayerCanSeePlayerInfo()
   return cw.core:IsInfoMenuOpen()
 end
 
---
+--- Called when GMod shows a hint; shows it as a Catwork top hint once a character is loaded.
+-- @param name [String The hint name, looked up as the `#Hint_<name>` phrase]
+-- @param delay [Number How long the hint stays]
 function GM:AddHint(name, delay)
   if IsValid(cw.client) and cw.client:HasInitialized() then
     cw.core:AddTopHint(
@@ -1350,7 +1413,10 @@ function GM:AddHint(name, delay)
   end
 end
 
---
+--- Called when GMod shows a notification; passes it to the base gamemode unless it is a `#Hint_` hint.
+-- @param text [String The notification text]
+-- @param class [Number The notification type (`NOTIFY_*`)]
+-- @param length [Number How long it stays]
 function GM:AddNotify(text, class, length)
   if class != NOTIFY_HINT or string.utf8sub(text, 1, 6) != '#Hint_' then
     if self.BaseClass.AddNotify then
@@ -1359,7 +1425,14 @@ function GM:AddNotify(text, class, length)
   end
 end
 
--- Called when the target ID HUD should be drawn.
+--- Called when the target ID HUD should be drawn.
+--
+-- For a player within `GetTargetPlayerFadeDistance` (and allowed by `ShouldDrawPlayerTargetID`)
+-- it draws their name from `GetTargetPlayerName` if recognised, or their unrecognised name and
+-- `PlayerCanShowUnrecognised` otherwise, then `GetTargetPlayerText`, `DrawPlayerStatusExtra` and
+-- `DrawTargetPlayerStatus`, and asks the server whether the target recognises the local player.
+-- Dropped weapons get a pickup hint, entities with `HUDPaintTargetID` draw themselves and other
+-- entities go through `HUDPaintEntityTargetID`. The text fades in after `target_id_delay`.
 function GM:HUDDrawTargetID()
   local targetIDTextFont = cw.option:GetFont('target_id_text')
   local traceEntity = NULL
@@ -1555,7 +1628,12 @@ function GM:HUDDrawTargetID()
   end
 end
 
--- Called when the target's status should be drawn.
+--- Called to draw a looked at player's status below their target ID; shows that they are deceased.
+-- @param target [Player The player looked at]
+-- @param alpha [Number The text alpha]
+-- @param x [Number The text x position]
+-- @param y [Number The text y position]
+-- @return [Number The y position below what was drawn]
 function GM:DrawTargetPlayerStatus(target, alpha, x, y)
   local informationColor = cw.option:GetColor('information')
   local gender = '#TargetPlayerStatus_Male'
@@ -1571,7 +1649,13 @@ function GM:DrawTargetPlayerStatus(target, alpha, x, y)
   end
 end
 
--- Called when the character panel tool tip is needed.
+--- Called to get the tooltip of a character in the character menu.
+--
+-- When there is more than one faction it shows how many players are in the character's faction
+-- and the faction's limit.
+-- @param panel [Panel The character panel]
+-- @param character [Map The character's screen info]
+-- @return [String The tooltip, or `nil` for none]
 function GM:GetCharacterPanelToolTip(panel, character)
   if table.Count(faction.GetAll()) > 1 then
     local numPlayers = #faction.GetPlayers(character.faction)
@@ -1580,7 +1664,12 @@ function GM:GetCharacterPanelToolTip(panel, character)
   end
 end
 
--- Called when a player's status info is needed.
+--- Called to get a player's status lines for the admin ESP.
+--
+-- Adds the player's current action (locking, unlocking, getting up, dead or another action) and
+-- whether they have fallen over.
+-- @param player [Player The player]
+-- @param text [List<String> The status lines, added to in place]
 function GM:GetStatusInfo(player, text)
   local action = cw.player:GetAction(player, true)
 
@@ -1613,13 +1702,12 @@ function GM:GetStatusInfo(player, text)
   end
 end
 
---[[
-  @codebase Client
-  @details This function is called to figure out the text, percentage and flash of the current progress bar.
-  @class Clockwork
-  @returns Table The text, flash, and percentage of the progress bar.
---]]
-
+--- Called to get the progress bar shown in the middle of the screen.
+--
+-- Shows locking and unlocking progress, getting up progress while ragdolled, and the get up
+-- prompt while fallen over when `PlayerCanGetUp` allows. Nothing is shown while waiting to
+-- respawn.
+-- @return [Map `text`, `percentage`, `flash`, `isBlocky` and `blocksAmt` of the bar, or `nil` for no bar]
 function GM:GetProgressBarInfo()
   local action, percentage = cw.player:GetAction(cw.client, true)
 
@@ -1679,13 +1767,21 @@ function GM:GetProgressBarInfo()
   end
 end
 
--- Called just before the local player's information is drawn.
+--- Called just before the local player's information box is drawn in the info menu; does nothing by default.
+-- @param boxInfo [Map The box position and size]
+-- @param information [Map The player info text lines]
+-- @param subInformation [Map The player info sub text lines]
+-- @return [Boolean `true` to skip drawing the box]
 function GM:PreDrawPlayerInfo(boxInfo, information, subInformation) end
 
--- Called just after the local player's information is drawn.
+--- Called just after the local player's information box is drawn; does nothing by default.
+-- @param boxInfo [Map The box position and size]
+-- @param information [Map The player info text lines]
+-- @param subInformation [Map The player info sub text lines]
 function GM:PostDrawPlayerInfo(boxInfo, information, subInformation) end
 
--- Called just after the date time box is drawn.
+--- Called just after the date and time box is drawn in the info menu; does nothing by default.
+-- @param info [Map The box's `x`, `y` and `width`]
 function GM:PostDrawDateTimeBox(info) end
 
 --[[
@@ -1705,13 +1801,11 @@ function GM:PostDrawViewModel(viewModel, player, weapon)
      end
 end
 --]]
---[[
-  @codebase Client
-  @details This function is called when local player info text is needed and adds onto it (F1 menu).
-  @class Clockwork
-  @param Table The current table of player info text to add onto.
---]]
 
+--- Called when the local player's info text (shown in the F1 menu) is needed.
+--
+-- Adds cash and wages when cash is enabled, and the player's name and class as sub text.
+-- @param playerInfoText [Map `cw.PlayerInfoText`; call its `Add(id, text)` and `AddSub(id, text, priority)`]
 function GM:GetPlayerInfoText(playerInfoText)
   local cash = cw.player:GetCash() or 0
   local wages = cw.player:GetWages() or 0
@@ -1733,30 +1827,23 @@ function GM:GetPlayerInfoText(playerInfoText)
   playerInfoText:AddSub('CLASS', _team.GetName(cw.client:Team()), 1)
 end
 
---[[
-  @codebase Client
-  @details This function is called when the player's fade distance is needed for their target text (when you look at
-  them).
-  @class Clockwork
-  @param Table The player we are finding the distance for.
-  @returns Int The fade distance, defaulted at 4096.
---]]
-
+--- Called to get how far away a player's target ID text stays visible; 4096 units by default.
+-- @param player [Player The player looked at]
+-- @return [Number The fade distance]
 function GM:GetTargetPlayerFadeDistance(player)
   return 4096
 end
 
--- Called when the player info text should be destroyed.
+--- Called after the player info text is collected, so lines can be removed; does nothing by default.
+-- @param playerInfoText [Map `cw.PlayerInfoText`]
 function GM:DestroyPlayerInfoText(playerInfoText) end
 
---[[
-  @codebase Client
-  @details This function is called when the targeted player's target text is needed.
-  @class Clockwork
-  @param Table The player we are finding the distance for.
-  @param Table The player's current target text.
---]]
-
+--- Called when the text below a looked at player's name is needed.
+--
+-- Adds the wrapped physical description of recognised players, or a prompt to look at them for
+-- unrecognised living players.
+-- @param player [Player The player looked at]
+-- @param targetPlayerText [Map `cw.TargetPlayerText`; call its `Add(id, text)`]
 function GM:GetTargetPlayerText(player, targetPlayerText)
   local targetIDTextFont = cw.option:GetFont('target_id_text')
   local physDescTable = {}
@@ -1777,10 +1864,17 @@ function GM:GetTargetPlayerText(player, targetPlayerText)
   end
 end
 
--- Called when the target player's text should be destroyed.
+--- Called after the target player text is collected, so lines can be removed; does nothing by default.
+-- @param player [Player The player looked at]
+-- @param targetPlayerText [Map `cw.TargetPlayerText`]
 function GM:DestroyTargetPlayerText(player, targetPlayerText) end
 
--- Called when a player's scoreboard text is needed.
+--- Called to get the text under a player's name on the scoreboard.
+--
+-- Shows the physical description (cut to 64 characters) of recognised players and a generic line
+-- for others.
+-- @param player [Player The player]
+-- @return [String The text]
 function GM:GetPlayerScoreboardText(player)
   local thirdPerson = '#Scoreboard_ScoreboardText_him'
 
@@ -1801,12 +1895,18 @@ function GM:GetPlayerScoreboardText(player)
   end
 end
 
--- Called when the local player's character screen faction is needed.
+--- Called to get which faction group a character is shown under on the character screen; uses its faction.
+-- @param character [Map The character's screen info]
+-- @return [String The faction name]
 function GM:GetPlayerCharacterScreenFaction(character)
   return character.faction
 end
 
--- Called to get whether the local player's character screen is visible.
+--- Called each frame to check whether the character screen is visible.
+--
+-- When the quiz is enabled, it stays hidden until the quiz is completed.
+-- @param panel [Panel The character menu]
+-- @return [Boolean Whether the character screen is visible]
 function GM:GetPlayerCharacterScreenVisible(panel)
   if !cw.quiz:GetEnabled() or cw.quiz:GetCompleted() then
     return true
@@ -1815,7 +1915,8 @@ function GM:GetPlayerCharacterScreenVisible(panel)
   end
 end
 
--- Called to get whether the character menu should be created.
+--- Called to check whether the character menu can be created yet; waits while the intro is fading out.
+-- @return [Boolean Whether the character menu is created]
 function GM:ShouldCharacterMenuBeCreated()
   if cw.ClockworkIntroFadeOut then
     return false
@@ -1824,19 +1925,31 @@ function GM:ShouldCharacterMenuBeCreated()
   return true
 end
 
--- Called when the local player's character screen is created.
+--- Called when the local player's character screen is created; asks the server for the quiz status.
+--
+-- The status is only requested when the quiz is enabled.
+-- @param panel [Panel The character menu]
 function GM:PlayerCharacterScreenCreated(panel)
   if cw.quiz:GetEnabled() then
     netstream.Start('GetQuizStatus', true)
   end
 end
 
--- Called when a player's scoreboard class is needed.
+--- Called to get the scoreboard group a player is listed under; uses their team name.
+-- @param player [Player The player]
+-- @return [String The group name]
 function GM:GetPlayerScoreboardClass(player)
   return _team.GetName(player:Team())
 end
 
--- Called when a player's scoreboard options are needed.
+--- Called when the admin options for a player on the scoreboard are needed.
+--
+-- Adds ban, kick, flag, name, item, user group, demote and whitelist options for the commands the
+-- local player has access to. Each option runs the matching command, asking for text first where
+-- the command needs it.
+-- @param player [Player The player the options act on]
+-- @param options [Map Option names mapped to callbacks, or to nested option maps for submenus]
+-- @param menu [Panel Unused; the callers do not pass it]
 function GM:GetPlayerScoreboardOptions(player, options, menu)
   local charTakeFlags = cw.command:FindByID('CharTakeFlags')
   local charGiveFlags = cw.command:FindByID('CharGiveFlags')
@@ -1980,7 +2093,14 @@ function GM:GetPlayerScoreboardOptions(player, options, menu)
   end
 end
 
--- Called when information about a door is needed.
+--- Called when a piece of information about a door is needed for its 3D2D text.
+--
+-- For `DOOR_INFO_NAME` it returns the door's name or a default; for `DOOR_INFO_TEXT` its text,
+-- or whether it is unownable, can be bought or owned, or has been bought or owned (depending on
+-- `door_cost`). Hidden and false doors show nothing.
+-- @param door [Entity The door]
+-- @param information [Number What is needed, `DOOR_INFO_NAME` or `DOOR_INFO_TEXT`]
+-- @return [String The text, or `false` to show nothing]
 function GM:GetDoorInfo(door, information)
   local doorCost = config.Get('door_cost'):Get()
   local owner = cw.entity:GetOwner(door)
@@ -2032,12 +2152,17 @@ function GM:GetDoorInfo(door, information)
   end
 end
 
--- Called to get whether or not a post process is permitted.
+--- Called to check whether a sandbox post process is permitted; never.
+-- @param class [String The post process name]
+-- @return [Boolean Always `false`]
 function GM:PostProcessPermitted(class)
   return false
 end
 
--- Called just after the translucent renderables have been drawn.
+--- Called after translucent renderables are drawn; draws the 3D2D text of doors within 256 units.
+-- @param bDrawingDepth [Boolean Whether this is a depth pass, skipped]
+-- @param bDrawingSkybox [Boolean Whether the skybox is being drawn]
+-- @param bDrawing3DSkybox [Boolean Whether the 3D skybox is being drawn, skipped]
 function GM:PostDrawTranslucentRenderables(bDrawingDepth, bDrawingSkybox, bDrawing3DSkybox)
   -- bDrawingSkybox is also true for the main view on maps with a 2D skybox, so only skip the 3D skybox pass.
   if bDrawingDepth or bDrawing3DSkybox then return end
@@ -2061,7 +2186,12 @@ function GM:PostDrawTranslucentRenderables(bDrawingDepth, bDrawingSkybox, bDrawi
   end
 end
 
--- Called when screen space effects should be rendered.
+--- Called when screen space effects should be rendered.
+--
+-- Blurs the screen for head damage or low health, drains colour with lost health, draws the
+-- underwater fish eye effect and applies colour modification: the `Color Modify` system's override
+-- when enabled, otherwise `PlayerSetDefaultColorModify`. `PlayerAdjustColorModify` and
+-- `PlayerAdjustMotionBlurs` can adjust the result.
 function GM:RenderScreenspaceEffects()
   if IsValid(cw.client) then
     local frameTime = FrameTime()
@@ -2161,13 +2291,15 @@ function GM:RenderScreenspaceEffects()
   end
 end
 
--- Called when the chat box is opened.
+--- Called when the chat box is opened; does nothing by default.
 function GM:ChatBoxOpened() end
 
--- Called when the chat box is closed.
+--- Called when the chat box is closed; does nothing by default.
+-- @param textTyped [String The text left in the chat box]
 function GM:ChatBoxClosed(textTyped) end
 
--- Called when the chat box text has been typed.
+--- Called when chat box text has been sent; remembers the last 25 messages for the up and down keys.
+-- @param text [String The text sent]
 function GM:ChatBoxTextTyped(text)
   if cw.LastChatBoxText then
     if #cw.LastChatBoxText >= 25 then
@@ -2184,16 +2316,23 @@ function GM:ChatBoxTextTyped(text)
   end
 end
 
--- Called when the calc view table should be adjusted.
+--- Called to adjust the final view table from `GM:CalcView`; does nothing by default.
+-- @param view [Map The view table, with `origin`, `angles` and `fov`, modified in place]
 function GM:CalcViewAdjustTable(view) end
 
--- Called when the chat box info should be adjusted.
+--- Called when chat box info should be adjusted; does nothing by default.
+-- @param info [Map The message info]
 function GM:ChatBoxAdjustInfo(info) end
 
--- Called when the chat box text has changed.
+--- Called when the chat box text has changed; does nothing by default.
+-- @param previousText [String The previous text]
+-- @param newText [String The new text]
 function GM:ChatBoxTextChanged(previousText, newText) end
 
--- Called when the chat box has had a key code typed in.
+--- Called when a key is typed in the chat box; up and down cycle through the remembered messages.
+-- @param code [Number The key code (`KEY_*`)]
+-- @param text [String The current chat box text]
+-- @return [String Text to replace the chat box contents with, or `nil`]
 function GM:ChatBoxKeyCodeTyped(code, text)
   if !cw.LastChatBoxCheck then
     cw.LastChatBoxCheck = 1
@@ -2222,18 +2361,27 @@ function GM:ChatBoxKeyCodeTyped(code, text)
   end
 end
 
--- Called when a notification should be adjusted.
+--- Called before a notification from the server is shown, to adjust it; shows every notification.
+-- @param info [Map `text`, `class` and `sound` of the notification, which can be changed]
+-- @return [Boolean Whether the notification is shown]
 function GM:NotificationAdjustInfo(info)
   return true
 end
 
--- Called when the local player's business item should be adjusted.
+--- Called to adjust an item shown in the business menu; does nothing by default.
+-- @param itemTable [Item The item, which can be changed]
 function GM:PlayerAdjustBusinessItemTable(itemTable) end
 
--- Called when the local player's class model info should be adjusted.
+--- Called to adjust the model shown for a class in the classes menu; does nothing by default.
+-- @param class [Number The class index]
+-- @param info [Map `model` and `skin`, which can be changed]
 function GM:PlayerAdjustClassModelInfo(class, info) end
 
--- Called when the local player's headbob info should be adjusted.
+--- Called to adjust the local player's headbob.
+--
+-- Speeds up and strengthens the bob while walking and running, scaled by `cwHeadbobScale`, and is
+-- meant to exaggerate it while drunk.
+-- @param info [Map `speed`, `yaw` and `roll` of the headbob, modified in place]
 function GM:PlayerAdjustHeadbobInfo(info)
   local bisDrunk = cw.player:GetDrunk()
   local scale
@@ -2260,27 +2408,40 @@ function GM:PlayerAdjustHeadbobInfo(info)
   end
 end
 
--- Called when the local player's motion blurs should be adjusted.
+--- Called to adjust the local player's motion blur; does nothing by default.
+-- @param motionBlurs [Map `enabled` and `blurTable` (blur amounts by name, the lowest is used), modified in place]
 function GM:PlayerAdjustMotionBlurs(motionBlurs) end
 
--- Called when the local player's item menu should be adjusted.
+--- Called when the local player's item menu should be adjusted; does nothing by default.
+-- @param itemTable [Item The item]
+-- @param menuPanel [Panel The menu]
+-- @param itemFunctions [List The item's functions]
 function GM:PlayerAdjustMenuFunctions(itemTable, menuPanel, itemFunctions) end
 
--- Called when the local player's item functions should be adjusted.
+--- Called to adjust the functions offered for an item in the inventory; does nothing by default.
+-- @param itemTable [Item The item]
+-- @param itemFunctions [List<Map> The functions, as `{ title = ..., name = ... }` entries, modified in place]
 function GM:PlayerAdjustItemFunctions(itemTable, itemFunctions) end
 
--- Called when the local player's default colorify should be set.
+--- Called to set the local player's default colour modification when no override is active; does nothing by default.
+-- @param colorModify [Map The `$pp_colour_*` values, modified in place]
 function GM:PlayerSetDefaultColorModify(colorModify) end
 
--- Called when the local player's colorify should be adjusted.
+--- Called to adjust the local player's colour modification; does nothing by default.
+-- @param colorModify [Map The `$pp_colour_*` values, modified in place]
 function GM:PlayerAdjustColorModify(colorModify) end
 
--- Called to get whether a player's target ID should be drawn.
+--- Called to check whether a looked at player's target ID is drawn; always draws it.
+-- @param player [Player The player looked at]
+-- @return [Boolean Whether the target ID is drawn]
 function GM:ShouldDrawPlayerTargetID(player)
   return true
 end
 
--- Called to get whether the local player's screen should fade black.
+--- Called to check whether the local player's screen fades to black.
+--
+-- Fades while dead or fallen over, unless `PlayerCanSeeUnconscious` allows seeing.
+-- @return [Boolean Whether the screen fades to black]
 function GM:ShouldPlayerScreenFadeBlack()
   if !cw.client:Alive() or cw.client:IsRagdolled(RAGDOLL_FALLENOVER) then
     if !hook.Run('PlayerCanSeeUnconscious') then
@@ -2291,27 +2452,37 @@ function GM:ShouldPlayerScreenFadeBlack()
   return false
 end
 
--- Called when the menu background blur should be drawn.
+--- Called to check whether the menu background blur is drawn; always draws it.
+-- @return [Boolean Whether the blur is drawn]
 function GM:ShouldDrawMenuBackgroundBlur()
   return true
 end
 
--- Called when the character background blur should be drawn.
+--- Called to check whether the character menu background blur is drawn; always draws it.
+-- @return [Boolean Whether the blur is drawn]
 function GM:ShouldDrawCharacterBackgroundBlur()
   return true
 end
 
--- Called when the character background should be drawn.
+--- Called to check whether the black character menu background is drawn; always draws it.
+-- @return [Boolean Whether the background is drawn]
 function GM:ShouldDrawCharacterBackground()
   return true
 end
 
--- Called when the character fault should be drawn.
+--- Called to check whether a character creation fault is drawn; always draws it.
+-- @param fault [String The fault]
+-- @return [Boolean Whether the fault is drawn]
 function GM:ShouldDrawCharacterFault(fault)
   return true
 end
 
--- Called when the score board should be drawn.
+--- Called every frame to draw the full screen layers above the HUD.
+--
+-- Draws the character selection background and `HUDPaintCharacterSelection`, then for a loaded
+-- character runs `HUDPaintForeground` and `HUDPaintImportant`, the cinematic intro, background
+-- blurs (when `ShouldDrawBackgroundBlurs` allows), the Catwork intro splash, the loading and
+-- no-database screens and `HUDPaintCharacterLoading`, then `PostDrawBackgroundBlurs`.
 function GM:HUDDrawScoreBoard()
   self.BaseClass:HUDDrawScoreBoard(player)
 
@@ -2483,12 +2654,16 @@ function GM:HUDDrawScoreBoard()
   hook.Run('PostDrawBackgroundBlurs')
 end
 
--- Called when the background blurs should be drawn.
+--- Called to check whether the background blurs are drawn; always draws them.
+-- @return [Boolean Whether the blurs are drawn]
 function GM:ShouldDrawBackgroundBlurs()
   return true
 end
 
--- Called just after the background blurs have been drawn.
+--- Called just after the background blurs have been drawn.
+--
+-- Draws the selected faction's image on the character screen, the title box of a titled menu and
+-- the date and time.
 function GM:PostDrawBackgroundBlurs()
   local introTextSmallFont = cw.option:GetFont('intro_text_small')
   local backgroundColor = cw.option:GetColor('background')
@@ -2538,19 +2713,26 @@ function GM:PostDrawBackgroundBlurs()
   cw.core:DrawDateTime()
 end
 
--- Called just before a bar is drawn.
+--- Called just before a HUD bar is drawn; does nothing by default.
+-- @param barInfo [Map The bar's position, size, colour, text and progress]
+-- @return [Boolean `true` to skip drawing the bar's background and fill]
 function GM:PreDrawBar(barInfo) end
 
--- Called just after a bar is drawn.
+--- Called just after a HUD bar is drawn; does nothing by default.
+-- @param barInfo [Map The bar's position, size, colour, text and progress]
+-- @return [Boolean `true` to skip drawing the bar's text]
 function GM:PostDrawBar(barInfo) end
 
--- Called when the top bars are needed.
+--- Called each tick when the HUD bars are collected; does nothing by default.
+-- @param bars [Map The `cw.bars` library; add bars with its functions]
 function GM:GetBars(bars) end
 
--- Called when the top bars should be destroyed.
+--- Called after the HUD bars are collected, so bars can be removed; does nothing by default.
+-- @param bars [Map The `cw.bars` library]
 function GM:DestroyBars(bars) end
 
--- Called when the cinematic intro info is needed.
+--- Called when the cinematic intro info is needed; uses the schema's author, name and description.
+-- @return [Map `credits`, `title` and `text` of the intro]
 function GM:GetCinematicIntroInfo()
   return {
     credits = '#Schema_Credits:'..Schema:GetAuthor()..';',
@@ -2559,13 +2741,20 @@ function GM:GetCinematicIntroInfo()
   }
 end
 
--- Called when the character loading time is needed.
+--- Called to get how long the character loading screen lasts; 8 seconds.
+-- @return [Number The loading time in seconds]
 function GM:GetCharacterLoadingTime() return 8 end
 
--- Called when a player's HUD should be painted.
+--- Called when a player's HUD should be painted; does nothing by default.
+-- @param player [Player The player]
 function GM:HUDPaintPlayer(player) end
 
--- Called when the HUD should be painted.
+--- Called when the HUD should be painted.
+--
+-- Outside character selection and cameras it draws the vignette (when enabled by the event,
+-- `enable_vignette` and `cwShowVignette`), the base HUD and the hints, and a crosshair when
+-- `CanDrawCrosshair` allows, positioned by `GetPlayerCrosshairInfo` and drawn by
+-- `DrawPlayerCrosshair`.
 function GM:HUDPaint()
   if !cw.core:IsChoosingCharacter() and !cw.core:IsUsingCamera() then
     if cw.event:CanRun('view', 'damage') and cw.client:Alive() then
@@ -2606,11 +2795,15 @@ function GM:HUDPaint()
   end
 end
 
+--- Called to check whether the Catwork crosshair is drawn; never by default.
+-- @param weapon [Weapon The local player's active weapon]
+-- @return [Boolean Whether the crosshair is drawn]
 function GM:CanDrawCrosshair(weapon)
   return false
 end
 
--- Called when the local player's crosshair info is needed.
+--- Called to position the local player's crosshair; with `use_free_aiming` it follows where the weapon actually aims.
+-- @param info [Map `color`, `x` and `y` of the crosshair, modified in place]
 function GM:GetPlayerCrosshairInfo(info)
   if config.GetVal('use_free_aiming') then
     -- Thanks to BlackOps7799 for this open source example.
@@ -2628,7 +2821,11 @@ function GM:GetPlayerCrosshairInfo(info)
   end
 end
 
--- Called when the local player's crosshair should be drawn.
+--- Called when the local player's crosshair should be drawn; draws five small dots.
+-- @param x [Number The crosshair x position]
+-- @param y [Number The crosshair y position]
+-- @param color [Color The crosshair colour]
+-- @return [Boolean Stored in `cw.CustomCrosshair`; `true` when a custom crosshair was drawn]
 function GM:DrawPlayerCrosshair(x, y, color)
   surface.SetDrawColor(color.r, color.g, color.b, color.a)
   surface.DrawRect(x, y, 2, 2)
@@ -2640,7 +2837,11 @@ function GM:DrawPlayerCrosshair(x, y, color)
   return true
 end
 
--- Called when a player starts using voice.
+--- Called when a player starts using voice.
+--
+-- With `local_voice`, no voice indicator is shown for players who have fallen over, are dead or
+-- lack the `x` flag.
+-- @param player [Player The talking player]
 function GM:PlayerStartVoice(player)
   if config.Get('local_voice'):Get() then
     if player:IsRagdolled(RAGDOLL_FALLENOVER) or !player:Alive() or !cw.player:HasFlags(player, 'x') then
@@ -2653,34 +2854,66 @@ function GM:PlayerStartVoice(player)
   end
 end
 
--- Called to check if a player does have an flag.
+--- Called to check whether a player has a flag they do not hold themselves; grants the `default_flags` config flags.
+-- @param player [Player The player]
+-- @param flag [String A single flag]
+-- @return [Boolean `true` to grant the flag, `false` to deny it, `nil` to fall through]
 function GM:PlayerDoesHaveFlag(player, flag)
   if string.find(config.GetVal('default_flags'), flag) then
     return true
   end
 end
 
--- Called to check if a player does recognise another player.
+--- Called after recognition is worked out, to override whether the local player recognises another.
+--
+-- Catwork returns the computed value unchanged.
+-- @param player [Player The player who may be recognised]
+-- @param status [Number The recognition level asked about (`RECOGNISE_*`)]
+-- @param isAccurate [Boolean Whether the level must match exactly]
+-- @param realValue [Boolean Whether the local player recognises the player according to their recognised names]
+-- @return [Boolean Whether the local player recognises the player]
 function GM:PlayerDoesRecognisePlayer(player, status, isAccurate, realValue)
   return realValue
 end
 
--- Called when a player's name should be shown as unrecognised.
+--- Called when the target ID of an unrecognised player is drawn; draws the unrecognised name.
+--
+-- `GM:HUDDrawTargetID` passes the arguments as `(player, x, y, unrecognisedName, teamColor,
+-- alpha, flashAlpha)`, so from `color` onwards they are shifted by one compared to these names.
+-- @param player [Player The player looked at]
+-- @param x [Number The text x position]
+-- @param y [Number The text y position]
+-- @param color [String The unrecognised name (see above)]
+-- @param alpha [Color The team colour (see above)]
+-- @param flashAlpha [Number The text alpha (see above)]
+-- @return [Any `true` to draw the unrecognised name, a string to draw that text instead, a number to
+-- draw nothing and continue at that y position]
 function GM:PlayerCanShowUnrecognised(player, x, y, color, alpha, flashAlpha)
   return true
 end
 
--- Called when the target player's name is needed.
+--- Called to get the name drawn on a recognised player's target ID; uses their name.
+-- @param player [Player The player looked at]
+-- @return [String The name, which may contain newlines]
 function GM:GetTargetPlayerName(player)
   return player:Name()
 end
 
--- Called when a player begins typing.
+--- Called when the local player begins typing; returns `true` to hide the default chat box.
+-- @param team [Boolean Whether team chat is being opened]
+-- @return [Boolean Always `true`]
 function GM:StartChat(team)
   return true
 end
 
--- Called when a player says something.
+--- Called when a player says something; suppresses the default chat.
+--
+-- Console messages are added to the Catwork chatbox.
+-- @param player [Player The player, or an invalid entity for the console]
+-- @param text [String The message]
+-- @param teamOnly [Boolean Whether it was team only]
+-- @param playerIsDead [Boolean Whether the player is dead]
+-- @return [Boolean Always `true`]
 function GM:OnPlayerChat(player, text, teamOnly, playerIsDead)
   if !IsValid(player) then
     chatbox.AddText(nil, '[color=red]#Console[/color]: '..text, { icon = 'icon16/shield.png' })
@@ -2689,15 +2922,20 @@ function GM:OnPlayerChat(player, text, teamOnly, playerIsDead)
   return true
 end
 
--- Called when chat text is received from the server
+--- Called when engine chat text is received from the server; returns `true` to suppress it.
+-- @param index [Number The player index]
+-- @param name [String The player name]
+-- @param text [String The text]
+-- @param class [String The message type]
+-- @return [Boolean Always `true`]
 function GM:ChatText(index, name, text, class)
   return true
 end
 
--- Called when the scoreboard should be created.
+--- Called when the scoreboard should be created; overridden to do nothing, the scoreboard is part of the main menu.
 function GM:CreateScoreboard() end
 
--- Called when the scoreboard should be shown.
+--- Called when the scoreboard key is pressed; opens the main menu when `CanShowTabMenu` allows.
 function GM:ScoreboardShow()
   if cw.client:HasInitialized() then
     if hook.Run('CanShowTabMenu') then
@@ -2708,7 +2946,7 @@ function GM:ScoreboardShow()
   end
 end
 
--- Called when the scoreboard should be hidden.
+--- Called when the scoreboard key is released; closes the main menu if it was held for at least half a second.
 function GM:ScoreboardHide()
   if cw.client:HasInitialized() and cw.menu.holdTime then
     if UnPredictedCurTime() >= cw.menu.holdTime then
@@ -2719,15 +2957,26 @@ function GM:ScoreboardHide()
   end
 end
 
--- Called before the tab menu is shown.
+--- Called before the main menu is opened or closed with the scoreboard key; always allows it.
+-- @return [Boolean Whether the menu opens or closes]
 function GM:CanShowTabMenu() return true end
 
--- Overriding Garry's "grab ear" animation.
+--- Called to play GMod's "grab ear" animation while typing; overridden to do nothing.
+-- @param player [Player The player]
 function GM:GrabEarAnimation(player) end
 
--- Called before the item entity's target ID is drawn. Return false to stop default draw.
+--- Called before an item entity's target ID is drawn; return `false` to stop the default draw.
+-- @param x [Number The text x position]
+-- @param y [Number The text y position]
+-- @param alpha [Number The text alpha]
+-- @param itemTable [Item The item]
+-- @return [Boolean Whether the default target ID is drawn]
 function GM:PaintItemTargetID(x, y, alpha, itemTable) return true end
 
+--- Called when a hook errors; shows the hook error notice on the HUD for 3 seconds.
+-- @param name [String The hook name]
+-- @param isGM [Boolean Whether the error was in a gamemode hook]
+-- @param message [String The error message]
 function GM:OnHookError(name, isGM, message)
   LocalPlayer().ErrorBoxTime = CurTime() + 3
 end

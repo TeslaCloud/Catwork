@@ -19,11 +19,11 @@ ITEM.description = '#ITEM_Metropolice_Supplements_Desc'
 ITEM.hunger = 100
 ITEM.thirst = 10
 
--- Called when a player uses the item.
+--- Heals 5 health and boosts endurance by 2 for two minutes.
 function ITEM:OnUse(player, itemEntity)
   player:SetHealth(math.Clamp(player:Health() + 5, 0, player:GetMaxHealth()))
   player:BoostAttribute(self.name, ATB_ENDURANCE, 2, 120)
 end
 
--- Called when a player drops the item.
+--- Lets the item be dropped; nothing else happens.
 function ITEM:OnDrop(player, position) end

@@ -34,7 +34,11 @@ FACTION.models = {
   }
 }
 
--- Called when a player is transferred to the faction.
+--- Called when a player is transferred to the faction; only citizens can become administrators.
+-- @param player [Player The player]
+-- @param faction [Faction The faction the player comes from]
+-- @param name=nil [String The new name, unused]
+-- @return [Boolean `false` to refuse the transfer]
 function FACTION:OnTransferred(player, faction, name)
   if faction.name != FACTION_CITIZEN then
     return false

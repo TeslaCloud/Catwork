@@ -11,7 +11,9 @@ COMMAND.access = 'a'
 COMMAND.arguments = 1
 COMMAND.alias = { 'SetCustomSpawn', 'SetCustomSpawnPoint', 'CustomSpawnSet' }
 
--- Called when the command has been run.
+--- Sets the target character's custom spawn point to the target's current position on this map.
+--
+-- The saved angles are the eye angles of the player running the command, not the target's.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
 

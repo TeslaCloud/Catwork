@@ -4,6 +4,11 @@
   without permission.
 --]]
 
+--- Called before a chat message is sent; capitalises in-character messages and ends them with a period.
+--
+-- Leading and trailing quotes are kept, and no period is added after `.`, `!` or `?`.
+-- @param info [Map The message info; `info.text` is changed in place for the `ic` filter]
+-- @param listeners [List<Player> The players who will receive the message; may also be a single player or `nil`]
 function PLUGIN:ChatboxAdjustMessageInfo(info, listeners)
   if info.filter == 'ic' then
     local len = info.text:utf8len()

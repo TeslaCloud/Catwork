@@ -6,12 +6,12 @@
   with contributions from Cloud Sixteen community.
 --]]
 
--- A function to load the dynamic adverts.
+--- Loads the current map's adverts from the schema data into `cwDynamicAdverts.storedList`.
 function cwDynamicAdverts:LoadDynamicAdverts()
   self.storedList = cw.core:RestoreSchemaData('plugins/adverts/'..game.GetMap())
 end
 
--- A function to save the dynamic adverts.
+--- Saves `cwDynamicAdverts.storedList` to the schema data for the current map.
 function cwDynamicAdverts:SaveDynamicAdverts()
   cw.core:SaveSchemaData('plugins/adverts/'..game.GetMap(), self.storedList)
 end

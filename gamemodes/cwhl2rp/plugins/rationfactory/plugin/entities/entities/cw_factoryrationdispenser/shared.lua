@@ -13,6 +13,7 @@ ENT.AdminSpawnable = false
 ENT.UsableInVehicle = true
 ENT.PhysgunDisabled = true
 
+--- Sets up the networked ration timer, flash timer, lock state and ration count.
 function ENT:SetupDataTables()
   self:DTVar('Float', 0, 'ration')
   self:DTVar('Float', 1, 'flash')
@@ -20,10 +21,14 @@ function ENT:SetupDataTables()
   self:DTVar('Int', 0, 'rations')
 end
 
+--- Returns whether the dispenser is locked.
+-- @return [Boolean Whether the dispenser is locked]
 function ENT:IsLocked()
   return self:GetDTBool(0)
 end
 
+--- Returns how many rations the dispenser has left.
+-- @return [Number The ration count]
 function ENT:GetRationCount()
   return self:GetDTInt(0)
 end

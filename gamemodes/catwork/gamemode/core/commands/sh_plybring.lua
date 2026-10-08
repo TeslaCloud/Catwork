@@ -15,7 +15,7 @@ COMMAND.optionalArguments = 1
 COMMAND.access = 'o'
 COMMAND.alias = { 'Bring' }
 
--- Called when the command has been run.
+--- Teleports the target player to where the caller is looking; arguments are the name and an optional silent flag.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
   local trace = player:GetEyeTraceNoCursor()

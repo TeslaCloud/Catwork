@@ -12,7 +12,7 @@ COMMAND.text = '#Command_Contsetmessage_Syntax'
 COMMAND.flags = CMD_DEFAULT
 COMMAND.arguments = 1
 
--- Called when the command has been run.
+--- Sets the message shown when the physics entity the player is looking at is opened.
 function COMMAND:OnRun(player, arguments)
   local trace = player:GetEyeTraceNoCursor()
 

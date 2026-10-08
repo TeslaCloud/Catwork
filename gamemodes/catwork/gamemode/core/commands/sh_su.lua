@@ -12,7 +12,7 @@ COMMAND.text = '#Command_Su_Syntax'
 COMMAND.access = 's'
 COMMAND.arguments = 1
 
--- Called when the command has been run.
+--- Sends a message to every online superadmin; the arguments are the message.
 function COMMAND:OnRun(player, arguments)
   local listeners = {}
 

@@ -30,6 +30,16 @@ end
 --]]
 local oldRegister = vgui.Register
 
+--- Registers a VGUI panel class, replacing the engine's `vgui.Register`.
+--
+-- Also saves wrappers of the panel's methods (merged with its base class) to
+-- `cw.theme.backupFactory`, or to the theme being built when the class is
+-- re-registered inside a theme file, so theme changes can be reverted when the
+-- theme is unloaded.
+-- @param className [String Name of the panel class]
+-- @param panelTable [Map The panel's methods]
+-- @param baseName=nil [String Name of the base class]
+-- @return [Map The registered panel table, as returned by the engine function]
 function vgui.Register(className, panelTable, baseName)
   local backup = cw.theme.backupFactory
 
@@ -60,14 +70,22 @@ function vgui.Register(className, panelTable, baseName)
   return oldRegister(className, panelTable, baseName)
 end
 
---[[
-  @codebase Client
-  @details A function to replace a Derma panel's hook.
-  @params String The name of the panel with the hook to replace.
-  @params String The name of the hook that is being replaced.
-  @params Function The function to replace the Derma panel's hook with.
---]]
-
+--- Replaces a method of a Derma panel class in the theme being built.
+--
+-- Must be called between `cw.theme:New` and `cw.theme:Register`; does nothing
+-- otherwise or if the panel class does not exist.
+--
+-- ```
+-- cw.theme:HookReplace('cwStorage', 'Paint', function(panel, w, h)
+--   draw.RoundedBox(0, 0, 0, w, h, Color(20, 20, 20))
+-- end)
+-- ```
+--
+-- @param vguiName [String Name of the panel class]
+-- @param functionName [String Name of the method to replace]
+-- @param callback [Function The new method, called with the panel and the method's arguments]
+-- @see cw.theme:HookBefore
+-- @see cw.theme:HookAfter
 function cw.theme:HookReplace(vguiName, functionName, callback)
   if !self.factory[vguiName] then
     return
@@ -83,14 +101,14 @@ function cw.theme:HookReplace(vguiName, functionName, callback)
   end
 end
 
---[[
-  @codebase Client
-  @details A function to add a hook to be called before a Derma panel's hook is called.
-  @params String The name of the panel with the hook to hook before.
-  @params String The name of the hook to add a hook before.
-  @params Function The function that will be called before the panel's hook is called.
---]]
-
+--- Adds a function that runs before a method of a Derma panel class, in the theme being built.
+--
+-- Must be called between `cw.theme:New` and `cw.theme:Register`; does nothing
+-- otherwise or if the panel class or method does not exist.
+-- @param vguiName [String Name of the panel class]
+-- @param functionName [String Name of the method]
+-- @param callback [Function Called with the panel and the method's arguments before the method]
+-- @see cw.theme:HookAfter
 function cw.theme:HookBefore(vguiName, functionName, callback)
   if !self.factory[vguiName] then
     return
@@ -113,14 +131,14 @@ function cw.theme:HookBefore(vguiName, functionName, callback)
   end
 end
 
---[[
-  @codebase Client
-  @details A function to add a hook to be called after a Derma panel's hook is called.
-  @params String The name of the panel with the hook to hook after.
-  @params String The name of the hook to add a hook after.
-  @params Function The function that will be called after the panel's hook is called.
---]]
-
+--- Adds a function that runs after a method of a Derma panel class, in the theme being built.
+--
+-- Must be called between `cw.theme:New` and `cw.theme:Register`; does nothing
+-- otherwise or if the panel class or method does not exist.
+-- @param vguiName [String Name of the panel class]
+-- @param functionName [String Name of the method]
+-- @param callback [Function Called with the panel and the method's arguments after the method]
+-- @see cw.theme:HookBefore
 function cw.theme:HookAfter(vguiName, functionName, callback)
   if !self.factory[vguiName] then
     return
@@ -143,60 +161,61 @@ function cw.theme:HookAfter(vguiName, functionName, callback)
   end
 end
 
---[[
-  @codebase Client
-  @details A function to return all of the stored themes that have been created.
-  @returns Table The table containing all of the currently created themes.
---]]
-
+--- Returns every registered theme.
+-- @return [Map<Map> Theme tables keyed by name]
 function cw.theme:GetAll()
   return cw.theme.stored
 end
 
---[[
-  @codebase Client
-  @details A function to find a specific theme by the name it was created with.
-  @params String The name to search for.
-  @returns Table The theme table if found, returns nil if it doesn't exist.
---]]
-
+--- Returns a registered theme by name.
+-- @param id [String Name of the theme]
+-- @return [Map The theme table, or `nil` if it does not exist]
 function cw.theme:FindByID(id)
   return cw.theme.stored[id]
 end
 
---[[
-  @codebase Client
-  @details A function to find if a specific theme exists by the name it was created with.
-  @params String The name to search for.
-  @returns Bool Whether or not the theme searched for exists.
---]]
-
+--- Returns whether a theme is registered.
+--
+-- Uses `IsValid` on the theme table, which is only true for tables with an
+-- `IsValid` method, so this returns `false` for ordinary themes.
+-- @param id [String Name of the theme]
+-- @return [Boolean Whether the theme exists]
 function cw.theme:Exists(id)
   return (IsValid(cw.theme.stored[id]))
 end
 
---[[
-  @codebase Client
-  @details A deprecated function used to create a new theme.
-  @params Bool Whether or not the theme will not allow players to change the information color in settings.
-  @params String The name of the new theme to be created.
-  @params String The name of the base theme to derive from.
-  @returns Table The newly created theme table.
---]]
-
+--- Starts building a new theme with the arguments in the old order.
+-- @param isFixed=nil [Boolean Whether players cannot change the information color]
+-- @param name='Schema' [String Name of the theme]
+-- @param baseName=nil [String Name of the theme to derive from]
+-- @return [Map The new theme table]
+-- @deprecation [Use `cw.theme:New`, which takes the arguments as `(name, baseName, isFixed)`.]
 function cw.theme:Begin(isFixed, name, baseName)
   return self:New(name, baseName, isFixed)
 end
 
---[[
-  @codebase Client
-  @details A function used to create a new theme.
-  @params String The name of the new theme to be created.
-  @params String The name of the base theme to derive from.
-  @params Bool Whether or not the theme will not allow players to change the information color in settings.
-  @returns Table The newly created theme table.
---]]
-
+--- Starts building a new theme and stores it in the global `cwTHEME`.
+--
+-- The theme starts as a copy of its base theme, or of the `Clockwork` theme when
+-- no base is given. Fill in its `hooks` (theme hooks run by `cw.theme:Call`),
+-- `module` (plugin hooks), `skin` and `factory` tables and its `CreateFonts`,
+-- `Initialize`, `PostInitialize` and `OnUnloaded` methods, then call
+-- `cw.theme:Register`.
+--
+-- ```
+-- local THEME = cw.theme:New('Combine', 'Clockwork')
+--
+-- function THEME.hooks:PostMainMenuPaint(panel)
+--   draw.RoundedBox(0, 0, 0, panel:GetWide(), 4, Color(0, 120, 255))
+-- end
+--
+-- cw.theme:Register()
+-- ```
+--
+-- @param themeName='Schema' [String Name of the theme]
+-- @param baseName=nil [String Name of the theme to derive from]
+-- @param isFixed=nil [Boolean Whether players cannot change the information color]
+-- @return [Map The new theme table]
 function cw.theme:New(themeName, baseName, isFixed)
   if baseName then
     local base = self:FindByID(baseName)
@@ -231,32 +250,19 @@ function cw.theme:New(themeName, baseName, isFixed)
   return cwTHEME
 end
 
---[[
-  @codebase Client
-  @details A function to get the currently active theme.
-  @returns Table The active theme currently in use.
---]]
-
+--- Returns the active theme.
+-- @return [Map The active theme table, or `nil` if none is loaded]
 function cw.theme:Get()
   return self.active
 end
 
---[[
-  @codebase Client
-  @details A function to get whether the currently active theme allows clients to change the information color.
-  @returns Bool Whether or not the active theme has a fixed information color or not. Returns false if players
-  can change the color.
---]]
-
+--- Returns whether the active theme stops players from changing the information color.
+-- @return [Boolean Whether the color is fixed; `nil` if no theme is active]
 function cw.theme:IsFixed()
   return (self.active and self.active.isFixed)
 end
 
---[[
-  @codebase Client
-  @details A function to copy the currently active theme's skin to the Clockwork derma skin.
---]]
-
+--- Copies the active theme's `skin` table into the `Clockwork` Derma skin and refreshes the skins.
 function cw.theme:CopySkin()
   local skinTable = derma.GetNamedSkin('Clockwork')
 
@@ -269,11 +275,11 @@ function cw.theme:CopySkin()
   derma.RefreshSkins()
 end
 
---[[
-  @codebase Client
-  @details A function to initialize the theme library, called when Clockwork is initializing.
---]]
-
+--- Loads the starting theme when Catwork initializes.
+--
+-- Uses the `default_theme` config, or the player's `cwActiveTheme` console
+-- variable when the `modify_themes` config is on, falling back to `Clockwork`.
+-- @warning [Internal] Called from `GM:Initialize`.
 function cw.theme:Initialize()
   local theme = self:Get()
   local defaultTheme = config.Get('default_theme'):Get()
@@ -297,13 +303,9 @@ function cw.theme:Initialize()
   cw.theme:SetActive(theme, true)
 end
 
---[[
-  @codebase Client
-  @details A function to save a new theme into the theme library, uses the Finish method.
-  @params Bool Whether or not you want to switch to the newly created theme upon creation.
-  @returns String The name of the new theme that was saved.
---]]
-
+--- Saves the theme being built in `cwTHEME` with `cw.theme:Finish`.
+-- @param bSwitchTo=nil [Boolean Whether to switch to the theme right away]
+-- @return [String Name of the theme, or `nil` if no theme was being built]
 function cw.theme:Register(bSwitchTo)
   if cwTHEME then
     local name = cwTHEME.name
@@ -314,13 +316,10 @@ function cw.theme:Register(bSwitchTo)
   end
 end
 
---[[
-  @codebase Client
-  @details A deprecated function to save a new theme into the theme library.
-  @params Table The theme table to be saved.
-  @params Bool Whether or not you want to switch to the newly created theme upon creation.
---]]
-
+--- Saves a theme to the theme library and clears `cwTHEME`.
+-- @param themeTable [Map The theme table]
+-- @param bNoSwitch=nil [Boolean Whether to keep the current theme instead of switching to this one]
+-- @see cw.theme:Register
 function cw.theme:Finish(themeTable, bNoSwitch)
   cw.theme.stored[themeTable.name] = themeTable
 
@@ -331,14 +330,13 @@ function cw.theme:Finish(themeTable, bNoSwitch)
   cwTHEME = nil
 end
 
---[[
-  @codebase Client
-  @details A function to smoothly transition between themes, and call the hooks for loading and unloading them.
-  @params String The name of the theme to be loaded, can also be the theme table itself.
-  @params Bool Whether or not this is the first theme being loaded, used by Clockwork when initializing. Do NOT set to
-  true.
---]]
-
+--- Switches to a theme, unloading the active one first.
+--
+-- Loads the theme with its bases and copies its skin. Does nothing if a theme
+-- name is given and no such theme exists.
+-- @param theme [String Name of the theme, or the theme table itself]
+-- @param firstLoad=nil [Boolean Whether this is the first theme loaded, which skips unloading; only
+-- set by Catwork when it initializes]
 function cw.theme:SetActive(theme, firstLoad)
   if istable(theme) then
     if self:Get() and !firstLoad then
@@ -361,12 +359,16 @@ function cw.theme:SetActive(theme, firstLoad)
   cw.theme:CopySkin()
 end
 
---[[
-  @codebase Client
-  @details A function to load a theme and initialize it. Do not call this, as it will not unload the previous theme.
-  @params Table The theme table to load.
---]]
-
+--- Loads a theme and its base themes.
+--
+-- Calls the theme's `CreateFonts`, `Initialize` and `PostInitialize` methods,
+-- registers its `module` as the `Theme` plugin module and merges its panel
+-- changes into the VGUI factory. Does not unload the previous theme; use
+-- `cw.theme:SetActive`.
+-- @param themeTable [Map The theme table]
+-- @param isBase=nil [Boolean Whether the theme is loaded as the base of another, which skips the
+-- module and panel changes]
+-- @warning [Internal] Called by `cw.theme:SetActive`.
 function cw.theme:LoadTheme(themeTable, isBase)
   local baseName = themeTable.base
 
@@ -401,11 +403,14 @@ function cw.theme:LoadTheme(themeTable, isBase)
   end
 end
 
---[[
-  @codebase Client
-  @details A function to unload the current theme. Do not call this, as it will not load another theme.
---]]
-
+--- Unloads a theme and its base themes.
+--
+-- Calls the theme's `OnUnloaded` method, removes the `Theme` plugin module and
+-- restores the panel methods it changed from the backup factory. Does not load
+-- another theme; use `cw.theme:SetActive`.
+-- @param theme=nil [Map The theme table; the active theme when `nil`]
+-- @param isBase=nil [Boolean Whether the theme is unloaded as the base of another]
+-- @warning [Internal] Called by `cw.theme:SetActive`.
 function cw.theme:UnloadTheme(theme, isBase)
   local themeTable = theme or self.active
   local baseName = themeTable.base
@@ -445,14 +450,13 @@ function cw.theme:UnloadTheme(theme, isBase)
   end
 end
 
---[[
-  @codebase Client
-  @details A function call a hook from the currently active theme, along with any arguments.
-  @params String The name of the hook to call.
-  @params VarArg The arguments to call the hook with.
-  @returns Variable The results of the hook call.
---]]
-
+--- Calls a hook of the active theme.
+--
+-- Theme hooks such as `PreMainMenuPaint` live in the theme's `hooks` table. The
+-- `Pre` hooks can return `true` to replace the default drawing or behaviour.
+-- @param hookName [String Name of the hook]
+-- @param ... [Any Arguments passed to the hook]
+-- @return [Any Whatever the hook returns, or `nil` if the active theme does not define it]
 function cw.theme:Call(hookName, ...)
   if self.active and self.active.hooks[hookName] then
     return self.active.hooks[hookName](self.active.hooks, ...)
@@ -461,7 +465,13 @@ end
 
 local MARKUP_OBJECT = { __index = MARKUP_OBJECT, text = '' }
 
--- A function to add new text to the markup object.
+--- Adds a line of colored text to the markup object.
+--
+-- The text is parsed with `config.Parse` first, so config placeholders work.
+-- @param text [String Text to add]
+-- @param color=nil [Color Color of the text]
+-- @param scale=nil [Number Text scale]
+-- @param noNewLine=nil [Boolean Whether to append to the last line instead of starting a new one]
 function MARKUP_OBJECT:Add(text, color, scale, noNewLine)
   if self.text != '' and !noNewLine then
     self.text = self.text..'\n'
@@ -472,22 +482,30 @@ function MARKUP_OBJECT:Add(text, color, scale, noNewLine)
   )
 end
 
--- A function to add a new title to the markup object.
+--- Adds a title line to the markup object.
+-- @param title [String Text of the title]
+-- @param color=nil [Color Color of the title; the `information` option color when `nil`]
+-- @param scale=1.2 [Number Text scale]
 function MARKUP_OBJECT:Title(title, color, scale)
   self:Add(title, color or cw.option:GetColor('information'), scale or 1.2)
 end
 
--- A function to get the markup object's text.
+--- Returns the markup text built so far.
+-- @return [String The markup text]
 function MARKUP_OBJECT:GetText()
   return self.text
 end
 
---[[
-  @codebase Client
-  @details A function get a new markup object for rendering.
-  @returns MarkupObject The new markup object.
---]]
-
+--- Returns a new markup object for building tooltip and info text.
+--
+-- ```
+-- local markup = cw.theme:GetMarkupObject()
+-- markup:Title(itemTable.name)
+-- markup:Add(itemTable.description)
+-- local toolTip = markup:GetText()
+-- ```
+--
+-- @return [Map The markup object, with `Add`, `Title` and `GetText` methods]
 function cw.theme:GetMarkupObject()
   return cw.core:NewMetaTable(MARKUP_OBJECT)
 end

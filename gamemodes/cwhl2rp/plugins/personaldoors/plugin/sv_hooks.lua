@@ -8,12 +8,19 @@
 
 local PLUGIN = PLUGIN
 
--- Called when Clockwork has loaded all of the entities.
+--- Called after Catwork has loaded all map entities; restores the personal door owners.
 function PLUGIN:ClockworkInitPostEntity()
   self:LoadDoorData()
 end
 
--- Called to check if a player does have door access.
+--- Called when a player's access to a door is checked; grants basic access to the door's personal owners.
+--
+-- Owners are matched by character name, ignoring case.
+-- @param player [Player The player whose access is checked]
+-- @param door [Entity The door]
+-- @param access [Number The `DOOR_ACCESS_*` level being checked; only `DOOR_ACCESS_BASIC` is granted]
+-- @param isAccurate [Boolean Whether the exact access level must match]
+-- @return [Boolean `true` for a personal owner, otherwise `nil` to let other hooks decide]
 function PLUGIN:PlayerDoesHaveDoorAccess(player, door, access, isAccurate)
   if door._OwningPersons and access == DOOR_ACCESS_BASIC then
     local owningPerson = player:Name()

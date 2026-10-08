@@ -1,11 +1,18 @@
 
+--- Called when a character data value changes; networks the `diseases` value to clients.
+-- @param player [Player The player whose character data changed]
+-- @param key [String Name of the changed value]
+-- @param oldValue [Any The previous value]
+-- @param value [Any The new value]
 function PLUGIN:PlayerCharacterDataChanged(player, key, oldValue, value)
   if key == 'diseases' then
     player:SetNetVar('diseases', value)
   end
 end
 
--- Called when a player's character data should be restored.
+--- Called when a player's character data is restored; defaults the disease to `'none'`.
+-- @param player [Player The player whose character is loaded]
+-- @param data [Map The character data being restored]
 function PLUGIN:PlayerRestoreCharacterData(player, data)
   if !data['diseases'] then
     data['diseases'] = 'none'
@@ -19,6 +26,18 @@ local coughSounds = {
   'ambient/voices/cough4.wav'
 }
 
+--- Called every second for each player; runs the disease symptoms and random infections.
+--
+-- Coughs (which can turn into pneumonia), fever and gastritis play emotes and sounds at random
+-- intervals while the player is not noclipping. Healthy players have a chance every five to ten
+-- minutes to catch a cough, a fever, colour blindness or, at a `Hunger` of 65 or more,
+-- diarrhea. The death injections drain a point of health every few seconds
+-- (`fast_deathinjection` every half second) and perma-kill the character once health drops
+-- below 5.
+--
+-- @param player [Player The player being updated]
+-- @param curTime [Number The current time; overwritten with `CurTime()`]
+-- @param infoTable [Map Per-second player info; unused]
 function PLUGIN:OnePlayerSecond(player, curTime, infoTable)
   local faction = player:GetFaction()
   local curTime = CurTime()
@@ -159,7 +178,14 @@ function PLUGIN:OnePlayerSecond(player, curTime, infoTable)
   end
 end
 
--- Called when a player has been healed.
+--- Called when a player has been healed with an item; applies the medicine's rewards.
+--
+-- Most medicines boost the patient's dexterity for two minutes, and every one listed progresses
+-- the healer's medical attribute by an amount that depends on the item.
+--
+-- @param player [Player The patient]
+-- @param healer [Player The player who used the item; the patient themselves for self-treatment]
+-- @param itemTable [Item The medicine used]
 function PLUGIN:PlayerHealed(player, healer, itemTable)
   if itemTable.uniqueID == 'special_ration' then
     player:BoostAttribute(itemTable.name, ATB_DEXTERITY, 1, 120)
@@ -192,7 +218,15 @@ function PLUGIN:PlayerHealed(player, healer, itemTable)
   end
 end
 
--- Called when a player uses an item.
+--- Called when a player uses an item; can give a disease from food and triggers food symptoms.
+--
+-- A healthy player may get an allergy from some fruit and bread, gastritis from junk food or
+-- insomnia from coffee. Allergic players take damage from those foods again, and players with
+-- diarrhea vomit and take damage after eating or drinking anything.
+--
+-- @param player [Player The player who used the item]
+-- @param itemTable [Item The item used]
+-- @param itemEntity [Entity The item's entity when used from the world, otherwise `nil`]
 function PLUGIN:PlayerUseItem(player, itemTable, itemEntity)
   local allergyFood = {
     'choko',

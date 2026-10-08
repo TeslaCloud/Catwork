@@ -10,10 +10,14 @@ config.Add('garbage_respawn_delay', 400)
 config.Add('garbage_pickup_time', 20, true)
 config.Add('garbage_item_percentage', 30)
 
+--- Saves the garbage spawn points of the current map to the schema data.
+--
+-- Writes `plugins/garbage/<map>`.
 function cwGarbage:SaveGarbageSpawnPoints()
   cw.core:SaveSchemaData('plugins/garbage/'..game.GetMap(), self.garbagePoints)
 end
 
+--- Loads the garbage spawn points of the current map and makes each spawn as soon as possible.
 function cwGarbage:LoadGarbageSpawnPoints()
   self.garbagePoints = cw.core:RestoreSchemaData('plugins/garbage/'..game.GetMap())
 
@@ -26,6 +30,9 @@ function cwGarbage:LoadGarbageSpawnPoints()
   end
 end
 
+--- Spawns a garbage pile at a spawn point.
+--
+-- @param pointTable [Map The spawn point, with `position` and `angles`]
 function cwGarbage:SpawnGarbage(pointTable)
   local entity = ents.Create('cw_garbage')
 
@@ -37,6 +44,15 @@ function cwGarbage:SpawnGarbage(pointTable)
   end
 end
 
+--- Adds an item to the garbage loot table.
+--
+-- ```
+-- cwGarbage:AddItem('scrap_metal', 35)
+-- ```
+--
+-- @param id [String The item's unique ID]
+-- @param chance [Number Percent chance to find the item when it is picked; values above 100
+-- always succeed]
 function cwGarbage:AddItem(id, chance)
   table.insert(self.stored, { id, chance })
 end

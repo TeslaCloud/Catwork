@@ -16,7 +16,11 @@ ITEM.business = true
 ITEM.protection = 0.1
 ITEM.description = '#ITEM_Resistance_Uniform_Desc'
 
--- Called when a replacement is needed for a player.
+--- Swaps the player model to `models/humans/group03/male_02.mdl`
+-- for players using `models/humans/group01/jasona.mdl`.
+--
+-- Other models fall back to the item's `replacement` or `group` model.
+-- @return [String The replacement model path, or `nil`]
 function ITEM:GetReplacement(player)
   if string.lower(player:GetModel()) == 'models/humans/group01/jasona.mdl' then
     return 'models/humans/group03/male_02.mdl'

@@ -57,6 +57,7 @@ surface.CreateFont('_CMB_FONT_5', {
   underline = false
 })
 
+--- Creates the render target and scanline material the monitor's screen is drawn with.
 function ENT:Initialize()
   self.RT = GetRenderTarget('_CMB_SMALLMONITOR_ENT'..self:EntIndex()..CurTime(), 256, 256, false)
   self.RTMat = CreateMaterial('_CMB_SMALLMONITOR_ENT_RTMAT'..self:EntIndex()..CurTime(), 'UnlitTwoTexture', {
@@ -86,6 +87,10 @@ local function bitkek(int)
   return str
 end
 
+--- Draws the monitor and its screen: the three text lines and access level, or a flashing error.
+--
+-- Nearby players also see random binary on the error screen. Destroyed monitors show no
+-- screen.
 function ENT:DrawTranslucent()
   self:DrawModel()
 

@@ -8,7 +8,7 @@
 
 local PANEL = {}
 
--- Called when the panel is initialized.
+--- Sizes the classes menu tab to the menu, creates its list and builds it.
 function PANEL:Init()
   self:SetSize(cw.menu:GetWidth(), cw.menu:GetHeight())
 
@@ -21,7 +21,8 @@ function PANEL:Init()
   self:Rebuild()
 end
 
--- A function to get whether the button is visible.
+--- Returns whether the classes tab should be shown in the menu.
+-- @return [Boolean `true` when the player can see a class other than their current one, otherwise `nil`]
 function PANEL:IsButtonVisible()
   for k, v in pairs(cw.class:GetStored()) do
     if cw.core:HasObjectAccess(cw.client, v) then
@@ -34,7 +35,10 @@ function PANEL:IsButtonVisible()
   end
 end
 
--- A function to rebuild the panel.
+--- Rebuilds the list of classes the local player can see.
+--
+-- Classes are sorted by wages, highest first, then by name. A class is listed as a `cwClassesItem`
+-- when the player has access to it and the `PlayerCanSeeClass` hook allows it.
 function PANEL:Rebuild()
   self.panelList:Clear(true)
   self.classTable = nil
@@ -81,27 +85,27 @@ function PANEL:Rebuild()
   self.panelList:InvalidateLayout(true)
 end
 
--- Called when the menu is opened.
+--- Rebuilds the list when the menu is opened while this tab is active.
 function PANEL:OnMenuOpened()
   if cw.menu:IsPanelActive(self) then
     self:Rebuild()
   end
 end
 
--- Called when the panel is selected.
+--- Rebuilds the list when the tab is selected in the menu.
 function PANEL:OnSelected() self:Rebuild() end
 
--- Called when the layout should be performed.
+--- Does nothing; the list lays itself out.
 function PANEL:PerformLayout(w, h) end
 
--- Called when the panel is painted.
+--- Draws the white panel background.
 function PANEL:Paint(w, h)
   cdraw.DrawBox(0, 0, w, h, COLOR_WHITE)
 
   return true
 end
 
--- Called each frame.
+--- Rebuilds the list when the local player's class changes.
 function PANEL:Think()
   local team = cw.client:Team()
 
@@ -119,7 +123,12 @@ vgui.Register('cwClasses', PANEL, 'EditablePanel')
 
 local PANEL = {}
 
--- Called when the panel is initialized.
+--- Builds a class entry (`cwClassesItem`) for the parent's `classTable`, with its name, player count and
+-- model or image.
+--
+-- When the parent has an `overrideData` table, its `information` replaces the player count and its
+-- `Callback` runs with the class table on click instead of the `SetClass` command. The model can be
+-- changed through the `PlayerAdjustClassModelInfo` hook.
 function PANEL:Init()
   local colorWhite = Color(0, 0, 0, 200)
   local parent = self:GetParent()
@@ -181,7 +190,7 @@ function PANEL:Init()
   end
 end
 
--- Called each frame.
+--- Refreshes the class entry's player count and keeps its icon in place.
 function PANEL:Think()
   if self.classTable and !self.overrideData.information then
     self.information:SetText(
@@ -195,7 +204,7 @@ function PANEL:Think()
   self.spawnIcon:SetSize(30, 30)
 end
 
--- Called when the layout should be performed.
+--- Places the class entry's icon, name and information labels.
 function PANEL:PerformLayout(w, h)
   self.nameLabel:SizeToContents()
   self.information:SizeToContents()

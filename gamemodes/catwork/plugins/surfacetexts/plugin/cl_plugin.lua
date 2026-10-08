@@ -19,6 +19,13 @@ netstream.Hook('cw3DText_Calculate', function()
   cwSurfaceTexts:RemoveAtTrace(cw.client:GetEyeTraceNoCursor())
 end)
 
+--- Asks the server to remove the first surface text a trace runs through.
+--
+-- A text is hit when the trace crosses the line along its width and the hit position is within
+-- `5 * scale` units of its height. The server removes it only if the player is an admin.
+--
+-- @param trace [Map A trace result, such as from `GetEyeTraceNoCursor`]
+-- @return [Boolean Whether a text was hit and a removal request was sent]
 function cwSurfaceTexts:RemoveAtTrace(trace)
   if !trace then return false end
 

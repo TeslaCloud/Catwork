@@ -11,7 +11,7 @@ COMMAND.tip = '#Command_Cfglistvars_Description'
 COMMAND.text = '#Command_Cfglistvars_Syntax'
 COMMAND.access = 's'
 
--- Called when the command has been run.
+--- Prints the config variables to the caller's console; the optional argument is a search filter.
 function COMMAND:OnRun(player, arguments)
   local searchData = arguments[1] or ''
     netstream.Start(player, 'CfgListVars', searchData)

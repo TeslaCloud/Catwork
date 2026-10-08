@@ -14,7 +14,7 @@ COMMAND.optionalArguments = 1
 COMMAND.access = 'o'
 COMMAND.alias = { 'PlyRTP', 'RespawnTP' }
 
--- Called when the command has been run.
+--- Respawns the target player where the caller is looking; the argument is the player name.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
   local isSilent = cw.core:ToBool(arguments[2])

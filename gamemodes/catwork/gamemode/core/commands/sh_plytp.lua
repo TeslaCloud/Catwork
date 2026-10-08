@@ -13,7 +13,7 @@ COMMAND.access = 'o'
 COMMAND.arguments = 1
 COMMAND.alias = { 'PlyTP', 'TP' }
 
--- Called when the command has been run.
+--- Teleports the target player to where the caller is looking; the argument is the player name.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
 

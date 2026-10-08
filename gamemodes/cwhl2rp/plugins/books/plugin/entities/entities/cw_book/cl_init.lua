@@ -8,7 +8,7 @@
 
 include('shared.lua')
 
--- Called when the target ID HUD should be painted.
+--- Draws the book's name and weight when looked at.
 function ENT:HUDPaintTargetID(x, y, alpha)
   local colorTargetID = cw.option:GetColor('target_id')
   local colorWhite = cw.option:GetColor('white')
@@ -29,7 +29,7 @@ function ENT:HUDPaintTargetID(x, y, alpha)
   end
 end
 
--- Called when the entity should draw.
+--- Draws the book's model.
 function ENT:Draw()
   self:DrawModel()
 end

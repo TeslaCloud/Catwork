@@ -4,7 +4,12 @@
   the framework is publicly released.
 --]]
 
--- Called just after the translucent renderables have been drawn.
+--- Called after opaque renderables are drawn; draws the surface texts and the text tool's preview.
+--
+-- While the local player holds the `texts` tool, a faded preview of the configured text is drawn where
+-- they are looking. Every stored text within 1024 units plus its `fadeOffset` is drawn, fading out over
+-- its last 256 units. Styles add layers: 2 and up a darkened copy behind the text (except style 3), 3
+-- and up a black shadow, 5 and up a background box, and 6 makes the box pulse.
 function cwSurfaceTexts:PostDrawOpaqueRenderables()
   local weapon = cw.client:GetActiveWeapon()
   local font = cw.option:GetFont('surface_text_font')

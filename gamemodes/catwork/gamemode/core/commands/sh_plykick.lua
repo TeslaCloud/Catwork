@@ -14,7 +14,7 @@ COMMAND.access = 'o'
 COMMAND.arguments = 2
 COMMAND.alias = { 'Kick' }
 
--- Called when the command has been run.
+--- Kicks the target player from the server; arguments are the player name and the reason.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
   local reason = table.concat(arguments, ' ', 2)

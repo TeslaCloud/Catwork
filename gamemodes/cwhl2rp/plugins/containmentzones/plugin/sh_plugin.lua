@@ -9,6 +9,13 @@ cw.player:AddCharacterData('cp_filter', NWTYPE_NUMBER, 0, true)
 if SERVER then
   cwRadSystem.stored = cwRadSystem.stored or {}
 
+  --- Called when a character's data is restored; fills in missing radiation fields.
+  --
+  -- Sets `radlevel` and `radresist` to 0 and `cp_filter` to 100 for Civil Protection
+  -- characters (0 for everyone else) when they are not stored yet.
+  --
+  -- @param ply [Player The player whose character is loading]
+  -- @param data [Character The character data table, modified in place]
   function cwRadSystem:PlayerRestoreCharacterData(ply, data)
     if !data['radlevel'] then
       data['radlevel'] = 0
@@ -27,6 +34,15 @@ if SERVER then
     end
   end
 
+  --- Called after a player spawns; clears accumulated radiation on a full respawn.
+  --
+  -- On a spawn that is neither the first nor a light spawn, resets `radlevel` and
+  -- `radresist` to 0 and refills the Civil Protection filter to 100.
+  --
+  -- @param player [Player The player that spawned]
+  -- @param lightSpawn [Boolean Whether this was a light spawn]
+  -- @param changeClass [Boolean Whether the player changed class]
+  -- @param firstSpawn [Boolean Whether this is the character's first spawn]
   function cwRadSystem:PostPlayerSpawn(player, lightSpawn, changeClass, firstSpawn)
     if !firstSpawn and !lightSpawn then
       player:SetCharacterData('radlevel', 0)
@@ -60,6 +76,11 @@ if SERVER then
     end
   end
 
+  --- Called every half second; finds the players inside containment zones.
+  --
+  -- Resets every player's `inRadArea` flag, flags the players inside each stored sphere or
+  -- box zone and runs `OnPlayerInContainmentArea` for each living flagged player with the
+  -- strongest radiation level among the zones they stand in.
   function cwRadSystem:HalfSecond()
     for k, v in pairs(player.GetAll()) do
       v.radEffects = {}
@@ -87,6 +108,17 @@ if SERVER then
     end
   end
 
+  --- Called by `cwRadSystem:OnPlayerInContainmentArea` to adjust a player's radiation resistance.
+  --
+  -- Adds resistance for radiation-proof clothing, Overwatch, vortigaunts and mechanic forms.
+  -- Civil Protection drain their `cp_filter` and other players drain the `energy` of their
+  -- equipped gas mask; either grants 93 extra resistance while it has charge left. The
+  -- remaining charge is networked as the `resist_rad` integer.
+  --
+  -- @param ply [Player The player standing in radiation]
+  -- @param rad [Number Radiation strength of the zone, per second]
+  -- @param radresist [Number The player's base resistance, in percent]
+  -- @return [Number The modified resistance in percent; 100 or more blocks all radiation]
   function cwRadSystem:ModifyPlayerRadResistance(ply, rad, radresist)
     local clothesItem = ply:GetClothesItem()
 
@@ -151,6 +183,14 @@ if SERVER then
     return radresist
   end
 
+  --- Called every half second while a player stands in a containment zone.
+  --
+  -- Once per second, reduces `rad` by the resistance from `ModifyPlayerRadResistance` and adds
+  -- the result to the character's `radlevel`. Networks the zone strength as `radLevel` and
+  -- the absorbed amount as `radLevelRes` for the HUD.
+  --
+  -- @param ply [Player The player in the zone]
+  -- @param rad [Number Strongest radiation level among the zones the player is in]
   function cwRadSystem:OnPlayerInContainmentArea(ply, rad)
     if !ply.nextRadDamage then ply.nextRadDamage = CurTime() + 1 end
 
@@ -174,6 +214,14 @@ if SERVER then
     end
   end
 
+  --- Called every player think; runs the radiation hooks for living characters.
+  --
+  -- Runs `OnPlayerRadLevelChanged` when `radlevel` differs from the last seen value and
+  -- `PlayerRadThink` every think.
+  --
+  -- @param player [Player The player thinking]
+  -- @param curTime [Number The current time]
+  -- @param infoTable [Map The player's info table for this think]
   function cwRadSystem:PlayerThink(player, curTime, infoTable)
     local radlevel = player:GetCharacterData('radlevel', 0)
 
@@ -191,6 +239,9 @@ if SERVER then
     end
   end
 
+  --- Called when a player dies; clears their radiation level, networked values and timers.
+  --
+  -- @param ply [Player The player that died]
   function cwRadSystem:PlayerDeath(ply)
     ply:SetNWBool('inRadArea', false)
     ply:SetCharacterData('radlevel', 0)
@@ -203,6 +254,13 @@ if SERVER then
     ply.lastRadMessage = nil
   end
 
+  --- Called every player think with the character's radiation level; applies its effects.
+  --
+  -- Above 999 the player takes damage every half second. Above 899 the player has a small
+  -- chance every think, at most once every 20 seconds, to be knocked out for 5 to 15 seconds.
+  --
+  -- @param ply [Player The player thinking]
+  -- @param newrad [Number The character's accumulated `radlevel`]
   function cwRadSystem:PlayerRadThink(ply, newrad)
     if newrad > 999 then
       if !ply.nextRadApply then ply.nextRadApply = CurTime() + 0.5 end
@@ -230,6 +288,12 @@ if SERVER then
     end
   end
 
+  --- Sends a radiation sickness message to a player's chat, rate limited.
+  --
+  -- After a message is shown the next one is held back for a random 59 to 257 seconds.
+  --
+  -- @param ply [Player The player to message]
+  -- @param text [String The message text]
   function cwRadSystem:RadMessage(ply, text)
     if !ply.lastRadMessageTime then ply.lastRadMessageTime = CurTime() end
 
@@ -243,6 +307,14 @@ if SERVER then
     end
   end
 
+  --- Called when a character's radiation level changes; applies radiation sickness.
+  --
+  -- Boosts the player's attributes negatively under the `Radiation` boost in five stages
+  -- (above 149, 299, 449, 599 and 899) and shows the matching sickness message. Below 150 the
+  -- boosts are removed. Does nothing for players with `cwRadSystem:PlayerHasRadImmune`.
+  --
+  -- @param ply [Player The player whose level changed]
+  -- @param newrad [Number The new `radlevel`]
   function cwRadSystem:OnPlayerRadLevelChanged(ply, newrad)
     if self:PlayerHasRadImmune(ply) then
       return
@@ -298,6 +370,10 @@ if SERVER then
     end
   end
 
+  --- Called to check whether a player's stamina regenerates; blocks it above 199 radiation.
+  --
+  -- @param player [Player The player to check]
+  -- @return [Boolean `false` to block regeneration, `nil` to leave the decision to others]
   function cwRadSystem:PlayerShouldStaminaRegenerate(player)
     if !self:PlayerHasRadImmune(player) then
       local rad = player:GetCharacterData('radlevel', 0)
@@ -308,6 +384,10 @@ if SERVER then
     end
   end
 
+  --- Saves the containment zones of the current map to the schema data.
+  --
+  -- Writes `plugins/containment/<map>` with each zone's radiation level, sphere centre and
+  -- radius or box corners.
   function cwRadSystem:SaveAreas()
     local areas = {}
 
@@ -324,6 +404,7 @@ if SERVER then
     cw.core:SaveSchemaData('plugins/containment/'..game.GetMap(), areas)
   end
 
+  --- Called after Catwork has loaded the map entities; restores the saved containment zones.
   function cwRadSystem:ClockworkInitPostEntity()
     local areas = cw.core:RestoreSchemaData('plugins/containment/'..game.GetMap())
 
@@ -338,6 +419,7 @@ if SERVER then
     end
   end
 
+  --- Called after data is saved; saves the containment zones.
   function cwRadSystem:PostSaveData()
     self:SaveAreas()
   end
@@ -361,6 +443,11 @@ else
   cwRadSystem.localstored = cwRadSystem.localstored or {}
   cwRadSystem.show = false
 
+  --- Called to draw screen effects; draws the Combine overlay and radiation bloom.
+  --
+  -- Combine players get the binocular overlay (opaque for Overwatch). Above 449 radiation a
+  -- pulsing bloom grows stronger with the radiation level and with lost health. Players
+  -- immune to radiation see neither.
   function cwRadSystem:RenderScreenspaceEffects()
     local LP = cw.client
     local CT = UnPredictedCurTime()
@@ -408,6 +495,10 @@ else
     --- end
   end
 
+  --- Plays the local player's Geiger counter clicks.
+  --
+  -- While the player is inside a containment zone, picks a click chance and volume from the
+  -- networked `radLevel` and plays a `player/geiger` sound. Runs at most every 0.06 seconds.
   function cwRadSystem:GeigerThink()
     local LP = cw.client
     local highsound = false
@@ -477,6 +568,7 @@ else
     end
   end
 
+  --- Called every frame; runs `cwRadSystem:GeigerThink` when the local player has a Geiger counter.
   function cwRadSystem:Think()
     local LP = cw.client
 
@@ -485,6 +577,9 @@ else
     end
   end
 
+  --- Called to add HUD bars; adds the gas mask filter bar for Civil Protection.
+  --
+  -- @param bars [Map The HUD bars being built]
   function cwRadSystem:GetBars(bars)
     local LP = cw.client
     local cp_filter = LP:GetCharacterData('cp_filter') or 0
@@ -495,6 +590,9 @@ else
     end
   end
 
+  --- Called to paint the HUD; shows the zone's radiation per second to Geiger counter holders.
+  --
+  -- When resistance reduces the absorbed amount, it is shown in brackets after the zone value.
   function cwRadSystem:HUDPaint()
     local LocalPlayer = LocalPlayer()
     local hasgeiger = self:PlayerHasGeigerCounter(LocalPlayer)
@@ -588,6 +686,12 @@ local mechanics = {
   'dropship'
 }
 
+--- Returns whether a player is in a non-humanoid creature form.
+--
+-- The pill-form check is commented out, so this currently always returns `nil`.
+--
+-- @param ply [Player The player to check]
+-- @return [Boolean Whether the player is a creature; currently always `nil`]
 function cwRadSystem:PlayerIsBiotic(ply)
 --[[
   local ent = pk_pills.getMappedEnt(ply)
@@ -604,6 +708,12 @@ function cwRadSystem:PlayerIsBiotic(ply)
 ]]
 end
 
+--- Returns whether a player is in a mechanical Combine form, such as a scanner or turret.
+--
+-- The pill-form check is commented out, so this currently always returns `nil`.
+--
+-- @param ply [Player The player to check]
+-- @return [Boolean Whether the player is a machine; currently always `nil`]
 function cwRadSystem:PlayerIsMechanic(ply)
 --[[
   local ent = pk_pills.getMappedEnt(ply)
@@ -620,6 +730,14 @@ function cwRadSystem:PlayerIsMechanic(ply)
 ]]
 end
 
+--- Returns whether a player can read radiation levels.
+--
+-- True for Overwatch, Civil Protection, mechanic forms and holders of the `]` flag;
+-- otherwise checks for a `geiger_counter` item in the inventory (the server's copy on the
+-- server, the local inventory on the client).
+--
+-- @param ply [Player The player to check]
+-- @return [Boolean Whether the player has a Geiger counter]
 function cwRadSystem:PlayerHasGeigerCounter(ply)
   if ply:GetFaction() == FACTION_OTA then
     return true
@@ -648,6 +766,13 @@ function cwRadSystem:PlayerHasGeigerCounter(ply)
   return false
 end
 
+--- Returns whether a player is immune to radiation.
+--
+-- Mutants (the `isMutant` character data), creature and mechanic forms and vortigaunts are
+-- immune.
+--
+-- @param ply [Player The player to check]
+-- @return [Boolean Whether the player is immune]
 function cwRadSystem:PlayerHasRadImmune(ply)
   if ply:GetCharacterData('isMutant', false) then
     return true

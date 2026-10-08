@@ -14,7 +14,7 @@ COMMAND.access = 's'
 COMMAND.arguments = 1
 COMMAND.alias = { 'Demote' }
 
--- Called when the command has been run.
+--- Demotes the target player to the `user` group and respawns them; the argument is the player name.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
 

@@ -14,7 +14,7 @@ COMMAND.access = 'a'
 COMMAND.arguments = 1
 COMMAND.optionalArguments = 1
 
--- Called when the command has been run.
+--- Adds a spawn point for a faction, class or `default` where the player is looking, with an optional yaw.
 function COMMAND:OnRun(player, arguments)
   local faction = faction.FindByID(arguments[1])
   local class = cw.class:FindByID(arguments[1])

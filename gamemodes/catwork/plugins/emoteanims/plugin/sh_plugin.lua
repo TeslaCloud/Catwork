@@ -17,12 +17,20 @@ util.Include('sv_plugin.lua')
 util.Include('cl_hooks.lua')
 util.Include('sv_hooks.lua')
 
--- A function to get whether a player is in a stance.
+--- Returns whether a player is performing an emote.
+--
+-- A player is in a stance while the `StancePos` net var holds a position other than `Vector(0, 0, 0)`.
+-- @param player [Player The player to check]
+-- @return [Boolean Whether the player is in a stance]
 function cwEmoteAnims:IsPlayerInStance(player)
   return player:GetNetVar('StancePos') != Vector(0, 0, 0)
 end
 
--- Called when a player starts to move.
+--- Called when a player's movement is processed; locks the player's angles to the `StanceAng` net var
+-- while emoting and returns `true` to override the movement.
+-- @param player [Player The moving player]
+-- @param moveData [CMoveData The player's movement data]
+-- @return [Boolean `true` while the player is in a stance]
 function cwEmoteAnims:Move(player, moveData)
   local stanceAng = player:GetNetVar('StanceAng')
 
@@ -33,6 +41,11 @@ function cwEmoteAnims:Move(player, moveData)
   end
 end
 
+--- Called when an entity fires bullets; blocks bullets fired by an emoting player or by an entity whose
+-- owner is emoting.
+-- @param entity [Entity The entity firing, or the weapon whose owner is checked]
+-- @param bulletInfo [Map The bullet data]
+-- @return [Boolean `false` to block the bullets]
 function cwEmoteAnims:EntityFireBullets(entity, bulletInfo)
   if !IsValid(entity) then return false end
 

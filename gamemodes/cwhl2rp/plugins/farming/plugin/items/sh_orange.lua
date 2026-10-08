@@ -18,10 +18,10 @@ ITEM.category = 'Consumables'
 ITEM.business = true
 ITEM.description = '#Item_Orange_Description'
 
--- Called when a player uses the item.
+--- Peels the orange, giving the player an `orange_cleaned`.
 function ITEM:OnUse(player, itemEntity)
   player:FastGiveItem('orange_cleaned')
 end
 
--- Called when a player drops the item.
+--- Lets the item be dropped, with no extra effect.
 function ITEM:OnDrop(player, position) end

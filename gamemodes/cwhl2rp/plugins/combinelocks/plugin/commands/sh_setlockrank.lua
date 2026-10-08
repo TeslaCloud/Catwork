@@ -4,7 +4,10 @@ COMMAND.text = '#Command_Setcombinelockrank_Syntax'
 COMMAND.flags = bit.bor(CMD_DEFAULT, CMD_DEATHCODE)
 COMMAND.arguments = 1
 
--- Called when the command has been run.
+--- Restricts the Combine lock the player looks at to exclude the given ranks.
+--
+-- Only Civil Protection with the CmD, SeC or MaJ rank can use it. The argument is a list of
+-- ranks separated by `/`; an empty argument clears the restriction.
 function COMMAND:OnRun(combine, arguments)
   if combine:GetFaction() == FACTION_MPF then
     if Schema:IsPlayerCombineRank(combine, { 'CmD', 'SeC', 'MaJ' }) then

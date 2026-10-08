@@ -13,7 +13,7 @@ COMMAND.access = 's'
 COMMAND.arguments = 2
 COMMAND.alias = { 'TakeAccess' }
 
--- Called when the command has been run.
+--- Removes a command permission from the target player; arguments are the player name and the command.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
   local permission = string.lower(arguments[2])

@@ -11,7 +11,9 @@ COMMAND.access = 's'
 COMMAND.arguments = 2
 COMMAND.alias = { 'CharSetData', 'SetCharacterData' }
 
--- Called when the command has been run.
+--- Sets a character data key on the target player; only usable by developers (`catDev:IsDeveloper`).
+--
+-- The value is converted to the type of the existing value; table and userdata values cannot be set.
 function COMMAND:OnRun(player, arguments)
   local target = _player.Find(arguments[1])
   local key = arguments[2] or ''

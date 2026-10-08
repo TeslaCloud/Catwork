@@ -11,7 +11,7 @@ COMMAND.tip = '#Command_Doorsetchild_Description'
 COMMAND.flags = CMD_DEFAULT
 COMMAND.access = 'a'
 
--- Called when the command has been run.
+--- Parents the door the player is looking at to the player's active parent door and saves the parents.
 function COMMAND:OnRun(player, arguments)
   local door = player:GetEyeTraceNoCursor().Entity
 

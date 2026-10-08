@@ -6,7 +6,10 @@
   with contributions from Cloud Sixteen community.
 --]]
 
--- A function to load the player spawn points.
+--- Loads the current map's spawn points from the schema data into `cwSpawnPoints.spawnPoints`.
+--
+-- Points are grouped by faction or class name, or under `default`; groups for factions and classes that
+-- no longer exist are dropped. Positions saved as `'x, y, z'` strings are converted to vectors.
 function cwSpawnPoints:LoadSpawnPoints()
   local spawnPoints = cw.core:RestoreSchemaData('plugins/spawnpoints/'..game.GetMap())
   self.spawnPoints = self.spawnPoints or {}
@@ -48,7 +51,9 @@ function cwSpawnPoints:LoadSpawnPoints()
   end
 end
 
--- A function to save the player spawn points.
+--- Saves `cwSpawnPoints.spawnPoints` to the schema data and sends the updated ESP data to every admin.
+--
+-- Positions are stored as `'x, y, z'` strings.
 function cwSpawnPoints:SaveSpawnPoints()
   local spawnPoints = {}
 
@@ -72,7 +77,10 @@ function cwSpawnPoints:SaveSpawnPoints()
   cw.core:SaveSchemaData('plugins/spawnpoints/'..game.GetMap(), spawnPoints)
 end
 
--- A function to get the CW spawnpoints and combine them with source spawnpoints for syncing.
+--- Returns a copy of the spawn points with the map's `info_player_start` entities added, for the admin ESP.
+--
+-- @return [Map Lists of `{ position, rotate }` points keyed by faction or class name, `default` or
+-- `Source Spawnpoint`]
 function cwSpawnPoints:GetSpawnPoints()
   local spawnPoints = table.Copy(self.spawnPoints)
 

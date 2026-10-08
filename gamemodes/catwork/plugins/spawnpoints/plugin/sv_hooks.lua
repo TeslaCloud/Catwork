@@ -6,12 +6,18 @@
   with contributions from Cloud Sixteen community.
 --]]
 
--- Called when Clockwork has loaded all of the entities.
+--- Called after Catwork has loaded all of its entities; loads the saved spawn points.
 function cwSpawnPoints:ClockworkInitPostEntity()
   self:LoadSpawnPoints()
 end
 
--- Called when a player spawns.
+--- Called when a player spawns; moves them to a random spawn point for their class, faction or the default.
+--
+-- Class spawn points take priority over faction ones; the default set is used only when the faction has
+-- none. The player is placed 8 units above the point and turned to its `rotate` yaw. Admins also receive
+-- the spawn point ESP data.
+--
+-- @param player [Player The player who spawned]
 function cwSpawnPoints:PlayerSpawn(player)
   if player:HasInitialized() then
     local position = nil
@@ -79,7 +85,10 @@ local groupCheck = {
   operator = true
 }
 
--- Called when a player's usergroup has been set.
+--- Called when a player's user group is set; sends the spawn point ESP data to operators and above.
+--
+-- @param player [Player The player whose group was set]
+-- @param usergroup [String The new user group]
 function cwSpawnPoints:OnPlayerUserGroupSet(player, usergroup)
   if groupCheck[string.lower(usergroup)] then
     netstream.Start(player, 'SpawnPointESPSync', self:GetSpawnPoints())

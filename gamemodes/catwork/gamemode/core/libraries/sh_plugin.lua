@@ -21,56 +21,37 @@ local unloaded = {}
 local extras = {}
 local hooksCache = {}
 
---[[
-  @codebase Shared
-  @details A function to get the local stored table that contains all registered plugins.
-  @returns Table The local stored plugin table.
---]]
-
+--- Returns every registered plugin, indexed by name.
+-- @return [Map<Plugin> The plugins indexed by name]
 function plugin.GetStored()
   return stored
 end
 
---[[
-  @codebase Shared
-  @details A function to get the local plugin module table that contains all registered plugin modules.
-  @returns Table The local plugin module table.
---]]
-
+--- Returns every module added with `plugin.Add`, indexed by name.
+-- @return [Map The module tables indexed by name]
 function plugin.GetModules()
   return modules
 end
 
---[[
-  @codebase Shared
-  @details A function to get the local unloaded table that contains all unloaded plugins.
-  @returns Table The local stored unloaded plugin table.
---]]
-
+--- Returns the folder names of the plugins that are unloaded.
+-- @return [Map `true` for each unloaded plugin's folder name]
 function plugin.GetUnloaded()
   return unloaded
 end
 
---[[
-  @codebase Shared
-  @details A function to get the extras that will be included in each plugin.
-  @returns Table The local table of extras to be searched for in plugins.
---]]
-
+--- Returns the names of the folders loaded from every plugin, as added with `plugin.AddExtra`.
+-- @return [List<String> The folder names]
 function plugin.GetExtras()
   return extras
 end
 
---[[
-  @codebase Shared
-  @details A function to get the local plugin hook cache.
-  @returns Table The local plugin hook cache table.
---]]
-
+--- Returns the hook cache that `hook.Call` runs plugin hooks from.
+-- @return [Map Lists of `{ func, owner, id = moduleName }` entries indexed by hook name]
 function plugin.GetCache()
   return hooksCache
 end
 
+--- Prints the hook cache to the console.
 function plugin.DebugPrintCache()
   PrintTable(hooksCache)
 end
@@ -82,52 +63,98 @@ PLUGIN_META.version = 1.0
 PLUGIN_META.author = 'Unknown'
 PLUGIN_META.name = 'Unknown'
 
+--- Makes the plugin available as a global variable, so its hooks can be defined as `Alias:Hook`.
+--
+-- ```
+-- PLUGIN:SetGlobalAlias('cwStorage')
+--
+-- function cwStorage:PlayerSpawn(player) end
+-- ```
+--
+-- @param PLUGIN_META [Plugin The plugin; passed implicitly when called as `PLUGIN:Method()`]
+-- @param aliasName [String Name of the global variable]
 PLUGIN_META.SetGlobalAlias = function(PLUGIN_META, aliasName)
   _G[aliasName] = PLUGIN_META
   PLUGIN_META.alias = aliasName
 end
 
+--- Returns the plugin's description.
+-- @param PLUGIN_META [Plugin The plugin; passed implicitly when called as `PLUGIN:Method()`]
+-- @return [String The description]
 PLUGIN_META.GetDescription = function(PLUGIN_META)
   return PLUGIN_META.description
 end
 
+--- Returns the Lua directory the plugin was loaded from.
+-- @param PLUGIN_META [Plugin The plugin; passed implicitly when called as `PLUGIN:Method()`]
+-- @return [String The plugin's `plugin` folder, or the path of a single-file plugin]
 PLUGIN_META.GetBaseDir = function(PLUGIN_META)
   return PLUGIN_META.baseDir
 end
 
+--- Returns the plugin's hook order.
+-- @param PLUGIN_META [Plugin The plugin; passed implicitly when called as `PLUGIN:Method()`]
+-- @return [Number The hook order; `0` by default]
 PLUGIN_META.GetHookOrder = function(PLUGIN_META)
   return PLUGIN_META.hookOrder
 end
 
+--- Returns the plugin's version.
+-- @param PLUGIN_META [Plugin The plugin; passed implicitly when called as `PLUGIN:Method()`]
+-- @return [Number The version; `1.0` by default]
 PLUGIN_META.GetVersion = function(PLUGIN_META)
   return PLUGIN_META.version
 end
 
+--- Returns the plugin's author.
+-- @param PLUGIN_META [Plugin The plugin; passed implicitly when called as `PLUGIN:Method()`]
+-- @return [String The author; `'Unknown'` by default]
 PLUGIN_META.GetAuthor = function(PLUGIN_META)
   return PLUGIN_META.author
 end
 
+--- Returns the plugin's name.
+-- @param PLUGIN_META [Plugin The plugin; passed implicitly when called as `PLUGIN:Method()`]
+-- @return [String The name, as set in `plugin.ini`]
 PLUGIN_META.GetName = function(PLUGIN_META)
   return PLUGIN_META.name
 end
 
+--- Returns the CRC of a single-file plugin's path.
+-- @param PLUGIN_META [Plugin The plugin; passed implicitly when called as `PLUGIN:Method()`]
+-- @return [String The path CRC, or `nil` for folder plugins]
 PLUGIN_META.GetCRC = function(PLUGIN_META)
   return PLUGIN_META.__crc
 end
 
+--- Returns whether the plugin is a single Lua file rather than a folder.
+-- @param PLUGIN_META [Plugin The plugin; passed implicitly when called as `PLUGIN:Method()`]
+-- @return [Boolean `true` for single-file plugins, `nil` otherwise]
 PLUGIN_META.IsSingleFile = function(PLUGIN_META)
   return PLUGIN_META.__singlefile
 end
 
+--- Registers the plugin.
+-- @param PLUGIN_META [Plugin The plugin; passed implicitly when called as `PLUGIN:Method()`]
+-- @see plugin.Register
 PLUGIN_META.Register = function(PLUGIN_META)
   plugin.Register(PLUGIN_META)
 end
 
+--- Converts the plugin to a string of the form `Plugin [name]`.
+-- @param PLUGIN_META [Plugin The plugin; passed implicitly when called as `PLUGIN:Method()`]
+-- @return [String The string representation]
 PLUGIN_META.__tostring = function(PLUGIN_META)
   return 'Plugin ['..PLUGIN_META.name..']'
 end
 
 if SERVER then
+  --- Sets whether a plugin is unloaded and saves the list of unloaded plugins.
+  --
+  -- The change takes effect the next time plugins are loaded. The schema cannot be unloaded.
+  -- @param name [String Name of the plugin]
+  -- @param isUnloaded [Boolean Whether the plugin should be unloaded]
+  -- @return [Boolean Whether the plugin was found]
   function plugin.SetUnloaded(name, isUnloaded)
     local pluginTable = plugin.FindByID(name)
 
@@ -145,7 +172,13 @@ if SERVER then
     return false
   end
 
-  -- A function to get whether a plugin is disabled.
+  --- Returns whether a plugin is disabled because a plugin containing it is unloaded.
+  --
+  -- Unloaded plugins are looked up with `plugin.FindByID` by folder name, so this only finds parents
+  -- whose folder name matches their name.
+  -- @param name [String Name of the plugin, or its folder name when `bFolder` is set]
+  -- @param bFolder=nil [Boolean Treat `name` as a folder name]
+  -- @return [Boolean Whether the plugin is disabled]
   function plugin.IsDisabled(name, bFolder)
     if !bFolder then
       local pluginTable = plugin.FindByID(name)
@@ -177,7 +210,10 @@ if SERVER then
     return false
   end
 
-  -- A function to get whether a plugin is unloaded.
+  --- Returns whether a plugin is unloaded.
+  -- @param name [String Name of the plugin, or its folder name when `bFolder` is set]
+  -- @param bFolder=nil [Boolean Treat `name` as a folder name]
+  -- @return [Boolean Whether the plugin is unloaded; always `false` for the schema]
   function plugin.IsUnloaded(name, bFolder)
     if !bFolder then
       local pluginTable = plugin.FindByID(name)
@@ -194,7 +230,11 @@ if SERVER then
 else
   plugin.override = plugin.override or {}
 
-  -- A function to set whether a plugin is unloaded.
+  --- Overrides whether a plugin is shown as unloaded on the client.
+  --
+  -- Only changes what `plugin.IsUnloaded` returns on the client, e.g. to reflect a pending change.
+  -- @param name [String Name of the plugin]
+  -- @param isUnloaded [Boolean Whether the plugin should count as unloaded; `nil` removes the override]
   function plugin.SetUnloaded(name, isUnloaded)
     local pluginTable = plugin.FindByID(name)
 
@@ -203,7 +243,13 @@ else
     end
   end
 
-  -- A function to get whether a plugin is disabled.
+  --- Returns whether a plugin is disabled because a plugin containing it is unloaded.
+  --
+  -- Unloaded plugins are looked up with `plugin.FindByID` by folder name, so this only finds parents
+  -- whose folder name matches their name.
+  -- @param name [String Name of the plugin, or its folder name when `bFolder` is set]
+  -- @param bFolder=nil [Boolean Treat `name` as a folder name]
+  -- @return [Boolean Whether the plugin is disabled]
   function plugin.IsDisabled(name, bFolder)
     if !bFolder then
       local pluginTable = plugin.FindByID(name)
@@ -236,7 +282,10 @@ else
     return false
   end
 
-  -- A function to get whether a plugin is unloaded.
+  --- Returns whether a plugin is unloaded, taking overrides set with `plugin.SetUnloaded` into account.
+  -- @param name [String Name of the plugin, or its folder name when `bFolder` is set]
+  -- @param bFolder=nil [Boolean Treat `name` as a folder name]
+  -- @return [Boolean Whether the plugin is unloaded; always `false` for the schema]
   function plugin.IsUnloaded(name, bFolder)
     if !bFolder then
       local pluginTable = plugin.FindByID(name)
@@ -260,21 +309,27 @@ else
   end
 end
 
+--- Empties the hook cache, so no plugin hooks run until functions are cached again.
 function plugin.ClearCache()
   hooksCache = {}
 end
 
--- A function to set if the plugin system is initialized.
+--- Sets whether the plugin system has been initialized.
+-- @param bInitialized [Boolean Whether the plugin system has initialized]
 function plugin.SetInitialized(bInitialized)
   plugin.cwInitialized = bInitialized
 end
 
--- A function to get whether the config has initialized.
+--- Returns whether the plugin system has been initialized.
+-- @return [Boolean Whether `plugin.Initialize` has run]
 function plugin.HasInitialized()
   return plugin.cwInitialized
 end
 
--- A function to initialize the plugin system.
+--- Initializes the plugin system, restoring the saved list of unloaded plugins on the server.
+--
+-- Does nothing when already initialized.
+-- @warning [Internal] Called by `plugin.IncludePlugins` before the first plugin is loaded.
 function plugin.Initialize()
   if plugin.HasInitialized() then
     return
@@ -287,7 +342,12 @@ function plugin.Initialize()
   plugin.SetInitialized(true)
 end
 
--- A function to register a new plugin.
+--- Registers a plugin, caches its hooks and loads its contents.
+--
+-- Unless the plugin is unloaded, its functions are added to the hook cache, its extras (items,
+-- commands, entities...) are loaded with `plugin.IncludeExtras` and, on the client, a page is added
+-- to the directory. The plugins inside a folder plugin's `plugins` folder are then loaded.
+-- @param pluginTable [Plugin The plugin]
 function plugin.Register(pluginTable)
   local newBaseDir = cw.core:RemoveTextFromEnd(pluginTable.baseDir, '/schema')
   local files, pluginFolders = _file.Find(newBaseDir..'/plugins/*', 'LUA', 'namedesc')
@@ -345,12 +405,23 @@ function plugin.Register(pluginTable)
   end
 end
 
--- A function to find a plugin by an ID.
+--- Returns a registered plugin by name.
+-- @param identifier [String Name of the plugin]
+-- @return [Plugin The plugin, or `nil` when not registered]
 function plugin.FindByID(identifier)
   return stored[identifier]
 end
 
--- A function to include a plugin.
+--- Loads a plugin from its `plugin` folder or from a single Lua file.
+--
+-- Creates the global `PLUGIN` with `plugin.New`, merges in the `plugin.ini` data (on the server
+-- from the file, on the client from `CW_SCRIPT_SHARED`), runs `sh_plugin.lua` unless the plugin
+-- is unloaded or disabled, then registers it. A plugin that was already loaded keeps its table on
+-- refresh.
+--
+-- For a single-file plugin the folder name is taken from the parent directory, which is always
+-- `plugins`.
+-- @param directory [String Lua path of the plugin's `plugin` folder, or of a `.lua` file]
 function plugin.Include(directory)
   local schemaFolder = cw.core:GetSchemaFolder()
   local explodeDir = string.Explode('/', directory)
@@ -425,7 +496,10 @@ function plugin.Include(directory)
   PLUGIN = nil
 end
 
--- A function to create a new plugin.
+--- Creates a new plugin table for the plugin being included.
+--
+-- Uses the `PLUGIN_BASE_DIR` and `PLUGIN_FOLDERNAME` globals set by `plugin.Include`.
+-- @return [Plugin The new plugin]
 function plugin.New()
   local pluginTable = cw.core:NewMetaTable(PLUGIN_META)
   pluginTable.baseDir = PLUGIN_BASE_DIR
@@ -434,7 +508,9 @@ function plugin.New()
   return pluginTable
 end
 
--- A function to cache obj's functions.
+--- Adds every function of a table to the hook cache, so it runs as a hook of the same name.
+-- @param obj [Map The plugin, schema or module table]
+-- @param id=nil [String Name shown in hook error messages]
 function plugin.CacheFunctions(obj, id)
   for k, v in pairs(obj) do
     if isfunction(v) then
@@ -444,7 +520,8 @@ function plugin.CacheFunctions(obj, id)
   end
 end
 
--- A function to unhook a plugin from cache.
+--- Removes a plugin's or module's functions from the hook cache.
+-- @param id [Any The table, or the name of a registered plugin]
 function plugin.RemoveFromCache(id)
   local pluginTable = (istable(id) and id) or plugin.FindByID(id)
 
@@ -464,14 +541,24 @@ function plugin.RemoveFromCache(id)
   end
 end
 
--- A function to remove a module by name.
+--- Removes a module added with `plugin.Add` and its hooks.
+-- @param name [String Name of the module]
 function plugin.Remove(name)
   plugin.RemoveFromCache(modules[name])
 
   modules[name] = nil
 end
 
--- A function to add a table as a module.
+--- Adds a table as a module whose functions run as hooks, like a plugin's.
+--
+-- ```
+-- plugin.Add('Voices', cw.voices)
+-- ```
+--
+-- @param name [String Name of the module; also set as the table's `name` when it has none]
+-- @param moduleTable [Map The module table]
+-- @param hookOrder=0 [Number Stored as the module's `hookOrder`]
+-- @see plugin.Remove
 function plugin.Add(name, moduleTable, hookOrder)
   if !moduleTable.name then
     moduleTable.name = name
@@ -511,6 +598,12 @@ do
     }
   }
 
+  --- Loads and registers the weapons, entities and effects in a plugin's `entities` folder.
+  --
+  -- Each `weapons`, `entities` and `effects` subfolder may hold folders (with `shared.lua`,
+  -- `init.lua` and `cl_init.lua`) or single files, loaded with `SWEP`, `ENT` or `EFFECT` set
+  -- and registered under the file or folder name. Effects are only registered on the client.
+  -- @param folder [String Lua path of the `entities` folder]
   function plugin.IncludeEntities(folder)
     folder = cw.core:RemoveTextFromEnd(folder, '/')
 
@@ -579,7 +672,10 @@ do
   end
 end
 
--- A function to include a plugin's plugins.
+--- Loads every plugin in a directory's `plugins` folder, both single files and folders.
+--
+-- Initializes the plugin system first when needed.
+-- @param directory [String Lua path of the directory that contains the `plugins` folder]
 function plugin.IncludePlugins(directory)
   local files, pluginFolders = _file.Find(directory..'/plugins/*', 'LUA', 'namedesc')
 
@@ -598,12 +694,17 @@ function plugin.IncludePlugins(directory)
   end
 end
 
--- A function to add an extra folder to include for plugins.
+--- Adds a folder name that is loaded from every plugin and the schema.
+--
+-- `items` folders are loaded with `item.IncludeItems`, others with `util.IncludeDirectory`.
+-- @param folderName [String Name of the folder]
 function plugin.AddExtra(folderName)
   table.insert(extras, folderName)
 end
 
--- A function to include a plugin's extras.
+--- Loads a plugin's or schema's entities and extra folders.
+-- @param directory [String Lua path of the plugin or schema folder]
+-- @see plugin.AddExtra
 function plugin.IncludeExtras(directory)
   local files, folders = _file.Find(directory..'/*', 'LUA', 'namedesc')
 
@@ -644,6 +745,15 @@ do
   hook.ClockworkCall = oldHookCall
 
   if cw.DebugMode then
+    --- Runs a hook on every cached plugin, module and the schema, then on the gamemode.
+    --
+    -- Replaces `hook.Call` in debug mode. Each hook is called in a `pcall`; errors are printed and
+    -- fire `OnHookError`. The first non-`nil` return stops the call and is returned. Otherwise the
+    -- original `hook.Call` (kept as `hook.ClockworkCall`) runs the `hook.Add` hooks and the gamemode.
+    -- @param name [String Name of the hook]
+    -- @param gamemode [Map The gamemode table, passed on to the original `hook.Call`]
+    -- @param ... [Any Arguments passed to the hook]
+    -- @return [Any Up to six values returned by the first hook that returned anything]
     function hook.Call(name, gamemode, ...)
       if hooksCache[name] then
         for k, v in ipairs(hooksCache[name]) do
@@ -668,6 +778,15 @@ do
       return oldHookCall(name, gamemode, ...)
     end
   else
+    --- Runs a hook on every cached plugin, module and the schema, then on the gamemode.
+    --
+    -- Replaces `hook.Call` outside debug mode. The first non-`nil` return stops the call and is
+    -- returned. Otherwise the original `hook.Call` (kept as `hook.ClockworkCall`) runs the
+    -- `hook.Add` hooks and the gamemode.
+    -- @param name [String Name of the hook]
+    -- @param gamemode [Map The gamemode table, passed on to the original `hook.Call`]
+    -- @param ... [Any Arguments passed to the hook]
+    -- @return [Any Up to six values returned by the first hook that returned anything]
     function hook.Call(name, gamemode, ...)
       if hooksCache[name] then
         for k, v in ipairs(hooksCache[name]) do
@@ -685,7 +804,16 @@ do
     end
   end
 
-  -- A function to call a function for all plugins.
+  --- Calls a hook on every loaded plugin, module, the schema and the gamemode.
+  --
+  -- ```
+  -- local canSpawn = plugin.Call('PlayerCanSpawnItem', player, itemTable)
+  -- ```
+  --
+  -- @param name [String Name of the hook]
+  -- @param ... [Any Arguments passed to the hook]
+  -- @return [Any Up to six values returned by the first hook that returned anything]
+  -- @see hook.Call
   function plugin.Call(name, ...)
     return hook.Call(name, nil, ...)
   end
