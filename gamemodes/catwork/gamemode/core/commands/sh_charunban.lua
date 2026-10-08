@@ -21,7 +21,7 @@ function COMMAND:OnRun(player, arguments)
     if v:HasInitialized() then
       if string.lower(v:Name()) == charName then
         cw.player:NotifyAll(L('Command_Charunban_Unbanned', player:Name(), arguments[1]))
-        cw.player:SetBanned(player, false)
+        cw.player:SetBanned(v, false)
 
         return
       else

@@ -9,7 +9,14 @@ netstream.Hook('EditNotepad', function(player, entity, text)
   if IsValid(entity) then
     if entity:GetClass() == 'cw_notepad' then
       if player:GetPos():Distance(entity:GetPos()) <= 192 and player:GetEyeTraceNoCursor().Entity == entity then
-        if string.utf8len(text) > 0 then
+        -- Same rule as the menu option: written text is the owner's, a blank notepad is anyone's.
+        if entity.text and cw.entity:QueryProperty(entity, 'uniqueID') != player:UniqueID() then
+          cw.player:Notify(player, '#Notepad_CannotEdit')
+
+          return
+        end
+
+        if isstring(text) and string.utf8len(text) > 0 then
           entity:SetText(string.utf8sub(text, 0, 64000))
           cwNotepad:SaveNotepad()
         end

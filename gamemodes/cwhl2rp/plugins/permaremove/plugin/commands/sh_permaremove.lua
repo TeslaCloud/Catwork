@@ -19,7 +19,7 @@ function COMMAND:OnRun(player, arguments)
       entity = ent
     }
 
-    PLUGIN.removeData[data.entity] = data
+    PLUGIN.removeData[#PLUGIN.removeData + 1] = data
     PLUGIN:SaveRemoves()
     ent:Remove()
 

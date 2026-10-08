@@ -27,7 +27,7 @@ end
 
 --- Spawns the plants saved for the current map with their seed item, timings and plant model.
 function PLUGIN:LoadPlants()
-  local plants = cw.core:RestoreSchemaData('plugins/combinedevices/monitors/'..game.GetMap())
+  local plants = cw.core:RestoreSchemaData('plugins/farming/'..game.GetMap())
 
   for k, v in pairs(plants) do
     local plant = ents.Create('cw_plant')

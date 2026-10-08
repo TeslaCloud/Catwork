@@ -2,13 +2,18 @@ local PLUGIN = PLUGIN
 
 --- Removes every map entity whose class and exact position match an entry saved for the current map.
 --
--- Resets `self.removeData` to an empty table; the loaded entries are not added back to it.
+-- The loaded entries are kept in `self.removeData`, so later saves include them.
 -- @see PLUGIN:SaveRemoves
 function PLUGIN:LoadRemoves()
   self.removeData = {}
 
   local positions = {}
   local removeData = cw.core:RestoreSchemaData('plugins/removeData/'..game.GetMap())
+
+  for k, v in pairs(removeData) do
+    self.removeData[#self.removeData + 1] = v
+  end
+
   --[[
   for k, v in pairs(ents.GetAll()) do
     if (IsValid(v)) then

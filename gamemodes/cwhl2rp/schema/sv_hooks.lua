@@ -2065,7 +2065,7 @@ function Schema:EntityTakeDamage(entity, damageInfo)
             local damagePosition = damageInfo:GetDamagePosition()
 
             if entity:WorldToLocal(damagePosition):Distance(Vector(-1.0313, 41.8047, -8.1611)) <= 8 then
-              entity.doorHealth = math.min((entity.doorHealth or 50) - damageInfo:GetDamage(), 0)
+              entity.doorHealth = math.max((entity.doorHealth or 50) - damageInfo:GetDamage(), 0)
 
               local effectData = EffectData()
 
@@ -2104,7 +2104,7 @@ function Schema:EntityTakeDamage(entity, damageInfo)
       if string.lower(entity:GetClass()) == 'prop_door_rotating' then
         if !cw.entity:IsDoorFalse(entity) then
           if attacker:GetPos():Distance(entity:GetPos()) <= 96 then
-            entity.doorHealth = math.min((entity.doorHealth or 50) - damageInfo:GetDamage(), 0)
+            entity.doorHealth = math.max((entity.doorHealth or 50) - damageInfo:GetDamage(), 0)
 
             local damagePosition = damageInfo:GetDamagePosition()
             local effectData = EffectData()
